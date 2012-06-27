@@ -1,4 +1,4 @@
-Light-Table-Playground
+Light Table Playground
 ======================
 
 Issues and wiki for the Light Table Playground
