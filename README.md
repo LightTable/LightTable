@@ -5,6 +5,11 @@ Issues and wiki for the Light Table Playground
 
 #Changes
 
+##0.2.3
+
+* FIX: update mechanism was using mod time for freshness comparison
+* FIX: changes to the core loading script require a binary update
+
 ##0.2.2
 
 * FIX: light themes now correctly set their background color
