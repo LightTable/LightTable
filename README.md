@@ -5,6 +5,15 @@ Issues and wiki for the Light Table Playground
 
 #Changes
 
+##0.2.2
+
+* FIX: light themes now correctly set their background color
+* FIX: find allows spaces in search terms
+* UPDATE: updated to a much better version of the solarized theme use `set theme solarized light` or `set theme solarized dark`
+* ADDED: set theme [theme] now applies immediately to all open editors
+* ADDED: set line-numbers [true|false] now applies immediately to all open editors
+* ADDED: set skin [dark|light] changes the chrome of LT to be either a dark or light theme
+
 ##0.2.1
 
 * FIX: console.log on uncaught exceptions crashes the app
