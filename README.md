@@ -5,6 +5,14 @@ Issues and wiki for the Light Table Playground
 
 #Changes
 
+##0.2.4
+
+* FIX: initialization sequence that would cause skin to be loaded before deploy
+* FIX: redo the instarepl to remove the || hack and use marks
+* UPDATE: move to a newer version of the clojure mode
+* ADDED: new theme tomorrow-night
+* ADDED: handle OS file opens by showing an editor and no welcome screen
+
 ##0.2.3
 
 * FIX: update mechanism was using mod time for freshness comparison
