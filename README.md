@@ -5,6 +5,20 @@ Issues and wiki for the Light Table Playground
 
 #Changes
 
+##0.2.5
+
+* FIX: issue with starting a client in windows with a space in the path
+* FIX: canonical source for internal version info is now version.json
+* FIX: instarepl would sometimes show an error about the from property
+* FIX: no longer use a special version of Clojure in lein-light, thanks to bronsa/blind (AWESOME)
+* FIX: instarepl placement issues when a bare symbol is preceeded by multiple blank lines
+* FIX: infinite seqs as params would kill the instarepl
+* FIX: certain forms like (and) would stop evaluation in the instarepl
+* FIX: escaped chars would screw up highlighting, e.g. \" or \)
+* UPDATE: move to the official release of codemirror v3
+* ADDED: you can now eval @some-atom, [vec stuff], {:some map}
+* ADDED: starting a client will now search upward for a project.clj
+
 ##0.2.4
 
 * FIX: initialization sequence that would cause skin to be loaded before deploy
