@@ -5,6 +5,10 @@ Issues and wiki for the Light Table Playground
 
 #Changes
 
+##0.2.6
+
+* FIX: fix instarepl's out only printing when there's a new line at the end.
+
 ##0.2.5
 
 * FIX: issue with starting a client in windows with a space in the path
