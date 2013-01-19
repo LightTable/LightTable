@@ -5,6 +5,11 @@ Issues and wiki for the Light Table Playground
 
 #Changes
 
+##0.2.7
+
+* FIX: fix incorrect indenting of {} in clojure/clojurescript
+* FIX: hang on windows when trying to connect to a path without a project.clj
+
 ##0.2.6
 
 * FIX: fix instarepl's out only printing when there's a new line at the end.
