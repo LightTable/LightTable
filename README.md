@@ -5,6 +5,47 @@ Issues and wiki for the Light Table Playground
 
 #Changes
 
+##0.3.0
+
+* ADDED: You can eval JavaScript in a browser!
+* ADDED: CSS "eval"
+* ADDED: new visuals
+* ADDED: workspace treeview
+* ADDED: Fuzzy navigation pane (Cmd/Ctrl-O)
+* ADDED: Clients pane for client management
+* ADDED: Command fuzzy search (Ctrl-Space)
+* ADDED: Vim mode
+* ADDED: key binding UI
+* ADDED: goto line (Cmd/Ctrl-L)
+* ADDED: You can make a file into an instarepl and save instarepls
+* ADDED: set syntax command
+* ADDED: inline instarepl results
+* ADDED: env var for home (LTHOME)
+* ADDED: options to disable auto update (:no-update)
+* ADDED: new bottom console that shows prints
+* ADDED: print statements are now asynchronous
+* ADDED: tab reordering
+* ADDED: Context menus for results, tabs, and workspace
+* ADDED: native save/open dialogs
+* ADDED: better find
+* ADDED: status bar loading/working indicator
+* ADDED: line / column status
+* ADDED: resizable side pane and bottom console
+* ADDED: Create an empty new file (Cmd/Ctrl-N)
+* ADDED: Any arbitrary editor's content can be saved
+* ADDED: new eval system
+* ADDED: new inline results and errors experience
+* ADDED: Set font face
+* ADDED: themes and skins list for change commands
+* ADDED: working indicators for instarepl
+* FIX: popups now respond to keyboard input (arrows and tab/shift-tab)
+* FIX: tabs overflow in a reasonable way now
+* FIX: editor themes don't do weird things with font
+* FIX: Instarepl now reports that it is dirty and prevents closing
+* FIX: correctly report the location of reader errors
+* FIX: numerous improvements to the reliability of CLJ/CLJS eval
+* UPDATED: move to the latest blind (now tools.reader)
+
 ##0.2.7
 
 * FIX: fix incorrect indenting of {} in clojure/clojurescript
