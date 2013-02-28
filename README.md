@@ -44,6 +44,7 @@ Issues and wiki for the Light Table Playground
 * FIX: Instarepl now reports that it is dirty and prevents closing
 * FIX: correctly report the location of reader errors
 * FIX: numerous improvements to the reliability of CLJ/CLJS eval
+* FIX: The binary is now signed for OSX
 * UPDATED: move to the latest blind (now tools.reader)
 
 ##0.2.7
