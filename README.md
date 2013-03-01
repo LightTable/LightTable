@@ -5,6 +5,10 @@ Issues and wiki for the Light Table Playground
 
 #Changes
 
+##0.3.2
+
+* FIX: keybinding command-list was broken in 0.3.1
+
 ##0.3.1
 
 * FIX: you can copy/post in vim insert mode with Ctrl-C/Ctrl-V
