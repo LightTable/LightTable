@@ -5,6 +5,27 @@ Issues and wiki for the Light Table Playground
 
 #Changes
 
+##0.3.1
+
+* FIX: you can copy/post in vim insert mode with Ctrl-C/Ctrl-V
+* FIX: "Make current editor an[d] instarepl" typo fix
+* FIX: file dialogs would sometime have no effect
+* FIX: save would intermittently do nothing because the element was GC'd
+* FIX: exclude pattern when walking directories (ignores \..\* and others)
+* FIX: right-click closing a tab caused file to be unopenable
+* FIX: new file without changes + save correctly reports name change
+* FIX: version checking guard against redirects
+* FIX: Custom set themes were not loaded on restart
+* FIX: Ctrl-F was incorrectly bound by default
+* FIX: bind keys per platform (on mac Cmd-[something] on everything else Ctrl-[something])
+* FIX: line numbers were reported at 0, they are now indexed from 1
+* ADDED: commands for eval, eval.one, tab navigation, pair characters
+* ADDED: `Set line height` command
+* ADDED: save-as (Cmd/Ctrl-S)
+* ADDED: configurable exclude pattern, via `set exclude pattern/filter` command
+* ADDED: you can now drag and drop files onto LT to open them.
+* ADDED: set a Clojure file's namespace to user if there isn't one (helps newcomers!).
+
 ##0.3.0
 
 * ADDED: You can eval JavaScript in a browser!
