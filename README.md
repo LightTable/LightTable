@@ -5,6 +5,14 @@ Issues and wiki for the Light Table Playground
 
 #Changes
 
+##0.3.3
+
+* FIX: clicking on the side tabs doesn't focus content when opened via mouse.
+* FIX: Clojure 1.5.0 support
+* FIX: instarepl live button has wrong cursor
+* FIX: instarepl + line numbers hides the reader error box
+* ADDED: much faster, much more robust fuzzy searching
+
 ##0.3.2
 
 * FIX: keybinding command-list was broken in 0.3.1
