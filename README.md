@@ -5,6 +5,18 @@ Issues and wiki for the Light Table Playground
 
 #Changes
 
+##0.3.4
+
+* FIXED: Cmd/Ctrl-F now pre-fills the selection if there is one
+* FIXED: update clojure mode to have the latest builtins from 1.5
+* FIXED: remove conflict with people using tools.reader
+* FIXED: doto was broken in the instarepl
+* FIXED: remove aggressive macro expansion in the instarepl
+* FIXED: instarepl didn't respond to the `save file as` command
+* FIXED: Give a meaningful error when Clojure version is < 1.4.0
+* ADDED: window size, position, and fullscreen are now remembered
+* ADDED: clients now spawn normal lein processes (allows for setting memory, local-repo, etc)
+
 ##0.3.3
 
 * FIX: clicking on the side tabs doesn't focus content when opened via mouse.
