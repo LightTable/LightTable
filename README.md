@@ -5,6 +5,10 @@ Issues and wiki for the Light Table Playground
 
 #Changes
 
+##0.3.5
+
+* FIX: windows clients were broken due to double forward-slashes
+
 ##0.3.4
 
 * FIX: Cmd/Ctrl-F now pre-fills the selection if there is one
