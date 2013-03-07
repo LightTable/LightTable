@@ -5,6 +5,20 @@ Issues and wiki for the Light Table Playground
 
 #Changes
 
+##0.3.7
+
+* FIX: valid clojure NS forms failed in the instarepl (use a custom version of the analyzer)
+* FIX: auto-expand tabs when indent behavior is set to spaces
+* FIX: fully kill everything on shutdown to try and isolate the OSX address in use bug
+* ADDED: `set tab size/behavior` command 
+* ADDED: you can now provide options when binding keys
+* ADDED: remove button when hovering over a binding in the keybinding interface
+* ADDED: the keys input for key binding is now a capturing-input
+
+##0.3.6
+
+* FIX: workspace sometimes incorrectly filters out files
+
 ##0.3.5
 
 * FIX: windows clients were broken due to double forward-slashes
