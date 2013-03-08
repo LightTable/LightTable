@@ -5,6 +5,14 @@ Issues and wiki for the Light Table Playground
 
 #Changes
 
+##0.3.8
+
+* FIX: (:use [blah a b c]) in the instarepl
+* FIX: " wasn't being paired correctly
+* FIX: removing a tab before the active would incorrectly show content
+* FIX: try to handle the AltGr key on international keyboards.
+* ADDED: Cmd/Ctrl-F while find is open will replace the search with selection if there is one
+
 ##0.3.7
 
 * FIX: valid clojure NS forms failed in the instarepl (use a custom version of the analyzer)
