@@ -5,6 +5,20 @@ Issues and wiki for the Light Table Playground
 
 #Changes
 
+##0.3.9
+
+* CHANGE: set the default theme to something with a bit more color
+* FIX: tab did not correctly indent with a selection
+* FIX: tab was not correctly inserting tabs when use tabs was on.
+* FIX: servers are per window using random open ports (fixes EADDRINUSE)
+* FIX: add hover state for instarepl live button
+* FIX: when switching live on and off in the instarepl, clear results
+* FIX: instarepl live toggle refocuses the editor
+* FIX: don't insert paired brace if the next char is a word character
+* ADDED: scss mode
+* ADDED: `ibdknox` theme, which is the previous default theme
+* UPDATED: lots of the codemirror modes
+
 ##0.3.8
 
 * FIX: (:use [blah a b c]) in the instarepl
