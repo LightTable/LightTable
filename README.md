@@ -5,6 +5,57 @@ Issues and wiki for the Light Table Playground
 
 #Changes
 
+##0.4.0
+
+* FIX: change bundle id for Mac .app
+* FIX: make the fuzzy matching take separators into account
+* FIX: setting the exclude path didn't take effect until restart
+* FIX: remove errant print statement (#405)
+* FIX: pipe separator highlights (#406)
+* FIX: dramatically improve rendering performance.
+* FIX: correctly parse version parts to numbers for comparison.
+* FIX: set syntax needed a better error message and description (#388)
+* FIX: better searching of the PATH on windows
+* FIX: don't fail startup if a file/folder in a workspace was deleted
+* FIX: default exclude pattern was too greedy
+* FIX: handle semi-colonless JS much better
+* FIX: remove the tab symbols from the solarized theme
+* FIX: workspace buttons no longer overflow
+* FIX: handle the no available client much more gracefully
+* ADDED: the ability to split the window into multiple tabsets
+* ADDED: you can now have multiple windows open (Cmd/Ctrl-Shift-N to open a window, Cmd/Ctrl-Shift-W to close)
+* ADDED: python eval!
+* ADDED: ipython client integration
+* ADDED: nodejs client
+* ADDED: browser tab `Browser: add browser tab`, `Browser: refresh active browser tab`
+* ADDED: browser client using chrome-devtools
+* ADDED: Magical JS VM patching for live updates through the devtools integration
+* ADDED: command grouping
+* ADDED: connect tab that now shows which clients are active
+* ADDED: you can now unset a client from an editor
+* ADDED: connect tab now has `add connection` that lists all available client types
+* ADDED: executing a command by name with a keybinding will prompt you with the keybinding
+* ADDED: token-based auto-complete (press tab after a character)
+* ADDED: trailing whitespace is now removed on save (use the `toggle remove trailing whitespace` command to disable)
+* ADDED: line-ending detection on save
+* ADDED: You can now eval any arbitrary selection, just select text and press cmd/ctrl+enter
+* ADDED: Better styling for filter lists
+* ADDED: greatly improved startup time
+* ADDED: new folder, new file, rename, and delete to workspace context menu
+* ADDED: workspaces now watch the file system for changes
+* ADDED: Inline inspectable results for Javascript
+* ADDED: Console inspectable results for Javascript
+* ADDED: A greatly improved console with source information
+* ADDED: You can now put the console in a tab via the `Console: Open the console in a tab` command
+* ADDED: cancelable eval for Clojure and Python
+* ADDED: editor context menu for cut/copy/paste
+* ADDED: Light Table Docs! `Docs: Open Light Table's documentation`
+* ADDED: Recent workspaces are remembered, added `Workspace: Create new workspace`
+* CHANGED: clients tab is now `connect`
+* CHANGED: moved to acorn for Javascript parsing instead of Esprima
+* CHANGED: completely remove JQuery for significant memory performance increases
+* UPDATED: latest codemirror
+
 ##0.3.9
 
 * CHANGE: set the default theme to something with a bit more color
