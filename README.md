@@ -5,6 +5,24 @@ Issues and wiki for the Light Table Playground
 
 #Changes
 
+##0.4.1
+
+* FIX: Eval an empty line in Python throws #480
+* FIX: NodeJS require issues #448, #485
+* FIX: Python 3 issues #467
+* FIX: File encoding in Python throws #454
+* FIX: Missing connecting loader.gif
+* FIX: CLJS eval with ^:export is broken #484
+* FIX: Use pre's for stdout #474
+* FIX: Screen jumps when you click on certain links #461
+* FIX: Platform error when clicking download link #447
+* FIX: Single quotes break js eval #449
+* FIX: Segfault on linux when right clicking on results #478
+* FIX: File events were unhooked from the editor pool #446
+* FIX: Browser reload throws when you remove a browser tab #477
+* FIX: Connect to external browser is broken #459
+* FIX: .pyw scripts are not recognised as python #489
+
 ##0.4.0
 
 * FIX: change bundle id for Mac .app
