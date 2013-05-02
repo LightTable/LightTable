@@ -10,7 +10,7 @@ Issues and wiki for the Light Table Playground
 * FIX: Incorrectly interpreting "//" as a regex for find #499
 * FIX: toggle remove whitespace caused save issues #479
 * FIX: discover the PATH in OSX when run GUI-wise
-* ADDED: VirtualEnv support for Python and IPython
+* ADDED: VirtualEnv support for Python and IPython issue #465
 
 ##0.4.1
 
