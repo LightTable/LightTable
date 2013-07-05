@@ -1,0 +1,58 @@
+/*
+ * Classic example grammar, which recognizes simple arithmetic expressions like
+ * "2*(3+4)". The parser generated from this grammar then computes their value.
+ */
+
+start
+  = toplevel *
+
+whitespace
+  = [ \r\n\t]+ { return; }
+
+sexpr
+  = "#_" ? "#" ? "(" toplevel * end:endexpr { return {line: line, col: column, endLine: end.line, endCol: end.col}; }
+
+mapexpr
+  =  "#" ? "{" toplevel * end:mapendexpr { return {line: line, col: column, endLine: end.line, endCol: end.col}; }
+
+vecexpr
+  = "[" toplevel * end:vecendexpr { return {line: line, col: column, endLine: end.line, endCol: end.col}; }
+
+endexpr
+  = ")" { return {line:line, col:column}; }
+
+mapendexpr
+  = "}" { return {line:line, col:column}; }
+
+vecendexpr
+  = "]" { return {line:line, col:column}; }
+
+taggedliteral
+  = "#" symbol whitespace * e:expr { return {line: line, col: column, endLine: e.endLine, endCol: e.endCol}; } / "#" s:symbol { return {line: line, col: column, endLine: s.endLine, endCol: s.endCol}; }
+    
+quoted
+  = [\'\`]+ whitespace * e:expr { return {line: line, col:column, endLine: e.endLine, endCol: e.endCol}; }
+  
+comment
+  = ";" [^\r\n]*
+
+string
+  = "\"" stringchar * e:stringend { return {line: line, col:column, endLine: e.line, endCol:e.col }; }
+     
+stringchar
+  = "\\\"" / [^\"]
+     
+stringend
+  = "\"" { return { line:line, col:column }; }
+  
+ignore
+  = whitespace / comment
+
+expr
+  = symbol / sexpr / mapexpr / vecexpr / taggedliteral / string / quoted
+  
+toplevel
+ = ignore* e:expr ignore * { return e; }
+
+symbol
+  = [^ \r\n\t\{\}\[\]\(\)\'\`\"\;\#]sym:[^ \r\n\t\{\}\[\]\(\)\'\`\"\;]* { return {line:line, col:column, endLine:line, endCol: column + sym.length}; }

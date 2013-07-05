@@ -1,0 +1,25 @@
+.cm-s-codemirror { background: #fff; }
+.cm-s-codemirror span.cm-keyword {color: #708;}
+.cm-s-codemirror span.cm-atom {color: #219;}
+.cm-s-codemirror span.cm-number {color: #164;}
+.cm-s-codemirror span.cm-def {color: #00f;}
+.cm-s-codemirror span.cm-variable {color: black;}
+.cm-s-codemirror span.cm-variable-2 {color: #05a;}
+.cm-s-codemirror span.cm-variable-3 {color: #085;}
+.cm-s-codemirror span.cm-property {color: black;}
+.cm-s-codemirror span.cm-operator {color: black;}
+.cm-s-codemirror span.cm-comment {color: #a50;}
+.cm-s-codemirror span.cm-string {color: #a11;}
+.cm-s-codemirror span.cm-string-2 {color: #f50;}
+.cm-s-codemirror span.cm-meta {color: #555;}
+.cm-s-codemirror span.cm-error {color: #f00;}
+.cm-s-codemirror span.cm-qualifier {color: #555;}
+.cm-s-codemirror span.cm-builtin {color: #30a;}
+.cm-s-codemirror span.cm-bracket {color: #997;}
+.cm-s-codemirror span.cm-tag {color: #170;}
+.cm-s-codemirror span.cm-attribute {color: #00c;}
+.cm-s-codemirror span.cm-header {color: blue;}
+.cm-s-codemirror span.cm-quote {color: #090;}
+.cm-s-codemirror span.cm-hr {color: #999;}
+.cm-s-codemirror span.cm-link {color: #00c;}
+.cm-s-codemirror span.cm-symbol {color: black; }

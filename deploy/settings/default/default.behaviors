@@ -1,0 +1,361 @@
+{
+:+
+{:app
+ #{:lt.objs.clients.local/startup-with-local-client
+   :lt.objs.settings2/load-behaviors
+   :lt.objs.settings2/load-keys
+   :lt.objs.proc/set-path-OSX
+   :lt.objs.workspace/reconstitute-last-workspace
+   :lt.objs.sidebar.command/init-commands
+   :lt.objs.clients.ws/kill-on-closed
+   :lt.objs.keyboard/load-keys-on-init
+   :lt.objs.workspace/stop-watch-on-close
+   :lt.objs.workspace/store-last-workspace
+   :lt.objs.clients.devtools/clean-inspectors-timer
+   :lt.objs.editor.pool/init-tab-settings
+   :lt.objs.style/load-theme-on-init :lt.objs.app/pre-init-args
+   :lt.objs.deploy/check-deploy :lt.objs.editor.pool/stop-close-dirty
+   :lt.objs.clients/close-clients-on-closed
+   :lt.objs.app/restore-position-on-init
+   :lt.objs.cli/open-on-args
+   :lt.objs.cli/open!
+   :lt.objs.clients.tcp-client/kill-on-closed
+   :lt.objs.animations/animate-on-init
+   :lt.objs.app/store-position-on-close :lt.objs.canvas/append-canvas
+   :lt.objs.tabs/init-sortable :lt.objs.app/restore-fullscreen
+   :lt.objs.sidebar.navigate/set-exclude-on-init
+   :lt.objs.deploy/check-version
+   :lt.objs.style/style-on-init
+   :lt.objs.app/initial-focus
+   :lt.objs.app/close!
+   :lt.objs.app/refresh
+   :lt.objs.app/ready!
+   :lt.objs.app/on-show-bind-navigate
+   :lt.objs.editor.pool/stop-reload-dirty
+   :lt.objs.window/track-focus},
+ :browser
+ #{:lt.objs.browser/forward! :lt.objs.browser/init!
+   :lt.objs.browser/destroy-on-close :lt.objs.browser/focus!
+   :lt.objs.browser/set-client-name :lt.objs.browser/rem-client
+   :lt.objs.browser/store-history :lt.objs.browser/refresh!
+   :lt.objs.browser/set-active :lt.objs.browser/navigate!
+   :lt.objs.browser/back!},
+ :client
+ #{:lt.objs.clients/on-connect-drain :lt.objs.clients/queue!
+   :lt.objs.clients/try-send},
+ :client.local #{:lt.objs.clients.local/send!},
+ :client.placeholder #{:lt.objs.clients/remove-placeholder-on-swapped},
+ :clients
+ #{:lt.objs.langs.clj/handle-cancellation
+   :lt.objs.langs.python/pyzmq-error},
+ :clients.devtools
+ #{:lt.objs.clients.devtools/clear-queue-on-connect
+   :lt.objs.clients.devtools/console-log
+   :lt.objs.clients.devtools/handle-message
+   :lt.objs.clients.devtools/clear-console
+   :lt.objs.clients.devtools/script-parsed
+   :lt.objs.clients.devtools/print-messages},
+ :clojure.lang #{:lt.objs.langs.clj/connect :lt.objs.langs.clj/eval!},
+ :codex
+ #{:lt.objs.codex/close :lt.objs.codex/add! :lt.objs.codex/clear!},
+ :command.options #{:lt.objs.sidebar.command/options-escape!},
+ :command.selector
+ #{:lt.objs.sidebar.command/escape!
+   :lt.objs.sidebar.command/select-hidden
+   :lt.objs.sidebar.command/select-command},
+ :console #{:lt.objs.console/on-close},
+ :docs #{:lt.objs.docs/on-close-destroy},
+ :editor
+ #{:lt.objs.sidebar.clients/track-active-client
+   :lt.plugins.auto-complete/intra-buffer-string-hints
+   :lt.plugins.auto-paren/close-pair :lt.objs.editor.pool/track-active
+   :lt.objs.editor.pool/ed-close :lt.objs.editor/menu!
+   :lt.objs.editor.pool/warn-on-active :lt.objs.editor/refresh!
+   :lt.plugins.auto-paren/repeat-pair
+   :lt.plugins.auto-complete/async-hint-tokens
+   :lt.objs.editor/copy-paste-menu+
+   :lt.plugins.auto-paren/try-remove-pair
+   :lt.plugins.auto-paren/open-pair
+   :lt.plugins.auto-complete/show-hint},
+ :editor.active #{:lt.objs.statusbar/report-cursor-location},
+ :editor.behaviors #{:lt.objs.settings2/on-behaviors-editor-save}
+ :editor.keymap #{:lt.objs.settings2/on-keymap-editor-save}
+ :editor.clj
+ #{:lt.objs.langs.clj/eval-print :lt.objs.langs.clj/on-result-set-ns
+   :lt.objs.langs.clj/no-op :lt.objs.langs.clj/clj-exception
+   :lt.objs.langs.clj/eval-print-err :lt.objs.langs.clj/eval-location
+   :lt.objs.langs.clj/on-eval.one :lt.objs.langs.clj/on-eval
+   :lt.objs.langs.clj/clj-result},
+ :editor.clj.instarepl
+ #{:lt.objs.instarepl/on-eval-one :lt.objs.instarepl/set-parent-title
+   :lt.objs.instarepl/on-eval-sonar :lt.objs.instarepl/dirty-parent
+   :lt.objs.instarepl/no-op :lt.objs.instarepl/eval-on-change
+   :lt.objs.instarepl/close-parent
+   :lt.objs.editor.find/find-in-editor},
+ :editor.cljs
+ #{:lt.objs.langs.clj/on-result-set-ns :lt.objs.langs.clj/exec.cljs!
+   :lt.objs.langs.clj/no-op :lt.objs.langs.clj/eval-location
+   :lt.objs.langs.clj/on-code :lt.objs.langs.clj/on-eval.one
+   :lt.objs.langs.clj/on-remote-result :lt.objs.langs.clj/on-eval
+   :lt.objs.langs.clj/cljs-exception},
+ :editor.css
+ #{:lt.objs.langs.css/on-eval :lt.objs.langs.css/eval-on-save},
+ :editor.file-backed
+ #{:lt.objs.opener/save-as-rename!
+   :lt.objs.editor.file/remove-trailing-whitespace
+   :lt.objs.editor.file/dirty-on-change :lt.objs.editor.file/file-save
+   :lt.objs.opener/save-as :lt.objs.editor.file/preserve-line-endings
+   :lt.objs.editor.file/last-char-newline},
+ :editor.hinting
+ #{:lt.plugins.auto-complete/remove-on-move-line
+   :lt.plugins.auto-complete/remove-on-scroll-inactive},
+ :editor.html
+ #{:lt.objs.langs.html/eval-on-save :lt.objs.langs.html/on-eval},
+ :editor.htmlembedded
+ #{:lt.objs.langs.html/eval-on-save :lt.objs.langs.html/on-eval},
+ :editor.htmlmixed
+ #{:lt.objs.langs.html/eval-on-save :lt.objs.langs.html/on-eval},
+ :editor.inline-result
+ #{:lt.objs.eval/underline-results :lt.objs.eval/inline-results
+   :lt.objs.eval/inline-exceptions},
+ :editor.javascript
+ #{:lt.objs.langs.js/js-success :lt.objs.langs.js/js-result
+   :lt.objs.langs.js/js-exception :lt.objs.langs.js/on-eval
+   :lt.objs.langs.js/on-eval.one},
+ :editor.pool
+ #{:lt.objs.editor.pool/add-tab-settings
+   :lt.objs.editor.pool/options-changed
+   :lt.objs.editor.pool/line-numbers-changed
+   :lt.objs.editor.pool/theme-changed},
+ :editor.python
+ #{:lt.objs.langs.python/python-exception :lt.objs.langs.python/on-eval
+   :lt.objs.langs.python/on-eval.one
+   :lt.objs.langs.python/python-result
+   :lt.objs.langs.python/python-success
+   :lt.objs.langs.python/python-printer
+   :lt.objs.langs.python/python-image},
+ :editor.structural #{:lt.plugins.struct/rem-on-close},
+ :editor.transient
+ #{:lt.objs.editor.file/dirty-on-change :lt.objs.opener/transient-save
+   :lt.objs.opener/save-as},
+ :evaler #{:lt.objs.eval/alert-on-no-client},
+
+
+ :files [(:lt.objs.files/file-types [{:name "CSS" :exts [:css] :mime "text/css" :tags [:editor.css]}
+                                     {:name "C" :exts [:c] :mime "text/x-c" :tags [:editor.c]}
+                                     {:name "C++" :exts [:cpp :mm :cc] :mime "text/x-c++src" :tags [:editor.cpp]}
+                                     {:name "C++ Header" :exts [:h] :mime "text/x-c++hdr" :tags [:editor.cpph]}
+                                     {:name "C#" :exts [:cs] :mime "text/x-csharpr" :tags [:editor.csharp]}
+                                     {:name "Clojure" :exts [:clj] :mime "text/x-clojure" :tags [:editor.clj]}
+                                     {:name "ClojureScript" :exts [:cljs] :mime "text/x-clojurescript" :tags [:editor.cljs]}
+                                     {:name "CoffeeScript" :exts [:coffee] :mime "text/x-coffeescript" :tags [:editor.coffee]}
+                                     {:name "Common Lisp" :exts [:cl] :mime "text/x-common-lisp" :tags [:editor.common-lisp]}
+                                     {:name "Diff" :exts [:diff :patch] :mime "text/x-diff" :tags [:editor.diff]}
+                                     {:name "Erlang" :exts [:erl] :mime "text/x-erlang" :tags [:editor.erlang]}
+                                     {:name "Go" :exts [:go] :mime "text/x-go" :tags [:editor.go]}
+                                     {:name "Groovy" :exts [:groovy] :mime "text/x-groovy" :tags [:editor.groovy]}
+                                     {:name "Haskell" :exts [:hs] :mime "text/x-haskell" :tags [:editor.haskell]}
+                                     {:name "HAML" :exts [:haml] :mime "text/x-haml" :tags [:editor.haml]}
+                                     {:name "Haxe" :exts [:haxe] :mime "text/x-haxe" :tags [:editor.haxe]}
+                                     {:name "HTML" :exts [:html :htm] :mime "htmlmixed" :tags [:editor.html]}
+                                     {:name "INI" :exts [:ini] :mime "text/x-ini" :tags [:editor.ini]}
+                                     {:name "Javascript" :exts [:js :json] :mime "text/javascript" :tags [:editor.javascript]}
+                                     {:name "Java" :exts [:java] :mime "text/x-java" :tags [:editor.java]}
+                                     {:name "LaTeX" :exts [:latex :tex] :mime "text/x-stex" :tags [:editor.latex]}
+                                     {:name "LESS" :exts [:less] :mime "text/x-less" :tags [:editor.less]}
+                                     {:name "Lua" :exts [:lua] :mime "text/x-lua" :tags [:editor.lua]}
+                                     {:name "Light Table Behaviors" :exts [:behaviors] :mime "text/x-clojurescript" :tags [:editor.behaviors]}
+                                     {:name "Light Table Keymap" :exts [:keymap] :mime "text/x-clojurescript" :tags [:editor.keymap]}
+                                     {:name "Markdown" :exts [:md :markdown] :mime "text/x-markdown" :tags [:editor.markdown]}
+                                     {:name "OCaml" :exts [:ocaml :ml] :mime "text/x-ocaml" :tags [:editor.ocaml]}
+                                     {:name "Pascal" :exts [:pas] :mime "text/x-pascal" :tags [:editor.pascal]}
+                                     {:name "Perl" :exts [:pl] :mime "text/x-perl" :tags [:editor.perl]}
+                                     {:name "PHP" :exts [:php] :mime "text/x-perl" :tags [:editor.perl]}
+                                     {:name "Python" :exts [:py :pyw] :mime "text/x-python" :tags [:editor.python]}
+                                     {:name "Plain Text" :exts [:txt] :mime "plaintext" :tags [:editor.plaintext]}
+                                     {:name "R" :exts [:r] :mime "text/x-rsrc" :tags [:editor.r]}
+                                     {:name "Rust" :exts [:rs] :mime "text/x-rustsrc" :tags [:editor.rust]}
+                                     {:name "Ruby" :exts [:rb] :mime "text/x-ruby" :tags [:editor.ruby]}
+                                     {:name "Sass" :exts [:sass] :mime "text/x-sass" :tags [:editor.sass]}
+                                     {:name "Scala" :exts [:scala] :mime "text/x-scala" :tags [:editor.scala]}
+                                     {:name "Scheme" :exts [:ss :scm :sch] :mime "text/x-scheme" :tags [:editor.scheme]}
+                                     {:name "SCSS" :exts [:scss] :mime "text/x-scss" :tags [:editor.scss]}
+                                     {:name "Shell" :exts [:sh :bash :profile :bash_profile :bashrc] :mime "text/x-sh" :tags [:editor.shell]}
+                                     {:name "Smarty" :exts [:smarty] :mime "text/x-smarty" :tags [:editor.smarty]}
+                                     {:name "SPARQL" :exts [:sparql] :mime "text/x-sparql-query" :tags [:editor.sparql]}
+                                     {:name "TypeScript" :exts [:ts] :mime "text/x-typescript" :tags [:editor.typescript]}
+                                     {:name "VB" :exts [:vb] :mime "text/x-vb" :tags [:editor.visualbasic]}
+                                     {:name "YAML" :exts [:yml :yaml] :mime "text/x-yaml" :tags [:editor.yaml]}
+                                     ])]
+ :filter-list
+ #{:lt.objs.sidebar.command/select!
+   :lt.objs.sidebar.command/filter-inactive
+   :lt.objs.sidebar.command/focus! :lt.objs.sidebar.command/change!
+   :lt.objs.sidebar.command/clear! :lt.objs.sidebar.command/update-lis
+   :lt.objs.sidebar.command/set-on-select
+   :lt.objs.sidebar.command/move-selection
+   :lt.objs.sidebar.command/set-selection!
+   :lt.objs.sidebar.command/filter-active},
+ :find-bar
+ #{:lt.objs.find/show! :lt.objs.find/clear! :lt.objs.find/next!
+   :lt.objs.find/focus! :lt.objs.find/hide! :lt.objs.find/prev!
+   :lt.objs.find/search!},
+ :frame.client
+ #{:lt.objs.browser/html-eval :lt.objs.browser/cljs-exec
+   :lt.objs.browser/handle-refresh! :lt.objs.browser/handle-send!
+   :lt.objs.browser/css-eval :lt.objs.browser/js-eval
+   :lt.objs.browser/js-eval-file :lt.objs.browser/handle-close!
+   :lt.objs.browser/change-live},
+ :hinter
+ #{:lt.plugins.auto-complete/select :lt.plugins.auto-complete/escape!
+   :lt.plugins.auto-complete/line-change},
+ :html.lang #{:lt.objs.langs.html/eval!},
+ :inline.exception
+ #{:lt.objs.eval/ex-menu! :lt.objs.eval/ex-clear
+   :lt.objs.eval/ex-shrink-on-double-click},
+ :inline.result
+ #{:lt.objs.eval/shrink-on-double-click :lt.objs.eval/result-menu!
+   :lt.objs.eval/expand-on-click :lt.objs.eval/clear-mark
+   :lt.objs.eval/move-mark :lt.objs.eval/changed},
+ :inline.result-group
+ #{:lt.objs.instarepl/clear-mark :lt.objs.instarepl/changed
+   :lt.objs.instarepl/soft-clear :lt.objs.instarepl/expand-on-click
+   :lt.objs.instarepl/move-mark
+   :lt.objs.instarepl/shrink-on-double-click},
+ :inline.underline-result
+ #{:lt.objs.eval/result-menu! :lt.objs.eval/ex-clear},
+ :inspector.object #{:lt.objs.clients.devtools/clear-inspector-object},
+ :keybinding
+ #{:lt.objs.keybinding/capture! :lt.objs.keybinding/show-mappings
+   :lt.objs.keybinding/add-binding!
+   :lt.objs.keybinding/destroy-on-close},
+ :navigate.selector
+ #{:lt.objs.sidebar.navigate/escape!
+   :lt.objs.sidebar.navigate/pop-transient-on-select
+   :lt.objs.sidebar.navigate/open-on-select},
+ :navigator #{:lt.objs.sidebar.navigate/focus! :lt.objs.sidebar.navigate/workspace-files},
+ :nodejs.client
+ #{:lt.objs.clients.tcp-client/init-debugger!
+   :lt.objs.clients.tcp-client/start-debugger!
+   :lt.objs.clients.tcp-client/connect-success
+   :lt.objs.clients.tcp-client/send!
+   :lt.objs.clients.tcp-client/debugger-evaluate
+   :lt.objs.clients.tcp-client/debugger-changelive
+   :lt.objs.clients.tcp-client/refresh-scripts!
+   :lt.objs.clients.tcp-client/debugger-scripts
+   :lt.objs.clients.tcp-client/changelive!
+   :lt.objs.clients.tcp-client/connect-retry},
+ :nodejs.lang #{:lt.objs.clients.tcp-client/connect!},
+ :object #{:lt.objs.clients/on-destroy-remove-cb},
+ :opener
+ #{:lt.objs.opener/open-from-info :lt.objs.opener/open-transient-editor
+   :lt.objs.opener/open-standard-editor},
+ :options-input
+ #{:lt.objs.sidebar.command/op-select!
+   :lt.objs.sidebar.command/options-escape!
+   :lt.objs.sidebar.command/op-clear!
+   :lt.objs.sidebar.command/op-focus!},
+ :python.lang
+ #{:lt.objs.langs.python/eval! :lt.objs.langs.python/connect},
+ :searcher
+ #{:lt.objs.search/search! :lt.objs.search/on-result
+   :lt.objs.search/on-data :lt.objs.search/clear!
+   :lt.objs.search/on-close},
+ :sidebar
+ #{:lt.objs.sidebar/item-toggled
+   :lt.objs.sidebar/width!
+   :lt.objs.sidebar/open!
+   :lt.objs.sidebar/close!
+   :lt.objs.sidebar/no-anim-on-drag
+   :lt.objs.sidebar/reanim-on-drop
+   :lt.objs.sidebar/pop-transient},
+ :sidebar.clients
+ #{:lt.objs.sidebar.clients/unset-client
+   :lt.objs.sidebar.clients/selecting!
+   :lt.objs.sidebar.clients/done-selecting},
+ :sidebar.command
+ #{:lt.objs.sidebar.command/refresh! :lt.objs.sidebar.command/focus!
+   :lt.objs.sidebar.command/exec-active!
+   :lt.objs.sidebar.command/post-select-pop
+   :lt.objs.sidebar.command/soft-focus!
+   :lt.objs.sidebar.command/cancel!
+   :lt.objs.keybinding/show-keybinding-after-command
+   :lt.objs.sidebar.command/exec-command},
+ :sidebar.workspace
+ #{:lt.objs.sidebar.workspace/sidebar-menu
+   :lt.objs.sidebar.workspace/recent! :lt.objs.sidebar.workspace/tree!
+   :lt.objs.sidebar.workspace/recent.select!},
+ :skin-selector #{:lt.objs.style/set-skin-on-select},
+ :statusbar.console #{:lt.objs.console/statusbar-console-toggle},
+ :tab-options #{:lt.objs.editor.pool/focus-options},
+ :tabs #{:lt.objs.tabs/on-destroy-eds :lt.objs.tabs/active-tab-num :lt.objs.tabs/prev-tab :lt.objs.tabs/next-tab :lt.objs.tabs/tab-close :lt.objs.tabs/repaint-tab-updated
+         :lt.objs.tabs/right! :lt.objs.tabs/left! :lt.objs.tabs/bottom!
+         :lt.objs.find/adjust-find-on-resize}
+ :tabset
+ #{:lt.objs.tabs/set-width-final! :lt.objs.tabs/tabset-active
+   :lt.objs.tabs/next-tab :lt.objs.tabs/unset-dragging
+   :lt.objs.tabs/repaint-tab-updated :lt.objs.tabs/width!
+   :lt.objs.tabs/tab-close :lt.objs.tabs/prev-tab
+   :lt.objs.tabs/reanim-on-drop :lt.objs.tabs/tabset-menu
+   :lt.objs.tabs/no-anim-on-drag :lt.objs.tabs/active-tab-num
+   :lt.objs.tabs/set-dragging},
+ :tabset.tab
+ #{:lt.objs.tabs/on-destroy-remove
+   :lt.objs.tabs/on-active-active-tabset},
+ :tcp.client #{:lt.objs.clients.tcp/send!},
+ :theme-selector #{:lt.objs.style/set-theme-on-select},
+ :tree-item
+ #{:lt.objs.sidebar.workspace/rename-submit
+   :lt.objs.sidebar.workspace/rename-focus
+   :lt.objs.sidebar.workspace/start-rename
+   :lt.objs.sidebar.workspace/rename-cancel
+   :lt.objs.sidebar.workspace/rename-blur},
+ :window
+ #{:lt.objs.clients.tcp/kill-on-closed
+   :lt.objs.workspace/stop-watch-on-blur
+   :lt.objs.window/track-focus
+   :lt.objs.workspace/watch-workspace},
+ :worker-thread [:lt.objs.thread/kill! :lt.objs.thread/send! :lt.objs.thread/queue! :lt.objs.thread/connect :lt.objs.thread/try-send :lt.objs.thread/message]
+ :workspace
+ #{:lt.objs.sidebar.workspace/on-ws-set
+   :lt.objs.sidebar.navigate/watched.delete :lt.objs.workspace/rename!
+   :lt.objs.workspace/clear! :lt.objs.sidebar.navigate/watched.create
+   :lt.objs.sidebar.navigate/populate-on-ws-update
+   :lt.objs.editor.pool/watched.delete :lt.objs.workspace/add-folder!
+   :lt.objs.workspace/serialize-workspace
+   :lt.objs.workspace/remove-file! :lt.objs.editor.pool/watched.rename
+   :lt.objs.workspace/add-file! :lt.objs.sidebar.workspace/on-ws-add
+   :lt.objs.workspace/watch-on-set
+   :lt.objs.sidebar.workspace/on-ws-remove :lt.objs.workspace/set!
+   :lt.objs.sidebar.workspace/watched.delete :lt.objs.workspace/new!
+   :lt.objs.sidebar.workspace/watched.create
+   :lt.objs.editor.pool/watched.update
+   :lt.objs.workspace/remove-folder!},
+ :workspace.file
+ #{:lt.objs.sidebar.workspace/on-open-file
+   :lt.objs.sidebar.workspace/rename-file
+   :lt.objs.sidebar.workspace/subfile-menu
+   :lt.objs.sidebar.workspace/delete-file
+   :lt.objs.sidebar.workspace/on-menu},
+ :workspace.file.root #{:lt.objs.sidebar.workspace/on-root-menu},
+ :workspace.folder
+ #{:lt.objs.sidebar.workspace/new-folder!
+   :lt.objs.sidebar.workspace/subfolder-menu
+   :lt.objs.sidebar.workspace/destroy-sub-tree
+   :lt.objs.sidebar.workspace/on-open-ls
+   :lt.objs.sidebar.workspace/delete-folder
+   :lt.objs.sidebar.workspace/on-close
+   :lt.objs.sidebar.workspace/rename-folder
+   :lt.objs.sidebar.workspace/refresh
+   :lt.objs.sidebar.workspace/on-menu
+   :lt.objs.sidebar.workspace/force-delete-folder
+   :lt.objs.sidebar.workspace/new-file!},
+ :workspace.folder.root
+ #{:lt.objs.sidebar.workspace/on-root-menu
+   :lt.objs.sidebar.workspace/on-menu},
+ :workspace.root
+ #{:lt.objs.sidebar.workspace/on-remove
+   :lt.objs.sidebar.workspace/add-ws-folder
+   :lt.objs.sidebar.workspace/on-clear
+   :lt.objs.sidebar.workspace/add-ws-file},
+ :ws.client #{:lt.objs.clients.ws/send!}}}
