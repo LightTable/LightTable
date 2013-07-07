@@ -12,7 +12,7 @@
      :editor.keys.normal {"\"" [(:editor.repeat-pair "\"")]
                           "(" [(:editor.open-pair "(")]
                           ")" [(:editor.close-pair ")")]
-                          "cmd-f" [:find-in-editor]
+                          "pmeta-f" [:find-in-editor]
                           "tab" [:auto-complete]
                           "[" [(:editor.open-pair "[")]
                           "{" [(:editor.open-pair "{")]

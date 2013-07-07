@@ -93,27 +93,22 @@
          [:h3 (:desc info (pr-str b)) (pr-str (:type info))]
          (when (coll? b) (string/join " " (rest b)))])]]))
 
-(object/object* ::on-behaviors-editor-save
+(object/behavior* ::on-close-remove
+                  :triggers #{:close}
+                  :reaction (fn [this]
+                              (tabs/rem! this)))
+
+(object/object* ::behavior-editor
                 :tags #{:behaviors.editor}
                 :name "Behaviors"
                 :init (fn [this]
                         [:div#behavior-editor
-                         (time (behavior-list @object/tags))
-                         ]
-                        ))
+                         (time (behavior-list @object/tags))]))
 
 (def behavior-editor (object/create ::behavior-editor))
-(do (tabs/add! behavior-editor) nil)
+;(do (tabs/add! behavior-editor) nil)
 
 (object/tag-behaviors :app [::initial-behaviors])
-
-;(reset! final (sorted-map))
-;(reset! final (parse-file "/users/chris/.lighttable/settings/default/default.behaviors"))
-;(-> (parse-file "/users/chris/.lighttable/settings/user/user.behaviors") :foo)
-
-
-
-;;comment
 
 (defn fix-keys [[k v]]
   [(string/replace k "pmeta" kb/meta) v])

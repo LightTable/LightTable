@@ -51,9 +51,6 @@
 (defpartial ->item [l & [class]]
   [:li {:class class} l])
 
-(defpartial ->place-holder []
-  [:img {:src "file://localhost/Users/chris/Downloads/287.gif"}])
-
 (defn ->ui [c]
   (if (= (:current-ui @c) :self)
     (object/->content c)

@@ -166,25 +166,3 @@
          (fn [err out serr]
            (let [vs (zipmap vars (string/split out ";"))]
              (cb vs)))))
-
-(comment
-
-  (.exec (js/require "child_process") "git diff" (clj->js {:cwd "/users/chris/lighttable"})
-         (fn [err out serr]
-           (object/raise (first (object/by-tag :opener)) :open-info! {:content out :type "diff" :name "diff"})))
-
-  (def x (exec {:command "sh"
-                :obj printer}))
-
-  (-> @printer :procs first (.-stdin) (.write "grep -r woot playground/src/ \n" ))
-
-  (.exec (js/require "child_process") "ls -la"
-         (fn [err out serr]
-           ;(set! js/process.env.PATH out)
-           (println "HERE: "err serr out)))
-  (.exec (js/require "child_process") "echo $PATH"
-         (fn [err out serr]
-           (println out)))
-  (set! js/process.env.PATH )
-  (.which shell "python")
-  )

@@ -180,7 +180,7 @@
   (send client {:command :evaluate :arguments {:expression code :global true}}))
 
 (defn grab-require [client]
-  (global-eval client "global.require = global.process.mainModule.require; global.ltclient = global.process.mainModule.exports; //require('/users/chris/lighttable/plugins/nodejs/ltnodeclient.js');"))
+  (global-eval client "global.require = global.process.mainModule.require; global.ltclient = global.process.mainModule.exports;"))
 
 (defn load-tools [client]
   (global-eval client (str "global.ltclient.connect('" (-> @client :path) "'," tcp/port "," (clients/->id client) ");")))

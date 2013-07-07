@@ -5,7 +5,7 @@
                  ;:exclusions [org.clojure/clojurescript]]
                  [crate "0.2.4"]
                  [fetch "0.1.0-alpha2" :exclusions [org.clojure/clojure]]
-                 [org.clojure/clojurescript "0.0-1552"
+                 [org.clojure/clojurescript "0.0-1806"
                   :exclusions [org.apache.ant/ant]]
                  ]
   :cljsbuild {:builds [{:source-paths ["src"]

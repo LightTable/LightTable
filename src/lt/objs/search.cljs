@@ -11,18 +11,6 @@
             [clojure.string :as string])
   (:require-macros [lt.macros :refer [defui]]))
 
-(comment
-(proc/exec {:command "grep -nr find /users/chris/lighttable/playground/src /users/chris/lighttable/playground/deploy"
-            :obj searcher})
-  )
-
-(comment
-(def grep-list (computed [workspace/workspace]
-                     (fn [ws]
-                       (let [{:keys [files folders]} (workspace/serialize ws)]
-                         (string/join " " (concat files folders))))))
-  )
-
 (defn construct-grep [term locs]
   (str "grep -nr " term " " (string/join " " locs)))
 
@@ -80,8 +68,6 @@
                               (proc/exec {:command (construct-grep s [folder])
                                           :obj this})
                               ))
-
-;(object/raise searcher :search! "woot" "/users/chris/lighttable/playground")
 
 (object/behavior* ::on-result
                   :triggers #{:result}

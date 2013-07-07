@@ -33,6 +33,7 @@
    :lt.objs.app/on-show-bind-navigate
    :lt.objs.editor.pool/stop-reload-dirty
    :lt.objs.window/track-focus},
+ :behaviors.editor #{:lt.objs.settings2/on-close-remove}
  :browser
  #{:lt.objs.browser/forward! :lt.objs.browser/init!
    :lt.objs.browser/destroy-on-close :lt.objs.browser/focus!

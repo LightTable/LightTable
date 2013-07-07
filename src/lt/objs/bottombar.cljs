@@ -37,7 +37,7 @@
                               (when-not (= 0 (.-clientY e))
                                 (let [win-height (.-innerHeight js/window)
                                       height (- win-height (.-clientY e))]
-                                (object/raise tabs/multi :bottom! (- (:height @this) height))
+                                (object/raise tabs/multi :bottom! (- height (:height @this)))
                                 (object/merge! this {:height height
                                                      :max-height height})))
                               ))
