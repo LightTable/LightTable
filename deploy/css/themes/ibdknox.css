@@ -52,4 +52,4 @@
 .CodeMirror div.CodeMirror-secondarycursor { border-left: 1px solid silver; }
 .CodeMirror.cm-keymap-fat-cursor div.CodeMirror-cursor { width: auto; border: none !important; background: #80838a; z-index:0;}
 
-.CodeMirror-gutters { background: inherit; border-right:0px solid #444; }
+.CodeMirror-gutters { background: inherit; border-right:1px solid #444; }

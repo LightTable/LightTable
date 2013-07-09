@@ -3,7 +3,6 @@
   (:require [lt.object :as object]
             [lt.objs.window :as window]
             [lt.util.js :refer [wait]]
-            [lt.util.cljs :refer [clj->js]]
             [lt.objs.notifos :as notifos]
             [clojure.string :as string]))
 

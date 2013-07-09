@@ -90,7 +90,7 @@
                                        {:label "Cut" :selector "cut:" :key "x"}
                                        {:label "Copy" :selector "copy:" :key "c"}
                                        {:label "Paste" :selector "paste:" :key "v"}]}
-              {:label "View" :submenu [{:label "Toggle Workspace tree" :key "t" :click (fn [] (cmd/exec! :workspace.show))}
+              {:label "View" :submenu [{:label "Workspace" :key "t" :click (fn [] (cmd/exec! :workspace.show))}
                                        {:label "Connections" :click #(cmd/exec! :show-connect)}
                                        {:label "Navigator" :key "o" :click #(cmd/exec! :navigate-workspace-transient)}
                                        {:label "Commands" :key " " :modifiers "ctrl" :click #(cmd/exec! :show-commandbar-transient)}

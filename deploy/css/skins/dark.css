@@ -29,6 +29,7 @@ input { color: #fff; background:#777; }
 
 .inline-result { background:none; }
 .inline-result .truncated { background: -webkit-var(dark-accent-background); color:-webkit-var(accent-foreground); }
+.inline-result .inline { background: -webkit-var(dark-accent-background); color:-webkit-var(accent-foreground); }
 .inline-result.open .full { background: -webkit-var(dark-accent-background); color:-webkit-var(accent-foreground); }
 
 .inline-exception pre { background:#8A1C3B; color:#FFADAD; }
@@ -195,6 +196,9 @@ input { color: #fff; background:#777; }
 .search-results .path { color: -webkit-var(accent-foreground); }
 .search-results .file { color: -webkit-var(accent-foreground); }
 
+.watch-result { display:inline-block; padding-left:2px; vertical-align:top; background:#5C0087; color:#E8B5FF; border-left: 2px solid #E8B5FF; border-radius:2px; }
+.CodeMirror .watched { border-bottom:1px solid #E8B5FF; }
+
 .cm-visible-space { background:url("/users/chris/lighttable/playground/deploy/img/visible-space11.png"); background-size:100%; background-position:center;  background-repeat: no-repeat;}
 .cm-visible-tab { background:url("/users/chris/lighttable/playground/deploy/img/visible-tab7.png"); background-size:100% 1em; background-position:center;  background-repeat: no-repeat;}
 
@@ -256,7 +260,7 @@ input { color: #fff; background:#777; }
 .CodeMirror div.CodeMirror-secondarycursor { border-left: 1px solid silver; }
 .CodeMirror.cm-keymap-fat-cursor div.CodeMirror-cursor { width: auto; border: none !important; background: rgba(0, 200, 200, .4); }
 
-.CodeMirror-gutters { background: #202020; border-right:0px solid #444; }
+.CodeMirror-gutters { background: #202020; }
 
 .CodeMirror-hints {
   position: absolute;

@@ -4,7 +4,6 @@
             [lt.objs.files :as files]
             [lt.objs.platform :as platform]
             [lt.objs.app :as app]
-            [lt.util.cljs :refer [clj->js]]
             [clojure.string :as string]))
 
 ;;TODO: kill processes on shutdown

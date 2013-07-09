@@ -16,6 +16,7 @@
             [lt.objs.proc :as proc]
             [lt.objs.eval :as eval]
             [lt.objs.notifos :as notifos]
+            [lt.plugins.watches :as watches]
             [lt.util.cljs :refer [->dottedkw]]
             [clojure.string :as string]))
 
@@ -95,7 +96,9 @@
 (object/behavior* ::on-eval.one
                   :triggers #{:eval.one}
                   :reaction (fn [editor]
-                              (let [code (ed/->val editor)
+                              (let [code (watches/watched-range editor nil nil (if (object/has-tag? editor :editor.cljs)
+                                                                                 cljs-watch
+                                                                                 clj-watch))
                                     pos (ed/->cursor editor)
                                     info (:info @editor)
                                     info (if (ed/selection? editor)
@@ -217,6 +220,15 @@
                               ;(println "LOCATION: " loc)
                               ))
 
+(object/behavior* ::cljs-watch-result
+                  :triggers #{:editor.eval.cljs.watch}
+                  :reaction (fn [editor res]
+                              (when-let [watch (get (:watches @editor) (-> res :meta :id))]
+                                (let [str-result (pr-str (:result res))]
+                                  (object/raise (:inline-result watch) :update! str-result)
+                                  )
+                              )))
+
 (object/behavior* ::eval-print
                   :triggers #{:editor.eval.clj.print}
                   :reaction (fn [this str]
@@ -254,6 +266,17 @@
 (object/tag-behaviors :clojure.lang [::eval! ::connect])
 (object/tag-behaviors :editor.clj #{::eval-location ::no-op ::eval-print ::eval-print-err ::clj-exception ::on-eval ::on-eval.one ::on-result-set-ns ::clj-result})
 (object/tag-behaviors :editor.cljs #{::eval-location ::no-op ::exec.cljs! ::on-eval ::on-eval.one ::on-code ::cljs-exception ::on-result-set-ns ::on-remote-result})
+
+;;****************************************************
+;; watches
+;;****************************************************
+
+(defn cljs-watch [meta src]
+  (let [meta (assoc meta :ev :editor.eval.cljs.watch)]
+    (str "(js/lttools.watch " src " (clj->js " (pr-str meta) "))")))
+
+(defn clj-watch [meta src]
+  src)
 
 ;;****************************************************
 ;; Proc

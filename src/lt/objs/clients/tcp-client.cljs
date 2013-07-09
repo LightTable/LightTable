@@ -14,8 +14,7 @@
             [lt.objs.console :as console]
             [lt.objs.clients.tcp :as tcp]
             [clojure.string :as string])
-  (:use [lt.util.cljs :only [clj->js]]
-        [lt.util.js :only [wait ->clj]]))
+  (:use [lt.util.js :only [wait ->clj]]))
 
 ;;****************************************************
 ;; Proc

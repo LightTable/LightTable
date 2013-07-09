@@ -11,7 +11,7 @@
             )
   (:use [lt.util.dom :only [remove-class add-class]]
         [lt.object :only [object* behavior*]]
-        [lt.util.cljs :only [clj->js js->clj]]))
+        [lt.util.cljs :only [js->clj]]))
 
 ;;*********************************************************
 ;; Creating
@@ -499,7 +499,8 @@
                              {:label "Select all"
                               :order 5
                               :click (fn []
-                                       (set-selection this (first-line this) (last-line this))
+                                       (set-selection this {:line (first-line this)}
+                                                      {:line (last-line this)})
                                        )})))
 
 (def ed-obj (object* ::editor
@@ -528,4 +529,3 @@
                                ))))
 
 (object/tag-behaviors :editor [::menu! ::copy-paste-menu+ ::refresh!])
-

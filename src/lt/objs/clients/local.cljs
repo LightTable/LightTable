@@ -8,10 +8,8 @@
             [lt.objs.console :as console]
             [clojure.string :as string]
             [crate.core :as crate]
-            [lt.util.dom :refer [$ append remove]]
-            )
-  (:use [lt.util.cljs :only [clj->js]]
-        [lt.util.js :only [wait ->clj]]))
+            [lt.util.dom :refer [$ append remove]])
+  (:use [lt.util.js :only [wait ->clj]]))
 
 (def client-name "LightTable-UI")
 
@@ -30,7 +28,8 @@
           (object/raise clients/clients :message [cb :editor.eval.cljs.exception {:ex e :meta (:meta res)}]))))))
 
 (defmethod on-message :editor.eval.js [_ data cb]
-  (let [code (:code data)]
+  (let [code (-> (:code data)
+                 (eval/append-source-file (:path data)))]
       (try
         (object/raise clients/clients :message
                       [cb

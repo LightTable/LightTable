@@ -79,8 +79,10 @@
    :lt.plugins.auto-paren/open-pair
    :lt.plugins.auto-complete/show-hint},
  :editor.active #{:lt.objs.statusbar/report-cursor-location},
- :editor.behaviors #{:lt.objs.settings2/on-behaviors-editor-save}
- :editor.keymap #{:lt.objs.settings2/on-keymap-editor-save}
+ :editor.behaviors #{:lt.objs.settings2/on-behaviors-editor-save
+                     :lt.objs.settings2/eval-settings}
+ :editor.keymap #{:lt.objs.settings2/on-keymap-editor-save
+                  :lt.objs.settings2/eval-settings}
  :editor.clj
  #{:lt.objs.langs.clj/eval-print :lt.objs.langs.clj/on-result-set-ns
    :lt.objs.langs.clj/no-op :lt.objs.langs.clj/clj-exception
@@ -98,7 +100,11 @@
    :lt.objs.langs.clj/no-op :lt.objs.langs.clj/eval-location
    :lt.objs.langs.clj/on-code :lt.objs.langs.clj/on-eval.one
    :lt.objs.langs.clj/on-remote-result :lt.objs.langs.clj/on-eval
-   :lt.objs.langs.clj/cljs-exception},
+   :lt.objs.langs.clj/cljs-exception
+   :lt.objs.langs.clj/cljs-watch-result
+   :lt.plugins.watches/watch!
+   :lt.plugins.watches/unwatch!
+   :lt.plugins.watches/eval-on-watch-or-unwatch},
  :editor.css
  #{:lt.objs.langs.css/on-eval :lt.objs.langs.css/eval-on-save},
  :editor.file-backed
@@ -122,7 +128,11 @@
  :editor.javascript
  #{:lt.objs.langs.js/js-success :lt.objs.langs.js/js-result
    :lt.objs.langs.js/js-exception :lt.objs.langs.js/on-eval
-   :lt.objs.langs.js/on-eval.one},
+   :lt.objs.langs.js/on-eval.one
+   :lt.objs.langs.js/js-watch
+   :lt.plugins.watches/watch!
+   :lt.plugins.watches/unwatch!
+   :lt.plugins.watches/eval-on-watch-or-unwatch},
  :editor.pool
  #{:lt.objs.editor.pool/add-tab-settings
    :lt.objs.editor.pool/options-changed
@@ -217,7 +227,9 @@
  :inline.result
  #{:lt.objs.eval/shrink-on-double-click :lt.objs.eval/result-menu!
    :lt.objs.eval/expand-on-click :lt.objs.eval/clear-mark
-   :lt.objs.eval/move-mark :lt.objs.eval/changed},
+   :lt.objs.eval/move-mark :lt.objs.eval/changed
+   :lt.objs.eval/update!
+   :lt.objs.eval/destroy-on-cleared},
  :inline.result-group
  #{:lt.objs.instarepl/clear-mark :lt.objs.instarepl/changed
    :lt.objs.instarepl/soft-clear :lt.objs.instarepl/expand-on-click
@@ -225,6 +237,7 @@
    :lt.objs.instarepl/shrink-on-double-click},
  :inline.underline-result
  #{:lt.objs.eval/result-menu! :lt.objs.eval/ex-clear},
+ :inline.watch #{:lt.plugins.watches/clear!}
  :inspector.object #{:lt.objs.clients.devtools/clear-inspector-object},
  :keybinding
  #{:lt.objs.keybinding/capture! :lt.objs.keybinding/show-mappings

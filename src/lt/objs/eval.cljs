@@ -10,6 +10,7 @@
             [lt.objs.sidebar.command :as cmd]
             [lt.objs.notifos :as notifos]
             [lt.objs.popup :as popup]
+            [crate.core :as crate]
             [crate.binding :refer [bound]]
             [lt.objs.console :as console]
             [lt.util.dom :as dom]
@@ -161,12 +162,15 @@
          " open"
          )))
 
+(defn truncate-result [r]
+  (when (string? r)
+    (if (> (count r) 50)
+      (subs r 0 50)
+      r)))
+
 (defui ->inline-res [this info]
   (let [r (:result info)
-        truncated (when (string? r)
-                    (if (> (count r) 50)
-                      (subs r 0 50)
-                      r))]
+        truncated (truncate-result r)]
     [:span {:class (bound this #(->result-class % truncated))}
      (when truncated
        [:span.truncated truncated])
@@ -203,19 +207,37 @@
                               (object/raise this :changed)
                               (ed/focus (:ed @this))))
 
+(object/behavior* ::destroy-on-cleared
+                  :triggers #{:cleared}
+                  :reacion (fn [this]
+                             (object/destroy! this)))
+
 (object/behavior* ::clear-mark
                   :triggers #{:clear!}
                   :reaction (fn [this]
                               (js/CodeMirror.off (:line @this) "change" (:listener @this))
                               (js/CodeMirror.off (:line @this) "delete" (:delete @this))
                               (.clear (:mark @this))
-                              (object/destroy! this)))
+                              (object/raise this :clear)
+                              (object/raise this :cleared)))
 
 (object/behavior* ::changed
                   :triggers #{:changed}
                   :reaction (fn [this]
                               ;(.changed (:mark @this))
                               ))
+
+(object/behavior* ::update!
+                  :triggers #{:update!}
+                  :reaction (fn [this res]
+                              (let [content (object/->content this)
+                                    full (dom/$ :.full content)
+                                    scroll (dom/scroll-top full)]
+                                (when-let [t (truncate-result res)]
+                                  (when-let [trunc (dom/$ :.truncated content)]
+                                    (dom/html trunc t)))
+                                (dom/html full res)
+                                (dom/scroll-top full scroll))))
 
 (def new-line-change ["" ""])
 (object/behavior* ::move-mark
@@ -269,7 +291,6 @@
                                                                             :opts opts
                                                                             :result res
                                                                             :loc loc
-                                                                            :end-loc end-loc
                                                                             :line line})]
                                 (when-let [prev (get (@this :widgets) [line type])]
                                   (when (:open @prev)

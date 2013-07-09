@@ -59,6 +59,7 @@
                   :triggers #{:workspace.add.file!}
                   :reaction (fn [this path]
                               (object/raise workspace/current-ws :add.file! path)
+                              (object/raise (first (object/by-tag :opener)) :open! path)
                               ))
 
 (object/behavior* ::on-open-ls
@@ -519,7 +520,12 @@
 (object/behavior* ::sidebar-menu
                   :triggers #{:menu!}
                   :reaction (fn [this e]
-                              (-> (menu [{:label "Clear workspace"
+                              (-> (menu [{:label "Add folder"
+                                          :click (fn [] (cmd/exec! :workspace.add-folder))}
+                                         {:label "Add file"
+                                          :click (fn [] (cmd/exec! :workspace.add-file))}
+                                         {:type "separator"}
+                                         {:label "Clear workspace"
                                           :click (fn [] (object/raise tree :clear!))}])
                                   (show-menu (.-clientX e) (.-clientY e)))
                               ))
@@ -529,6 +535,16 @@
 (def sidebar-workspace (object/create ::sidebar.workspace))
 
 (sidebar/add-item sidebar/sidebar sidebar-workspace)
+
+(cmd/command {:command :workspace.add-folder
+              :desc "Workspace: add folder"
+              :exec (fn []
+                      (open-folder))})
+
+(cmd/command {:command :workspace.add-file
+              :desc "Workspace: add file"
+              :exec (fn []
+                      (open-file))})
 
 (cmd/command {:command :workspace.show
               :desc "Workspace: Toggle workspace tree"

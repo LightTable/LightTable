@@ -4,8 +4,7 @@
             [lt.objs.editor :as ed]
             [lt.objs.files :as files]
             [lt.objs.clients :as clients]
-            [lt.util.dom :refer [$ append]]
-            [lt.util.cljs :refer [clj->js]])
+            [lt.util.dom :refer [$ append]])
   (:require-macros [lt.macros :refer [defui]]))
 
 (object/behavior* ::on-eval

@@ -9,8 +9,9 @@
             [lt.objs.notifos :as notifos]
             [lt.objs.sidebar.command :as cmd]
             [lt.objs.popup :as popup]
+            [lt.plugins.watches :as watches]
             [lt.util.dom :refer [$ append]]
-            [lt.util.cljs :refer [clj->js js->clj]])
+            [lt.util.cljs :refer [js->clj]])
   (:require-macros [lt.macros :refer [defui]]))
 
 (def util-inspect (.-inspect (js/require "util")))
@@ -72,33 +73,13 @@
        :end {:line (dec (.-line end))
              :ch (.-column end)}})))
 
-(defn src->watch [ed src pos]
+(defn src->watch [meta src]
   (let [[src semi] (if (= (last src) ";")
                       [(subs src 0 (dec (count src))) ";"]
                       [src ""])
-        opts (js-obj "start" (.-from pos)
-                     "end" (.-to pos)
-                     "obj" (object/->id ed))
+        opts (clj->js (assoc meta :ev :editor.eval.js.watch))
         opts-str (.stringify js/JSON opts)]
     (str "lttools.watch(" src ", " opts-str ")" semi)))
-
-(defn watched-range [ed start end]
-  (let [doc (.Doc js/CodeMirror (ed/->val ed))
-        range (when start
-                (ed/mark doc start (update-in end [:ch] inc) {:inclusiveLeft true :inclusiveRight true}))
-        ;;add watch ranges
-        watches (doall (for [watch (:watches @ed)
-                             :let [pos (.find watch)]]
-                         (ed/mark doc (.-from pos) (.-to pos)  {:className "watched"})))]
-    ;;replace watched ranges with code
-    (doseq [watch watches
-            :let [pos (.find watch)
-                  text (ed/range doc (.-from pos) (.-to pos))]]
-      (ed/replace doc (.-from pos) (.-to pos) (src->watch ed text pos)))
-    (if range
-      (let [pos (.find range)]
-        (ed/range doc (.-from pos) (.-to pos)))
-      (ed/->val doc))))
 
 (object/behavior* ::on-eval
                   :triggers #{:eval}
@@ -114,7 +95,7 @@
                                 (let [code (ed/->val editor)
                                       pos (ed/->cursor editor)
                                       {:keys [start end] :as meta} (pos->form code pos)
-                                      form (when meta (watched-range editor start end))
+                                      form (when meta (watches/watched-range editor start end src->watch))
                                       info (:info @editor)
                                       info (if (ed/selection? editor)
                                              (assoc info
@@ -126,7 +107,8 @@
                                                (assoc info :pos pos :code form :meta meta)))
                                       info (update-in info [:code] #(-> %
                                                                         (eval/pad (-> info :meta :start :line))
-                                                                        (eval/append-source-file (-> @editor :info :path))))]
+                                                                        ;(eval/append-source-file (-> @editor :info :path))
+                                                                        ))]
                                   (when info
                                     (object/raise js-lang :eval! {:origin editor
                                                                   :info info})))
@@ -152,11 +134,11 @@
 (object/behavior* ::js-watch
                   :triggers #{:editor.eval.js.watch}
                   :reaction (fn [editor res]
-                              (let [loc (-> res :meta :end)
-                                    loc (assoc loc :start-line (-> res :meta :start :line))]
-                                  (let [str-result (inspect (:result res) 0)]
-                                    (object/raise editor :editor.result str-result loc {:type :watch})
-                                    ))))
+                              (when-let [watch (get (:watches @editor) (-> res :meta :id))]
+                                (let [str-result (inspect (:result res) 0)]
+                                  (object/raise (:inline-result watch) :update! str-result)
+                                  )
+                                )))
 
 (object/behavior* ::js-exception
                   :triggers #{:editor.eval.js.exception}
@@ -211,7 +193,9 @@
                                (cmd/exec! :connect-to-browser))})
 
 (browser/add-util :watch (fn [exp meta]
-                           (object/raise (object/by-id (.-obj meta)) :editor.eval.js.watch {:result exp :meta (js->clj meta :keywordize-keys true)})
+                           (println "in watch: " exp (js->clj meta))
+                           (when-let [obj (object/by-id (.-obj meta))]
+                             (object/raise obj (keyword (.-ev meta)) {:result exp :meta (js->clj meta :keywordize-keys true)}))
                            exp))
 
 ;(println (inspect (->body cur)))

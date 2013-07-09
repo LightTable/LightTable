@@ -5,7 +5,7 @@
             [lt.objs.files :as files]
             [lt.objs.window :as window]
             [lt.objs.clients :as clients]
-            [lt.util.cljs :refer [js->clj clj->js]]
+            [lt.util.cljs :refer [js->clj]]
             [clojure.string :as string])
   (:use [lt.util.js :only [wait ->clj]]))
 

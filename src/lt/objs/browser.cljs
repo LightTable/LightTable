@@ -23,6 +23,7 @@
     url))
 
 (def utils (js-obj))
+(set! js/lttools utils)
 
 (defn add-util [nme fn]
   (aset utils (name nme) fn))
@@ -255,16 +256,19 @@
 (object/behavior* ::js-eval
                   :triggers #{:editor.eval.js!}
                   :reaction (fn [this msg clj-msg]
-                              (if-not (-> clj-msg last :meta)
+                              (if (or (not (-> clj-msg last :meta))
+                                      (not (devtools/find-script devtools/local (-> clj-msg last :path))))
                                 (object/raise this :editor.eval.js.file! msg clj-msg)
-                                (devtools/eval-in-frame (:frame-id @this) msg
-                                                        (fn [res]
-                                                          (let [result (devtools/inspector->result res)
-                                                                req (last clj-msg)
-                                                                result (assoc result :meta (:meta req) :no-inspect true)]
-                                                            (if-not (:ex result)
-                                                              (handle-cb (first clj-msg) :editor.eval.js.result result)
-                                                              (handle-cb (first clj-msg) :editor.eval.js.exception result))))))
+                                (do
+                                  (set! (.-code (last msg)) (eval/append-source-file (-> clj-msg last :code) (-> clj-msg last :path)))
+                                  (devtools/eval-in-frame (:frame-id @this) msg
+                                                          (fn [res]
+                                                            (let [result (devtools/inspector->result res)
+                                                                  req (last clj-msg)
+                                                                  result (assoc result :meta (:meta req) :no-inspect true)]
+                                                              (if-not (:ex result)
+                                                                (handle-cb (first clj-msg) :editor.eval.js.result result)
+                                                                (handle-cb (first clj-msg) :editor.eval.js.exception result)))))))
                               (object/raise this :editor.eval.js.change-live! msg clj-msg)
                               ))
 

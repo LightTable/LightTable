@@ -10,7 +10,7 @@
             [crate.core :as crate]
             [lt.util.dom :as dom]
             [lt.util.js :refer [every wait ->clj]]
-            [lt.util.cljs :refer [js->clj clj->js]]
+            [lt.util.cljs :refer [js->clj]]
             [crate.binding :refer [bound subatom]]
             [clojure.string :as string])
   (:require-macros [lt.macros :refer [defui]]))

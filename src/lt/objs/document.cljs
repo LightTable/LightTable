@@ -1,8 +1,7 @@
 (ns lt.objs.document
   (:require [lt.object :as object]
             [lt.objs.files :as files]
-            [lt.objs.popup :as popup]
-            [lt.util.cljs :refer [clj->js]])
+            [lt.objs.popup :as popup])
   (:require-macros [lt.macros :refer [defui]]))
 
 

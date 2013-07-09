@@ -70,6 +70,13 @@
                               (load-all)
                               (refresh-all (vals @object/instances))))
 
+(object/behavior* ::eval-settings
+                  :triggers #{:eval :eval.one}
+                  :reaction (fn [ed]
+                              (object/raise ed :save)))
+
+(@object/tags :editor.behaviors)
+
 (cmd/command {:command :behaviors.reload
               :desc "App: Reload behaviors"
               :exec (fn []
