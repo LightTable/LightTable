@@ -27,8 +27,9 @@ body { -webkit-user-select: none; }
 .result-mark.open .full { vertical-align:top; max-width:100%; max-height:50%; overflow-y:auto;  white-space:pre-wrap; display:inline-block; border-radius:3px; }
 .result-mark.open .truncated { display:none; }
 
-.inline-exception { box-sizing:border-box; padding:5px 0px; -webkit-user-select:text; white-space:pre-wrap; width:100%;}
-.inline-exception pre { white-space:pre-wrap; padding:15px 10px; border-radius:2px; }
+.inline-exception { box-sizing:border-box; padding:5px 0px; padding-left:10px; -webkit-user-select:text; white-space:pre-wrap; }
+.inline-exception pre { display:inline-block; white-space:pre-wrap;  padding:4px 10px; padding-bottom:6px; }
+.inline-exception .spacer { display:inline-block; white-space:pre; }
 
 .underline-result{ box-sizing:border-box; padding:5px 0px; -webkit-user-select:text; white-space:pre-wrap; width:100%;}
 .underline-result pre { white-space:pre-wrap; padding:15px 10px !important; border-radius:2px; }

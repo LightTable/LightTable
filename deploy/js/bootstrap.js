@@ -24495,9 +24495,9 @@ lt.objs.eval.unescape_unicode = function(a) {
     return String.fromCharCode(parseInt(c, 16))
   })
 };
-var ev_id_6660 = cljs.core.atom.call(null, 0);
+var ev_id_60242 = cljs.core.atom.call(null, 0);
 lt.objs.eval.append_source_file = function(a, b) {
-  return[cljs.core.str(a), cljs.core.str("\n\n//@ sourceURL="), cljs.core.str(cljs.core.truth_(b) ? b : "evalresult"), cljs.core.str("[eval"), cljs.core.str(cljs.core.swap_BANG_.call(null, ev_id_6660, cljs.core.inc)), cljs.core.str("]")].join("")
+  return[cljs.core.str(a), cljs.core.str("\n\n//@ sourceURL="), cljs.core.str(cljs.core.truth_(b) ? b : "evalresult"), cljs.core.str("[eval"), cljs.core.str(cljs.core.swap_BANG_.call(null, ev_id_60242, cljs.core.inc)), cljs.core.str("]")].join("")
 };
 lt.objs.eval.pad = function(a, b) {
   return[cljs.core.str(cljs.core.reduce.call(null, cljs.core.str, cljs.core.repeat.call(null, b, "\n"))), cljs.core.str(a)].join("")
@@ -24628,15 +24628,9 @@ lt.object.behavior_STAR_.call(null, "\ufdd0:lt.objs.eval/update!", "\ufdd0:trigg
 lt.objs.eval.new_line_change = cljs.core.PersistentVector.fromArray(["", ""], !0);
 lt.object.behavior_STAR_.call(null, "\ufdd0:lt.objs.eval/move-mark", "\ufdd0:triggers", cljs.core.PersistentHashSet.fromArray(["\ufdd0:move!", null], !0), "\ufdd0:reaction", function(a, b) {
   var c = (new cljs.core.Keyword("\ufdd0:mark")).call(null, cljs.core.deref.call(null, a)), d = c.find(), e = lt.objs.editor.lh__GT_line.call(null, (new cljs.core.Keyword("\ufdd0:ed")).call(null, cljs.core.deref.call(null, a)), (new cljs.core.Keyword("\ufdd0:line")).call(null, cljs.core.deref.call(null, a))), f;
-  f = cljs.core.not.call(null, d);
-  f || (f = (f = cljs.core.not_EQ_.call(null, d.line, e)) ? f : cljs.core.empty_QMARK_.call(null, (new cljs.core.Keyword("\ufdd0:line")).call(null, cljs.core.deref.call(null, a)).text));
-  return f ? lt.object.raise.call(null, a, "\ufdd0:clear!") : cljs.core.truth_(function() {
-    if(cljs.core.truth_(b)) {
-      var a = cljs.core.not_EQ_.call(null, lt.objs.eval.new_line_change, cljs.core.seq.call(null, b.text));
-      return a ? b.to.ch >= d.ch : a
-    }
-    return b
-  }()) ? (lt.object.merge_BANG_.call(null, a, cljs.core.PersistentArrayMap.fromArray(["\ufdd0:mark", lt.objs.editor.bookmark.call(null, lt.objs.editor.__GT_cm_ed.call(null, (new cljs.core.Keyword("\ufdd0:ed")).call(null, cljs.core.deref.call(null, a))), cljs.core.PersistentArrayMap.fromArray(["\ufdd0:line", e], !0), cljs.core.PersistentArrayMap.fromArray(["\ufdd0:widget", lt.object.__GT_content.call(null, a), "\ufdd0:insertLeft", !1], !0))], !0)), cljs.core.truth_(c) ? c.clear() : null) : null
+  f = (f = cljs.core.not.call(null, d)) ? f : cljs.core.empty_QMARK_.call(null, (new cljs.core.Keyword("\ufdd0:line")).call(null, cljs.core.deref.call(null, a)).text);
+  return f ? lt.object.raise.call(null, a, "\ufdd0:clear!") : cljs.core.truth_(cljs.core.truth_(b) ? b.to.ch >= d.ch : b) ? (lt.object.merge_BANG_.call(null, a, cljs.core.PersistentArrayMap.fromArray(["\ufdd0:mark", lt.objs.editor.bookmark.call(null, lt.objs.editor.__GT_cm_ed.call(null, (new cljs.core.Keyword("\ufdd0:ed")).call(null, cljs.core.deref.call(null, a))), cljs.core.PersistentArrayMap.fromArray(["\ufdd0:line", e], !0), cljs.core.PersistentArrayMap.fromArray(["\ufdd0:widget", lt.object.__GT_content.call(null, 
+  a), "\ufdd0:insertLeft", !0], !0))], !0)), cljs.core.truth_(c) ? c.clear() : null) : null
 });
 lt.object.object_STAR_.call(null, "\ufdd0:lt.objs.eval/inline-result", "\ufdd0:triggers", cljs.core.PersistentHashSet.fromArray(["\ufdd0:double-click", null, "\ufdd0:click", null, "\ufdd0:clear!", null], !0), "\ufdd0:tags", cljs.core.PersistentHashSet.fromArray(["\ufdd0:inline.result", null, "\ufdd0:inline", null], !0), "\ufdd0:init", function(a, b) {
   var c = lt.objs.eval.__GT_inline_res.call(null, a, b), d = function() {
@@ -24646,7 +24640,7 @@ lt.object.object_STAR_.call(null, "\ufdd0:lt.objs.eval/inline-result", "\ufdd0:t
   };
   CodeMirror.on((new cljs.core.Keyword("\ufdd0:line")).call(null, b), "change", e);
   CodeMirror.on((new cljs.core.Keyword("\ufdd0:line")).call(null, b), "delete", d);
-  lt.object.merge_BANG_.call(null, a, cljs.core.assoc.call(null, b, "\ufdd0:listener", e, "\ufdd0:delete", d, "\ufdd0:mark", lt.objs.editor.bookmark.call(null, lt.objs.editor.__GT_cm_ed.call(null, (new cljs.core.Keyword("\ufdd0:ed")).call(null, b)), cljs.core.PersistentArrayMap.fromArray(["\ufdd0:line", (new cljs.core.Keyword("\ufdd0:line")).call(null, (new cljs.core.Keyword("\ufdd0:loc")).call(null, b))], !0), cljs.core.PersistentArrayMap.fromArray(["\ufdd0:widget", c, "\ufdd0:insertLeft", !1], 
+  lt.object.merge_BANG_.call(null, a, cljs.core.assoc.call(null, b, "\ufdd0:listener", e, "\ufdd0:delete", d, "\ufdd0:mark", lt.objs.editor.bookmark.call(null, lt.objs.editor.__GT_cm_ed.call(null, (new cljs.core.Keyword("\ufdd0:ed")).call(null, b)), cljs.core.PersistentArrayMap.fromArray(["\ufdd0:line", (new cljs.core.Keyword("\ufdd0:line")).call(null, (new cljs.core.Keyword("\ufdd0:loc")).call(null, b))], !0), cljs.core.PersistentArrayMap.fromArray(["\ufdd0:widget", c, "\ufdd0:insertLeft", !0], 
   !0))));
   return c
 });
@@ -24737,11 +24731,15 @@ lt.object.behavior_STAR_.call(null, "\ufdd0:lt.objs.eval/underline-results", "\u
 });
 lt.object.tag_behaviors.call(null, "\ufdd0:inline.underline-result", cljs.core.PersistentVector.fromArray(["\ufdd0:lt.objs.eval/ex-clear", "\ufdd0:lt.objs.eval/result-menu!"], !0));
 lt.object.tag_behaviors.call(null, "\ufdd0:editor.inline-result", cljs.core.PersistentVector.fromArray(["\ufdd0:lt.objs.eval/underline-results"], !0));
+lt.objs.eval.__GT_spacing = function(a) {
+  return cljs.core.truth_(a) ? cljs.core.first.call(null, cljs.core.re_seq.call(null, /^\s+/, a)) : null
+};
 lt.objs.eval.__GT_exception_class = function(a) {
   return[cljs.core.str("inline-exception "), cljs.core.str(cljs.core.truth_((new cljs.core.Keyword("\ufdd0:open")).call(null, a)) ? "open" : null)].join("")
 };
 lt.objs.eval.__GT_inline_exception = function(a, b) {
-  for(var c = crate.core.html.call(null, cljs.core.PersistentVector.fromArray(["\ufdd0:div", cljs.core.PersistentArrayMap.fromArray(["\ufdd0:class", crate.binding.bound.call(null, a, lt.objs.eval.__GT_exception_class)], !0), cljs.core.PersistentVector.fromArray(["\ufdd0:pre", "" + cljs.core.str((new cljs.core.Keyword("\ufdd0:ex")).call(null, b))], !0)], !0)), d = cljs.core.seq.call(null, cljs.core.partition.call(null, 2, cljs.core.PersistentVector.fromArray(["\ufdd0:click", function() {
+  for(var c = crate.core.html.call(null, cljs.core.PersistentVector.fromArray(["\ufdd0:div", cljs.core.PersistentArrayMap.fromArray(["\ufdd0:class", crate.binding.bound.call(null, a, lt.objs.eval.__GT_exception_class)], !0), cljs.core.PersistentVector.fromArray(["\ufdd0:span.spacer", lt.objs.eval.__GT_spacing.call(null, lt.objs.editor.line.call(null, (new cljs.core.Keyword("\ufdd0:ed")).call(null, b), (new cljs.core.Keyword("\ufdd0:line")).call(null, (new cljs.core.Keyword("\ufdd0:loc")).call(null, 
+  b))))], !0), cljs.core.PersistentVector.fromArray(["\ufdd0:pre", "" + cljs.core.str((new cljs.core.Keyword("\ufdd0:ex")).call(null, b))], !0)], !0)), d = cljs.core.seq.call(null, cljs.core.partition.call(null, 2, cljs.core.PersistentVector.fromArray(["\ufdd0:click", function() {
     return lt.object.raise.call(null, a, "\ufdd0:click")
   }, "\ufdd0:contextmenu", function(b) {
     return lt.object.raise.call(null, a, "\ufdd0:menu!", b)
@@ -31335,7 +31333,6 @@ lt.objs.sidebar.clients.add_connector.call(null, cljs.core.PersistentArrayMap.fr
   return lt.objs.sidebar.command.exec_BANG_.call(null, "\ufdd0:connect-to-browser")
 }], !0));
 lt.objs.browser.add_util.call(null, "\ufdd0:watch", function(a, b) {
-  cljs.core.println.call(null, "in watch: ", a, lt.util.cljs.js__GT_clj.call(null, b));
   var c = lt.object.by_id.call(null, b.obj);
   cljs.core.truth_(c) && lt.object.raise.call(null, c, cljs.core.keyword.call(null, b.ev), cljs.core.PersistentArrayMap.fromArray(["\ufdd0:result", a, "\ufdd0:meta", lt.util.cljs.js__GT_clj.call(null, b, "\ufdd0:keywordize-keys", !0)], !0));
   return a

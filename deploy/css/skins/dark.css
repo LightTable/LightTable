@@ -32,7 +32,7 @@ input { color: #fff; background:#777; }
 .inline-result .inline { background: -webkit-var(dark-accent-background); color:-webkit-var(accent-foreground); }
 .inline-result.open .full { background: -webkit-var(dark-accent-background); color:-webkit-var(accent-foreground); }
 
-.inline-exception pre { background:#8A1C3B; color:#FFADAD; }
+.inline-exception pre { background:#8A1C3B; color:#FFADAD; border-left:4px solid #FFADAD; }
 
 .underline-result pre { background: transparent; color: -webkit-var(accent-foreground)}
 

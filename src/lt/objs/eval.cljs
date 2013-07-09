@@ -247,16 +247,14 @@
                                       loc (.find orig)
                                       cur-line (ed/lh->line (:ed @this) (:line @this))]
                                   (if (or (not loc)
-                                          (not= (.-line loc) cur-line)
                                           (empty? (.-text (:line @this))))
                                     (object/raise this :clear!)
                                     (when (and ch
-                                               (not= new-line-change (seq (.-text ch)))
                                                (>= (.-to.ch ch) (.-ch loc)))
                                       (object/merge! this {:mark (ed/bookmark (ed/->cm-ed (:ed @this))
                                                                                   {:line cur-line}
                                                                                   {:widget (object/->content this)
-                                                                                   :insertLeft false})})
+                                                                                   :insertLeft true})})
                                       (when orig
                                         (.clear orig)))))))
 
@@ -277,8 +275,13 @@
                                                 :mark (ed/bookmark (ed/->cm-ed (:ed info))
                                                                    {:line (-> info :loc :line)}
                                                                    {:widget content
-                                                                    :insertLeft false})))
+                                                                    :insertLeft true})))
                           content)))
+
+
+
+
+
 
 (object/behavior* ::inline-results
                   :triggers #{:editor.result}
@@ -363,6 +366,11 @@
 ;; inline exception
 ;;****************************************************
 
+(defn ->spacing [text]
+  (when text
+    (-> (re-seq #"^\s+" text)
+        (first))))
+
 (defn ->exception-class [this]
   (str "inline-exception " (when (:open this)
                              "open"
@@ -370,6 +378,7 @@
 
 (defui ->inline-exception [this info]
     [:div {:class (bound this ->exception-class)}
+     [:span.spacer (->spacing (ed/line (:ed info) (-> info :loc :line)))]
      [:pre (str (:ex info))]]
     :click (fn []
              (object/raise this :click))

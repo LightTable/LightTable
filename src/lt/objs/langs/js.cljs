@@ -193,7 +193,6 @@
                                (cmd/exec! :connect-to-browser))})
 
 (browser/add-util :watch (fn [exp meta]
-                           (println "in watch: " exp (js->clj meta))
                            (when-let [obj (object/by-id (.-obj meta))]
                              (object/raise obj (keyword (.-ev meta)) {:result exp :meta (js->clj meta :keywordize-keys true)}))
                            exp))
