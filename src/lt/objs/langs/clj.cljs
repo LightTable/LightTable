@@ -70,20 +70,17 @@
    (= (pr-str n) "#<[object Object]>") (console/inspect n)
    :else (pr-str n)))
 
+(clients/by-name local-name)
+
 (defn try-connect [{:keys [info]}]
-  (let [client (clients/client! :clojure.client)
-        path (:path info)
+  (let [path (:path info)
         {:keys [project-path]} (when path (find-project {:path path}))]
     (if project-path
       (do
         (check-all {:path path
-                    :client client}))
-      (do
-        (if (clients/available? local-name)
-          (clients/by-name local-name)
-          (do
-            (run-local-server client)))))
-    client))
+                    :client (clients/client! :clojure.client)}))
+      (or (clients/by-name local-name)
+          (run-local-server (clients/client! :clojure.client))))))
 
 (object/behavior* ::on-eval
                   :triggers #{:eval}
@@ -393,7 +390,8 @@
       (check-java)
       (check-ltjar)
       (find-project)
-      (notify)))
+      (notify))
+  (:client obj))
 
 (object/behavior* ::run-clj-client
                   :triggers #{:connect.clj}

@@ -1,5 +1,5 @@
 (ns lt.objs.files
-  (:refer-clojure :exclude [open])
+  (:refer-clojure :exclude [open exists?])
   (:require [lt.object :as object]
             [lt.util.js :refer [now]]))
 
@@ -169,6 +169,9 @@
           cur
           (recur (inc x) (join p (str name (inc x) (when ext (str "." ext))))))))))
 
+(defn exists? [path]
+  (.existsSync fs path))
+
 (defn stats [path]
   (when (exists? path)
     (.statSync fs path)))
@@ -182,9 +185,6 @@
   (when (exists? path)
     (let [stat (.statSync fs path)]
       (.isFile stat))))
-
-(defn exists? [path]
-  (.existsSync fs path))
 
 (defn basename [path]
   (.basename fpath path))

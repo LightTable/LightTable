@@ -3389,22 +3389,22 @@ cljs.core.with_meta = function with_meta(b, c) {
   var d = cljs.core.fn_QMARK_.call(null, b);
   d && (d = b ? ((d = b.cljs$lang$protocol_mask$partition0$ & 262144) ? d : b.cljs$core$IWithMeta$) || (b.cljs$lang$protocol_mask$partition0$ ? 0 : cljs.core.type_satisfies_.call(null, cljs.core.IWithMeta, b)) : cljs.core.type_satisfies_.call(null, cljs.core.IWithMeta, b), d = !d);
   return d ? with_meta.call(null, function() {
-    if(void 0 === cljs.core.t11829) {
-      cljs.core.t11829 = {};
-      cljs.core.t11829 = function(b, c, d, e) {
+    if(void 0 === cljs.core.t11868) {
+      cljs.core.t11868 = {};
+      cljs.core.t11868 = function(b, c, d, e) {
         this.meta = b;
         this.o = c;
         this.with_meta = d;
-        this.meta11830 = e;
+        this.meta11869 = e;
         this.cljs$lang$protocol_mask$partition1$ = 0;
         this.cljs$lang$protocol_mask$partition0$ = 393217
       };
-      cljs.core.t11829.cljs$lang$type = !0;
-      cljs.core.t11829.cljs$lang$ctorStr = "cljs.core/t11829";
-      cljs.core.t11829.cljs$lang$ctorPrWriter = function(b, c) {
-        return cljs.core._write.call(null, c, "cljs.core/t11829")
+      cljs.core.t11868.cljs$lang$type = !0;
+      cljs.core.t11868.cljs$lang$ctorStr = "cljs.core/t11868";
+      cljs.core.t11868.cljs$lang$ctorPrWriter = function(b, c) {
+        return cljs.core._write.call(null, c, "cljs.core/t11868")
       };
-      var d = cljs.core.t11829.prototype, f = function(b, c) {
+      var d = cljs.core.t11868.prototype, f = function(b, c) {
         return cljs.core.apply.call(null, b.o, c)
       }, g = function(b, c) {
         var b = this, d = null;
@@ -3418,19 +3418,19 @@ cljs.core.with_meta = function with_meta(b, c) {
       };
       g.cljs$core$IFn$_invoke$arity$variadic = f;
       d.call = g;
-      cljs.core.t11829.prototype.apply = function(b, c) {
+      cljs.core.t11868.prototype.apply = function(b, c) {
         b = this;
         return b.call.apply(b, [b].concat(c.slice()))
       };
-      cljs.core.t11829.prototype.cljs$core$Fn$ = !0;
-      cljs.core.t11829.prototype.cljs$core$IMeta$_meta$arity$1 = function() {
-        return this.meta11830
+      cljs.core.t11868.prototype.cljs$core$Fn$ = !0;
+      cljs.core.t11868.prototype.cljs$core$IMeta$_meta$arity$1 = function() {
+        return this.meta11869
       };
-      cljs.core.t11829.prototype.cljs$core$IWithMeta$_with_meta$arity$2 = function(b, c) {
-        return new cljs.core.t11829(this.meta, this.o, this.with_meta, c)
+      cljs.core.t11868.prototype.cljs$core$IWithMeta$_with_meta$arity$2 = function(b, c) {
+        return new cljs.core.t11868(this.meta, this.o, this.with_meta, c)
       }
     }
-    return new cljs.core.t11829(c, b, with_meta, null)
+    return new cljs.core.t11868(c, b, with_meta, null)
   }(), c) : cljs.core._with_meta.call(null, b, c)
 };
 cljs.core.meta = function(a) {
@@ -19116,27 +19116,27 @@ lt.objs.files.mkdir = function(a) {
   return lt.objs.files.fs.mkdirSync(a)
 };
 lt.objs.files.next_available_name = function(a) {
-  if("undefined" === typeof a) {
+  if(cljs.core.not.call(null, lt.objs.files.exists_QMARK_.call(null, a))) {
     return a
   }
   for(var b = lt.objs.files.ext.call(null, a), c = lt.objs.files.without_ext.call(null, lt.objs.files.basename.call(null, a)), a = lt.objs.files.parent.call(null, a), d = 1, e = lt.objs.files.join.call(null, a, [cljs.core.str(c), cljs.core.str(d), cljs.core.str("."), cljs.core.str(b)].join(""));;) {
-    if("undefined" === typeof e) {
+    if(cljs.core.not.call(null, lt.objs.files.exists_QMARK_.call(null, e))) {
       return e
     }
     var e = d + 1, f = lt.objs.files.join.call(null, a, [cljs.core.str(c), cljs.core.str(d + 1), cljs.core.str(cljs.core.truth_(b) ? [cljs.core.str("."), cljs.core.str(b)].join("") : null)].join("")), d = e, e = f
   }
 };
-lt.objs.files.stats = function(a) {
-  return"undefined" !== typeof a ? lt.objs.files.fs.statSync(a) : null
-};
-lt.objs.files.dir_QMARK_ = function(a) {
-  return"undefined" !== typeof a ? lt.objs.files.fs.statSync(a).isDirectory() : null
-};
-lt.objs.files.file_QMARK_ = function(a) {
-  return"undefined" !== typeof a ? lt.objs.files.fs.statSync(a).isFile() : null
-};
 lt.objs.files.exists_QMARK_ = function(a) {
   return lt.objs.files.fs.existsSync(a)
+};
+lt.objs.files.stats = function(a) {
+  return cljs.core.truth_(lt.objs.files.exists_QMARK_.call(null, a)) ? lt.objs.files.fs.statSync(a) : null
+};
+lt.objs.files.dir_QMARK_ = function(a) {
+  return cljs.core.truth_(lt.objs.files.exists_QMARK_.call(null, a)) ? lt.objs.files.fs.statSync(a).isDirectory() : null
+};
+lt.objs.files.file_QMARK_ = function(a) {
+  return cljs.core.truth_(lt.objs.files.exists_QMARK_.call(null, a)) ? lt.objs.files.fs.statSync(a).isFile() : null
 };
 lt.objs.files.basename = function(a) {
   return lt.objs.files.fpath.basename(a)
@@ -19234,13 +19234,13 @@ lt.objs.files.walk_up_find = function(a, b) {
     }())) {
       return null
     }
-    if("undefined" !== typeof lt.objs.files.join.call(null, d, b)) {
+    if(cljs.core.truth_(lt.objs.files.exists_QMARK_.call(null, lt.objs.files.join.call(null, d, b)))) {
       return lt.objs.files.join.call(null, d, b)
     }
     var f = lt.objs.files.parent.call(null, d), g = d, d = f, e = g
   }
 };
-lt.objs.files.walk = "undefined" !== typeof lt.objs.files.lt_home.call(null, "js/lib/walkdir.js") ? require(lt.objs.files.lt_home.call(null, "js/lib/walkdir.js")) : require("walkdir");
+lt.objs.files.walk = cljs.core.truth_(lt.objs.files.exists_QMARK_.call(null, lt.objs.files.lt_home.call(null, "js/lib/walkdir.js"))) ? require(lt.objs.files.lt_home.call(null, "js/lib/walkdir.js")) : require("walkdir");
 lt.objs.files.all_files_async = function(a, b) {
   var c = lt.objs.files.walk.call(null, a), d = [], e = lt.util.js.now.call(null);
   c.on("file", function(a) {
@@ -19252,7 +19252,7 @@ lt.objs.files.all_files_async = function(a, b) {
   })
 };
 lt.objs.files.all_files = function(a, b) {
-  return"undefined" !== typeof a ? lt.objs.files.walk.sync(a, cljs.core.clj__GT_js.call(null, b)) : null
+  return cljs.core.truth_(lt.objs.files.exists_QMARK_.call(null, a)) ? lt.objs.files.walk.sync(a, cljs.core.clj__GT_js.call(null, b)) : null
 };
 lt.objs.files.__GT_name_BAR_path = function() {
   var a = function(a, b) {
@@ -24495,9 +24495,9 @@ lt.objs.eval.unescape_unicode = function(a) {
     return String.fromCharCode(parseInt(c, 16))
   })
 };
-var ev_id_169271 = cljs.core.atom.call(null, 0);
+var ev_id_6660 = cljs.core.atom.call(null, 0);
 lt.objs.eval.append_source_file = function(a, b) {
-  return[cljs.core.str(a), cljs.core.str("\n\n//@ sourceURL="), cljs.core.str(cljs.core.truth_(b) ? b : "evalresult"), cljs.core.str("[eval"), cljs.core.str(cljs.core.swap_BANG_.call(null, ev_id_169271, cljs.core.inc)), cljs.core.str("]")].join("")
+  return[cljs.core.str(a), cljs.core.str("\n\n//@ sourceURL="), cljs.core.str(cljs.core.truth_(b) ? b : "evalresult"), cljs.core.str("[eval"), cljs.core.str(cljs.core.swap_BANG_.call(null, ev_id_6660, cljs.core.inc)), cljs.core.str("]")].join("")
 };
 lt.objs.eval.pad = function(a, b) {
   return[cljs.core.str(cljs.core.reduce.call(null, cljs.core.str, cljs.core.repeat.call(null, b, "\n"))), cljs.core.str(a)].join("")
@@ -25994,7 +25994,7 @@ lt.object.behavior_STAR_.call(null, "\ufdd0:lt.objs.thread/kill!", "\ufdd0:trigg
   return(new cljs.core.Keyword("\ufdd0:worker")).call(null, cljs.core.deref.call(null, a)).kill()
 });
 lt.object.object_STAR_.call(null, "\ufdd0:lt.objs.thread/worker-thread", "\ufdd0:tags", cljs.core.PersistentHashSet.fromArray(["\ufdd0:worker-thread", null], !0), "\ufdd0:queue", cljs.core.PersistentVector.EMPTY, "\ufdd0:init", function(a) {
-  var b = lt.objs.thread.cp.fork("/users/chris/lighttable/playground/deploy/js/testworker.js", cljs.core.clj__GT_js.call(null, cljs.core.PersistentVector.fromArray(["--harmony"], !0)), cljs.core.clj__GT_js.call(null, cljs.core.PersistentArrayMap.fromArray(["\ufdd0:execPath", "/users/chris/lighttable/plugins/node/node"], !0)));
+  var b = lt.objs.thread.cp.fork(lt.objs.files.lt_home.call(null, "/js/testworker.js"), cljs.core.clj__GT_js.call(null, cljs.core.PersistentVector.fromArray(["--harmony"], !0)), cljs.core.clj__GT_js.call(null, cljs.core.PersistentArrayMap.fromArray(["\ufdd0:execPath", lt.objs.files.lt_home.call(null, "/plugins/node/node")], !0)));
   b.on("message", function(b) {
     return lt.object.raise.call(null, a, "\ufdd0:message", b)
   });
@@ -28097,11 +28097,14 @@ lt.objs.langs.clj.unescape_unicode = function(a) {
 lt.objs.langs.clj.cljs_result_format = function(a) {
   return cljs.core.fn_QMARK_.call(null, a) ? [cljs.core.str("(fn "), cljs.core.str(a.name), cljs.core.str(" ..)")].join("") : null == a ? "nil" : cljs.core._EQ_.call(null, cljs.core.pr_str.call(null, a), "#<[object Object]>") ? lt.objs.console.inspect.call(null, a) : cljs.core.pr_str.call(null, a)
 };
+lt.objs.clients.by_name.call(null, lt.objs.langs.clj.local_name);
 lt.objs.langs.clj.try_connect = function(a) {
-  var a = cljs.core.seq_QMARK_.call(null, a) ? cljs.core.apply.call(null, cljs.core.hash_map, a) : a, b = cljs.core.get.call(null, a, "\ufdd0:info"), a = lt.objs.clients.client_BANG_.call(null, "\ufdd0:clojure.client"), b = (new cljs.core.Keyword("\ufdd0:path")).call(null, b), c = cljs.core.truth_(b) ? lt.objs.langs.clj.find_project.call(null, cljs.core.PersistentArrayMap.fromArray(["\ufdd0:path", b], !0)) : null, c = cljs.core.seq_QMARK_.call(null, c) ? cljs.core.apply.call(null, cljs.core.hash_map, 
-  c) : c, c = cljs.core.get.call(null, c, "\ufdd0:project-path");
-  cljs.core.truth_(c) ? lt.objs.langs.clj.check_all.call(null, cljs.core.PersistentArrayMap.fromArray(["\ufdd0:path", b, "\ufdd0:client", a], !0)) : cljs.core.truth_(lt.objs.clients.available_QMARK_.call(null, lt.objs.langs.clj.local_name)) ? lt.objs.clients.by_name.call(null, lt.objs.langs.clj.local_name) : lt.objs.langs.clj.run_local_server.call(null, a);
-  return a
+  var a = cljs.core.seq_QMARK_.call(null, a) ? cljs.core.apply.call(null, cljs.core.hash_map, a) : a, a = cljs.core.get.call(null, a, "\ufdd0:info"), a = (new cljs.core.Keyword("\ufdd0:path")).call(null, a), b = cljs.core.truth_(a) ? lt.objs.langs.clj.find_project.call(null, cljs.core.PersistentArrayMap.fromArray(["\ufdd0:path", a], !0)) : null, b = cljs.core.seq_QMARK_.call(null, b) ? cljs.core.apply.call(null, cljs.core.hash_map, b) : b, b = cljs.core.get.call(null, b, "\ufdd0:project-path");
+  if(cljs.core.truth_(b)) {
+    return lt.objs.langs.clj.check_all.call(null, cljs.core.PersistentArrayMap.fromArray(["\ufdd0:path", a, "\ufdd0:client", lt.objs.clients.client_BANG_.call(null, "\ufdd0:clojure.client")], !0))
+  }
+  a = lt.objs.clients.by_name.call(null, lt.objs.langs.clj.local_name);
+  return cljs.core.truth_(a) ? a : lt.objs.langs.clj.run_local_server.call(null, lt.objs.clients.client_BANG_.call(null, "\ufdd0:clojure.client"))
 };
 lt.object.behavior_STAR_.call(null, "\ufdd0:lt.objs.langs.clj/on-eval", "\ufdd0:triggers", cljs.core.PersistentHashSet.fromArray(["\ufdd0:eval", null], !0), "\ufdd0:reaction", function(a) {
   return lt.object.raise.call(null, lt.objs.langs.clj.clj_lang, "\ufdd0:eval!", cljs.core.PersistentArrayMap.fromArray(["\ufdd0:origin", a, "\ufdd0:info", cljs.core.assoc.call(null, cljs.core.deref.call(null, a).call(null, "\ufdd0:info"), "\ufdd0:code", lt.objs.editor.__GT_val.call(null, (new cljs.core.Keyword("\ufdd0:ed")).call(null, cljs.core.deref.call(null, a))))], !0))
@@ -28320,7 +28323,8 @@ lt.objs.langs.clj.notify = function(a) {
   return a
 };
 lt.objs.langs.clj.check_all = function(a) {
-  return lt.objs.langs.clj.notify.call(null, lt.objs.langs.clj.find_project.call(null, lt.objs.langs.clj.check_ltjar.call(null, lt.objs.langs.clj.check_java.call(null, a))))
+  lt.objs.langs.clj.notify.call(null, lt.objs.langs.clj.find_project.call(null, lt.objs.langs.clj.check_ltjar.call(null, lt.objs.langs.clj.check_java.call(null, a))));
+  return(new cljs.core.Keyword("\ufdd0:client")).call(null, a)
 };
 lt.object.behavior_STAR_.call(null, "\ufdd0:lt.objs.langs.clj/run-clj-client", "\ufdd0:triggers", cljs.core.PersistentHashSet.fromArray(["\ufdd0:connect.clj", null], !0), "\ufdd0:reaction", function(a, b) {
   return lt.objs.langs.clj.check_all.call(null, cljs.core.PersistentArrayMap.fromArray(["\ufdd0:path", b], !0))
