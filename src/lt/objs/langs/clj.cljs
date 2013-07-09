@@ -70,8 +70,6 @@
    (= (pr-str n) "#<[object Object]>") (console/inspect n)
    :else (pr-str n)))
 
-(clients/by-name local-name)
-
 (defn try-connect [{:keys [info]}]
   (let [path (:path info)
         {:keys [project-path]} (when path (find-project {:path path}))]

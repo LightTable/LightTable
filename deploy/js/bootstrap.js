@@ -28097,7 +28097,6 @@ lt.objs.langs.clj.unescape_unicode = function(a) {
 lt.objs.langs.clj.cljs_result_format = function(a) {
   return cljs.core.fn_QMARK_.call(null, a) ? [cljs.core.str("(fn "), cljs.core.str(a.name), cljs.core.str(" ..)")].join("") : null == a ? "nil" : cljs.core._EQ_.call(null, cljs.core.pr_str.call(null, a), "#<[object Object]>") ? lt.objs.console.inspect.call(null, a) : cljs.core.pr_str.call(null, a)
 };
-lt.objs.clients.by_name.call(null, lt.objs.langs.clj.local_name);
 lt.objs.langs.clj.try_connect = function(a) {
   var a = cljs.core.seq_QMARK_.call(null, a) ? cljs.core.apply.call(null, cljs.core.hash_map, a) : a, a = cljs.core.get.call(null, a, "\ufdd0:info"), a = (new cljs.core.Keyword("\ufdd0:path")).call(null, a), b = cljs.core.truth_(a) ? lt.objs.langs.clj.find_project.call(null, cljs.core.PersistentArrayMap.fromArray(["\ufdd0:path", a], !0)) : null, b = cljs.core.seq_QMARK_.call(null, b) ? cljs.core.apply.call(null, cljs.core.hash_map, b) : b, b = cljs.core.get.call(null, b, "\ufdd0:project-path");
   if(cljs.core.truth_(b)) {
