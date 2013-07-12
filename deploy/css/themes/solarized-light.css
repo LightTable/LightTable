@@ -147,7 +147,6 @@ http://ethanschoonover.com/solarized/img/solarized-palette.png
 }
 
 .cm-s-solarized-light .CodeMirror-lines {
-  padding-left: 5px;
 }
 
 .cm-s-solarized-light .CodeMirror-lines .CodeMirror-cursor {
@@ -159,7 +158,6 @@ Active line. Negative margin compensates left padding of the text in the
 view-port
 */
 .cm-s-solarized-light .activeline {
-  margin-left: -20px;
 }
 
 .cm-s-solarized-light .activeline {

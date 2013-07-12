@@ -24,7 +24,7 @@ body { -webkit-user-select: none; }
 .result-mark .truncated { display:inline; white-space:nowrap; cursor:pointer; padding:0 5px; border-radius:3px; box-sizing:border-box;}
 .result-mark .full { display:none; }
 .result-mark.open .full { padding:0 10px; }
-.result-mark.open .full { vertical-align:top; max-width:100%; max-height:50%; overflow-y:auto;  white-space:pre-wrap; display:inline-block; border-radius:3px; }
+.result-mark.open .full { vertical-align:top; max-width:60%; max-height:50%; overflow-y:auto;  white-space:pre-wrap; display:inline-block; border-radius:3px; }
 .result-mark.open .truncated { display:none; }
 
 .inline-exception { box-sizing:border-box; padding:5px 0px; padding-left:10px; -webkit-user-select:text; white-space:pre-wrap; }

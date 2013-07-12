@@ -3,6 +3,7 @@
             [lt.objs.settings :as settings]
             [lt.objs.sidebar.command :as cmd]
             [lt.objs.app :as app]
+            [lt.objs.editor :as editor]
             [lt.objs.editor.pool :as pool]
             [lt.objs.files :as files]
             [lt.objs.deploy :as deploy]
@@ -169,9 +170,9 @@
           :href (deploy/in-lt (str "css/themes/" name ".css"))}])
 
 (defn load-theme [name]
+  (dom/add-class (dom/$ :#multi) name)
   (when-not (empty? prev-theme)
     (dom/remove-class (dom/$ :#multi) prev-theme))
-  (dom/add-class (dom/$ :#multi) name)
   (set! prev-theme name)
   (when-not (dom/$ (str "#theme-" name))
     (dom/append (dom/$ :head) (stylesheet name))))
@@ -192,12 +193,11 @@
                                 (load-theme theme))))
 
 (object/behavior* ::set-theme
-                  :triggers #{:object.instant}
+                  :triggers #{:object.instant :show}
+                  :exclusive true
                   :reaction (fn [this sel]
                               (load-theme sel)
-                              (settings/store! :theme sel)
-                              (object/raise pool/pool :theme-change sel)
-                              (object/raise theme-selector :clear!)))
+                              (editor/set-options this {:theme sel})))
 
 (object/tag-behaviors :app [::load-theme-on-init])
 (object/tag-behaviors :theme-selector [::set-theme-on-select])

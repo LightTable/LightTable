@@ -2,6 +2,8 @@
   (:refer-clojure :exclude [set!])
   (:require [crate.core :as crate]
             [clojure.set :as set]
+            [clojure.string :as string]
+            [lt.util.cljs :as cljs]
             [lt.util.dom :refer [replace-with] :as dom]
             [lt.util.js :refer [throttle debounce]])
   (:use [crate.binding :only [sub-swap! subatom sub-reset! deref?]]))
@@ -18,10 +20,13 @@
 (defn add-b [obj]
   (swap! behaviors assoc (:name obj) obj))
 
+(defn ->behavior-name [be]
+  (if (coll? be)
+    (first be)
+    be))
+
 (defn ->behavior [be]
-  (@behaviors (if (coll? be)
-                (first be)
-                be)))
+  (@behaviors (->behavior-name be)))
 
 (defn ->triggers [behs]
   (let [listeners (reduce
@@ -35,8 +40,24 @@
                    behs)]
     listeners))
 
+(defn specificity-sort [xs dir]
+  (sort-by #(do [(count (string/split "." %)) %]) (if dir < >) xs))
+
 (defn tags->behaviors [ts]
-  (apply concat (map @tags ts)))
+  (let [duped (apply concat (map @tags (specificity-sort ts :down)))
+        de-duped (reduce
+                   (fn [res cur]
+                     (if (aget (:seen res) (->behavior-name cur))
+                       res
+                       (do
+                         (when (:exclusive (->behavior cur))
+                           (aset (:seen res) (->behavior-name cur) true))
+                         (conj! (:final res) cur)
+                         res)))
+                   {:seen (js-obj)
+                    :final (transient [])}
+                   duped)]
+    (reverse (persistent! (:final de-duped)))))
 
 (defn trigger->behaviors [trig ts]
   (get (->triggers (tags->behaviors ts)) trig))
@@ -298,5 +319,7 @@
   (add-watch obj (gensym change) (fn [_ _ _ v]
                                    (func v))))
 
-
-(@tags :editor)
+(behavior* ::add-tag
+           :triggers #{:object.instant}
+           :reaction (fn [this & ts]
+                       (add-tags this ts)))

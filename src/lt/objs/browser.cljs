@@ -194,7 +194,7 @@
                   :triggers #{:editor.eval.js.change-live!}
                   :reaction (fn [this msg clj-msg]
                               (when-let [ed (clients/cb->obj (first clj-msg))]
-                                 (devtools/changelive! ed (-> clj-msg last :path) (js/lt.objs.langs.js.watched-range ed)
+                                 (devtools/changelive! ed (-> clj-msg last :path) (js/lt.plugins.watches.watched-range ed nil nil js/lt.objs.langs.js.src->watch)
                                                        (fn [res]
                                                          ;;TODO: check for exception, otherwise, assume success
                                                          (object/raise ed :editor.eval.js.change-live.success)

@@ -101,4 +101,7 @@
               ]
              )
 
-(set! (.-menu window/me) menubar)
+(object/behavior* ::set-menu
+                  :triggers #{:focus :init}
+                  :reaction (fn [this]
+                              (set! (.-menu window/me) menubar)))

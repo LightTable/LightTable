@@ -215,15 +215,6 @@
                               ;(println "LOCATION: " loc)
                               ))
 
-(object/behavior* ::cljs-watch-result
-                  :triggers #{:editor.eval.cljs.watch}
-                  :reaction (fn [editor res]
-                              (when-let [watch (get (:watches @editor) (-> res :meta :id))]
-                                (let [str-result (pr-str (:result res))]
-                                  (object/raise (:inline-result watch) :update! str-result)
-                                  )
-                              )))
-
 (object/behavior* ::eval-print
                   :triggers #{:editor.eval.clj.print}
                   :reaction (fn [this str]
@@ -271,7 +262,22 @@
     (str "(js/lttools.watch " src " (clj->js " (pr-str meta) "))")))
 
 (defn clj-watch [meta src]
-  src)
+  (str "(lighttable.hub.clj.eval/watch " src " " (pr-str meta) ")"))
+
+(object/behavior* ::cljs-watch-result
+                  :triggers #{:editor.eval.cljs.watch}
+                  :reaction (fn [editor res]
+                              (when-let [watch (get (:watches @editor) (-> res :meta :id))]
+                                (let [str-result (pr-str (:result res))]
+                                  (object/raise (:inline-result watch) :update! str-result)))))
+
+(object/behavior* ::clj-watch-result
+                  :triggers #{:editor.eval.clj.watch}
+                  :reaction (fn [editor res]
+                              (when-let [watch (get (:watches @editor) (-> res :meta :id))]
+                                (let [str-result (:result res)]
+                                  (object/raise (:inline-result watch) :update! str-result)))))
+
 
 ;;****************************************************
 ;; Proc
