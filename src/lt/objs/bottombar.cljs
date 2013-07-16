@@ -20,6 +20,47 @@
           (object/raise this :height! e)
              ))
 
+(defn active-content [active]
+  (when active
+    (object/->content active)))
+
+(defn active? [item]
+  (= (:active @bottombar) item))
+
+(defn ->active-class [{:keys [active]}]
+  (if active
+    "open"
+    "closed"))
+
+(defn add-item [item]
+  (object/update! bottombar [:items] assoc (:order @item) item))
+
+;;*********************************************************
+;; Object
+;;*********************************************************
+
+(object/object* ::bottombar
+                :tags #{:bottombar}
+                :behaviors [::item-toggled ::height! ::no-anim-on-drag ::reanim-on-drop]
+                :items (sorted-map-by >)
+                :height 0
+                :max-height default-height
+                :init (fn [this]
+                        [:div#bottombar {:class (bound this ->active-class)
+                                         :style {:left (bound (subatom tabs/multi :left) ->px)
+                                                 :height (bound (subatom this :height) ->px)}}
+                         (horizontal-grip this)
+                         [:div.content
+                          (bound (subatom this :active) active-content)]]))
+
+(def bottombar (object/create ::bottombar))
+
+(canvas/add! bottombar)
+
+;;*********************************************************
+;; Behaviors
+;;*********************************************************
+
 (object/behavior* ::no-anim-on-drag
                   :triggers #{:start-drag}
                   :reaction (fn [this]
@@ -54,52 +95,5 @@
                                 (do
                                   (object/raise tabs/multi :bottom! (- (:max-height @this)))
                                   (object/merge! this {:active nil
-                                                       :height 0})))
-                              ))
-
-(defn active-content [active]
-  (when active
-    (object/->content active)))
-
-(defn active? [item]
-  (= (:active @bottombar) item))
-
-(defn ->active-class [{:keys [active]}]
-  (if active
-    "open"
-    "closed"))
-
-(object/object* ::bottombar
-                :tags #{:bottombar}
-                :behaviors [::item-toggled ::height! ::no-anim-on-drag ::reanim-on-drop]
-                :items (sorted-map-by >)
-                :height 0
-                :max-height default-height
-                :init (fn [this]
-                        [:div#bottombar {:class (bound this ->active-class)
-                                         :style {:left (bound (subatom tabs/multi :left) ->px)
-                                                 :height (bound (subatom this :height) ->px)}}
-                         (horizontal-grip this)
-                         [:div.content
-                          (bound (subatom this :active) active-content)]]))
-
-(def bottombar (object/create ::bottombar))
-
-(canvas/add! bottombar)
-
-(defn add-item [item]
-  (object/update! bottombar [:items] assoc (:order @item) item))
-
-(object/object* ::bottom-console
-                :order 0
-                :init (fn []
-                        [:div "woot"]
-                        [:img {:src ""}]))
-
-(def console (object/create ::bottom-console))
-
-(add-item console)
-
-;(object/raise bottombar :toggle console)
-
+                                                       :height 0})))))
 

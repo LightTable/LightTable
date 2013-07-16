@@ -5,6 +5,7 @@
             [lt.objs.command :as cmd]
             [lt.objs.app :as app]
             [lt.objs.keyboard :as keyboard]
+            [lt.util.load :as load]
             [lt.util.dom :as dom]
             [lt.util.cljs :refer [->dottedkw]]
             [clojure.string :as string]
@@ -12,6 +13,7 @@
             [crate.binding :refer [subatom bound map-bound computed]])
   (:require-macros [lt.macros :refer [defui]]))
 
+(load/js "core/node_modules/lighttable/util/fuzzy.js" :sync)
 
 ;**********************************************************
 ;; options input

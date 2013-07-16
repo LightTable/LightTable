@@ -79,8 +79,8 @@
                                        {:label "Save file" :key "s" :click #(cmd/exec! :save)}
                                        {:label "Save file as.." :key "s" :click #(cmd/exec! :save-as) :modifiers "cmd-shift"}
                                        {:type "separator"}
-                                       {:label "New window" :key "n" :modifiers "cmd-shift" :click #(cmd/exec! :open-new-window)}
-                                       {:label "Close window" :key "w" :modifiers "cmd-shift" :click #(cmd/exec! :close-window)}
+                                       {:label "New window" :key "n" :modifiers "cmd-shift" :click #(cmd/exec! :window.new)}
+                                       {:label "Close window" :key "w" :modifiers "cmd-shift" :click #(cmd/exec! :window.close)}
                                        {:type "separator"}
                                        {:label "Close file" :key "w" :click #(cmd/exec! :tabs.close)}
                                        ]}

@@ -6,15 +6,10 @@
             [lt.objs.notifos :as notifos]
             [clojure.string :as string]))
 
-;;**********************************************************
-;; clients
-;;**********************************************************
-
 (when-not (window/fetch :clients)
   (window/store! :clients (atom {})))
 
 (def cs (window/fetch :clients))
-
 (def types (atom {}))
 
 (defn register-type [type func]
@@ -153,6 +148,21 @@
 ;; object
 ;;**********************************************************
 
+(object/object* ::clients
+                :triggers [:connect :disconnect :message]
+                :behaviors [::handle-message ::notify-connect]
+                :tags #{:clients}
+                :init (fn []
+                        ))
+
+(def clients (object/create ::clients))
+
+(object/behavior* ::close-clients-on-closed
+                  :triggers #{:closing}
+                  :reaction (fn [app]
+                              (doseq [[_ c] @cs]
+                                (close! c))))
+
 (object/behavior* ::on-destroy-remove-cb
                   :triggers #{:destroy}
                   :reaction (fn [this]
@@ -168,30 +178,29 @@
 (object/behavior* ::notify-connect
                   :triggers #{:connect}
                   :reaction (fn [obj client]
-                              (notifos/set-msg! (str "Connected to " (:name @client)))
-                              ))
-
-(object/object* ::clients
-                :triggers [:connect :disconnect :message]
-                :behaviors [::handle-message ::notify-connect]
-                :tags #{:clients}
-                :init (fn []
-                        ))
-
-(object/behavior* ::close-clients-on-closed
-                  :triggers #{:closing}
-                  :reaction (fn [app]
-                              (doseq [[_ c] @cs]
-                                (close! c))))
-
-(def clients (object/create ::clients))
-(object/tag-behaviors :object [::on-destroy-remove-cb])
-
-(object/tag-behaviors :app [::close-clients-on-closed])
+                              (notifos/set-msg! (str "Connected to " (:name @client)))))
 
 ;;**********************************************************
-;; individual
+;; individual Clients
 ;;**********************************************************
+
+(defn client! [type]
+  (let [obj (object/create ::client)]
+    (object/add-tags obj [type])
+    (swap! cs assoc (->id obj) obj)
+    obj))
+
+(defn placeholder []
+  (-> (object/create ::client)
+      (object/add-tags [:client.placeholder])))
+
+(defn placeholder? [c]
+  (object/has-tag? c :client.placeholder))
+
+(defn swap-client! [a b]
+  (doseq [item (:queue @a)]
+    (object/raise b :try-send! item))
+  (object/raise a :swapped b))
 
 (object/object* ::client
                 :queue []
@@ -223,24 +232,3 @@
                   :triggers #{:swapped}
                   :reaction (fn [this]
                               (object/destroy! this)))
-
-(object/tag-behaviors :client [::try-send ::queue! ::on-connect-drain])
-(object/tag-behaviors :client.placeholder [::remove-placeholder-on-swapped])
-
-(defn client! [type]
-  (let [obj (object/create ::client)]
-    (object/add-tags obj [type])
-    (swap! cs assoc (->id obj) obj)
-    obj))
-
-(defn placeholder []
-  (-> (object/create ::client)
-      (object/add-tags [:client.placeholder])))
-
-(defn placeholder? [c]
-  (object/has-tag? c :client.placeholder))
-
-(defn swap-client! [a b]
-  (doseq [item (:queue @a)]
-    (object/raise b :try-send! item))
-  (object/raise a :swapped b))

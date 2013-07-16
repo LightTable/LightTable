@@ -15,7 +15,7 @@
                               (object/raise this :destroy)))
 
 (defn ->lt-image [stts]
-  (deploy/in-lt (str "img/lighttabletext" (if (= (:skin stts) "light")
+  (deploy/in-lt (str "core/img/lighttabletext" (if (= (:skin stts) "light")
                                             "light"
                                             "dark") ".png")))
 

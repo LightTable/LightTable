@@ -13,6 +13,7 @@
             [lt.objs.clients :as clients]
             [lt.objs.console :as console]
             [lt.objs.clients.tcp :as tcp]
+            [lt.util.load :as load]
             [clojure.string :as string])
   (:use [lt.util.js :only [wait ->clj]]))
 
@@ -20,8 +21,8 @@
 ;; Proc
 ;;****************************************************
 
-(def shell (js/require "shelljs"))
-(def harbor ((js/require "harbor") 49152 65000))
+(def shell (load/node-module "shelljs"))
+(def harbor ((load/node-module "harbor") 49152 65000))
 
 (defn open-port [id cb]
   (.claim harbor

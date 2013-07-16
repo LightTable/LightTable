@@ -1,11 +1,7 @@
 (ns lt.objs.command
   (:require [lt.object :as object]))
 
-(object/object* ::command.manager
-                :tags #{:command.manager}
-                :commands {})
-
-(def manager (object/create ::command.manager))
+(declare manager)
 
 (defn command [cmd]
   (object/update! manager [:commands] assoc (:command cmd) cmd)
@@ -25,3 +21,13 @@
       (if (:options cmd)
         (apply object/raise (first (object/by-tag :sidebar.command)) :exec! cmd args)
         (apply (:exec cmd) args)))))
+
+;;*********************************************************
+;; Object
+;;*********************************************************
+
+(object/object* ::command.manager
+                :tags #{:command.manager}
+                :commands {})
+
+(def manager (object/create ::command.manager))

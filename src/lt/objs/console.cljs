@@ -13,17 +13,7 @@
 (def console-limit 50)
 (def util-inspect (.-inspect (js/require "util")))
 
-(set! js/window.onerror (fn [msg url line]
-                          ;;(log (str msg "(" url ":" line ")") "error")
-                          ))
-
-(when (.-uncaughtError js/setup)
-  (.removeListener js/process "uncaughtException" (.-uncaughtError js/setup)))
-
 (.on js/process "uncaughtException" #(error %))
-
-;(set! js/console.log #(log %))
-;(set! js/global.console.log #(log %))
 
 (defui console-ui [this]
        [:ul.console])
@@ -42,8 +32,6 @@
                         (object/merge! this {:current-ui sidebar-console})
                         (console-ui this)
                         ))
-
-(object/tag-behaviors :console #{::on-close})
 
 (defn inspect [thing]
   (util-inspect thing false 2))
@@ -120,8 +108,6 @@
                                 (dom/scroll-top (object/->content sidebar-console) 10000000000)
                                 (statusbar/clean))
                               ))
-
-(object/tag-behaviors :statusbar.console [::statusbar-console-toggle])
 
 (bottombar/add-item sidebar-console)
 

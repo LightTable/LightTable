@@ -69,8 +69,6 @@
                   )
 
 (object/object* ::context
-                :triggers [:in! :out! :in!context-name :out!context-name]
-                :behaviors []
                 :init (fn []))
 
 (set! ctx-obj (object/create ::context))

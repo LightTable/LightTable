@@ -35,8 +35,8 @@
   ([doc] (create-sub doc nil))
   ([doc info] (create (assoc info :doc (linked* doc info)))))
 
-(def orig (create {:content "hey\nzomg\nwoot\ncool\nlah" :type "text/x-clojure"}))
-(def sub (create-sub orig {:from 1 :to 2}))
+;(def orig (create {:content "hey\nzomg\nwoot\ncool\nlah" :type "text/x-clojure"}))
+;(def sub (create-sub orig {:from 1 :to 2}))
 
 (defn ->cm-doc [doc]
   (-> @doc :doc))

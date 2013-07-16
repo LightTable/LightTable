@@ -40,31 +40,18 @@
 
 (object/behavior* ::remove-trailing-whitespace
                   :triggers #{:save+}
+                  :type :user
+                  :exclusive true
                   :reaction (fn [editor content]
-                              (if-not (settings/fetch :leave-trailing-whitespace)
-                                (.replace content (js/RegExp. "[ \\t]+$" "gm") "")
-                                content)))
+                              (.replace content (js/RegExp. "[ \\t]+$" "gm") "")))
 
 (object/behavior* ::last-char-newline
                   :desc "Ensure the file ends with an appropriate new-line character"
                   :type :user
+                  :exclusive true
                   :triggers #{:save+}
                   :reaction (fn [editor content]
                               (let [line-ending (-> @editor :info :line-ending)]
                                 (if (= (last content) line-ending)
                                   content
                                   (str content line-ending)))))
-
-(cmd/command {:command :toggle-trailing-whitespace
-              :desc "Settings: Toggle remove trailing whitespace"
-              :exec (fn []
-                      (if-not (settings/fetch :leave-trailing-whitespace)
-                        (do
-                          (settings/store! :leave-trailing-whitespace true)
-                          (notifos/set-msg! "No longer removing trailing whitespace"))
-                        (do
-                          (settings/store! :leave-trailing-whitespace false)
-                          (notifos/set-msg! "Removing trailing whitespace on save"))))})
-
-(object/tag-behaviors :editor.transient [::dirty-on-change])
-(object/tag-behaviors :editor.file-backed [::dirty-on-change ::file-save ::remove-trailing-whitespace ::preserve-line-endings])

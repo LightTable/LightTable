@@ -7,8 +7,7 @@
   (condp = plat
     "win32" :windows
     "linux" :linux
-    "darwin" :mac
-    ))
+    "darwin" :mac))
 
 (defn open [path]
   (.Shell.openExternal (js/require "nw.gui") path))

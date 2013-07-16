@@ -10,12 +10,13 @@
             [lt.objs.sidebar.command :as cmd]
             [lt.objs.popup :as popup]
             [lt.plugins.watches :as watches]
+            [lt.util.load :as load]
             [lt.util.dom :refer [$ append]]
             [lt.util.cljs :refer [js->clj]])
   (:require-macros [lt.macros :refer [defui]]))
 
 (def util-inspect (.-inspect (js/require "util")))
-(def acorn (.-parse (js/require "acorn")))
+(def acorn (.-parse (load/node-module "acorn")))
 (def head ($ :head))
 
 (defn inspect [thing depth]

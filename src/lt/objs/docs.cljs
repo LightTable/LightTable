@@ -1,17 +1,11 @@
 (ns lt.objs.docs
   (:require [lt.object :as object]
-            [lt.objs.settings :as settings]
-            [lt.objs.deploy :as deploy]
-            [lt.objs.app :as app]
             [lt.objs.command :as cmd]
-            [lt.objs.tabs :as tabs]
-            [crate.core :refer [raw]]
-            [crate.binding :refer [bound]]))
+            [lt.objs.tabs :as tabs]))
 
-(object/behavior* ::on-close-destroy
-                  :triggers #{:close}
-                  :reaction (fn [this]
-                              (object/raise this :destroy)))
+;;*********************************************************
+;; Object
+;;*********************************************************
 
 (object/object* ::docs
                 :tags #{:docs}
@@ -21,7 +15,18 @@
                          [:div.frame-shade]
                          [:iframe {:src "http://docs.lighttable.com" :nwdisable "true" :nwfaketop "true"}]]))
 
-(object/tag-behaviors :docs [::on-close-destroy])
+;;*********************************************************
+;; Behaviors
+;;*********************************************************
+
+(object/behavior* ::on-close-destroy
+                  :triggers #{:close}
+                  :reaction (fn [this]
+                              (object/raise this :destroy)))
+
+;;*********************************************************
+;; Commands
+;;*********************************************************
 
 (cmd/command {:command :show-docs
               :desc "Docs: Open Light Table's documentation"

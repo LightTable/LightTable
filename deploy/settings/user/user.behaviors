@@ -1,0 +1,13 @@
+{:+ {:app [(:lt.objs.style/set-skin "dark")
+           (:lt.plugins.vim/map-keys {"j" "gj"
+                                      "k" "gk"
+                                      "0" "^"
+                                      "-" "$"
+                                      "<Space>" "<PageDown>"
+                                      "<BS>" "<PageUp>"})]
+     :files [(:lt.objs.files/file-types [{:name "Wisp" :exts [:wisp] :mime "text/x-clojurescript" :tags [:editor.wisp]}])]
+     :editor [:lt.plugins.vim/activate-vim
+              (:lt.objs.style/set-theme "ibdknox")]
+     :editor.python [(:lt.objs.style/set-theme "tomorrow-night")]
+     :editor.markdown [:lt.objs.editor/wrap]
+     :editor.plaintext [:lt.objs.editor/wrap]}}

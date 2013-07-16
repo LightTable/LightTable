@@ -5,6 +5,7 @@
             [lt.objs.files :as files]
             [lt.objs.window :as window]
             [lt.objs.clients :as clients]
+            [lt.util.load :as load]
             [lt.util.cljs :refer [js->clj]]
             [clojure.string :as string])
   (:use [lt.util.js :only [wait ->clj]]))
@@ -14,7 +15,7 @@
 
 (def port 0)
 (def sockets (window/fetch :wsockets))
-(def io (js/require "socket.io"))
+(def io (load/node-module "socket.io"))
 (def net (js/require "net"))
 
 (defn send-to [sock data]

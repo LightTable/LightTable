@@ -1,2 +1,7 @@
 cljs/
 target/
+deploy/settings/default.clj
+deploy/plugins/
+deploy/node-webkit*
+deploy/core/cache
+.DS_Store

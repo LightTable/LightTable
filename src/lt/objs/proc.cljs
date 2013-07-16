@@ -4,11 +4,12 @@
             [lt.objs.files :as files]
             [lt.objs.platform :as platform]
             [lt.objs.app :as app]
+            [lt.util.load :as load]
             [clojure.string :as string]))
 
 ;;TODO: kill processes on shutdown
 
-(def shell (js/require "shelljs"))
+(def shell (load/node-module "shelljs"))
 (def spawn (.-spawn (js/require "child_process")))
 (def cur-path (.pwd shell))
 

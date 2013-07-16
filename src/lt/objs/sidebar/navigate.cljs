@@ -10,6 +10,7 @@
             [lt.objs.opener :as opener]
             [lt.objs.sidebar :as sidebar]
             [lt.util.dom :as dom]
+            [lt.util.load :as load]
             [lt.util.cljs :as cljs-util]
             [crate.core :as crate]
             [crate.binding :refer [bound subatom]])
@@ -28,7 +29,7 @@
                                (time
                                (let [fs (js/require "fs")
                                      fpath (js/require "path")
-                                     walkdir (js/require (str js/ltpath "/js/lib/walkdir2.js"))
+                                     walkdir (js/require (str js/ltpath "/core/node_modules/lighttable/background/walkdir2.js"))
                                      grab-files (fn [all-files folder]
                                                   (let [root-length (inc (count (.dirname fpath folder)))
                                                         walked (walkdir folder (clj->js {:filter (js/RegExp. pattern)

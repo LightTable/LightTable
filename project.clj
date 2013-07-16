@@ -11,7 +11,7 @@
   :cljsbuild {:builds [{:source-paths ["src"]
                         :compiler {:optimizations :simple
                                    :externs ["externs/jquery.js" "externs/throttle.js" "externs/codemirror.js"]
-                                   :output-to "deploy/js/bootstrap.js"
+                                   :output-to "deploy/core/node_modules/lighttable/bootstrap.js"
                                    :output-dir "cljs/"
                                    :pretty-print true}}]}
   :source-paths ["src/"

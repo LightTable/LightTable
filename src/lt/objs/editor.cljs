@@ -3,18 +3,20 @@
   (:require [crate.core :as crate]
             [lt.objs.context :as ctx-obj]
             [lt.object :as object]
+            [lt.objs.files :as files]
             [lt.objs.command :as cmd]
             [lt.objs.settings :as settings]
             [lt.objs.menu :as menu]
             [lt.util.events :as ev]
             [lt.util.dom :as dom]
-            )
+            [lt.util.load :as load])
   (:use [lt.util.dom :only [remove-class add-class]]
         [lt.object :only [object* behavior*]]
         [lt.util.cljs :only [js->clj]]))
 
+
 ;;*********************************************************
-;; Creating
+;; commands
 ;;*********************************************************
 
 (defn expand-tab [cm]
@@ -25,7 +27,6 @@
    (let [spaces (.join (js/Array (inc (.getOption cm "indentUnit"))) " ")]
       (.replaceSelection cm spaces "end" "+input"))))
 
-(aset js/CodeMirror.keyMap.basic "Tab" expand-tab)
 
 ;;*********************************************************
 ;; Creating
@@ -38,8 +39,6 @@
                             (.get $elem 0)
                             $elem)
                  (clj->js opts)))
-
-
 
 (defn ed-headless [opts]
   (-> (js/CodeMirror. (fn []))
@@ -361,8 +360,28 @@
   (.uncomment (->cm-ed e) (clj->js from) (clj->js to) (clj->js opts)))
 
 ;;*********************************************************
-;; Object and behaviors
+;; Object
 ;;*********************************************************
+
+(load/js "core/node_modules/codemirror/codemirror.js" :sync)
+
+(object* ::editor
+         :tags #{:editor :editor.inline-result :editor.keys.normal}
+         :init (fn [obj info]
+                 (let [ed (make nil info)]
+                   (object/merge! obj {:ed ed :info (dissoc info :content)})
+                   (wrap-object-events ed obj)
+                   (when-let [line-nos (settings/fetch :line-numbers)]
+                     (set-options ed {:lineNumbers line-nos}))
+                   (->elem ed)
+                   )))
+
+;;*********************************************************
+;; Behaviors
+;;*********************************************************
+
+(def gui (js/require "nw.gui"))
+(def clipboard (.Clipboard.get gui))
 
 (behavior* ::read-only
            :triggers #{:init}
@@ -435,7 +454,8 @@
 (behavior* ::refresh-on-show
            :triggers #{:show}
            :reaction (fn [obj]
-                       (refresh (:ed @obj))))
+                       ;(refresh (:ed @obj))
+                       ))
 
 (behavior* ::focus
            :triggers #{:show :focus!}
@@ -448,15 +468,10 @@
                        (object/destroy! obj)))
 
 (behavior* ::highlight-current-line
-           :triggers #{:move :show}
+           :triggers #{:object.instant}
+           :exclusive true
            :reaction (fn [this]
-                       (let [ed (:ed @this)
-                             line (:line (->cursor ed))
-                             cur (line-handle ed line)]
-                         (when (not= cur (:cur-line @this))
-                           (-line-class ed (:cur-line @this) :wrap :activeline)
-                           (+line-class ed cur :wrap :activeline)
-                           (object/merge! this {:cur-line cur})))))
+                       (set-options this {:styleActiveLine true})))
 
 (behavior* ::menu!
            :triggers #{:menu!}
@@ -467,9 +482,6 @@
                        (dom/prevent e)
                        (dom/stop-propagation e)
                        ))
-
-(def gui (js/require "nw.gui"))
-(def clipboard (.Clipboard.get gui))
 
 (behavior* ::copy-paste-menu+
            :triggers #{:menu+}
@@ -503,29 +515,14 @@
                                                       {:line (last-line this)})
                                        )})))
 
-(def ed-obj (object* ::editor
-                     :tags #{:editor :editor.inline-result :editor.keys.normal}
-                     :triggers [:change :scroll :update :focus :blur
-                                :active :inactive :close :close.force]
-                     :behaviors [::active-on-focus
-                                 ::on-tags-added ::on-tags-removed
-                                 ::inactive-on-blur ::context-on-active
-                                 ::focus
-                                 ::context-on-inactive
-                                 ::refresh-on-show
-                                 ::highlight-current-line
-                                 ::destroy-on-close]
-                     :cur-line 0
-                     :init (fn [obj info]
-                             (let [ed (make nil info)]
-                               (println "here")
-                               (object/merge! obj {:ed ed :info (dissoc info :content)})
-                               (wrap-object-events ed obj)
-                               (when-let [theme (settings/fetch :theme)]
-                                 (set-options ed {:theme theme}))
-                               (when-let [line-nos (settings/fetch :line-numbers)]
-                                 (set-options ed {:lineNumbers line-nos}))
-                               (->elem ed)
-                               ))))
-
-(object/tag-behaviors :editor [::menu! ::copy-paste-menu+ ::refresh!])
+(object/behavior* ::init-codemirror
+                  :triggers #{:init}
+                  :reaction (fn [this]
+                              (println "init'd codemirror")
+                              (load/js "core/node_modules/codemirror/matchbracket.js" :sync)
+                              (load/js "core/node_modules/codemirror/comment.js" :sync)
+                              (load/js "core/node_modules/codemirror/active-line.js" :sync)
+                              (doseq [mode (files/ls "core/node_modules/codemirror/modes")
+                                      :when (= (files/ext mode) "js")]
+                                (load/js (str "core/node_modules/codemirror/modes/" mode) :sync))
+                              (aset js/CodeMirror.keyMap.basic "Tab" expand-tab)))

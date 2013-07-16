@@ -17,10 +17,11 @@
             [lt.objs.eval :as eval]
             [lt.objs.notifos :as notifos]
             [lt.plugins.watches :as watches]
+            [lt.util.load :as load]
             [lt.util.cljs :refer [->dottedkw]]
             [clojure.string :as string]))
 
-(def shell (js/require "shelljs"))
+(def shell (load/node-module "shelljs"))
 (def cur-path (.pwd shell))
 (def home-path deploy/home-path)
 (def jar-dir (files/join home-path "plugins" "clojure"))
@@ -350,7 +351,7 @@
                 :obj obj})))
 
 (defn run-local-server [client]
-  (check-all {:path (str home-path "/")
+  (check-all {:path (str home-path "/plugins/clojure/")
               :client client
               :name local-name}))
 
@@ -396,18 +397,3 @@
       (find-project)
       (notify))
   (:client obj))
-
-(object/behavior* ::run-clj-client
-                  :triggers #{:connect.clj}
-                  :reaction (fn [this path]
-                              (check-all {:path path})
-                              ))
-
-(object/behavior* ::run-local-client
-                  :triggers #{:connect.local}
-                  :reaction (fn [this]
-                              (run-local-server)
-                              ))
-
-(object/add-behavior! connector/connector ::run-clj-client)
-(object/add-behavior! connector/connector ::run-local-client)

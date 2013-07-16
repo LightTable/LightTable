@@ -47,7 +47,7 @@
 ;;*********************************************************
 
 (comment
-(def parser (js/require "gonzales"))
+(def parser (load/node-module "gonzales"))
 (def css (files/open-sync "/users/chris/lighttable/playground/deploy/css/structure.css"))
 (time (do (.srcToCSSP parser (:content css) nil true) nil))
 (def ast (js/srcToCSSP "body .woot.zomg { background:red; }\n#blah > li { color:purple; }\nfoo {}" nil true))

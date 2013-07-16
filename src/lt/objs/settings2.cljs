@@ -38,8 +38,9 @@
     (files/lt-home "settings/default/")))
 
 (defn ordered-files []
+  (println files/pwd "/settings/default/")
   (filter #(= (files/ext %) "behaviors")
-          (concat (files/full-path-ls (default-dir))
+          (concat (files/full-path-ls (str files/pwd "/settings/default/"))
                   (files/full-path-ls (files/lt-home "settings/user/")))))
 
 (defn load-all []

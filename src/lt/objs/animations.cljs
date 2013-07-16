@@ -17,6 +17,10 @@
   (when-not force-off
     (dom/has-class? $body :animated)))
 
+;;*********************************************************
+;; Behaviors
+;;*********************************************************
+
 (object/behavior* ::animate-on-init
                   :triggers #{:init}
                   :reaction (fn [app]
@@ -31,5 +35,3 @@
                               (if active?
                                 (on)
                                 (off))))
-
-(object/tag-behaviors :app [::animate-on-init])

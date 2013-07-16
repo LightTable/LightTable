@@ -5,6 +5,7 @@
             [lt.objs.command :as cmd]
             [lt.objs.window :as window]
             [cljs.reader :as reader]
+            [lt.util.load :as load]
             [lt.util.js :refer [now]]
             [lt.util.cljs :refer [->dottedkw]]))
 
@@ -12,7 +13,7 @@
 ;; Watching
 ;;*********************************************************
 
-(def watchr (js/require "watchr"))
+(def watchr (load/node-module "watchr"))
 
 (defn stop-watching [ws]
   (doseq [w (::watch @ws)
@@ -83,7 +84,7 @@
 
 (defn open [ws file]
   (let [loc (if-not (> (.indexOf file files/separator) -1)
-              (files/lt-home (files/join "cache" "workspace" file))
+              (files/lt-home (files/join "core" "cache" "workspace" file))
               file)]
     (object/merge! ws {:file (new-cached-file)})
     (try
@@ -94,10 +95,10 @@
         ))))
 
 (defn save [ws file]
-  (files/save (files/lt-home (files/join "cache" "workspace" file)) (pr-str (serialize @ws))))
+  (files/save (files/lt-home (files/join "core" "cache" "workspace" file)) (pr-str (serialize @ws))))
 
 (defn cached []
-  (filter #(> (.indexOf % ".clj") -1) (files/full-path-ls (files/lt-home (files/join "cache" "workspace")))))
+  (filter #(> (.indexOf % ".clj") -1) (files/full-path-ls (files/lt-home (files/join "core" "cache" "workspace")))))
 
 (defn file->ws [file]
   (-> (files/open-sync file)
@@ -107,6 +108,7 @@
 
 (defn all []
   (let [fs (sort > (cached))]
+    (println fs)
     ;;if there are more than 20, delete the extras
     (doseq [file (drop 20 fs)]
       (files/delete! file))

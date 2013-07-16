@@ -136,8 +136,6 @@
                 :tags #{:evaler}
                 :init (fn []))
 
-(object/tag-behaviors :evaler [::alert-on-no-client])
-
 (def evaler (object/create ::evaler))
 
 (object/add-behavior! clients/clients ::on-connect-check-queue)
@@ -305,9 +303,6 @@
                                     (object/raise widget :clear!)))
                                 (object/update! this [:widgets] assoc [line type] res-obj))))
 
-(object/tag-behaviors :inline.result [::expand-on-click ::changed ::shrink-on-double-click ::clear-mark ::move-mark ::result-menu!])
-(object/tag-behaviors :editor.inline-result [::inline-results])
-
 ;;****************************************************
 ;; underline result
 ;;****************************************************
@@ -358,9 +353,6 @@
                                           :when widget]
                                     (object/raise widget :clear!)))
                                 (object/update! this [:widgets] assoc [line :underline] res-obj))))
-
-(object/tag-behaviors :inline.underline-result [::ex-clear ::result-menu!])
-(object/tag-behaviors :editor.inline-result [::underline-results])
 
 ;;****************************************************
 ;; inline exception
@@ -442,9 +434,6 @@
                                             :when widget]
                                       (object/raise widget :clear!)))
                                   (object/update! this [:widgets] assoc [line :inline] ex-obj)))))
-
-(object/tag-behaviors :inline.exception [::ex-shrink-on-double-click ::ex-clear ::ex-menu!])
-(object/tag-behaviors :editor.inline-result [::inline-exceptions])
 
 (cmd/command {:command :clear-inline-results
               :desc "Eval: Clear inline results"

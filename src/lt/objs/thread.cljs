@@ -52,7 +52,7 @@
                 :tags #{:worker-thread}
                 :queue []
                 :init (fn [this]
-                        (let [worker (.fork cp (files/lt-home "/js/testworker.js") (clj->js ["--harmony"]) (clj->js {:execPath (files/lt-home "/plugins/node/node")}))]
+                        (let [worker (.fork cp (files/lt-home "/core/node_modules/lighttable/background/threadworker.js") (clj->js ["--harmony"]) (clj->js {:execPath (files/lt-home "/plugins/node/node")}))]
                           (.on worker "message" (fn [m] (object/raise this :message m)))
                           (.send worker (clj->js {:msg "init"
                                                   :obj (object/->id this)

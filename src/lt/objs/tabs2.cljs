@@ -6,12 +6,15 @@
             [lt.objs.animations :as anim]
             [lt.objs.context :as ctx]
             [lt.objs.menu :as menu]
+            [lt.util.load :as load]
             [lt.util.dom :refer [$ append] :as dom]
             [lt.util.style :refer [->px]]
             [lt.util.js :refer [now]]
             [crate.core :as crate]
             [crate.binding :refer [bound map-bound subatom]])
   (:require-macros [lt.macros :refer [defui]]))
+
+(load/js "core/node_modules/lighttable/ui/dragdrop.js" :sync)
 
 (defn ensure-visible [idx tabset]
   (when-let [cur (aget (dom/$$ ".list li" (object/->content tabset)) idx)]
@@ -366,9 +369,6 @@
                         (tabset-ui this)
                         ))
 
-(object/tag-behaviors :tabset [::set-dragging ::tabset-menu ::unset-dragging ::no-anim-on-drag ::set-width-final! ::reanim-on-drop ::width! ::tabset-active ::active-tab-num ::prev-tab ::next-tab ::tab-close ::repaint-tab-updated])
-(object/tag-behaviors :tabset.tab [::on-destroy-remove ::on-active-active-tabset])
-
 (defn ->tabsets [tabs]
   (for [k tabs]
     (object/->content k)))
@@ -462,6 +462,10 @@
                                               ))
     obj))
 
+(defn refresh! [obj]
+  (when-let [ts (::tabset @obj)]
+    (object/raise ts :tab.updated)))
+
 (defn in-tab? [obj]
   (@obj ::tabset))
 
@@ -529,7 +533,7 @@
               :desc "Tab: Close current tab"
               :exec (fn []
                       (when (= 0 (num-tabs))
-                        (cmd/exec! :close-window))
+                        (cmd/exec! :window.close))
                       (when-let [ts (ctx/->obj :tabset)]
                         (when (and (:active-obj @ts)
                                  @(:active-obj @ts))
@@ -576,5 +580,9 @@
 
 (object/tag-behaviors :app [::init-sortable])
 
-(add-tabset tabset)
-(object/raise tabset :active)
+(object/behavior* ::init
+                  :triggers #{:init}
+                  :reaction (fn [this]
+                              (add-tabset tabset)
+                              (object/raise tabset :active)
+                              ))

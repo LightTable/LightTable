@@ -15,7 +15,7 @@
   (:require-macros [lt.macros :refer [defui]]))
 
 (defn get-all []
-  (object/instances-by-type editor/ed-obj))
+  (object/by-tag :editor))
 
 (object/behavior* ::theme-changed
                   :triggers #{:theme-change}
@@ -44,7 +44,7 @@
 (object/tag-behaviors :editor.pool [::theme-changed ::line-numbers-changed ::options-changed])
 
 (defn unsaved? []
-  (some #(:dirty (deref %)) (object/instances-by-type editor/ed-obj)))
+  (some #(:dirty (deref %)) (object/by-tag :editor)))
 
 (defn by-path [path]
   (filter #(= (-> @% :info :path) path) (object/by-tag :editor)))
@@ -197,9 +197,8 @@
       (object/remove-tags ed [(->dottedkw :editor prev-type)]))
     (object/add-tags ed [(->dottedkw :editor type)])))
 
-(defn create [info & [wraps]]
-  (let [wraps (apply comp wraps)
-        ed (object/create (-> editor/ed-obj wraps) info)]
+(defn create [info]
+  (let [ed (object/create :lt.objs.editor/editor info)]
     (object/add-tags ed (:tags info []))
     (object/raise pool :create ed info)
     ed))
@@ -407,3 +406,19 @@
                           (if (editor/selection? cur)
                             (editor/indent-selection cur "smart")
                             (editor/indent-line cur line "smart")))))})
+
+(cmd/command {:command :line-numbers
+              :desc "Editor: Toggle line numbers"
+              :exec (fn []
+                      (let [v (not (settings/fetch :line-numbers))]
+                        (settings/store! :line-numbers v)
+                        (object/raise pool :line-numbers-change v))
+                      )})
+
+(cmd/command {:command :toggle-wrap
+              :desc "Editor: Toggle line wrapping for current"
+              :exec (fn []
+                      (let [ed (pool/last-active)
+                            v (not (editor/option ed :lineWrapping))]
+                        (editor/set-options ed {:lineWrapping v}))
+                      )})

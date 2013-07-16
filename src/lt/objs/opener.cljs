@@ -114,10 +114,6 @@
                 :behaviors [::open-standard-editor]
                 :init (fn [this]))
 
-(object/tag-behaviors :editor.file-backed [::save-as-rename! ::save-as])
-(object/tag-behaviors :editor.transient [::transient-save ::save-as])
-(object/tag-behaviors :opener [::open-standard-editor ::open-transient-editor ::open-from-info])
-
 (def opener (object/create ::opener))
 
 (cmd/command {:command :new-file

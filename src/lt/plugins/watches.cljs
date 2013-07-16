@@ -83,8 +83,6 @@
                                   (ed/set-selection this cursor cursor)))
                               (object/raise this :eval.one)))
 
-(object/tag-behaviors :editor.javascript [::eval-on-watch-or-unwatch ::watch! ::unwatch!])
-
 (cmd/command {:command :editor.watch.watch-selection
               :desc "Editor: watch selection"
               :exec (fn []

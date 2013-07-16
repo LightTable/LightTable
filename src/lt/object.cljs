@@ -3,10 +3,11 @@
   (:require [crate.core :as crate]
             [clojure.set :as set]
             [clojure.string :as string]
+            [crate.binding :refer [sub-swap! subatom sub-reset! deref?]]
             [lt.util.cljs :as cljs]
             [lt.util.dom :refer [replace-with] :as dom]
             [lt.util.js :refer [throttle debounce]])
-  (:use [crate.binding :only [sub-swap! subatom sub-reset! deref?]]))
+  (:require-macros [lt.macros :refer [with-time]]))
 
 (def obj-id (atom 0))
 (def instances (atom (sorted-map)))
@@ -17,25 +18,25 @@
 (defn add [obj]
   (swap! object-defs assoc (::type obj) obj))
 
-(defn add-b [obj]
-  (swap! behaviors assoc (:name obj) obj))
+(defn add-behavior [beh]
+  (swap! behaviors assoc (:name beh) beh))
 
-(defn ->behavior-name [be]
-  (if (coll? be)
-    (first be)
-    be))
+(defn ->behavior-name [beh]
+  (if (coll? beh)
+    (first beh)
+    beh))
 
-(defn ->behavior [be]
-  (@behaviors (->behavior-name be)))
+(defn ->behavior [beh]
+  (@behaviors (->behavior-name beh)))
 
 (defn ->triggers [behs]
   (let [listeners (reduce
-                   (fn [res be]
+                   (fn [res beh]
                      (merge-with concat
                                  res
                                  (into {}
-                                       (for [t (:triggers (->behavior be))]
-                                         [t [be]]))))
+                                       (for [t (:triggers (->behavior beh))]
+                                         [t [beh]]))))
                    {}
                    behs)]
     listeners))
@@ -119,7 +120,7 @@
     be))
 
 (defn store-behavior* [beh]
-  (add-b beh)
+  (add-behavior beh)
   (:name beh))
 
 (defn wrap-throttle [beh]
@@ -138,18 +139,21 @@
       (wrap-debounce)
       (store-behavior*)))
 
-(defn raise* [obj reactions args]
+(defn raise* [obj reactions args trigger]
   (doseq [r reactions
           :let [func (:reaction (->behavior r))
                 args (if (coll? r)
                        (concat (rest r) args)
                        args)]
           :when func]
-    (apply func obj args)))
+    (with-time
+      (apply func obj args)
+      (when-not (= trigger :object.behavior.time)
+        (raise obj :object.behavior.time r time)))))
 
 (defn raise [obj k & args]
   (let [reactions (-> @obj :listeners k)]
-    (raise* obj reactions args)))
+    (raise* obj reactions args k)))
 
 (defn raise-reduce [obj k start & args]
   (let [reactions (-> @obj :listeners k)]
@@ -231,9 +235,6 @@
 (defn refresh! [obj]
   (reset! obj (update-listeners obj))
   (raise* obj (trigger->behaviors :object.instant (:tags @obj)) nil))
-
-(defn ->def [obj]
-  (@object-defs (::type @obj)))
 
 (defn add-behavior! [obj behavior]
   (update! obj [:behaviors] conj behavior)
@@ -323,3 +324,9 @@
            :triggers #{:object.instant}
            :reaction (fn [this & ts]
                        (add-tags this ts)))
+
+(behavior* ::report-time
+           :triggers #{:object.behavior.time}
+           :reaction (fn [this beh time]
+                       (when js/lt.objs.console
+                         (js/lt.objs.console.log (str beh " took " time "ms")))))

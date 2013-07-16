@@ -14,7 +14,7 @@
   (:require-macros [lt.macros :refer [defui]]))
 
 (comment
-(def marked (js/require "marked"))
+(def marked (load/node-module "marked"))
 
 (object/behavior* ::preview-on-change
                   :triggers #{:change}
@@ -34,8 +34,7 @@
                 :name "Markdown"
                 :preview ""
                 :init (fn [this]
-                        (let [main (pool/create {:type "markdown" :content ""}
-                                                [#(object/with-behaviors % [:lt.objs.editor/wrap ::preview-on-change])])
+                        (let [main (pool/create {:type "markdown" :content ""})
                               main-ed (:ed @main)]
                           (object/parent! this main)
                         [:div#markdown-preview

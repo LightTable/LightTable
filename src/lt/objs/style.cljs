@@ -26,17 +26,17 @@
             (css-expr :font-size (str (:font-size settings) "pt"))))
 
 (defn ->skin [skin]
-  (let [path (deploy/in-lt (str "css/skins/" (or skin "dark") ".css"))
+  (let [path (deploy/in-lt (str "core/css/skins/" (or skin "dark") ".css"))
         path (if (files/exists? path)
                path
-               (deploy/in-lt (str "css/skins/dark.css")))]
+               (deploy/in-lt (str "core/css/skins/dark.css")))]
     (:content (files/open-sync path))))
 
 (defui skin-style []
   [:link {:rel "stylesheet"
           :type "text/css"
           :id "skin-style"
-          :href (bound (subatom settings/settings [:skin]) #(deploy/in-lt (str "css/skins/" (or % "dark") ".css")))}])
+          :href (bound (subatom settings/settings [:skin]) #(deploy/in-lt (str "core/css/skins/" (or % "dark") ".css")))}])
 
 (object/object* ::styles
                 :triggers []
@@ -125,7 +125,7 @@
 ;;**********************************************************
 
 (defn get-skins []
-  (for [f (files/ls-sync (deploy/in-lt "css/skins") {:files true})]
+  (for [f (files/ls-sync (deploy/in-lt "core/css/skins") {:files true})]
     {:item (files/without-ext f)}))
 
 (def skin-selector (cmd/filter-list {:items get-skins
@@ -160,17 +160,16 @@
 (def prev-theme "")
 
 (defn get-themes []
-  (for [f (files/ls-sync (deploy/in-lt "css/themes") {:files true})]
+  (for [f (files/ls-sync (deploy/in-lt "core/css/themes") {:files true})]
     {:item (files/without-ext f)}))
 
 (defui stylesheet [name]
   [:link {:rel "stylesheet"
           :type "text/css"
           :id (str "theme-" name)
-          :href (deploy/in-lt (str "css/themes/" name ".css"))}])
+          :href (str "css/themes/" name ".css")}])
 
 (defn load-theme [name]
-  (dom/add-class (dom/$ :#multi) name)
   (when-not (empty? prev-theme)
     (dom/remove-class (dom/$ :#multi) prev-theme))
   (set! prev-theme name)

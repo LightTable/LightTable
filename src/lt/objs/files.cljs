@@ -1,11 +1,12 @@
 (ns lt.objs.files
   (:refer-clojure :exclude [open exists?])
   (:require [lt.object :as object]
+            [lt.util.load :as load]
             [lt.util.js :refer [now]]))
 
 (def fs (js/require "fs"))
 (def fpath (js/require "path"))
-(def wrench (js/require "wrench"))
+(def wrench (load/node-module "wrench"))
 (def os (js/require "os"))
 
 (defn typelist->index [cur types]
@@ -248,7 +249,8 @@
 (defn lt-home [path]
   (if js/process.env.LTHOME
     (join js/process.env.LTHOME (or path ""))
-    (home (join ".lighttable" path))))
+    (home (join ".lighttable" path)))
+  (join pwd path))
 
 (defn walk-up-find [start find]
   (let [roots (get-roots)]
@@ -261,24 +263,6 @@
         (if (exists? (join cur find))
           (join cur find)
           (recur (parent cur) cur))))))
-
-(def walk (if (exists? (lt-home "js/lib/walkdir.js"))
-            (js/require (lt-home "js/lib/walkdir.js"))
-            (js/require "walkdir")))
-
-(defn all-files-async [path cb]
-  (let [f (walk path)
-        res (array)
-        start (now)]
-    (.on f "file" (fn [file stat]
-                    (.push res file)))
-	(.on f "end" (fn []
-                 (println (- (now) start))
-                   (cb res)))))
-
-(defn all-files [path opts]
-  (when (exists? path)
-    (.sync walk path (clj->js opts))))
 
 (defn ->name|path [f & [relative]]
   (let [path (if relative

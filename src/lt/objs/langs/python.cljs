@@ -14,6 +14,7 @@
             [clojure.string :as string]
             [lt.objs.clients :as clients]
             [lt.objs.notifos :as notifos]
+            [lt.util.load :as load]
             [lt.util.cljs :refer [js->clj]])
   (:require-macros [lt.macros :refer [defui]]))
 
@@ -21,7 +22,7 @@
 ;; Proc
 ;;****************************************************
 
-(def shell (js/require "shelljs"))
+(def shell (load/node-module "shelljs"))
 
 (object/behavior* ::on-out
                   :triggers #{:proc.out}

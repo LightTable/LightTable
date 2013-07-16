@@ -1,4 +1,5 @@
-(ns lt.macros)
+(ns lt.macros
+  (:require [clojure.walk :as walk]))
 
 (defmacro defui [sym params hiccup & events]
   `(defn ~sym ~params
@@ -41,6 +42,14 @@
   `(do
      ~@defs)))
 
+(defmacro with-time [& body]
+  (let [start (gensym "start")
+        body (walk/postwalk-replace {'time (list '- '(.getTime (js/Date.)) start)} body)]
+  `(let [~start (.getTime (js/Date.))]
+     ~@body)))
+
+(macroexpand '(with-time (foo) (println time)))
+
 (defmacro worker [func & r]
   (let [m (apply hash-map r)]
     `(lt.objs.workers/worker*
@@ -48,7 +57,7 @@
         (set! (.-onmessage js/self)
               (fn [msg#]
                 (let [~'lthome (.-data msg#)]
-                  (js/importScripts (+ "file://" ~'lthome "/js/cljsDeps.js"))
+                  (js/importScripts (+ "file://" ~'lthome "/core/node_modules/clojurescript/base.js"))
                   (set! js/window (cljs.core/js-obj))
                   (set! js/document (cljs.core/js-obj))
                   (let [~'send (fn [k# v#]

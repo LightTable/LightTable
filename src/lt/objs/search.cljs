@@ -95,6 +95,6 @@
 
 (def searcher (object/create ::workspace-search))
 
-;(time (object/raise searcher :search! "error" "/users/chris/lighttable/playground/src"))
+;(time (object/raise searcher :search! "pool/create" "/users/chris/lighttable/playground/src"))
 
 ;(do (tabs/add! searcher) nil)

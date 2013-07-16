@@ -1,0 +1,36 @@
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <title>
+      Light Table
+    </title>
+    <link type="text/css" rel="stylesheet" href="css/reset.css"></link>
+    <link type="text/css" rel="stylesheet" href="css/codemirror.css"></link>
+    <link type="text/css" rel="stylesheet" href="css/structure.css"></link>
+    <style>
+      body { background: #202020; color:#ccc; }
+      #loader { position:absolute; top:0; left:0; right:0; bottom:0; width:100vw; height:100vh; display:table; text-align:center; box-sizing:border-box; vertical-align:middle;}
+      #loader p { display:table-cell; vertical-align:middle; text-align:center; }
+    </style>
+  </head>
+  <body tabindex="-1">
+    <div id="loader">
+      <p>
+        <img src="img/lighttabletextdark.png" width="40%"/>
+      </p>
+    </div>
+    <div id="wrapper" style="opacity:0;">
+    </div>
+    <script src="node_modules/lighttable/util/keyevents.js" type="text/javascript"> </script>
+    <script src="node_modules/lighttable/util/throttle.js" type="text/javascript"> </script>
+    <script type="text/javascript">
+      var win = require("nw.gui").Window.get();
+      win.show();
+    </script>
+    <script src="node_modules/lighttable/bootstrap.js" type="text/javascript"> </script>
+    <script type="text/javascript">
+      lt.objs.app.init();
+    </script>
+  </body>
+</html>
+

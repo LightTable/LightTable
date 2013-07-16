@@ -1,9 +1,9 @@
-{:+ {:global {"pmeta-r" [:refresh-connected-browser]
-              "pmeta-shift-n" [:open-new-window]
-              "pmeta-o" [:navigate-workspace-transient]
-              "pmeta-shift-o" [:open-file]
-              "pmeta-n" [:new-file]
-              "ctrl-space" [:show-commandbar-transient]}
+{:+ {:app {"pmeta-r" [:refresh-connected-browser]
+           "pmeta-shift-n" [:window.new]
+           "pmeta-o" [:navigate-workspace-transient]
+           "pmeta-shift-o" [:open-file]
+           "pmeta-n" [:new-file]
+           "ctrl-space" [:show-commandbar-transient]}
      :editor {"pmeta-enter" [:eval-editor-form]
               "pmeta-shift-enter" [:eval-editor]
               "pmeta-s" [:save]
@@ -12,7 +12,7 @@
      :editor.keys.normal {"\"" [(:editor.repeat-pair "\"")]
                           "(" [(:editor.open-pair "(")]
                           ")" [(:editor.close-pair ")")]
-                          "pmeta-f" [:find-in-editor]
+                          "pmeta-f" [:find.show]
                           "tab" [:auto-complete]
                           "[" [(:editor.open-pair "[")]
                           "{" [(:editor.open-pair "{")]
@@ -38,10 +38,10 @@
              "tab" [(:popup.move-active 1)],
              "enter" [(:popup.exec-active)],
              "right" [(:popup.move-active -1)]}
-     :find-bar {"shift-enter" [:find-prev],
-                "esc" [:clear-and-hide-find],
-                "enter" [:find-next]}
-     :find-bar.vim {"enter" [:hide-find]}
+     :find-bar {"shift-enter" [:find.prev],
+                "esc" [:find.clear :find.hide],
+                "enter" [:find.next]}
+     :find-bar.vim {"enter" [:find.hide]}
      :browser.url-bar {"enter" [:browser.url-bar.navigate!]},
      :filter-list.input {"down" [(:filter-list.input.move-selection 1)],
                          "esc" [:filter-list.input.escape!],

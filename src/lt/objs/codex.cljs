@@ -16,13 +16,34 @@
                               (add-item! this info)))")
 
 (defui codex-item [info]
-  [:li (object/->content (:ed info))]
-  )
+  [:li (object/->content (:ed info))])
 
 (defn add-item! [codex info]
   (let [ed (pool/create {:content fake-content :name "fake codex editor" :type "cljs"})]
     (dom/append (object/->content codex) (codex-item (assoc info :ed ed)))
     ed))
+
+(defn open-codex! []
+  (let [c (object/create ::codex)]
+    (tabs/add! c)
+    c))
+
+;;*********************************************************
+;; Object
+;;*********************************************************
+
+(object/object* ::codex
+                :name "Codex"
+                :eds []
+                :tags #{:codex}
+                :init (fn []
+                        [:ul.codex
+                         ]
+                        ))
+
+;;*********************************************************
+;; Behaviors
+;;*********************************************************
 
 (object/behavior* ::close
                   :triggers #{:close}
@@ -42,21 +63,6 @@
                               (doseq [ed (:eds @this)]
                                 (object/destroy! ed))))
 
-(object/object* ::codex
-                :name "Codex"
-                :eds []
-                :tags #{:codex}
-                :init (fn []
-                        [:ul.codex
-                         ]
-                        ))
-
-(object/tag-behaviors :codex [::add! ::close ::clear!])
-
-(defn open-codex! []
-  (let [c (object/create ::codex)]
-    (tabs/add! c)
-    c))
 
 ;(def cur (open-codex!))
 ;(object/raise cur :add! {:name "blah"})

@@ -4,7 +4,7 @@
             [lt.objs.window :as window]
             [lt.objs.files :as files]
             [lt.objs.workspace :as workspace]
-            [lt.util.setup :refer [npm-require]]
+            [lt.util.load :refer [node-module]]
             [lt.util.cljs :refer [js->clj]]
             [clojure.string :as string]
             [lt.objs.opener :as opener]))
@@ -16,7 +16,7 @@
       (to-array)))
 
 (defn parse-args [argv]
-  (-> (.. (npm-require "optimist")
+  (-> (.. (node-module "optimist")
           (options (js-obj "n" (js-obj "boolean" true "alias" "new")
                            "a" (js-obj "boolean" true "alias" "add")
                            "w" (js-obj "boolean" true "alias" "wait")
@@ -35,7 +35,9 @@
             (object/raise workspace/current-ws :add.file! path))))
       (object/raise opener/opener :new! path))))
 
-(.-focusedWindow js/localStorage)
+;;*********************************************************
+;; Behaviors
+;;*********************************************************
 
 (object/behavior* ::open-on-args
                   :triggers #{:init}
@@ -66,7 +68,3 @@
                                       (window/app-store! winid :args path)
                                       (app/open-window))
                                     (open-paths paths (:add args)))))))
-
-(object/tag-behaviors :app [::open-on-args ::open!])
-
-(.on (.-App app/gui) "open" (fn [path] (object/raise app/app :open! path)))

@@ -24,33 +24,29 @@
 
 (defn open-window []
   (let [id (store-swap! :window-id inc)
-        w (.Window.open gui (str "index.html?id=" id) (clj->js {:toolbar false
-                                                                :new-instance true
-                                                                :min_height 400
-                                                                :min_width 400
-                                                                :show false}))]
+        w (.Window.open gui (str "LightTable.html?id=" id) (clj->js {:toolbar false
+                                                                     :new-instance true
+                                                                     :min_height 400
+                                                                     :min_width 400
+                                                                     :show false}))]
     (set! (.-ltid w) id)
     w))
 
-(defn ready? [this]
-  (= 0 (:delays @this)))
-
 (defn args []
-  (seq (.-App.argv gui)))
+  (when-not (= 0 (.-App.argv.length gui))
+    (seq (.-App.argv gui))))
 
 (defn init []
   (object/raise app :deploy)
   (object/raise app :pre-init)
   (object/raise app :init)
   (object/raise app :post-init)
-  (object/raise app :show)
-  )
+  (object/raise app :show))
 
 (defn fetch [k]
   (when-let [v (aget js/localStorage (name k))]
     (when (not= "null" v)
-      (js/JSON.parse v)
-      )))
+      (js/JSON.parse v))))
 
 (defn store! [k v]
   (aset js/localStorage (name k) (if (string? v)
@@ -61,6 +57,16 @@
   (let [neue (f (fetch k))]
     (store! k neue)
     neue))
+
+(defn ensure-greater [x cap]
+  (let [x (if (string? x)
+            (js/parseInt x)
+            x)]
+    (max x cap)))
+
+;;*********************************************************
+;; Behaviors
+;;*********************************************************
 
 (object/behavior* ::refresh
                   :triggers #{:refresh}
@@ -78,11 +84,6 @@
                               (when closing
                                 (close true))))
 
-(object/behavior* ::delay!
-                  :triggers #{:delay!}
-                  :reaction (fn [this]
-                              (object/update! this [:delays] inc)))
-
 (object/behavior* ::store-position-on-close
                   :triggers #{:closed :refresh}
                   :reaction (fn [this]
@@ -90,34 +91,20 @@
                               (set! js/localStorage.y (.-y win))
                               (set! js/localStorage.width (.-width win))
                               (set! js/localStorage.height (.-height win))
-                              (set! js/localStorage.fullscreen (.-isFullscreen win))
-                              ))
+                              (set! js/localStorage.fullscreen (.-isFullscreen win))))
 
 (object/behavior* ::restore-fullscreen
                   :triggers #{:show}
                   :reaction (fn [this]
                                 (when (= js/localStorage.fullscreen "true")
-                                  (.enterFullscreen win))
-                              ))
-(defn ensure-greater [x cap]
-  (let [x (if (string? x)
-            (js/parseInt x)
-            x)]
-    (max x cap)))
+                                  (.enterFullscreen win))))
 
 (object/behavior* ::restore-position-on-init
                   :triggers #{:show}
                   :reaction (fn [this]
                               (when-not (empty? (.-width js/localStorage))
                                 (.resizeTo win (ensure-greater js/localStorage.width 400) (ensure-greater js/localStorage.height 400))
-                                (.moveTo win (ensure-greater js/localStorage.x 0) (ensure-greater js/localStorage.y 0)))
-                              ))
-
-(object/behavior* ::ready!
-                  :triggers #{:delay!}
-                  :reaction (fn [this]
-                              (object/update! this [:delays] dec)
-                              (ready? this)))
+                                (.moveTo win (ensure-greater js/localStorage.x 0) (ensure-greater js/localStorage.y 0)))))
 
 (object/behavior* ::on-show-bind-navigate
                   :triggers #{:show}
@@ -130,44 +117,41 @@
                                                                 (.Shell.openExternal gui href)
                                                                 (.focus win)))))))
 
-(object/behavior* ::startup-time
-                  :triggers #{:show}
-                  :reaction (fn [this]
-                              (- (now) js/setup.startTime))
-                  )
-
 (object/behavior* ::initial-focus
                   :triggers #{:show}
                   :reaction (fn [this]
-                              (dom/focus (dom/$ :body))
-                              ))
+                              (dom/focus (dom/$ :body))))
+
+;;*********************************************************
+;; Object
+;;*********************************************************
 
 (object/object* ::app
                 :tags #{:app}
                 :delays 0
                 :init (fn [this]
-                        (ctx/in! :app this)
-                        ))
-
-(object/tag-behaviors :app [::store-position-on-close ::restore-position-on-init ::restore-fullscreen ::initial-focus])
+                        (ctx/in! :app this)))
 
 (def app (object/create ::app))
 
-(.on win "close" (fn []
-                   (object/raise app :close!)
-                   ))
+(.on win "close" (fn [] (object/raise app :close!)))
+(.on (.-App gui) "open" (fn [path] (object/raise app :open! path)))
+
+;;*********************************************************
+;; Commands
+;;*********************************************************
 
 (cmd/command {:command :app.refresh
               :desc "Window: Refresh Light Table"
               :exec (fn []
                       (object/raise app :refresh))})
 
-(cmd/command {:command :open-new-window
+(cmd/command {:command :window.new
               :desc "Window: Open new window"
               :exec (fn []
                       (let [w (open-window)]))})
 
-(cmd/command {:command :close-window
+(cmd/command {:command :window.close
               :desc "Window: Close window"
               :exec (fn []
                       (object/raise app :close!))})

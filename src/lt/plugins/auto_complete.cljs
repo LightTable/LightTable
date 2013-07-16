@@ -2,6 +2,7 @@
   (:require [lt.object :as object]
             [lt.objs.keyboard :as keyboard]
             [lt.objs.command :as cmd]
+            [lt.util.load :as load]
             [lt.objs.sidebar.command :as scmd]
             [lt.objs.editor.pool :as pool]
             [lt.objs.editor :as editor]
@@ -80,7 +81,7 @@
       (some #(not (re-seq pattern %)) text))))
 
 (def w (worker (fn [m]
-                 (js/importScripts (str "file://" lthome "/js/lib/stringstream.js"))
+                 (js/importScripts (str "file://" lthome "/core/node_modules/codemirror/stringstream.js"))
                  (let [stream (fn [s]
                                 (js/StringStream. s))
                        advance (fn [s]
@@ -272,5 +273,10 @@
 ;; Mode extensions
 ;;*********************************************************
 
-(js/CodeMirror.extendMode "clojure" (clj->js {:hint-pattern #"[\w\-\>\:\*\$\?\<\!\+]"}))
-(js/CodeMirror.extendMode "css" (clj->js {:hint-pattern #"[\w\.\-\#]"}))
+(object/behavior* ::init
+                  :triggers #{:init}
+                  :reaction (fn [this]
+                              (js/load "node_modules/codemirror/show-hint.js")
+                              (js/CodeMirror.extendMode "clojure" (clj->js {:hint-pattern #"[\w\-\>\:\*\$\?\<\!\+]"}))
+                              (js/CodeMirror.extendMode "css" (clj->js {:hint-pattern #"[\w\.\-\#]"}))
+                              ))

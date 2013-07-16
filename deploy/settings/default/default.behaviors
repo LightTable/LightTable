@@ -33,7 +33,10 @@
    :lt.objs.app/on-show-bind-navigate
    :lt.objs.editor.pool/stop-reload-dirty
    :lt.objs.window/track-focus
-   :lt.objs.menu/set-menu},
+   :lt.objs.menu/set-menu
+   :lt.objs.tabs/init
+   :lt.objs.find/init
+   :lt.objs.editor/init-codemirror},
  :behaviors.editor #{:lt.objs.settings2/on-close-remove}
  :browser
  #{:lt.objs.browser/forward! :lt.objs.browser/init!
@@ -68,7 +71,17 @@
  :console #{:lt.objs.console/on-close},
  :docs #{:lt.objs.docs/on-close-destroy},
  :editor
- #{:lt.objs.sidebar.clients/track-active-client
+ #{:lt.objs.editor/active-on-focus
+   :lt.objs.editor/on-tags-added
+   :lt.objs.editor/on-tags-removed
+   :lt.objs.editor/inactive-on-blur
+   :lt.objs.editor/context-on-active
+   :lt.objs.editor/focus
+   :lt.objs.editor/context-on-inactive
+   :lt.objs.editor/refresh-on-show
+   :lt.objs.editor/destroy-on-close
+   :lt.objs.editor/highlight-current-line
+   :lt.objs.sidebar.clients/track-active-client
    :lt.plugins.auto-complete/intra-buffer-string-hints
    :lt.plugins.auto-paren/close-pair :lt.objs.editor.pool/track-active
    :lt.objs.editor.pool/ed-close :lt.objs.editor/menu!

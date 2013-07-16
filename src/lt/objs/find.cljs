@@ -1,6 +1,7 @@
 (ns lt.objs.find
   (:require [lt.object :as object]
             [lt.objs.context :as ctx]
+            [lt.util.load :as load]
             [lt.objs.canvas :as canvas]
             [lt.objs.sidebar.command :as cmd]
             [lt.objs.editor.pool :as pool]
@@ -143,48 +144,42 @@
                          (input this)
                          (replace-input this)]))
 
+(object/behavior* ::init
+                  :triggers #{:init}
+                  :reaction (fn [this]
+                              (load/js "core/node_modules/codemirror/search.js" :sync)
+                              (load/js "core/node_modules/codemirror/searchcursor.js" :sync)
+
+                              ))
+
 (def bar (object/create ::find-bar))
 
 (canvas/add! bar)
 
-(cmd/command {:command :find-in-editor
+(cmd/command {:command :find.show
               :desc "Find: In current editor"
-              :exec (fn []
-                      (object/merge! bar {:reverse? false})
+              :exec (fn [rev?]
+                      (object/merge! bar {:reverse? (not rev?)})
                       (object/raise bar :show!)
                       (object/raise bar :focus!))})
 
-(cmd/command {:command :find-in-editor-reverse
-              :desc "Find: Backward in current editor"
-              :exec (fn []
-                      (object/merge! bar {:reverse? true})
-                      (object/raise bar :show!)
-                      (object/raise bar :focus!))})
-
-(cmd/command {:command :clear-and-hide-find
-              :desc "Find: Clear and hide the find bar"
-              :hidden true
-              :exec (fn []
-                      (object/raise bar :clear!)
-                      (object/raise bar :hide!))})
-
-(cmd/command {:command :clear-find
+(cmd/command {:command :find.clear
               :desc "Find: Clear the find bar"
               :hidden true
               :exec (fn []
                       (object/raise bar :clear!))})
 
-(cmd/command {:command :hide-find
+(cmd/command {:command :find.hide
               :desc "Find: Hide the find bar"
               :exec (fn []
                       (object/raise bar :hide!))})
 
-(cmd/command {:command :find-next
+(cmd/command {:command :find.next
               :desc "Find: Next find result"
               :exec (fn []
                       (object/raise bar :next!))})
 
-(cmd/command {:command :find-prev
+(cmd/command {:command :find.prev
               :desc "Find: Previous find result"
               :exec (fn []
                       (object/raise bar :prev!))})

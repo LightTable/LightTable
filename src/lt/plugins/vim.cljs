@@ -1,6 +1,7 @@
 (ns lt.plugins.vim
   (:require [lt.object :as object]
             [lt.objs.context :as ctx]
+            [lt.util.load :as load]
             [lt.objs.editor.pool :as pool]
             [lt.objs.sidebar.command :as cmd :refer [command]]
             [lt.objs.editor :as editor]
@@ -62,7 +63,7 @@
                   :triggers #{:object.instant}
                   :reaction (fn [this ks]
                               (doseq [[k v] ks]
-                                (vim-binding k v))))
+                                (js/CodeMirror.Vim.map k v))))
 
 (object/behavior* ::activate-vim
                   :triggers #{:object.instant}
@@ -100,49 +101,28 @@
                   (let [cur (pool/last-active)]
                     (object/raise cur :close)))})
 
-(def vim-binding js/CodeMirror.Vim.map)
+(command {:command :vim.find
+          :desc "Vim: find"
+          :hidden true
+          :exec (fn [rev?]
+                  (ctx/in! :find-bar.vim)
+                  (if rev?
+                    (cmd/exec! :find.show true)
+                    (cmd/exec! :find.show))
+                  )})
 
 (defn ex-command [cmd]
   (js/CodeMirror.Vim.defineEx (:name cmd) (:name cmd) (:func cmd)))
 
-(ex-command {:name "ex"
-             :func (fn [cm]
-                     (object/raise (pool/last-active) :ex!))})
 
-(ex-command {:name "findEditor"
-             :func (fn [cm]
-                     (ctx/in! :find-bar.vim)
-                     (cmd/exec! :find-in-editor))})
+(load/js "core/node_modules/codemirror/vim.js" :sync)
 
-(ex-command {:name "findRevEditor"
-             :func (fn [cm]
-                     (ctx/in! :find-bar.vim)
-                     (cmd/exec! :find-in-editor-reverse))})
-
-(ex-command {:name "findNext"
-             :func (fn [cm]
-                     (cmd/exec! :find-next))})
-
-(ex-command {:name "findPrev"
-             :func (fn [cm]
-                     (cmd/exec! :find-prev))})
-
-(ex-command {:name "findClear"
-             :func (fn [cm]
-                     (cmd/exec! :clear-find))})
-
-(ex-command {:name "nextWindow"
-             :func (fn [cm]
-                     (cmd/exec! :tabset.next))})
-
-(ex-command {:name "indent"
-             :func (fn [cm]
-                     (.indentSelection cm "smart"))})
-
-(ex-command {:name "ltexec"
-             :func (fn [cm info]
-                     (apply cmd/exec! (-> (.-args info)
-                                          (first)
-                                          (keyword)) (next (.-args info))))})
-
-
+(object/behavior* ::init
+                  :triggers #{:init}
+                  :reaction (fn [this]
+                              (ex-command {:name "ltexec"
+                                           :func (fn [cm info]
+                                                   (apply cmd/exec! (-> (.-args info)
+                                                                        (first)
+                                                                        (keyword)) (next (.-args info))))})
+                              ))
