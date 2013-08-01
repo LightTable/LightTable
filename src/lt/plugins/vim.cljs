@@ -61,14 +61,20 @@
 
 (object/behavior* ::map-keys
                   :triggers #{:object.instant}
+                  :desc "Vim: Map vim keys"
+                  :type :user
                   :reaction (fn [this ks]
                               (doseq [[k v] ks]
                                 (js/CodeMirror.Vim.map k v))))
 
 (object/behavior* ::activate-vim
                   :triggers #{:object.instant}
+                  :desc "Vim: Activate vim mode"
+                  :type :user
+                  :exclusive true
                   :reaction (fn [this]
-                              (make-vim-editor this)))
+                              (when-not (object/has-tag? this :editor.keys.vim)
+                                (make-vim-editor this))))
 
 (command {:command :vim
           :desc "Vim: Toggle vim mode"

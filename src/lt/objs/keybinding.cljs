@@ -18,12 +18,11 @@
                               (tabs/rem! this)))
 
 (defn cmd->bindings [cmd]
-  (when (coll? cmd)
     (filter #(-> % second seq)
             (for [[ctx ms] @keyboard/keys]
-              [ctx (-> (filter #(= (-> % second last first) cmd) ms)
+              [ctx (-> (filter #(= (-> % second first) cmd) ms)
                        first
-                       first)]))))
+                       first)])))
 
 (defui key-box [this]
   [:input#key-box {:placeholder "key(s)"}]

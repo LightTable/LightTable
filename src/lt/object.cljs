@@ -104,7 +104,7 @@
                                       :behaviors (set/union behs (set (:behaviors odef)))
                                       :content neue})
       (merge! inst (update-listeners inst))
-      (when neue
+      (when (and old neue)
         (replace-with old neue))
       (raise inst :redef))
     id))
@@ -294,7 +294,7 @@
         behs (apply concat (map @tags ts))
         cur (-> cur
                 (update-in [:tags] #(reduce disj % ts))
-                (update-in [:behaviors] #(-> (remove #{behs} %) (vec)))
+                (update-in [:behaviors] #(remove #{behs} %))
                 (update-in [:listeners] #(apply dissoc % ts)))]
     (merge! obj cur)
     (reset! obj (update-listeners obj))
@@ -303,15 +303,14 @@
 
 (defn tag-behaviors [tag behs]
   (swap! tags update-in [tag] #(reduce conj
-                                       (or % #{})
+                                       (or % '())
                                        behs))
   (doseq [cur (by-tag tag)]
     (refresh! cur))
   (@tags tag))
 
 (defn remove-tag-behaviors [tag behs]
-  (swap! tags update-in [tag] #(-> (remove (set behs) (or % #{}))
-                                   vec))
+  (swap! tags update-in [tag] #(remove (set behs) (or % '())))
   (doseq [cur (by-tag tag)
           b behs]
     (rem-behavior! cur b)))

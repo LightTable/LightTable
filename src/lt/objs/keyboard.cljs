@@ -7,21 +7,39 @@
             [lt.objs.platform :as platform]
             [lt.objs.metrics :as metrics]
             [lt.objs.context :as ctx]
-            [lt.util.events :as utev])
-  (:use [lt.util.js :only [every]]))
+            [lt.util.js :refer [every wait]]
+            [lt.util.events :as utev]))
 
 (def capturing? true)
 (def keys (atom {}))
-
 (def key-map (atom {}))
+(def chords (js-obj :current nil :chords #{}))
+(def chord-timeout 1000)
 
 (defn activity []
   (metrics/used!))
 
+(defn chord-variants [k]
+  (let [splits (-> (string/split k " ")
+                   (butlast))]
+    (reduce (fn [res cur]
+              (conj res (str (last res) " " cur)))
+            [(first splits)]
+            (rest splits))))
+
+(defn extract-chords [ks]
+  (reduce (fn [chords [k _]]
+            (if-not (> (.indexOf k " ") -1)
+              chords
+              (apply conj chords (chord-variants k))))
+          #{}
+          ks))
+
 (defn merge-keys [_ _ _ ctx]
-  (let [ctx-set (into (sorted-set) ctx)
+  (let [ctx-set (object/specificity-sort ctx)
         ks @keys
         neue (apply merge {} (map ks ctx-set))]
+    (set! chords (js-obj :current nil :chords (extract-chords neue)))
     (reset! key-map neue)))
 
 (defn refresh []
@@ -35,9 +53,27 @@
   (str (when (.-altKey ev) "alt-")
        (when (or (.-altGraphKey ev) altgr) "altgr-")
        (when (.-ctrlKey ev) "ctrl-")
-       (when (.-metaKey ev) "cmd-")
+       (when (.-metaKey ev) (if (platform/mac?)
+                              "cmd-"
+                              "meta-"))
        (when (.-shiftKey ev) "shift-")
        (. (or (.-key ev) "") toLowerCase)))
+
+(defn chord|mapping [ev]
+  (let [current (aget chords :current)
+        cur-chords (aget chords :chords)
+        [ks ch] (if current
+                  [(str current " " (->keystr ev)) (str current " " (aget ev "char"))]
+                  [(->keystr ev) (aget ev "char")])]
+    (if-let [chord (or (cur-chords ch) (cur-chords ks))]
+      (do
+        (aset chords :current chord)
+        (when chord-timeout
+          (wait chord-timeout #(aset chords :current nil)))
+        [])
+      (do
+        (aset chords :current nil)
+        (or (@key-map ch) (@key-map ks) (when current []))))))
 
 (def ^:dynamic *capture* true)
 
@@ -68,13 +104,24 @@
 (defn capture [ev]
   (activity)
   (binding [*capture* true]
-    (when-let [cs (or (@key-map (aget ev "char")) (@key-map (->keystr ev)))]
+    (when-let [cs (chord|mapping ev)]
       (doseq [c cs]
         (trigger c))
       *capture*)))
 
 (defn capture-up [ev]
   (or (@key-map (aget ev "char")) (@key-map (->keystr ev))))
+
+(def meta (if (platform/mac?)
+            "cmd"
+            "ctrl"))
+
+(defn cmd->bindings [cmd]
+    (filter #(-> % second seq)
+            (for [[ctx ms] @keys]
+              [ctx (-> (filter #(= (-> % second first) cmd) ms)
+                       first
+                       first)])))
 
 (utev/capture :keydown
               (fn [ev]
@@ -90,6 +137,9 @@
                   (.preventDefault ev)
                   (.stopPropagation ev))))
 
-(def meta (if (platform/mac?)
-            "cmd"
-            "ctrl"))
+(object/behavior* ::chord-timeout
+                  :triggers #{:object.instant}
+                  :desc "Set the timeout for chords"
+                  :type :user
+                  :reaction (fn [this timeout]
+                              (set! chord-timeout timeout)))

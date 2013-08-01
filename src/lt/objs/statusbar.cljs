@@ -73,38 +73,12 @@
     "none"
     ""))
 
-(defn up-down [{:keys [active]}]
-  (if active
-    "⇣"
-    "⇡"))
-
-(defn toggle-class [{:keys [dirty]}]
-  (str "console-toggle " (when dirty "dirty")))
-
-(defn dirty []
-  (object/merge! statusbar-loader {:dirty true}))
-
-(defn clean[]
-  (object/merge! statusbar-loader {:dirty false}))
 
 (defui loader [this]
   [:span.load-wrapper {:style {:display (bound this loader-disp)}}
    [:span.img]]
   :click (fn []
            (object/raise this :toggle)))
-
-(defui toggle [this]
-  [:span {:class (bound this toggle-class)
-          :style {:display (bound this arrow-disp)}}
-   (bound bottombar/bottombar up-down)]
-  :click (fn []
-           (object/raise this :toggle)))
-
-(defn dirty []
-  (object/merge! statusbar-loader {:dirty true}))
-
-(defn clean []
-  (object/merge! statusbar-loader {:dirty false}))
 
 (defui log-item [i]
   [:li (bound i :text)])
@@ -114,7 +88,6 @@
 
 (defui log [this]
   [:div.log
-   (toggle this)
    (loader this)
    [:span {:class (bound this #(-> % :class ->message-class))} (bound this :message)]
    ])
@@ -140,3 +113,35 @@
 (def statusbar-loader (object/create ::statusbar.loader))
 (add-item statusbar-loader)
 
+;;**********************************************************
+;; console list
+;;**********************************************************
+
+(defui toggle-span [this]
+  [:span {:class (bound this toggle-class)}
+   "foo"
+   (bound this :dirty)]
+  :click (fn []
+           (object/raise this :toggle)))
+
+(defn toggle-class [{:keys [dirty class]}]
+  (str "console-toggle " (when class (str class " ")) (when (> dirty 0) "dirty")))
+
+(defn dirty []
+  (object/update! console-toggle [:dirty] inc))
+
+(defn clean []
+  (object/merge! console-toggle {:dirty 0
+                                 :class nil}))
+
+(defn console-class [class]
+  (object/merge! console-toggle {:class class}))
+
+(object/object* ::statusbar.console-toggle
+                :dirty 0
+                :tags [:statusbar.console-toggle]
+                :init (fn [this]
+                        (statusbar-item (toggle-span this))))
+
+(def console-toggle (object/create ::statusbar.console-toggle))
+(add-item console-toggle)

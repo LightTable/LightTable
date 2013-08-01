@@ -150,6 +150,8 @@
 
 (object/behavior* ::set-skin
                   :triggers #{:object.instant}
+                  :desc "Style: Set Light Table skin"
+                  :type :user
                   :reaction (fn [this skin]
                               (settings/store! :skin skin)))
 
@@ -193,6 +195,8 @@
 
 (object/behavior* ::set-theme
                   :triggers #{:object.instant :show}
+                  :desc "Style: Set the editor theme"
+                  :type :user
                   :exclusive true
                   :reaction (fn [this sel]
                               (load-theme sel)

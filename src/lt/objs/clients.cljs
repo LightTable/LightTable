@@ -168,6 +168,11 @@
                   :reaction (fn [this]
                               (rem-cb this)))
 
+(object/behavior* ::raise-on-object
+                  :triggers #{:clients.raise-on-object}
+                  :reaction (fn [this [id command data]]
+                              (object/raise (object/by-id id) (keyword command) data)))
+
 (object/behavior* ::handle-message
                   :triggers #{:message}
                   :reaction (fn [obj [cb-id command data :as msg]]

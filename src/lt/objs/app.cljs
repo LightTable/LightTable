@@ -135,6 +135,7 @@
 (def app (object/create ::app))
 
 (.on win "close" (fn [] (object/raise app :close!)))
+
 (.on (.-App gui) "open" (fn [path] (object/raise app :open! path)))
 
 ;;*********************************************************

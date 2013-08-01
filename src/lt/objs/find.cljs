@@ -159,7 +159,7 @@
 (cmd/command {:command :find.show
               :desc "Find: In current editor"
               :exec (fn [rev?]
-                      (object/merge! bar {:reverse? (not rev?)})
+                      (object/merge! bar {:reverse? rev?})
                       (object/raise bar :show!)
                       (object/raise bar :focus!))})
 

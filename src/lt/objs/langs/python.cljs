@@ -10,6 +10,7 @@
             [lt.objs.popup :as popup]
             [lt.objs.platform :as platform]
             [lt.objs.editor :as ed]
+            [lt.plugins.watches :as watches]
             [lt.objs.proc :as proc]
             [clojure.string :as string]
             [lt.objs.clients :as clients]
@@ -57,7 +58,6 @@
                                                :buttons [{:label "close"}]})
                                 )
                               (proc/kill-all (:procs @this))
-                              (notifos/rem! (:notifier @this))
                               (object/destroy! this)
                               ))
 
@@ -165,6 +165,10 @@
                 :client client})
     client))
 
+(defn python-watch [meta src]
+  (let [meta (js/JSON.stringify (clj->js meta))]
+    (str "sys.modules['lttools'].__dict__['watch'](" src ", " meta ")")))
+
 (object/behavior* ::on-eval
                   :triggers #{:eval}
                   :reaction (fn [editor]
@@ -175,7 +179,7 @@
 (object/behavior* ::on-eval.one
                   :triggers #{:eval.one}
                   :reaction (fn [editor]
-                              (let [code (ed/->val editor)
+                              (let [code (watches/watched-range editor nil nil python-watch)
                                     pos (ed/->cursor editor)
                                     info (:info @editor)
                                     info (if (ed/selection? editor)
@@ -187,13 +191,19 @@
                                 (object/raise python :eval! {:origin editor
                                                              :info info}))))
 
+(object/behavior* ::python-watch
+                  :triggers #{:editor.eval.python.watch}
+                  :reaction (fn [editor res]
+                              (when-let [watch (get (:watches @editor) (-> res :meta :id))]
+                                (let [str-result (:result res)]
+                                  (object/raise (:inline-result watch) :update! str-result)))))
+
 (object/behavior* ::python-result
                   :triggers #{:editor.eval.python.result}
                   :reaction (fn [editor res]
                               (notifos/done-working)
                               (object/raise editor :editor.result (:result res) {:line (:end (:meta res))
-                                                                                 :start-line (-> res :meta :start)}))
-                              )
+                                                                                 :start-line (-> res :meta :start)})))
 
 (object/behavior* ::python-success
                   :triggers #{:editor.eval.python.success}
@@ -263,15 +273,11 @@
                   :reaction (fn [this path]
                               (try-connect {:info {:path path}})))
 
-(object/tag-behaviors :python.lang [::eval! ::connect])
 
 (object/object* ::python-lang
                 :tags #{:python.lang})
 
 (def python (object/create ::python-lang))
-
-(object/tag-behaviors :clients #{::pyzmq-error})
-(object/tag-behaviors :editor.python #{::on-eval ::on-eval.one ::python-printer ::python-success ::python-result ::python-exception ::python-image})
 
 (scl/add-connector {:name "Python"
                     :desc "Select a directory to serve as the root of your python project."

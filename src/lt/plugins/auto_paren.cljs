@@ -11,7 +11,7 @@
             \" \"
             \< \>})
 
-(def word-char #"[^\s\)\}\]]")
+(def word-char #"[^\s\)\}\]\(\{\[]")
 
 (defn adjust-loc [loc dir]
   (update-in loc [:ch] + dir))

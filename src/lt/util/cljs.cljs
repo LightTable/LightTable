@@ -6,6 +6,7 @@
                    (when (and x (not= x "") (not= x "\n"))
                      (.log js/console (string/trim x)))))
 
+
 ;;NEEDED for latest CLJS
 (extend-type cljs.core/ChunkedCons
   INext
@@ -40,7 +41,7 @@
   (-seq [coll]
     (when (and coll (not (zero? (alength coll))))
                  (IndexedSeq. coll 0))))
-  
+
 
 (defn ->dottedkw [& args]
   (keyword (string/join "." (map name (filter identity args)))))

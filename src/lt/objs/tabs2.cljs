@@ -109,7 +109,7 @@
            " dirty")))
 
 (defui item [multi e pos]
-  [:li {:class (-> ""
+  [:li {:class (-> " "
                    (active? e multi)
                    (dirty? e))
         :draggable "true"

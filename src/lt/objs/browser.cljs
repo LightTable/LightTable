@@ -200,6 +200,7 @@
                                                            (set! (.-contentWindow.onhashchange frame) (fn []
                                                                                                         (dom/val bar (.-contentWindow.location.href frame))))
                                                            (set! (.-contentWindow.lttools frame) utils)
+                                                           (.contentWindow.eval frame (:content (files/open-sync "core/node_modules/lighttable/util/keyevents.js")))
                                                            (.contentWindow.document.addEventListener frame "keydown"
                                                             (fn [e]
                                                               (when (keyboard/capture e)
@@ -213,7 +214,10 @@
 (object/behavior* ::set-client-name
                   :triggers #{:navigate}
                   :reaction (fn [this loc]
-                              (let [title (or (.-document.title (to-frame this)) loc)]
+                              (let [title (.-document.title (to-frame this))
+                                    title (if-not (empty? title)
+                                            title
+                                            "browser")]
                                 (object/merge! this {:name title})
                                 (tabs/refresh! this)
                                 (object/merge! (:client @this) {:name loc}))))
@@ -297,7 +301,7 @@
                                     ;;TODO: this is a hack for bad compiler output. We need to just move to the latest cljs
                                     (handle-cb (first clj-msg) :editor.eval.cljs.result {:result (eval/cljs-result-format (.eval.call window window (string/replace (:code form) ")goog" ")\ngoog")))
                                                                                          :meta (:meta form)})
-                                    (catch js/Error e
+                                    (catch (.-Error window) e
                                       (handle-cb (first clj-msg) :editor.eval.cljs.exception {:ex e
                                                                                               :meta (:meta form)})))))))
 

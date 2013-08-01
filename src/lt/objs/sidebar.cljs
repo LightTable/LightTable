@@ -11,20 +11,6 @@
 
 (def default-width 200)
 
-(defui sidebar-item [this item]
-  (let [{:keys [label]} @item]
-    [:li {:class (bound this #(when (= item (:active %))
-                                "current"))}
-                        label])
-  :click (fn [e]
-           (object/raise this :toggle item)
-           (object/raise item :toggle e)))
-
-(defui sidebar-tabs [this tabs]
-  [:ul#sidebar
-   (for [[_ t] tabs]
-     (sidebar-item this t))])
-
 (defui vertical-grip [this]
   [:div.vertical-grip {:draggable "true"}]
   :dragstart (fn [e]
@@ -66,31 +52,29 @@
 (object/behavior* ::open!
                   :triggers #{:open!}
                   :reaction (fn [this]
-                              (object/merge! this {:width (:max-width @this)})
-                              (object/merge! tabs/multi {(:side @this) (+ (:max-width @this) )})))
+                              (object/merge! this {:width (:max-width @this)
+                                                   :open true})
+                              (object/merge! tabs/multi {(:side @this) (+ (:max-width @this) )})
+                              (dom/add-class (object/->content (:active @this)) :active)))
 
 (object/behavior* ::close!
                   :triggers #{:close!}
                   :reaction (fn [this]
                               (object/merge! tabs/multi {(:side @this) 0})
-                              (object/merge! this {:active nil
-                                                   :transients (list)
-                                                   :width 0})))
+                              (object/merge! this {:width 0
+                                                   :open false})))
 
 (object/behavior* ::item-toggled
                   :triggers #{:toggle}
                   :reaction (fn [this item {:keys [force? transient? soft?]}]
-                              (if (or (not= item (:active @this))
-                                      force?)
+                              (if (and (= (:active @this) item)
+                                       (:open @this))
+                                (object/raise this :close!)
                                 (do
-                                  (object/merge! this {:active item
-                                                       :prev (when transient?
-                                                               (or (:prev @this ) (:active @this) :none))})
-                                  (object/raise this :open!)
-                                  (when-not soft?
-                                    (object/raise item :focus!)))
-                                (object/raise this :close!))
-                              ))
+                                  (when (:active @this)
+                                    (dom/remove-class (object/->content (:active @this)) :active))
+                                  (object/merge! this {:active item})
+                                  (object/raise this :open!)))))
 
 (defn active-content [active]
   (when active
@@ -124,7 +108,7 @@
                          [:div#right-bar {:style {:width (bound (subatom this :width) ->width)}}
                           (vertical-grip this)
                           [:div.content
-                           (bound (subatom this :active) active-content)]]))
+                           ]]))
 
 (object/tag-behaviors :sidebar [::item-toggled ::width! ::open! ::close! ::no-anim-on-drag ::reanim-on-drop ::pop-transient])
 
@@ -135,7 +119,8 @@
 (canvas/add! rightbar)
 
 (defn add-item [bar item]
-  (object/update! bar [:items] assoc (:order @item) item))
+  (object/update! bar [:items] assoc (:order @item) item)
+  (dom/append (dom/$ :.content (object/->content bar)) (object/->content item)))
 
 (cmd/command {:command :close-sidebar
               :desc "Sidebar: close"

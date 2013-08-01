@@ -6,12 +6,16 @@
             [crate.binding :refer [map-bound bound deref?]])
   (:require-macros [lt.macros :refer [defui]]))
 
+(def standard-timeout 10000)
+
 (defn working [msg]
   (when msg
     (set-msg! msg))
   (statusbar/loader-inc))
 
-(defn done-working []
+(defn done-working [msg]
+  (when msg
+    (set-msg! msg))
   (statusbar/loader-dec))
 
 (defn msg* [m opts]

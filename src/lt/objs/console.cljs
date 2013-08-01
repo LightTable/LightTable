@@ -53,6 +53,8 @@
 
 (defn verbatim [thing class]
   (let [$console (->ui console)]
+    (when class
+      (statusbar/console-class class))
     (write $console (->item thing class))
     (dom/scroll-top $console 10000000000)
     nil))
@@ -75,13 +77,11 @@
       nil)))
 
 (defn error [e]
+  (statusbar/console-class "error")
   (log (str (if (.-stack e)
               (.-stack e)
               e))
        "error"))
-
-(defn show []
-  )
 
 (defn clear []
   (dom/empty (->ui console)))
@@ -121,7 +121,7 @@
 (cmd/command {:command :toggle-console
               :desc "Console: Toggle bottom console"
               :exec (fn []
-                      (object/raise statusbar/statusbar-loader :toggle))})
+                      (object/raise statusbar/console-toggle :toggle))})
 
 (cmd/command {:command :clear-console
               :desc "Console: Clear console"

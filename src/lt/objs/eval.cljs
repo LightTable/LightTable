@@ -222,7 +222,7 @@
 (object/behavior* ::changed
                   :triggers #{:changed}
                   :reaction (fn [this]
-                              ;(.changed (:mark @this))
+                              (.changed (:mark @this))
                               ))
 
 (object/behavior* ::update!

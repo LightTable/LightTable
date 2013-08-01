@@ -34,8 +34,11 @@
    :lt.objs.editor.pool/stop-reload-dirty
    :lt.objs.window/track-focus
    :lt.objs.menu/set-menu
+   :lt.plugins.auto-complete/init
+   :lt.objs.clients.devtools/connect-on-init
    :lt.objs.tabs/init
    :lt.objs.find/init
+   (:lt.objs.keyboard/chord-timeout 1000)
    :lt.objs.editor/init-codemirror},
  :behaviors.editor #{:lt.objs.settings2/on-close-remove}
  :browser
@@ -52,13 +55,17 @@
  :client.placeholder #{:lt.objs.clients/remove-placeholder-on-swapped},
  :clients
  #{:lt.objs.langs.clj/handle-cancellation
+   :lt.objs.clients/raise-on-object
    :lt.objs.langs.python/pyzmq-error},
  :clients.devtools
  #{:lt.objs.clients.devtools/clear-queue-on-connect
    :lt.objs.clients.devtools/console-log
    :lt.objs.clients.devtools/handle-message
    :lt.objs.clients.devtools/clear-console
+   :lt.objs.clients.devtools/connect!
    :lt.objs.clients.devtools/script-parsed
+   :lt.objs.clients.devtools/reconnect
+   :lt.objs.clients.devtools/disconnect
    :lt.objs.clients.devtools/print-messages},
  :clojure.lang #{:lt.objs.langs.clj/connect :lt.objs.langs.clj/eval!},
  :codex
@@ -144,6 +151,7 @@
    :lt.objs.langs.js/js-exception :lt.objs.langs.js/on-eval
    :lt.objs.langs.js/on-eval.one
    :lt.objs.langs.js/js-watch
+   :lt.plugins.jshint/inline-hints
    [:lt.object/add-tag :watchable]},
  :editor.pool
  #{:lt.objs.editor.pool/add-tab-settings
@@ -156,7 +164,9 @@
    :lt.objs.langs.python/python-result
    :lt.objs.langs.python/python-success
    :lt.objs.langs.python/python-printer
-   :lt.objs.langs.python/python-image},
+   :lt.objs.langs.python/python-watch
+   :lt.objs.langs.python/python-image
+   [:lt.object/add-tag :watchable]},
  :editor.structural #{:lt.plugins.struct/rem-on-close},
  :editor.transient
  #{:lt.objs.editor.file/dirty-on-change :lt.objs.opener/transient-save
@@ -231,6 +241,7 @@
    :lt.objs.browser/change-live},
  :hinter
  #{:lt.plugins.auto-complete/select :lt.plugins.auto-complete/escape!
+   :lt.plugins.auto-complete/select-unknown
    :lt.plugins.auto-complete/line-change},
  :html.lang #{:lt.objs.langs.html/eval!},
  :inline.exception
@@ -286,6 +297,7 @@
  :searcher
  #{:lt.objs.search/search! :lt.objs.search/on-result
    :lt.objs.search/on-data :lt.objs.search/clear!
+   :lt.objs.search/on-end
    :lt.objs.search/on-close},
  :sidebar
  #{:lt.objs.sidebar/item-toggled
@@ -312,7 +324,7 @@
    :lt.objs.sidebar.workspace/recent! :lt.objs.sidebar.workspace/tree!
    :lt.objs.sidebar.workspace/recent.select!},
  :skin-selector #{:lt.objs.style/set-skin-on-select},
- :statusbar.console #{:lt.objs.console/statusbar-console-toggle},
+ :statusbar.console-toggle #{:lt.objs.console/statusbar-console-toggle},
  :tab-options #{:lt.objs.editor.pool/focus-options},
  :tabs #{:lt.objs.tabs/on-destroy-eds :lt.objs.tabs/active-tab-num :lt.objs.tabs/prev-tab :lt.objs.tabs/next-tab :lt.objs.tabs/tab-close :lt.objs.tabs/repaint-tab-updated
          :lt.objs.tabs/right! :lt.objs.tabs/left! :lt.objs.tabs/bottom!
@@ -356,10 +368,12 @@
    :lt.objs.workspace/remove-file! :lt.objs.editor.pool/watched.rename
    :lt.objs.workspace/add-file! :lt.objs.sidebar.workspace/on-ws-add
    :lt.objs.workspace/watch-on-set
+   :lt.objs.workspace/store-on-save
    :lt.objs.sidebar.workspace/on-ws-remove :lt.objs.workspace/set!
    :lt.objs.sidebar.workspace/watched.delete :lt.objs.workspace/new!
    :lt.objs.sidebar.workspace/watched.create
    :lt.objs.editor.pool/watched.update
+   :lt.objs.settings2/grab-workspace-behaviors
    :lt.objs.workspace/remove-folder!},
  :workspace.file
  #{:lt.objs.sidebar.workspace/on-open-file

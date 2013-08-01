@@ -99,6 +99,7 @@
   (on ed :scroll #(object/raise obj :scroll %))
   (on ed :update #(object/raise obj :update % %2))
   (on ed :change #(object/raise obj :change % %2))
+  (on ed :inputRead #(object/raise obj :input % %2))
   (on ed :cursorActivity #(object/raise obj :move % %2))
   (on ed :focus #(object/raise obj :focus %))
   (on ed :blur #(object/raise obj :blur %)))
@@ -390,13 +391,24 @@
 
 (behavior* ::wrap
            :triggers #{:object.instant}
-           :reaction (fn [obj]
-                       (set-options obj {:lineWrapping true})
+           :desc "Editor: Wrap lines"
+           :exclusive true
+           :type :user
+           :reaction (fn [obj wrap?]
+                       (set-options obj {:lineWrapping (if (false? wrap?)
+                                                         false
+                                                         true)})
                        ))
-(behavior* ::no-wrap
-           :triggers #{:object.instants}
-           :reaction (fn [obj]
-                       (set-options obj {:lineWrapping false})))
+
+(object/behavior* ::blink-rate
+                  :triggers #{:object.instant}
+                  :desc "Editor: set cursor blink rate"
+                  :exclusive true
+                  :type :user
+                  :reaction (fn [this rate]
+                              (if rate
+                                (set-options this {:cursorBlinkRate rate})
+                                (set-options this {:cursorBlinkRate 100000000000}))))
 
 (behavior* ::active-on-focus
            :triggers #{:focus}
@@ -518,7 +530,6 @@
 (object/behavior* ::init-codemirror
                   :triggers #{:init}
                   :reaction (fn [this]
-                              (println "init'd codemirror")
                               (load/js "core/node_modules/codemirror/matchbracket.js" :sync)
                               (load/js "core/node_modules/codemirror/comment.js" :sync)
                               (load/js "core/node_modules/codemirror/active-line.js" :sync)

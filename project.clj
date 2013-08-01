@@ -4,8 +4,9 @@
   :dependencies [[org.clojure/clojure "1.5.1"]
                  ;:exclusions [org.clojure/clojurescript]]
                  [crate "0.2.4"]
-                 [fetch "0.1.0-alpha2" :exclusions [org.clojure/clojure]]
-                 [org.clojure/clojurescript "0.0-1806"
+                 [fetch "0.1.1" :exclusions [org.clojure/clojure]]
+                 [core.async "0.1.0-SNAPSHOT"]
+                 [org.clojure/clojurescript "0.0-1843"
                   :exclusions [org.apache.ant/ant]]
                  ]
   :cljsbuild {:builds [{:source-paths ["src"]
@@ -15,7 +16,7 @@
                                    :output-dir "cljs/"
                                    :pretty-print true}}]}
   :source-paths ["src/"
-                 ;"/Users/chris/repos/clojurescript/src/clj"
-                 ;"/Users/chris/repos/clojurescript/src/cljs"
+                 "/Users/chris/repos/clojurescript/src/clj"
+                 "/Users/chris/repos/clojurescript/src/cljs"
                  ]
   )

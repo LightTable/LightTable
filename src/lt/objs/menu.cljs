@@ -89,7 +89,9 @@
                                        {:type "separator"}
                                        {:label "Cut" :selector "cut:" :key "x"}
                                        {:label "Copy" :selector "copy:" :key "c"}
-                                       {:label "Paste" :selector "paste:" :key "v"}]}
+                                       {:label "Paste" :selector "paste:" :key "v"}
+                                       {:label "Select All" :selector "selectAll:" :key "a"}
+                                       ]}
               {:label "View" :submenu [{:label "Workspace" :key "t" :click (fn [] (cmd/exec! :workspace.show))}
                                        {:label "Connections" :click #(cmd/exec! :show-connect)}
                                        {:label "Navigator" :key "o" :click #(cmd/exec! :navigate-workspace-transient)}

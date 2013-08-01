@@ -7,7 +7,10 @@
                                       "<BS>" "<PageUp>"})]
      :files [(:lt.objs.files/file-types [{:name "Wisp" :exts [:wisp] :mime "text/x-clojurescript" :tags [:editor.wisp]}])]
      :editor [:lt.plugins.vim/activate-vim
+              :lt.plugins.auto-complete/auto-show-on-input
               (:lt.objs.style/set-theme "ibdknox")]
+     :editor.javascript [(:lt.plugins.jshint/jshint-options {:maxparams false})
+                         :lt.plugins.jshint/on-save]
      :editor.python [(:lt.objs.style/set-theme "tomorrow-night")]
      :editor.markdown [:lt.objs.editor/wrap]
      :editor.plaintext [:lt.objs.editor/wrap]}}

@@ -42,12 +42,10 @@
 (object/behavior* ::open-on-args
                   :triggers #{:init}
                   :reaction (fn [this]
-                              (println "Win args: " (window/window-number) (window/app-fetch (window/window-number) :args))
                               (when (or (window/app-fetch (window/window-number) :args) (and (app/args) (= (window/window-number) 0)))
                                 (let [args-str (or (window/app-extract! (window/window-number) :args)
                                                    (first (app/args)))
                                       args (parse-args (rebuild-argv args-str))
-                                      _ (println "parsed args:" (pr-str args))
                                       paths (map #(files/resolve (:dir args) %) (filter (complement empty?) (:_ args)))
                                       open-dir? (some files/dir? paths)]
                                   (when open-dir?
@@ -57,7 +55,6 @@
 (object/behavior* ::open!
                   :triggers #{:open!}
                   :reaction (fn [this path]
-                              (println "here with: " path (app/fetch :focusedWindow) (window/window-number))
                               (when (= (app/fetch :focusedWindow) (window/window-number))
                                 (let [args (parse-args (rebuild-argv path))
                                       paths (map #(files/resolve (:dir args) %) (filter (complement empty?) (:_ args)))

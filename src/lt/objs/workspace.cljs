@@ -67,11 +67,12 @@
           (files/full-path-ls path)))
 
 (defn serialize [ws]
-  (select-keys ws [:files :folders]))
+  (select-keys ws [:files :folders :ws-behaviors]))
 
 (defn reconstitute [ws v]
   (object/raise ws :set! {:files (:files v)
-                          :folders (filter files/exists? (:folders v))}))
+                          :folders (filter files/exists? (:folders v))
+                          :ws-behaviors (:ws-behaviors v)}))
 
 (defn add! [ws k v]
   (object/update! ws [k] conj v))
@@ -95,7 +96,8 @@
         ))))
 
 (defn save [ws file]
-  (files/save (files/lt-home (files/join "core" "cache" "workspace" file)) (pr-str (serialize @ws))))
+  (files/save (files/lt-home (files/join "core" "cache" "workspace" file)) (pr-str (serialize @ws)))
+  (object/raise ws :save))
 
 (defn cached []
   (filter #(> (.indexOf % ".clj") -1) (files/full-path-ls (files/lt-home (files/join "core" "cache" "workspace")))))
@@ -117,6 +119,11 @@
 (defn ws-empty? [ws]
   (not (or (seq (:files @ws))
            (seq (:folders @ws)))))
+
+(object/behavior* ::store-on-save
+                  :triggers #{:save}
+                  :reaction (fn [this]
+                              (settings/store! :last-workspace (:file @this))))
 
 (object/behavior* ::serialize-workspace
                   :triggers #{:updated}
@@ -191,17 +198,20 @@
 (object/behavior* ::clear!
                   :triggers #{:clear!}
                   :reaction (fn [this]
-                              (object/merge! this {:files []
-                                                   :folders []})
-                              (object/raise this :set)
-                              (object/raise this :updated)))
+                              (let [old @this]
+                                (object/merge! this {:files []
+                                                     :folders []
+                                                     :ws-behaviors {:+ {} :- {}}})
+                                (object/raise this :set old)
+                                (object/raise this :updated))))
 
 (object/behavior* ::set!
                   :triggers #{:set!}
                   :reaction (fn [this fs]
-                              (object/merge! this fs)
-                              (object/raise this :set)
-                              (object/raise this :updated)))
+                              (let [old @this]
+                                (object/merge! this fs)
+                                (object/raise this :set old)
+                                (object/raise this :updated))))
 
 (object/behavior* ::watch-on-set
                   :triggers #{:updated}
@@ -218,11 +228,10 @@
                 :tags #{:workspace}
                 :files []
                 :folders []
+                :ws-behaviors {:+ {}
+                               :- {}}
                 :init (fn [this]
                         nil))
-
-(object/tag-behaviors :app [::reconstitute-last-workspace ::stop-watch-on-close ::store-last-workspace])
-(object/tag-behaviors :workspace [::new! ::serialize-workspace ::clear! ::add-file! ::add-folder! ::remove-file! ::remove-folder! ::set! ::watch-on-set ::rename!])
 
 (def current-ws (object/create ::workspace))
 

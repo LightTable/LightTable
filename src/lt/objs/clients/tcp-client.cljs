@@ -161,10 +161,8 @@
     (.on socket "connect" #(when @client (object/raise client ::connect)))
     (.on socket "error" #(when @client (object/raise client ::connect-fail)))
     (.on socket "data" #(when @client
-                          ;(println "msg: " (parse-message %))
                           (doseq [m (parse-message %)
                                   :when m]
-                            ;(println m)
                             (when-not (do-callback m)
                               (object/raise client (keyword (str "debugger-" (:command m))) m)))))
     socket))
@@ -229,20 +227,17 @@
 (object/behavior* ::debugger-changelive
                   :triggers #{:debugger-changelive}
                   :reaction (fn [this msg]
-                              ;(println "Changelive response: " msg)
                               ))
 
 (object/behavior* ::debugger-scripts
                   :triggers #{:debugger-scripts}
                   :reaction (fn [this msg]
-                              ;(println "scripts response: " (map (juxt :name :id) (:body msg)))
                               (object/merge! this {:scripts (into {} (map (juxt :name :id) (:body msg)))})
                               ))
 
 (object/behavior* ::debugger-evaluate
                   :triggers #{:debugger-evaluate}
                   :reaction (fn [this msg]
-                              ;(println "evaluate response: " msg)
                               ))
 
 (object/behavior* ::init-debugger!

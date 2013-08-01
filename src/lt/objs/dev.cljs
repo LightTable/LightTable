@@ -1,16 +1,18 @@
 (ns lt.objs.dev
   (:require [lt.object :as object]
+            [lt.util.js :refer [wait ]]
             [lt.objs.command :as cmd]))
 
 (def win (.Window.get (js/require "nw.gui")))
 
-(defn open-tools []
-  (.showDevTools win))
-
 (cmd/command {:command :dev-inspector
               :desc "Dev: Open web inspector"
               :hidden true
-              :exec open-tools})
+              :exec (fn []
+                      (object/raise (first (object/by-tag :clients.devtools)) :disconnect)
+                      (.showDevTools win)
+                      (wait 1000 #(object/raise (first (object/by-tag :clients.devtools)) :reconnect!))
+                      )})
 
 (cmd/command {:command :toggle-edge
               :desc "Toggle edge"

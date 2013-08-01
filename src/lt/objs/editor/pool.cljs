@@ -47,10 +47,12 @@
   (some #(:dirty (deref %)) (object/by-tag :editor)))
 
 (defn by-path [path]
-  (filter #(= (-> @% :info :path) path) (object/by-tag :editor)))
+  (let [path (string/lower-case path)]
+    (filter #(= (-> @% :info :path string/lower-case) path) (object/by-tag :editor))))
 
 (defn containing-path [path]
-  (filter #(> (.indexOf (-> @% :info :path) path) -1) (object/by-tag :editor)))
+  (let [path (string/lower-case path)]
+    (filter #(> (.indexOf (-> @% :info :path string/lower-case) path) -1) (object/by-tag :editor))))
 
 (defui button [label & [cb]]
        [:div.button.right label]

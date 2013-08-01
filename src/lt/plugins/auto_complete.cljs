@@ -3,14 +3,15 @@
             [lt.objs.keyboard :as keyboard]
             [lt.objs.command :as cmd]
             [lt.util.load :as load]
+            [lt.objs.thread :as thread]
             [lt.objs.sidebar.command :as scmd]
             [lt.objs.editor.pool :as pool]
             [lt.objs.editor :as editor]
             [lt.objs.context :as ctx]
-            [lt.objs.workers :as workers]
             [clojure.string :as string]
+            [lt.util.js :refer [wait]]
             [lt.util.dom :as dom])
-  (:require-macros [lt.macros :refer [defui worker]]))
+  (:require-macros [lt.macros :refer [defui background]]))
 
 (defn stream [str]
   (js/CodeMirror.StringStream. str))
@@ -77,48 +78,47 @@
 (defn non-token-change? [ed ch]
   (let [pattern (get-pattern ed)
         text (map str (.-text ch))]
-    (when (= (.-origin ch) "+input")
-      (some #(not (re-seq pattern %)) text))))
+    (condp = (.-origin ch)
+      "+input" (some #(not (re-seq pattern %)) text)
+      "paste" true
+      false)))
 
-(def w (worker (fn [m]
-                 (js/importScripts (str "file://" lthome "/core/node_modules/codemirror/stringstream.js"))
-                 (let [stream (fn [s]
-                                (js/StringStream. s))
-                       advance (fn [s]
-                                 (set! (.-start s) (.-pos s)))
-                       next* (fn [s]
-                               (.next s))
-                       peek* (fn [s]
-                               (.peek s))
-                       current (fn [s]
-                                 (.current s))
-                       skip-space (fn [s]
-                                    (when (and (peek* s) (re-seq #"\s" (peek* s)))
-                                      (.eatSpace s)
-                                      (advance s)))
-                       eat-while (fn [s r]
-                                   (.eatWhile s r))
-                       string->tokens (fn [str pattern]
-                                        (let [s (stream str)
-                                              pattern (re-pattern pattern)
-                                              res (js-obj)]
-                                          (skip-space s)
-                                          (while (peek* s)
-                                            (eat-while s pattern)
-                                            (if-not (empty? (current s))
-                                              (do
-                                                (aset res (current s) true)
-                                                (advance s))
-                                              (do
-                                                (next* s)
-                                                (advance s)))
-                                            (skip-space s))
-                                          (map #(do {:completion %}) (js/Object.keys res))))]
-                   (send :tokens {:tokens (string->tokens (:string m) (:pattern m))
-                                  :obj (:obj m)})))
-        :tokens (fn [m]
-                  (let [obj (object/by-id (:obj m))]
-                    (object/raise obj :hint-tokens (:tokens m))))))
+(def w (background (fn [obj-id m]
+                     (let [StringStream (-> (js/require (str js/ltpath "/core/node_modules/codemirror/stringstream.js"))
+                                            (.-StringStream))
+                           stream (fn [s]
+                                    (StringStream. s))
+                           advance (fn [s]
+                                     (set! (.-start s) (.-pos s)))
+                           next* (fn [s]
+                                   (.next s))
+                           peek* (fn [s]
+                                   (.peek s))
+                           current (fn [s]
+                                     (.current s))
+                           skip-space (fn [s]
+                                        (when (and (peek* s) (re-seq #"\s" (peek* s)))
+                                          (.eatSpace s)
+                                          (advance s)))
+                           eat-while (fn [s r]
+                                       (.eatWhile s r))
+                           string->tokens (fn [str pattern]
+                                            (let [s (stream str)
+                                                  pattern (re-pattern pattern)
+                                                  res (js-obj)]
+                                              (skip-space s)
+                                              (while (peek* s)
+                                                (eat-while s pattern)
+                                                (if-not (empty? (current s))
+                                                  (do
+                                                    (aset res (current s) true)
+                                                    (advance s))
+                                                  (do
+                                                    (next* s)
+                                                    (advance s)))
+                                                (skip-space s))
+                                              (map #(do {:completion %}) (js/Object.keys res))))]
+                       (raise obj-id :hint-tokens (string->tokens (:string m) (:pattern m)))))))
 
 (def default-pattern #"[\w_$]")
 
@@ -127,9 +127,8 @@
     (or (aget mode "hint-pattern") default-pattern)))
 
 (defn async-hints [this]
-  (w {:obj (object/->id this)
-      :string (editor/->val this)
-      :pattern (.-source (get-pattern this))}))
+  (w this {:string (editor/->val this)
+           :pattern (.-source (get-pattern this))}))
 
 (def hinter (scmd/filter-list {:items (fn []
                                         (when-let [cur (pool/last-active)]
@@ -141,11 +140,13 @@
 
 (object/behavior* ::escape!
                   :triggers #{:escape!}
-                  :reaction (fn [this]
+                  :reaction (fn [this force?]
                               (let [elem (object/->content this)]
                                 (when (:line @this)
                                   (js/CodeMirror.off (:line @this) "change" on-line-change))
                                 (object/remove-tags (:ed @this) [:editor.hinting])
+                                (when (or force? (= 0 (count (:cur @this))))
+                                  (keyboard/passthrough))
                                 (object/merge! this {:active false
                                                      :selected 0
                                                      :ed nil
@@ -155,7 +156,6 @@
                                 (object/raise this :inactive)
                                 (when (dom/parent elem)
                                   (dom/remove elem)))))
-
 
 (object/behavior* ::select
                   :triggers #{:select}
@@ -169,6 +169,12 @@
                                                 (:completion c)))
                                 (object/raise this :escape!)))
 
+(object/behavior* ::select-unknown
+                  :triggers #{:select-unknown}
+                  :reaction (fn [this v]
+                              (object/raise this :escape!)
+                              (keyboard/passthrough)))
+
 (object/behavior* ::line-change
                   :triggers #{:line-change}
                   :reaction (fn [this l c]
@@ -180,12 +186,13 @@
                                     (object/raise hinter :escape!)
                                     (do
                                       (object/raise hinter :change! (:string token))
-                                      (object/merge! hinter {:token token})))))))
+                                      (object/merge! hinter {:token token})
+                                      (when (-> (:cur @hinter) (count) (zero?))
+                                        (object/raise hinter :escape!))))))))
 
 (defn on-line-change [line ch]
   (object/raise hinter :line-change line ch))
 
-(object/tag-behaviors :hinter [::escape! ::select ::line-change])
 (object/add-tags hinter [:hinter])
 
 (object/behavior* ::async-hint-tokens
@@ -195,14 +202,14 @@
 
 (object/behavior* ::intra-buffer-string-hints
                   :triggers #{:change}
-                  :debounce 200
+                  :debounce 400
                   :reaction (fn [this ch]
                               (when (or (not= (:ed @hinter) this)
                                         (not (:active @hinter)))
                                 (async-hints this))
                               ))
 
-(defn start-hinting [this]
+(defn start-hinting [this opts]
   (let [pos (editor/->cursor this)
         token (get-token this pos)
         line (editor/line-handle this (:line pos))
@@ -215,24 +222,27 @@
                            :line line})
     (object/raise hinter :change! (:string token))
     (object/raise hinter :active)
-    (condp = (count (:cur @hinter))
-      0 (object/raise hinter :escape!)
-      1 (object/raise hinter :select! 0)
-      (do
-        (js/CodeMirror.on line "change" on-line-change)
-        (dom/append (dom/$ :body) elem)
-        (js/CodeMirror.positionHint (editor/->cm-ed this) elem (:start token))))))
+    (let [count (count (:cur @hinter))]
+      (cond
+       (= 0 count) (object/raise hinter :escape!)
+       (and (= 1 count)
+            (:select-single opts)) (object/raise hinter :select! 0)
+       :else (do
+               (js/CodeMirror.on line "change" on-line-change)
+               (dom/append (dom/$ :body) elem)
+               (js/CodeMirror.positionHint (editor/->cm-ed this) elem (:start token)))))))
 
 (object/behavior* ::show-hint
                   :triggers #{:hint}
-                  :reaction (fn [this]
-                              (let [cur (string/trim (editor/get-char this -1))]
+                  :reaction (fn [this opts]
+                              (let [cur (string/trim (editor/get-char this -1))
+                                    opts (merge {:select-single true} opts)]
                                 (cond
                                  (and (:active @hinter)
                                       (= (:ed @hinter) this)) (object/raise hinter :select!)
                                  (empty? cur) (keyboard/passthrough)
                                  (:active @hinter) (do (object/raise hinter :escape!) (start-hinting this))
-                                 :else (start-hinting this)))))
+                                 :else (start-hinting this opts)))))
 
 (object/behavior* ::remove-on-scroll-inactive
                   :triggers #{:scroll :inactive}
@@ -241,13 +251,33 @@
 
 (object/behavior* ::remove-on-move-line
                   :triggers #{:move}
-                  :reaction (fn [this]
-                              (when (and (:starting-token @hinter)
-                                         (not= (-> @hinter :starting-token :line)
-                                               (-> (editor/->cursor this) :line)))
-                                (object/raise hinter :escape!))))
+                  :reaction (fn [this c]
+                              ;;HACK: line change events are sent *after* cursor move
+                              ;;this means that we need to wait for those to fire and then
+                              ;;check if we're out of bounds.
+                              (wait 0 (fn []
+                                        (let [starting (:starting-token @hinter)
+                                              cur (:token @hinter)
+                                              cursor (editor/->cursor this)]
+                                          (when (and starting
+                                                     cur
+                                                     (or (not (<= (:start cur) (:ch cursor) (:end cur)))
+                                                         (not= (:line starting) (:line cursor))))
+                                            (object/raise hinter :escape!)))))))
 
-(object/tag-behaviors :editor.hinting [::remove-on-scroll-inactive ::remove-on-move-line])
+(object/behavior* ::auto-show-on-input
+                  :triggers #{:input}
+                  :type :user
+                  :desc ""
+                  :reaction (fn [this _ ch]
+                              (when-let [t (::timeout @this)]
+                                (js/clearTimeout t))
+                              (when-not (non-token-change? this ch)
+                              (object/merge! this {::timeout (wait 50 (fn []
+                                                                         (when-not (and (:active @hinter)
+                                                                                        (= (:ed @hinter) this))
+                                                                           (object/raise this :hint {:select-single false}))
+                                                                         ))}))))
 
 (cmd/command {:command :auto-complete
               :hidden true
@@ -258,17 +288,6 @@
                           (object/raise ed :hint)
                           (keyboard/passthrough))))})
 
-(comment
-(defui mark [klass]
-  [:span {:class klass}])
-
-(editor/set-options (pool/last-active) {:gutters (array "gitmarks")})
-
-(.setGutterMarker (editor/->cm-ed (pool/last-active)) 30 "gitmarks" (mark "gitmodified"))
-  )
-
-(object/tag-behaviors :editor [::intra-buffer-string-hints ::show-hint ::async-hint-tokens])
-
 ;;*********************************************************
 ;; Mode extensions
 ;;*********************************************************
@@ -276,7 +295,7 @@
 (object/behavior* ::init
                   :triggers #{:init}
                   :reaction (fn [this]
-                              (js/load "node_modules/codemirror/show-hint.js")
-                              (js/CodeMirror.extendMode "clojure" (clj->js {:hint-pattern #"[\w\-\>\:\*\$\?\<\!\+]"}))
-                              (js/CodeMirror.extendMode "css" (clj->js {:hint-pattern #"[\w\.\-\#]"}))
+                              (load/js "core/node_modules/codemirror/show-hint.js" :sync)
+                              (js/CodeMirror.extendMode "clojure" (clj->js {:hint-pattern #"[\w\-\>\:\*\$\?\<\!\+\.]"}))
+                              (js/CodeMirror.extendMode "css-base" (clj->js {:hint-pattern #"[\w\.\-\#]"}))
                               ))

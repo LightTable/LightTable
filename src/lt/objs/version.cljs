@@ -4,8 +4,8 @@
             [lt.objs.opener :as opener]
             [lt.objs.editor.pool :as pool]
             [lt.objs.editor :as editor]
+            [lt.objs.files :as files]
             [lt.objs.tabs :as tabs]
-            [lt.objs.file-manager :as file-man]
             [lt.objs.deploy :as deploy])
   (:require-macros [lt.macros :refer [defui]]))
 
@@ -17,7 +17,7 @@
 (object/behavior* ::on-show-refresh-eds
                   :triggers #{:show}
                   :reaction (fn [this]
-                              (object/raise (-> @this :children :ed) :show)
+                              (object/raise (:ed @this) :refresh)
                               ))
 
 (object/behavior* ::destroy-on-close
@@ -32,12 +32,10 @@
                 :preview ""
                 :init (fn [this]
 
-                        (let [main (pool/create {:type "markdown" :content ""})
-                              main-ed (:ed @main)]
-                          (file-man/open (str deploy/home-path "/changelog.md")
-                                         (fn [{:keys [content type]}]
-                                           (editor/set-val main-ed content)))
-                          (object/parent! this main :ed)
+                        (let [main (pool/create {:type "markdown" :content (-> (files/lt-home "/core/changelog.md")
+                                                                               (files/open-sync)
+                                                                               (:content))})]
+                          (object/merge! this {:ed main})
                           [:div#version-info
                            [:div.info
                             [:dl
@@ -46,7 +44,7 @@
                              ]
                             (check-button)
                             ]
-                           (editor/->elem main-ed)
+                           (editor/->elem main)
                            ]
                           )))
 
@@ -59,5 +57,4 @@
 (cmd/command {:command :version
               :desc "Settings: Light Table version"
               :exec (fn [_]
-                       (add)
-                       )})
+                       (add))})

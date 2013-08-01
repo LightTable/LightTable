@@ -48,6 +48,7 @@
                 :init (fn [this]
                         [:div#bottombar {:class (bound this ->active-class)
                                          :style {:left (bound (subatom tabs/multi :left) ->px)
+                                                 :right (bound (subatom tabs/multi :right) ->px)
                                                  :height (bound (subatom this :height) ->px)}}
                          (horizontal-grip this)
                          [:div.content

@@ -241,7 +241,8 @@
       (dom/html li (transform (aget res 1) (aget res 4) (if-not (empty? search)
 
                                              (js/wrapMatch (aget res 1) (aget res 4))
-                                             (aget res 1))))
+                                             (aget res 1))
+                              (aget res 0)))
       (dom/css li {:display "block"})
       (if (= i cur)
         (dom/add-class li :selected)
@@ -360,7 +361,13 @@
 (defn ->command-class [this]
   (str "command " (if (:active this)
                     "options"
-                    "selector")))
+                    "selector")
+       (when (dom/has-class? (:content this) :active)
+         " active")))
+
+(defn command->display [orig scored highlighted item]
+  (str "<p>" orig "<p>" (when-let [binding (first (keyboard/cmd->bindings (item :command)))]
+                                 (str "<p class='binding'>" (second binding) "</p>"))))
 
 (object/object* ::sidebar.command
                 :tags #{:sidebar.command}
@@ -373,6 +380,7 @@
                                                  (fn [cmds]
                                                    (filter #(not (:hidden %)) (vals cmds))))
                               s2 (filter-list {:items f2
+                                               :transform #(command->display % %2 %3 %4)
                                                :key :desc})]
                           (object/merge! this {:selector s2})
                           (object/add-tags s2 [:command.selector])
@@ -464,8 +472,8 @@
 (command {:command :filter-list.input.escape!
           :hidden true
           :desc "FilterList: escape"
-          :exec (fn []
-                  (object/raise (ctx/->obj :filter-list.input) :escape!)
+          :exec (fn [force?]
+                  (object/raise (ctx/->obj :filter-list.input) :escape! force?)
                   )})
 
 (command {:command :options-input.select!

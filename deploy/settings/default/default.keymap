@@ -38,13 +38,16 @@
              "tab" [(:popup.move-active 1)],
              "enter" [(:popup.exec-active)],
              "right" [(:popup.move-active -1)]}
+     :searcher.search {"enter" [:searcher.search]}
+     :searcher.replace {"enter" [:searcher.replace]}
+     :searcher.location {"enter" [:searcher.search]}
      :find-bar {"shift-enter" [:find.prev],
                 "esc" [:find.clear :find.hide],
                 "enter" [:find.next]}
      :find-bar.vim {"enter" [:find.hide]}
      :browser.url-bar {"enter" [:browser.url-bar.navigate!]},
      :filter-list.input {"down" [(:filter-list.input.move-selection 1)],
-                         "esc" [:filter-list.input.escape!],
+                         "esc" [(:filter-list.input.escape! :force)],
                          "enter" [:filter-list.input.select!],
                          "up" [(:filter-list.input.move-selection -1)]}
      :options-input {"esc" [:options-input.escape!],

@@ -269,7 +269,10 @@
                   :triggers #{:editor.eval.cljs.watch}
                   :reaction (fn [editor res]
                               (when-let [watch (get (:watches @editor) (-> res :meta :id))]
-                                (let [str-result (pr-str (:result res))]
+                                (let [str-result (pr-str (:result res))
+                                      str-result (if (= str-result "#<[object Object]>")
+                                                   (console/util-inspect (:result res) false 1)
+                                                   str-result)]
                                   (object/raise (:inline-result watch) :update! str-result)))))
 
 (object/behavior* ::clj-watch-result
@@ -293,7 +296,6 @@
                                   (do
                                     (notifos/done-working)
                                     (object/merge! this {:connected true})
-                                    (notifos/rem! (:notifier @this))
                                     ;(object/destroy! this)
                                     )
                                   (when-not (:connected @this)
@@ -323,7 +325,6 @@
                                 (notifos/set-msg! "Failed to connect" {:class "error"})
                                 (clients/rem! (clients/by-id (:cid @this))))
                               (proc/kill-all (:procs @this))
-                              (notifos/rem! (:notifier @this))
                               (object/destroy! this)
                               ))
 
@@ -344,8 +345,8 @@
   (str "java -jar " (escape-spaces jar-path) " " tcp/port " \"" path "\" " (clients/->id client) " " name ""))
 
 (defn run-jar [{:keys [path project-path name client]}]
-  (let [n (notifos/working "Connecting..")
-        obj (object/create ::connecting-notifier n (clients/->id client))]
+  (let [obj (object/create ::connecting-notifier n (clients/->id client))]
+    (notifos/working "Connecting..")
     (proc/exec {:command (jar-command project-path name client)
                 :cwd project-path
                 :obj obj})))

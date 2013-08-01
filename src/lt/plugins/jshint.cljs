@@ -1,15 +1,13 @@
 (ns lt.plugins.jshint
   (:require [lt.object :as object]
             [lt.objs.editor :as editor]
-            [lt.objs.editor.pool :as pool]
             [lt.objs.thread :as thread])
   (:require-macros [lt.macros :refer [defui background]]))
 
-(def errors (background (fn [obj-id code]
+(def errors (background (fn [obj-id code opts]
                           (let [jshint (.-JSHINT (js/require (str js/ltpath "/core/node_modules/jshint")))]
-                            (jshint code)
+                            (jshint code (when opts (clj->js opts)))
                             (->> (js->clj (.-errors jshint) :keywordize-keys true)
-                                 (group-by :line)
                                  (raise obj-id :hinted))))))
 
 (defui mark [errors spacing]
@@ -32,7 +30,7 @@
                                                   (let [prev (.getScrollInfo (editor/->cm-ed this))]
                                                     (doseq [hint (:jshint @this)]
                                                       (editor/remove-line-widget this hint))
-                                                    (object/merge! this {:jshint (doall (for [[line es] hints]
+                                                    (object/merge! this {:jshint (doall (for [[line es] (group-by :line (filter identity hints))]
                                                                                           (editor/line-widget this (dec line) (mark es (->spacing (editor/line this (dec line)))))))})
                                                     ;;Ensure scroll position is the same as it was when we started
                                                     (.scrollTo (editor/->cm-ed this) (.-left prev) (.-top prev)))))))
@@ -41,11 +39,14 @@
                   :debounce 750
                   :triggers #{:change}
                   :reaction (fn [this]
-                              ;;(errors this (editor/->val this))
-                              ))
+                              (errors this (editor/->val this) (::jshint-options @this))))
 
 (object/behavior* ::on-save
                   :triggers #{:save}
                   :reaction (fn [this]
-                              ;(errors this (editor/->val this))
-                              ))
+                              (errors this (editor/->val this) (::jshint-options @this))))
+
+(object/behavior* ::jshint-options
+                  :triggers #{:object.instant}
+                  :reaction (fn [this opts]
+                              (object/merge! this {::jshint-options opts})))

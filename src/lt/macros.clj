@@ -36,41 +36,26 @@
        (-> ctx#
            ~@body))))
 
-(defmacro extract [elem kvs]
-  (let [defs (for [[k v] (partition 2 kvs)]
-               `(set! ~k (lt.util.dom/$ ~v ~elem)))]
-  `(do
-     ~@defs)))
+(defmacro extract [elem kvs & body]
+  (let [defs (vec (apply concat (for [[k v] (partition 2 kvs)]
+                                  `[~k (lt.util.dom/$ ~v ~elem)])))]
+    `(let ~defs
+       ~@body)))
+
+(defmacro foreach [xs & body]
+  `(let [xs# ~(second xs)
+         len# (.-length xs#)]
+     (loop [left# 0]
+       (when (< left# len#)
+         (let [~(first xs) (aget xs# left)]
+           ~@body
+           (recur (inc left#)))))))
 
 (defmacro with-time [& body]
   (let [start (gensym "start")
         body (walk/postwalk-replace {'time (list '- '(.getTime (js/Date.)) start)} body)]
   `(let [~start (.getTime (js/Date.))]
      ~@body)))
-
-(macroexpand '(with-time (foo) (println time)))
-
-(defmacro worker [func & r]
-  (let [m (apply hash-map r)]
-    `(lt.objs.workers/worker*
-      (fn []
-        (set! (.-onmessage js/self)
-              (fn [msg#]
-                (let [~'lthome (.-data msg#)]
-                  (js/importScripts (+ "file://" ~'lthome "/core/node_modules/clojurescript/base.js"))
-                  (set! js/window (cljs.core/js-obj))
-                  (set! js/document (cljs.core/js-obj))
-                  (let [~'send (fn [k# v#]
-                                 (.postMessage js/self (cljs.core/js-obj "type" k# "msg" (cljs.core/pr-str v#))))]
-                    (set! (.-onmessage js/self)
-                          (fn [m#]
-                            (let [data# (cljs.reader/read-string (.-data.data m#))]
-                              (~func data#))
-                            ))
-                    nil))))
-        nil)
-      ~m)))
-
 
 (defmacro background [func]
   `(lt.objs.thread/thread*
