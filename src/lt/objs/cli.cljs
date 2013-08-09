@@ -35,14 +35,18 @@
             (object/raise workspace/current-ws :add.file! path))))
       (object/raise opener/opener :new! path))))
 
+(defn args []
+  (or (window/app-fetch (window/window-number) :args)
+      (and (= (window/window-number) 0) (first (app/args)))))
+
 ;;*********************************************************
 ;; Behaviors
 ;;*********************************************************
 
 (object/behavior* ::open-on-args
-                  :triggers #{:init}
+                  :triggers #{:post-init}
                   :reaction (fn [this]
-                              (when (or (window/app-fetch (window/window-number) :args) (and (app/args) (= (window/window-number) 0)))
+                              (when (args)
                                 (let [args-str (or (window/app-extract! (window/window-number) :args)
                                                    (first (app/args)))
                                       args (parse-args (rebuild-argv args-str))

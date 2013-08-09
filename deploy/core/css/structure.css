@@ -193,10 +193,10 @@ body { -webkit-user-select: none; }
 #side .workspace.recents .recent { display:block; width:100%; overflow:hidden; }
 #side .workspace .recent { display:none; }
 #side .workspace.recents { overflow-y:auto; padding:0 5px; }
-#side .workspace .recent > div > ul { position:absolute; top:25px; bottom:0px; left:5px; right:0px; padding-right:10px; overflow-y:auto; }
+#side .workspace .recent > div > ul { position:absolute; top:35px; bottom:0px; left:5px; right:0px; padding-right:10px; overflow-y:auto; margin-top:0;}
 #side .workspace .recent > div > ul > li { padding:10px 10px; display:inline-block; width:100%; box-sizing:border-box; border-radius:2px; }
-#side .workspace .recent > div > ul > li:first-child {border-top-right-radius:2px; border-top-left-radius:2px; }
-#side .workspace .recent > div > ul > li:last-child { border-bottom-right-radius:2px; border-bottom-left-radius:2px;  }
+#side .workspace .recent > div > ul > li:first-child { border:none; border-top-right-radius:2px; border-top-left-radius:2px; }
+#side .workspace .recent > div > ul > li:last-child { border-bottom:none; border-bottom-right-radius:2px; border-bottom-left-radius:2px;  }
 #side .workspace .recent h2 { width:100%;  padding:2px 5px; font-size:10pt;  border-radius:2px; box-sizing:border-box; }
 #side .workspace .recent h2:after { float:right; content: "⇡"; }
 
@@ -212,8 +212,8 @@ body { -webkit-user-select: none; }
 #right-bar .clients {overflow:auto; height:100%; }
 #right-bar .clients .list > h2.add { float:none; display:inline-block; box-sizing:border-box; text-align:left; padding:2px 5px; margin-bottom:15px; }
 #right-bar .clients .list > ul > li { -webkit-user-select:text; overflow:hidden; box-sizing:border-box; padding:10px 10px; margin-bottom:0px; border-radius:0px; }
-#right-bar .clients .list > ul > li:first-child { border-radius:0; }
-#right-bar .clients .list > ul > li:last-child { border-radius:0;  }
+#right-bar .clients .list > ul > li:first-child { border-top-right-radius:2px; border-top-left-radius:2px; }
+#right-bar .clients .list > ul > li:last-child  { border-bottom-right-radius:2px; border-bottom-left-radius:2px;  }
 #right-bar .clients .list > ul:empty:before { content:"Eval in an editor or explicitly add a connection above."; padding:5px; display:block; box-sizing:border-box; margin-top:60px; }
 #right-bar .clients h2 { font-size:12pt; margin-bottom:5px; }
 #right-bar .clients td { vertical-align:top; text-align:left; }
@@ -232,8 +232,8 @@ body { -webkit-user-select: none; }
 #right-bar .clients .list .add { cursor:default; }
 #right-bar .clients .connector ul { margin-top:15px; }
 #right-bar .clients .connector ul li { padding:10px 10px; border-radius:0px; cursor:default; }
-#right-bar .clients .connector ul li:first-child { border-radius:0; }
-#right-bar .clients .connector ul li:last-child { border-radius:0; }
+#right-bar .clients .connector ul li:first-child { border-top-right-radius:2px; border-top-left-radius:2px; }
+#right-bar .clients .connector ul li:last-child { border-bottom-right-radius:2px; border-bottom-left-radius:2px; }
 #right-bar .clients .connector > h2 { cursor:default; }
 #right-bar .clients .connector > h2:after { float:right; content: "⇡"; }
 #right-bar .clients .toggle { padding:2px 5px; font-size:10pt;  border-radius:2px;  }
@@ -244,7 +244,7 @@ body { -webkit-user-select: none; }
 #right-bar .content > * { display:none; }
 #right-bar .content > .active {display:block;}
 
-#bottombar {  z-index:100000; position:fixed; bottom:0; right:0; background:transparent; padding-top:10px; padding-bottom:0px; box-sizing:border-box; }
+#bottombar {  z-index:100000; position:fixed; bottom:0; right:0; background:transparent; padding-top:0px; padding-bottom:0px; box-sizing:border-box; }
 #bottombar .content { padding:10px 10px; padding-right:10px; box-sizing:border-box; height:100%; }
 #bottombar .horizontal-grip {position:absolute; top:0px; width:100%; height:10px; z-index:10000; cursor:row-resize; }
 #bottombar.closed { padding:0; }

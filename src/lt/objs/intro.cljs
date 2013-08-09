@@ -2,6 +2,7 @@
   (:require [lt.object :as object]
             [lt.objs.settings :as settings]
             [lt.objs.deploy :as deploy]
+            [lt.objs.cli :as cli]
             [lt.objs.command :as cmd]
             [lt.objs.app :as app]
             [lt.objs.tabs :as tabs]
@@ -46,7 +47,7 @@
                   :type :user
                   :desc "Open the welcome screen when Light Table starts"
                   :reaction (fn [this]
-                              (when-not (app/args)
+                              (when-not (cli/args)
                                 (let [intro (object/create ::intro)]
                                   (tabs/add! intro)
                                   (tabs/active! intro)))))
@@ -56,4 +57,5 @@
                   :type :user
                   :desc "Open a new file when Light Table starts"
                   :reaction (fn [this]
-                              (cmd/exec! :new-file)))
+                              (when-not (cli/args)
+                                (cmd/exec! :new-file))))
