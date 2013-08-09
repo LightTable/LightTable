@@ -25,8 +25,9 @@
 
 .cm-s-ibdknox span.cm-SUBST { color:#FF1F69; }
 
-.cm-s-ibdknox span.cm-bracket0 { color:#f88; background:#733; }
+.cm-s-ibdknox span.cm-bracket0, .cm-s-ibdknox span.cm-bracket-mismatched { color:#f88; background:#733; }
 
+.cm-s-ibdknox span.cm-bracket1 {color: #999;}
 .cm-s-ibdknox span.cm-bracket2 {color: #0f0;}
 .cm-s-ibdknox span.cm-bracket3 {color: #00ffff;}
 .cm-s-ibdknox span.cm-bracket4 {color: #00bfff;}

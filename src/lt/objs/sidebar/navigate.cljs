@@ -26,7 +26,6 @@
     (vec (filter #(files/file? (:full %)) (remove #(-> % :rel file-filters) (concat files fs))))))
 
 (def populate-bg (background (fn [obj-id {:keys [ws pattern]}]
-                               (time
                                (let [fs (js/require "fs")
                                      fpath (js/require "path")
                                      walkdir (js/require (str js/ltpath "/core/node_modules/lighttable/background/walkdir2.js"))
@@ -44,18 +43,18 @@
                                                     (when (and x (not= x "") (not= x "\n"))
                                                       (.log js/console (js/clojure.string.trim x)))))
                                  (js/_send obj-id :workspace-files final)
-                                 )))))
+                                 ))))
 
 (object/behavior* ::workspace-files
                   :triggers #{:workspace-files}
                   :reaction (fn [this files]
-                              (object/merge! this {:files (time (cljs-util/js->clj files :keywordize-keys true))})
+                              (object/merge! this {:files (cljs-util/js->clj files :keywordize-keys true)})
                               (object/raise (:filter-list @this) :refresh!)
                               ))
 
 (object/behavior* ::populate-on-ws-update
                   :triggers #{:updated :refresh}
-                  :debounce 500
+                  :debounce 150
                   :reaction (fn [ws]
                               (populate-bg sidebar-navigate {:pattern (.-source files/ignore-pattern)
                                                              :ws (workspace/serialize @ws)})))

@@ -47,8 +47,9 @@
   (some #(:dirty (deref %)) (object/by-tag :editor)))
 
 (defn by-path [path]
-  (let [path (string/lower-case path)]
-    (filter #(= (-> @% :info :path string/lower-case) path) (object/by-tag :editor))))
+  (when path
+    (let [path (string/lower-case path)]
+      (filter #(= (-> @% :info (:path "") string/lower-case) path) (object/by-tag :editor)))))
 
 (defn containing-path [path]
   (let [path (string/lower-case path)]
@@ -420,7 +421,7 @@
 (cmd/command {:command :toggle-wrap
               :desc "Editor: Toggle line wrapping for current"
               :exec (fn []
-                      (let [ed (pool/last-active)
+                      (let [ed (last-active)
                             v (not (editor/option ed :lineWrapping))]
                         (editor/set-options ed {:lineWrapping v}))
                       )})

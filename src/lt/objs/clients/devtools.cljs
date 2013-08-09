@@ -75,7 +75,25 @@
       (do
         [:span.log-val (if (= (:type p) "object")
                          (object/->content (object/create ::inspector-object local {:value p}))
-                         (:value p))]))))
+                         (:value p (:text p)))]))))
+
+(defn msg->string [m]
+  (let [params (:parameters m)]
+    (reduce (fn [res p]
+              (str res " " (:value p)))
+            ""
+            params)))
+
+(defn error->string [e]
+  (str
+   "ERROR: "(:text e) ": " (:url e) "\n"
+   (reduce (fn [res f]
+             (str res "       " (files/basename (:url f)) " [" (:lineNumber f) "]: " (if (empty? (:functionName f))
+                                                                             "anonymous"
+                                                                             (:functionName f))
+                  "\n"))
+           ""
+           (:stackTrace e))))
 
 (defui frame [f]
   [:tr [:td.url (files/basename (:url f)) " [" (:lineNumber f) "]"] [:td (if (empty? (:functionName f))
@@ -98,7 +116,7 @@
                           (for [f (:stackTrace msg)]
                             (frame f)
                             )]]
-                        "error")
+                        "error" (error->string msg))
       )))
 
 (defmethod handle-log-msg "log" [msg]
@@ -106,14 +124,13 @@
         stack (if-not stack
                 (first (-> msg :stackTrace))
                 stack)]
-    (console/loc-log (files/basename (:url stack)) (:lineNumber stack) (msg->log msg))))
+    (console/loc-log (files/basename (:url stack)) (:lineNumber stack) (msg->log msg) nil (msg->string msg))))
+
+(defmethod handle-log-msg "warning" [msg]
+  (console/loc-log (files/basename (:url msg)) (:line msg) (:text msg) "warning" (:text msg)))
 
 (defmethod handle-log-msg :default [msg]
-  (let [stack (first (filter #(not= (files/basename (:url %)) "bootstrap.js") (-> msg :stackTrace)))
-        stack (if-not stack
-                (first (-> msg :stackTrace))
-                stack)]
-    (console/loc-log (files/basename (:url stack)) (:lineNumber stack) (msg->log msg))))
+  (console/loc-log (files/basename (:url msg)) (:line msg) (:text msg) nil (:text msg)))
 
 (defn extra-escape [code]
   (-> code

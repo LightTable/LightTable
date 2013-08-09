@@ -1,6 +1,8 @@
 (ns lt.objs.thread
   (:require [lt.object :as object]
             [lt.objs.files :as files]
+            [lt.objs.platform :as platform]
+            [lt.objs.console :as console]
             [cljs.reader :as reader])
   (:require-macros [lt.macros :refer [thread]]))
 
@@ -48,11 +50,16 @@
                   :reaction (fn [this]
                               (.kill (:worker @this))))
 
+(defn node-exe []
+  (if (platform/win?)
+    "/plugins/node/node.exe"
+    "/plugins/node/node"))
+
 (object/object* ::worker-thread
                 :tags #{:worker-thread}
                 :queue []
                 :init (fn [this]
-                        (let [worker (.fork cp (files/lt-home "/core/node_modules/lighttable/background/threadworker.js") (clj->js ["--harmony"]) (clj->js {:execPath (files/lt-home "/plugins/node/node")}))]
+                        (let [worker (.fork cp (files/lt-home "/core/node_modules/lighttable/background/threadworker.js") (clj->js ["--harmony"]) (clj->js {:execPath (files/lt-home (node-exe)) :silent false}))]
                           (.on worker "message" (fn [m] (object/raise this :message m)))
                           (.send worker (clj->js {:msg "init"
                                                   :obj (object/->id this)

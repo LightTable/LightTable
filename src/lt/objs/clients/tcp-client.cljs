@@ -178,10 +178,10 @@
   (send client {:command :evaluate :arguments {:expression code :global true}}))
 
 (defn grab-require [client]
-  (global-eval client "global.require = global.process.mainModule.require; global.ltclient = global.process.mainModule.exports;"))
+  (global-eval client "global.require = global.process.mainModule.require; global.lttools = global.process.mainModule.exports;"))
 
 (defn load-tools [client]
-  (global-eval client (str "global.ltclient.connect('" (-> @client :path) "'," tcp/port "," (clients/->id client) ");")))
+  (global-eval client (str "global.lttools.connect('" (-> @client :path) "'," tcp/port "," (clients/->id client) ");")))
 
 (defn init [this]
   (grab-require this)
@@ -193,7 +193,7 @@
   src)
 
 (defn handle-message [client msg]
-  (global-eval client (str "global.ltclient.handle(" (.stringify js/JSON msg) ")")))
+  (global-eval client (str "global.lttools.handle(" (.stringify js/JSON msg) ")")))
 
 (object/behavior* ::send!
                   :triggers #{:send!}

@@ -42,11 +42,18 @@
                          ]))
 
 (object/behavior* ::show-intro
-                  :triggers #{:init}
+                  :triggers #{:post-init}
+                  :type :user
+                  :desc "Open the welcome screen when Light Table starts"
                   :reaction (fn [this]
                               (when-not (app/args)
                                 (let [intro (object/create ::intro)]
                                   (tabs/add! intro)
                                   (tabs/active! intro)))))
 
-(object/add-behavior! app/app ::show-intro)
+(object/behavior* ::show-new-file
+                  :triggers #{:post-init}
+                  :type :user
+                  :desc "Open a new file when Light Table starts"
+                  :reaction (fn [this]
+                              (cmd/exec! :new-file)))

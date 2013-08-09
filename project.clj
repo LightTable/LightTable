@@ -5,7 +5,7 @@
                  ;:exclusions [org.clojure/clojurescript]]
                  [crate "0.2.4"]
                  [fetch "0.1.1" :exclusions [org.clojure/clojure]]
-                 [core.async "0.1.0-SNAPSHOT"]
+                 ;[core.async "0.1.0-SNAPSHOT"]
                  [org.clojure/clojurescript "0.0-1843"
                   :exclusions [org.apache.ant/ant]]
                  ]

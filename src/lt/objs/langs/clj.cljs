@@ -86,7 +86,9 @@
                   :reaction (fn [editor]
                               (object/raise clj-lang :eval! {:origin editor
                                                              :info (assoc (@editor :info)
-                                                                     :code (ed/->val (:ed @editor)))})
+                                                                     :code (watches/watched-range editor nil nil (if (object/has-tag? editor :editor.cljs)
+                                                                                 cljs-watch
+                                                                                 clj-watch)))})
                              ))
 
 (object/behavior* ::on-eval.one
@@ -166,8 +168,7 @@
                                              )]
                                 (object/raise obj :editor.result result {:line (dec (:end-line meta))
                                                                          :start-line (dec (:line meta))
-                                                                         :ch (:end-column meta)}
-                                              {:prefix " => "}))))
+                                                                         :ch (:end-column meta)}))))
 
 (object/behavior* ::clj-result
                   :triggers #{:editor.eval.clj.result}
@@ -182,7 +183,7 @@
                                 (if (:stack result)
                                   (object/raise obj :editor.eval.clj.exception result)
                                   (do
-                                    (object/raise obj :editor.result (:result result) loc {:prefix " => "}))))
+                                    (object/raise obj :editor.result (:result result) loc))))
                               ))
 
 (object/behavior* ::clj-exception

@@ -174,7 +174,7 @@
                   :reaction (fn [editor]
                               (object/raise python :eval! {:origin editor
                                                              :info (assoc (@editor :info)
-                                                                     :code (ed/->val (:ed @editor)))})))
+                                                                     :code (watches/watched-range editor nil nil python-watch))})))
 
 (object/behavior* ::on-eval.one
                   :triggers #{:eval.one}

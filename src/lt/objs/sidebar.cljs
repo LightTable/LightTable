@@ -91,12 +91,10 @@
                 :transients '()
                 :max-width default-width
                 :init (fn [this]
-                        [:div#side
-                         [:div.content-wrapper {:style {:width (bound (subatom this :width) ->width)}}
+                        [:div#side {:style {:width (bound (subatom this :width) ->width)}}
                           [:div.content
                            (bound (subatom this :active) active-content)]
-                          (vertical-grip this)]
-                          ]))
+                          (vertical-grip this)]))
 
 (object/object* ::right-bar
                 :items {}

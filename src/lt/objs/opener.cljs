@@ -42,7 +42,7 @@
 
 (object/behavior* ::open-transient-editor
                   :triggers #{:new!}
-                  :reaction (fn [this path]
+                  :reaction (fn [this path dirty?]
                               (let [last (pool/last-active)
                                     type (if last
                                            (-> last deref :info :type)
@@ -50,7 +50,7 @@
                                     info (merge {:name "untitled" :type type} (path->info path))
                                     ed (pool/create info)]
                                 (object/add-tags ed [:editor.transient])
-                                (object/merge! ed {:dirty true})
+                                (object/merge! ed {:dirty dirty?})
                                 (object/raise this :open ed)
                                 (tabs/add! ed)
                                 (tabs/active! ed))))
@@ -74,7 +74,7 @@
                                     prev-tags (-> @this :info :tags)]
                                 (object/update! this [:info] merge (path->info path))
                                 (object/merge! this {:dirty true})
-                                (editor/set-mode this mode)
+                                (editor/set-mode this (files/path->mode path))
                                 (object/remove-tags this (conj prev-tags :editor.transient))
                                 (object/add-tags this (conj (:tags type) :editor.file-backed))
                                 (object/raise this :save-as)
@@ -118,8 +118,8 @@
 
 (cmd/command {:command :new-file
               :desc "File: New file"
-              :exec (fn []
-                      (object/raise opener :new!))})
+              :exec (fn [dirty?]
+                      (object/raise opener :new! nil dirty?))})
 
 (cmd/command {:command :open-file
               :desc "File: Open file"

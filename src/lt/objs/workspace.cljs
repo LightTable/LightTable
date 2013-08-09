@@ -110,7 +110,6 @@
 
 (defn all []
   (let [fs (sort > (cached))]
-    (println fs)
     ;;if there are more than 20, delete the extras
     (doseq [file (drop 20 fs)]
       (files/delete! file))

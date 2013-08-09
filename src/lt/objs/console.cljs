@@ -1,5 +1,6 @@
 (ns lt.objs.console
   (:require [lt.object :as object]
+            [lt.objs.window :as window]
             [lt.objs.bottombar :as bottombar]
             [lt.objs.sidebar.command :as cmd]
             [lt.objs.statusbar :as statusbar]
@@ -12,6 +13,7 @@
 
 (def console-limit 50)
 (def util-inspect (.-inspect (js/require "util")))
+(def core-log (.. (js/require "fs") (createWriteStream (str "logs/window" (window/window-number) ".log"))))
 
 (.on js/process "uncaughtException" #(error %))
 
@@ -51,15 +53,20 @@
     (statusbar/dirty))
   (append $console msg))
 
-(defn verbatim [thing class]
+(defn verbatim [thing class str-version]
   (let [$console (->ui console)]
+    (when str-version
+      (.write core-log str-version))
     (when class
       (statusbar/console-class class))
     (write $console (->item thing class))
     (dom/scroll-top $console 10000000000)
     nil))
 
-(defn loc-log [file line content & [class]]
+(defn loc-log [file line content class str-version]
+  (when (or (string? content) str-version) (.write core-log (str file "[" line "]: " (if (string? content)
+                                                                      content
+                                                                      str-version) "\n")))
   (verbatim [:table
              [:tr
               [:td.loc
@@ -69,18 +76,21 @@
               [:td [:pre content]]]]
             class))
 
-(defn log [l & [class]]
+(defn log [l class str-version]
   (when-not (= "" l)
     (let [$console (->ui console)]
+      (when (or (string? l) str-version) (.write core-log (if (string? l)
+                                                            l
+                                                            str-version))
       (write $console (->item [:pre l] class))
       (dom/scroll-top $console 10000000000)
-      nil)))
+      nil))))
 
 (defn error [e]
   (statusbar/console-class "error")
   (log (str (if (.-stack e)
               (.-stack e)
-              e))
+              (str e)))
        "error"))
 
 (defn clear []
@@ -129,4 +139,3 @@
                       (doseq [o (object/by-tag :clients.devtools)]
                         (object/raise o :clear!))
                       (clear))})
-

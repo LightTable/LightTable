@@ -13,7 +13,7 @@
    :lt.objs.workspace/store-last-workspace
    :lt.objs.clients.devtools/clean-inspectors-timer
    :lt.objs.editor.pool/init-tab-settings
-   :lt.objs.style/load-theme-on-init :lt.objs.app/pre-init-args
+   :lt.objs.app/pre-init-args
    :lt.objs.deploy/check-deploy :lt.objs.editor.pool/stop-close-dirty
    :lt.objs.clients/close-clients-on-closed
    :lt.objs.app/restore-position-on-init
@@ -38,6 +38,7 @@
    :lt.objs.clients.devtools/connect-on-init
    :lt.objs.tabs/init
    :lt.objs.find/init
+   :lt.objs.intro/show-intro
    (:lt.objs.keyboard/chord-timeout 1000)
    :lt.objs.editor/init-codemirror},
  :behaviors.editor #{:lt.objs.settings2/on-close-remove}
@@ -295,9 +296,11 @@
  :python.lang
  #{:lt.objs.langs.python/eval! :lt.objs.langs.python/connect},
  :searcher
- #{:lt.objs.search/search! :lt.objs.search/on-result
+ #{:lt.objs.search/on-error
    :lt.objs.search/on-data :lt.objs.search/clear!
    :lt.objs.search/on-end
+   :lt.objs.search/search!
+   :lt.objs.search/on-result
    :lt.objs.search/on-close},
  :sidebar
  #{:lt.objs.sidebar/item-toggled
@@ -310,6 +313,7 @@
  :sidebar.clients
  #{:lt.objs.sidebar.clients/unset-client
    :lt.objs.sidebar.clients/selecting!
+   :lt.objs.sidebar.clients/focus!
    :lt.objs.sidebar.clients/done-selecting},
  :sidebar.command
  #{:lt.objs.sidebar.command/refresh! :lt.objs.sidebar.command/focus!

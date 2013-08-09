@@ -4,13 +4,20 @@
                                       "0" "^"
                                       "-" "$"
                                       "<Space>" "<PageDown>"
-                                      "<BS>" "<PageUp>"})]
+                                      "<BS>" "<PageUp>"})
+           :lt.objs.intro/show-new-file]
      :files [(:lt.objs.files/file-types [{:name "Wisp" :exts [:wisp] :mime "text/x-clojurescript" :tags [:editor.wisp]}])]
      :editor [:lt.plugins.vim/activate-vim
               :lt.plugins.auto-complete/auto-show-on-input
               (:lt.objs.style/set-theme "ibdknox")]
+     :editor.clj [:lt.plugins.rainbow-parens/rainbow-parens]
+     :editor.clj.instarepl [:lt.plugins.rainbow-parens/rainbow-parens]
+     :editor.cljs [:lt.plugins.rainbow-parens/rainbow-parens]
+     :editor.behaviors [:lt.plugins.rainbow-parens/rainbow-parens]
+     :editor.keymap [:lt.plugins.rainbow-parens/rainbow-parens]
      :editor.javascript [(:lt.plugins.jshint/jshint-options {:maxparams false})
                          :lt.plugins.jshint/on-save]
      :editor.python [(:lt.objs.style/set-theme "tomorrow-night")]
      :editor.markdown [:lt.objs.editor/wrap]
-     :editor.plaintext [:lt.objs.editor/wrap]}}
+     :editor.plaintext [:lt.objs.editor/wrap]}
+ :- {:app [:lt.objs.intro/show-intro]}}

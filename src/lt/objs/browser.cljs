@@ -3,6 +3,7 @@
             [lt.objs.tabs :as tabs]
             [lt.objs.command :as cmd]
             [lt.objs.console :as console]
+            [lt.objs.files :as files]
             [lt.objs.eval :as eval]
             [lt.objs.clients :as clients]
             [lt.objs.sidebar.clients :as scl]

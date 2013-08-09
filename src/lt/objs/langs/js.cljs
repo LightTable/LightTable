@@ -87,7 +87,7 @@
                   :reaction (fn [editor]
                               (object/raise js-lang :eval! {:origin editor
                                                              :info (assoc (@editor :info)
-                                                                     :code (ed/->val editor))})))
+                                                                     :code (watches/watched-range editor nil nil src->watch))})))
 
 (object/behavior* ::on-eval.one
                   :triggers #{:eval.one}
@@ -136,7 +136,9 @@
                   :triggers #{:editor.eval.js.watch}
                   :reaction (fn [editor res]
                               (when-let [watch (get (:watches @editor) (-> res :meta :id))]
-                                (let [str-result (inspect (:result res) 0)]
+                                (let [str-result (if (-> res :meta :no-inspect)
+                                                   (:result res)
+                                                   (inspect (:result res) 0))]
                                   (object/raise (:inline-result watch) :update! str-result)
                                   )
                                 )))

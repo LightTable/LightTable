@@ -10,6 +10,7 @@
 (def gui (js/require "nw.gui"))
 (def me (.Window.get gui))
 
+
 (when-not (.-ltstore me)
   (set! (.-ltstore me) (atom {})))
 

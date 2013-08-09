@@ -8,7 +8,7 @@
     <link type="text/css" rel="stylesheet" href="css/codemirror.css"></link>
     <link type="text/css" rel="stylesheet" href="css/structure.css"></link>
     <style>
-      body { background: #202020; color:#ccc; }
+      html, body { background: #202020; color:#ccc; height:100vh; width:100vw;}
       #loader { position:absolute; top:0; left:0; right:0; bottom:0; width:100vw; height:100vh; display:table; text-align:center; box-sizing:border-box; vertical-align:middle;}
       #loader p { display:table-cell; vertical-align:middle; text-align:center; }
     </style>
@@ -25,11 +25,34 @@
     <script src="node_modules/lighttable/util/throttle.js" type="text/javascript"> </script>
     <script type="text/javascript">
       var win = require("nw.gui").Window.get();
+      if(localStorage.width) {
+        win.resizeTo(parseInt(localStorage.width), parseInt(localStorage.height));
+        win.moveTo(parseInt(localStorage.x), parseInt(localStorage.y));
+      }
       win.show();
-    </script>
-    <script src="node_modules/lighttable/bootstrap.js" type="text/javascript"> </script>
-    <script type="text/javascript">
-      lt.objs.app.init();
+
+      //replace stdout so that we create a log file
+      process.__defineGetter__('stdout', function() {
+        if (process.__stdout) return process.__stdout;
+        process.__stdout = require('fs').createWriteStream('logs/core.log');
+        return process.__stdout;
+      });
+
+      //give it a little bit to paint before loading.
+      setTimeout(function() {
+       var script = document.createElement("script");
+       script.type = "text/javascript";
+       script.async = false;
+       script.src= "node_modules/lighttable/bootstrap.js";
+       document.body.appendChild(script);
+       script.onload = function() {
+         try {
+           lt.objs.app.init();
+         } catch (e) {
+           console.error(e);
+         }
+       }
+      }, 40);
     </script>
   </body>
 </html>

@@ -175,6 +175,7 @@
   (when-not (empty? prev-theme)
     (dom/remove-class (dom/$ :#multi) prev-theme))
   (set! prev-theme name)
+  (dom/add-class (dom/$ :#multi) name)
   (when-not (dom/$ (str "#theme-" name))
     (dom/append (dom/$ :head) (stylesheet name))))
 
@@ -186,12 +187,6 @@
                   :triggers #{:select}
                   :reaction (fn [this sel]
                               (cmd/exec-active! (:item sel))))
-
-(object/behavior* ::load-theme-on-init
-                  :triggers #{:init}
-                  :reaction (fn [app]
-                              (when-let [theme (settings/fetch :theme)]
-                                (load-theme theme))))
 
 (object/behavior* ::set-theme
                   :triggers #{:object.instant :show}

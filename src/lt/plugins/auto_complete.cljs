@@ -123,7 +123,7 @@
 (def default-pattern #"[\w_$]")
 
 (defn get-pattern [ed]
-  (let [mode (editor/->mode ed)]
+  (let [mode (editor/inner-mode ed)]
     (or (aget mode "hint-pattern") default-pattern)))
 
 (defn async-hints [this]

@@ -133,6 +133,9 @@
 (defn ->token [e pos]
   (js->clj (.getTokenAt (->cm-ed e) (clj->js pos)) :keywordize-keys true))
 
+(defn ->token-js [e pos]
+  (.getTokenAt (->cm-ed e) (clj->js pos)))
+
 (defn ->coords [e]
   (js->clj (.cursorCoords (->cm-ed e)) :keywordize-keys true :force-obj true))
 
@@ -337,7 +340,9 @@
   e)
 
 (defn inner-mode [e state]
-  (js/CodeMirror.innerMode (.getMode (->cm-ed e)) state))
+  (let [state (or state (->> (cursor e) (->token-js e) (.-state)))]
+    (-> (js/CodeMirror.innerMode (.getMode (->cm-ed e)) state)
+        (.-mode))))
 
 (defn adjust-loc [loc dir]
   (update-in loc [:ch] + dir))
@@ -533,6 +538,7 @@
                               (load/js "core/node_modules/codemirror/matchbracket.js" :sync)
                               (load/js "core/node_modules/codemirror/comment.js" :sync)
                               (load/js "core/node_modules/codemirror/active-line.js" :sync)
+                              (load/js "core/node_modules/codemirror/overlay.js" :sync)
                               (doseq [mode (files/ls "core/node_modules/codemirror/modes")
                                       :when (= (files/ext mode) "js")]
                                 (load/js (str "core/node_modules/codemirror/modes/" mode) :sync))

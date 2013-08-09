@@ -71,9 +71,7 @@
       (.on (.-server ws) "listening" #(do
                                  (set! port (.-port (.address (.-server ws))))
                                  ))
-      (.add (aget ws "static") "/lighttable/ws.js" (clj->js {:file (if (files/exists? (files/lt-home "js/ws.js"))
-                                                                     (files/lt-home "js/ws.js")
-                                                                     "deploy/js/ws.js")}))
+      (.add (aget ws "static") "/lighttable/ws.js" (clj->js {:file (files/lt-home "core/node_modules/lighttable/ws.js")}))
       ;(js/eval "global.ws.static.add(\"/lighttable/ws.js\",{\"file\":\"deploy/js/ws.js\"});")
       (.on (.-sockets ws) "connection" on-connect))
     ;;TODO: warn the user that they're not connected to anything

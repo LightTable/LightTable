@@ -52,7 +52,6 @@
 (defui op-input [this]
   [:input.option {:type "text" :placeholder (bound this :placeholder) :value (bound this ->value)}]
   :focus (fn [e]
-           (println "in options")
            (ctx/in! :options-input this)
            (object/raise this :active))
   :blur (fn [e]
@@ -131,7 +130,6 @@
 (object/behavior* ::options-escape!
                   :triggers #{:escape!}
                   :reaction (fn [this]
-                              (println "escaping")
                               (object/raise sidebar-command :cancel!)))
 
 (object/behavior* ::set-on-select
@@ -302,8 +300,9 @@
 (object/behavior* ::post-select-pop
                   :triggers #{:selected-exec}
                   :reaction (fn [this]
-                              (object/raise sidebar/rightbar :close!)
-                              (exec! :focus-last-editor)))
+                              (when (= this (:active @sidebar/rightbar))
+                                (object/raise sidebar/rightbar :close!)
+                                (exec! :focus-last-editor))))
 
 (object/behavior* ::exec-command
                   :triggers #{:exec!}
@@ -487,6 +486,5 @@
           :hidden true
           :desc "OptionsInput: escape"
           :exec (fn []
-                  (println "trying to escape")
                   (object/raise (ctx/->obj :options-input) :escape!)
                   )})

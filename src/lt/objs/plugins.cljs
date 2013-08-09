@@ -3,6 +3,7 @@
             [lt.objs.app :as app]
             [lt.objs.files :as files]
             [lt.objs.deploy :as deploy]
+            [lt.util.load :as load]
             [lt.util.dom :as dom])
   (:require-macros [lt.macros :refer [defui]]))
 
@@ -23,7 +24,7 @@
 
 (defn plugin-json [dir]
   (when-let [content (files/open-sync (files/join dir "plugin.json"))]
-    (-> (.parse js/JSON (:content content)) 
+    (-> (.parse js/JSON (:content content))
         (js->clj :keywordize-keys true)
         (assoc :dir dir))))
 
@@ -51,7 +52,23 @@
                   :triggers #{:init}
                   :reaction (fn [app]
                               (doseq [p (available-plugins)]
-                                (load-plugin p))
-                              ))
+                                (load-plugin p))))
+
+(object/behavior* ::load-js
+                  :triggers #{:object.instant}
+                  :desc "Load a javascript file"
+                  :params {"path" "The path of the file to load"
+                           "sync?" "Whether to load the JS synchronously"}
+                  :type :user
+                  :reaction (fn [this path sync?]
+                              (load/js path sync?)))
+
+(object/behavior* ::load-css
+                  :triggers #{:object.instant}
+                  :desc "Load a css file"
+                  :params {"path" "The pad of the css file to load"}
+                  :type :user
+                  :reaction (fn [this path]
+                              (load/css path)))
 
 (object/add-behavior! app/app ::init-plugins)

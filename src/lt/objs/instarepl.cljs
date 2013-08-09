@@ -12,7 +12,6 @@
             [lt.objs.sidebar.command :as cmd]
             [crate.binding :refer [bound subatom]]
             [crate.core :as crate]
-
             [cljs.reader :as reader])
   (:require-macros [lt.macros :refer [defui]]))
 
@@ -104,6 +103,7 @@
                   :triggers #{:show}
                   :reaction (fn [this]
                               (object/raise (:main @this) :show)
+                              (object/raise (:main @this) :refresh!)
                               (editor/focus (:main @this))
                               ))
 
@@ -117,137 +117,39 @@
 (def default-content ";; Anything you type in here will be executed
 ;; immediately with the results shown on the
 ;; right.
-
 ")
 
-(defui ->result [r]
-  [:span.usage.result r]
-  )
+(defn clean-ex [x]
+  (.replace x (js/RegExp. "^.*user/eval[\\s\\S]*" "gmi") ""))
 
-(defui ->ex [msg stack]
-  [:span.usage.exception
-   [:span.stack stack]])
+(defn ->type|val [r vs]
+  (cond
+   (= (:root r) "result") ["result" (-> r :cur last)]
+   (= (:root r) "ex") ["exception" (-> r :cur last clean-ex)]
+   :else ["use" (get vs (:root r))]))
 
-(defui ->usage [sym u]
-  [:span.usage u])
-
-
-(object/behavior* ::expand-on-click
-                  :triggers #{:click :expand!}
-                  :reaction (fn [this]
-                              (object/merge! this {:open true})
-                              (object/raise this :changed)))
-
-(object/behavior* ::shrink-on-double-click
-                  :triggers #{:double-click :shrink!}
-                  :reaction (fn [this]
-                              (object/merge! this {:open false})
-                              (object/raise this :changed)
-                              (ed/focus (:ed @this))))
-
-(object/behavior* ::soft-clear
-                  :triggers #{:soft-clear!}
-                  :reaction (fn [this]
-                              (object/merge! this {:active false :group nil :vs nil})))
-
-(object/behavior* ::clear-mark
-                  :triggers #{:clear!}
-                  :reaction (fn [this]
-                              (js/CodeMirror.off (:lineh @this) "change" (:listener @this))
-                              (js/CodeMirror.off (:lineh @this) "delete" (:delete @this))
-                              (.clear (:mark @this))
-                              (object/destroy! this)))
-
-(object/behavior* ::changed
-                  :triggers #{:changed}
-                  :reaction (fn [this]
-                              ;(.changed (:mark @this))
-                              ))
-
-(def new-line-change ["" ""])
-(object/behavior* ::move-mark
-                  :triggers #{:move!}
-                  :reaction (fn [this ch]
-                                (let [orig (:mark @this)
-                                      loc (.find orig)
-                                      cur-line (editor/lh->line (:ed @this) (:lineh @this))]
-                                  (if (or (not loc)
-                                          (not= (.-line loc) cur-line)
-                                          (empty? (.-text (:lineh @this))))
-                                    (object/raise this :clear!)
-                                    (when (and (not= new-line-change (seq (.-text ch)))
-                                               (>= (.-to.ch ch) (.-ch (.find orig))))
-                                      (object/merge! this {:mark (editor/bookmark (editor/->cm-ed (:ed @this))
-                                                                                  {:line cur-line}
-                                                                                  {:widget (object/->content this)
-                                                                                   :insertLeft false})})
-                                      (when orig
-                                        (.clear orig)))))))
-
-(defui ->group [this]
-  (let [{:keys [group vs]} @this]
-    [:span
-     (for [{:keys [cur root]} group]
-       (condp = root
-         "result" (->result (nth cur 2))
-         "ex" (->ex (nth cur 2) (nth cur 3))
-         (->usage (nth cur 2) (vs root))))]))
-
-(defn ->group-class [this]
-  (str "result-group "
-       (if (:active this)
-         ""
-         "inactive")))
-
-(defui use-group [this]
-  [:span {:class (bound this ->group-class)}
-   (bound this (partial ->group this))])
-
-(object/object* ::inline-result-group
-                :tags #{:inline :inline.result-group}
-                :active true
-                :init (fn [this info]
-                        (let [content (use-group this)
-                              delete (fn [cm]
-                                       (object/raise this :clear!))
-                              listener (fn [line change]
-                                         (object/raise this :move! change))]
-                          (js/CodeMirror.on (:lineh info) "change" listener)
-                          (js/CodeMirror.on (:lineh info) "delete" delete)
-                          (object/merge! this (assoc info
-                                                :listener listener
-                                                :delete delete
-                                                :mark (editor/bookmark (editor/->cm-ed (:ed info))
-                                                                   {:line (:line info)}
-                                                                   {:widget content
-                                                                    :insertLeft false})))
-                          content)))
-
-(object/tag-behaviors :inline.result-group [::clear-mark ::shrink-on-double-click ::expand-on-click ::move-mark ::soft-clear ::changed])
-
-(defn update-use-group! [this ed group vs]
-  (let [line (-> group first :cur first dec)
-        lineh (editor/line-handle ed line)
-        main (-> @this :main)]
-    (if-let [ug (-> @main :widgets (get lineh))]
-      (object/merge! ug {:group group :vs vs :active true})
-      (object/update! main [:widgets] assoc lineh (object/create ::inline-result-group {:ed ed :line line :lineh lineh :group group :vs vs})))))
+(defn inline [this res opts]
+  (object/create :lt.objs.eval/inline-result {:ed this
+                                              :class (name (:type opts :inline))
+                                              :opts opts
+                                              :trunc-length 100
+                                              :result res
+                                              :loc opts
+                                              :line (editor/line-handle this (:line opts))}))
 
 (defn update-res [this results]
-  ;(reset! cur-error nil)
-  (let [main (-> @this :main deref :ed)
+  (let [main (-> @this :main)
         vs (-> results :vals reader/read-string)
         repls (-> results :uses)
-        used-lines (into #{} (map #(-> % :cur first dec) repls))
         out (:out results)]
-    ;;TODO: where do we get "Version"
-    (doseq [[lh v] (-> @this :main deref :widgets)]
-      (if-not @v
-        (object/update! (-> @this :main) [:widgets] dissoc lh)
-        (when-not (used-lines (editor/lh->line main lh))
-          (object/raise v :soft-clear!))))
-    (doseq [group (partition-by #(-> % :cur first) repls)]
-      (update-use-group! this main group vs))))
+    (editor/operation (:main @this)
+                      (fn []
+                        (doseq [w (-> @main ::widgets)]
+                          (object/raise w :clear!))
+                        (object/merge! main {::widgets (doall (for [r repls
+                                                                    :let [[type val] (->type|val r vs)]]
+                                                                (inline main val {:type type
+                                                                                  :line (-> r :cur first dec)})))})))))
 
 (defui live-toggle [this]
        [:span {:class (bound this #(str "livetoggler " (when-not (:live %) "off")))} "live"]
@@ -263,7 +165,7 @@
                 :live true
                 :init (fn [this]
                         (let [main (-> (pool/create {:type "clj" :content default-content :ns "user"})
-                                       (object/remove-tags [:editor.inline-result :editor.clj])
+                                       (object/remove-tags [:editor.clj])
                                        (object/add-tags [:editor.clj.instarepl :editor.transient]))]
                           (object/parent! this main)
                           (object/merge! this {:main main})
@@ -275,8 +177,6 @@
                            [:p.error (bound this :error)]
                            ]
                         )))
-
-(object/tag-behaviors :editor.clj.instarepl  [::set-parent-title ::dirty-parent ::close-parent ::on-eval-sonar ::no-op ::eval-on-change ::on-eval-one :lt.objs.editor.find/find-in-editor])
 
 (defn add []
   (let [instarepl (object/create ::instarepl)]

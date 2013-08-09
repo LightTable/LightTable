@@ -17,7 +17,6 @@
                   :triggers #{:eval
                               :eval.one}
                   :reaction (fn [editor]
-                              (println "here")
                               (let [info {}
                                     meta {:start {:line (-> (ed/->cursor editor "start") :line)}
                                           :end {:line (-> (ed/->cursor editor "end") :line)}}

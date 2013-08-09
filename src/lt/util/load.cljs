@@ -6,10 +6,10 @@
 (def pwd (.resolve fpath "."))
 
 (defn node-module [path]
-  (js/require (str "./node_modules/" path)))
+  (js/require (str pwd "/core/node_modules/" path)))
 
 (defn- prep [code file]
-  (str code "\n\n//@ sourceURL=" file))
+  (str code "\n\n//# sourceURL=" file))
 
 (defn js
   ([file] (js file false))

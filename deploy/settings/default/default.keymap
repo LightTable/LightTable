@@ -38,6 +38,7 @@
              "tab" [(:popup.move-active 1)],
              "enter" [(:popup.exec-active)],
              "right" [(:popup.move-active -1)]}
+     :sidebar.clients {"esc" [:hide-connect]}
      :searcher.search {"enter" [:searcher.search]}
      :searcher.replace {"enter" [:searcher.replace]}
      :searcher.location {"enter" [:searcher.search]}

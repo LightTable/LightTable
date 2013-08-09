@@ -106,4 +106,5 @@
 (object/behavior* ::set-menu
                   :triggers #{:focus :init}
                   :reaction (fn [this]
+                              (println "setting the menu")
                               (set! (.-menu window/me) menubar)))

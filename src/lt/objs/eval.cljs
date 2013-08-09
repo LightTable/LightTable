@@ -66,7 +66,7 @@
 
 (let [ev-id (atom 0)]
   (defn append-source-file [code file]
-    (str code "\n\n//@ sourceURL=" (or file "evalresult") "[eval" (swap! ev-id inc) "]")))
+    (str code "\n\n//# sourceURL=" (or file "evalresult") "[eval" (swap! ev-id inc) "]")))
 
 (defn pad [code lines]
   (str (reduce str (repeat lines "\n"))
@@ -74,6 +74,7 @@
 
 (defn cljs-result-format [n]
   (cond
+   (coll? n) (pr-str n)
    (fn? n) (str "(fn " (.-name n) " ..)")
    (nil? n) "nil"
    (= (pr-str n) "#<[object Object]>") (console/inspect n)
@@ -160,15 +161,19 @@
          " open"
          )))
 
-(defn truncate-result [r]
+(defn truncate-result [r opts]
   (when (string? r)
-    (if (> (count r) 50)
-      (subs r 0 50)
-      r)))
+    (let [nl (.indexOf r "\n")
+          len (if (> nl -1)
+                nl
+                (:trunc-length opts 50))]
+    (if (> (count r) len)
+      (subs r 0 len)
+      r))))
 
 (defui ->inline-res [this info]
   (let [r (:result info)
-        truncated (truncate-result r)]
+        truncated (truncate-result r info)]
     [:span {:class (bound this #(->result-class % truncated))}
      (when truncated
        [:span.truncated truncated])
@@ -241,6 +246,7 @@
 (object/behavior* ::move-mark
                   :triggers #{:move!}
                   :reaction (fn [this ch]
+                              (println "moving")
                                 (let [orig (:mark @this)
                                       loc (.find orig)
                                       cur-line (ed/lh->line (:ed @this) (:line @this))]

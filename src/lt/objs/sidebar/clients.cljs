@@ -3,10 +3,12 @@
             [lt.objs.clients :as clients]
             [lt.objs.sidebar :as sidebar]
             [lt.objs.command :as cmd]
+            [lt.objs.context :as ctx]
             [lt.objs.clients.tcp :as tcp]
             [lt.objs.clients.ws :as ws]
             [lt.objs.popup :as popup]
             [lt.objs.editor.pool :as pool]
+            [lt.util.dom :as dom]
             [crate.binding :refer [bound map-bound subatom]])
   (:require-macros [lt.macros :refer [defui]]))
 
@@ -61,7 +63,9 @@
   (str "clients "
        (if (:selecting? clients)
          "selecting"
-         "")))
+         "")
+       (when (dom/has-class? (:content clients) :active)
+         " active")))
 
 (defui client-item [clients i]
   (let [i @i]
@@ -77,6 +81,24 @@
   :click (fn []
            ((:connect i))
            (object/raise this :selected)))
+
+(defui connect-ui [this]
+  [:div {:class (bound this connector?)
+         :tabindex -1}
+   [:div.list
+    (add-button this)
+    [:ul
+     (map-bound (partial client-item this) clients/cs)]]
+   [:div.connector
+    (choose-cancel this)
+    [:ul
+     (bound (subatom this [:connectors]) (partial connectors this))
+     ]]]
+  :focus (fn []
+           (ctx/in! :sidebar.clients this))
+  :blur (fn []
+          (ctx/out! :sidebar.clients this))
+  )
 
 (object/behavior* ::track-active-client
                   :triggers #{:active :set-client}
@@ -104,8 +126,10 @@
                   :reaction (fn [this]
                               (object/merge! this {:selecting? false})))
 
-(object/tag-behaviors :editor [::track-active-client])
-(object/tag-behaviors :sidebar.clients [::unset-client ::selecting! ::done-selecting])
+(object/behavior* ::focus!
+                  :triggers #{:focus!}
+                  :reaction (fn [this]
+                              (dom/focus (object/->content this))))
 
 (defn connectors [this connectors]
   (for [[k c] connectors]
@@ -118,21 +142,12 @@
                 :connectors (sorted-map)
                 :order 2
                 :init (fn [this]
-                        [:div {:class (bound this connector?)}
-                         [:div.list
-                          (add-button this)
-                          [:ul
-                           (map-bound (partial client-item this) clients/cs)]]
-                         [:div.connector
-                          (choose-cancel this)
-                          [:ul
-                           (bound (subatom this [:connectors]) (partial connectors this))
-                           ]]]
+                        (connect-ui this)
                         ))
 
 (def clients (object/create ::sidebar.clients))
 
-(sidebar/add-item sidebar/sidebar clients)
+(sidebar/add-item sidebar/rightbar clients)
 
 (defn add-connector [c]
   (object/update! clients [:connectors] assoc (:name c) c))
@@ -140,15 +155,22 @@
 (cmd/command {:command :show-connect
               :desc "Connect: Show connect bar"
               :exec (fn []
-                      (object/raise sidebar/sidebar :toggle clients {:force? true
+                      (object/raise sidebar/rightbar :toggle clients {:force? true
                                                                      :transient? false})
+                      (object/raise clients :focus!)
                       )})
 
+
+(cmd/command {:command :hide-connect
+              :desc "Connect: hide connect bar"
+              :exec (fn []
+                      (object/raise sidebar/rightbar :close!)
+                      )})
 
 (cmd/command {:command :show-add-connection
               :desc "Connect: Add Connection"
               :exec (fn []
-                      (object/raise sidebar/sidebar :toggle clients {:force? true
+                      (object/raise sidebar/rightbar :toggle clients {:force? true
                                                                      :transient? false})
                       (object/raise clients :selecting!)
                       )})
