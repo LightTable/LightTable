@@ -22,3 +22,14 @@
 
 (defn ->clj [data]
   (js->clj data :keywordize-keys true))
+
+(def entities {"&" "&amp;"
+               "<" "&lt;"
+               ">" "&gt;"
+               "\"" "&quot;"
+               "'" "&#39;"
+               "/" "&#x2F;"})
+
+(defn escape [str]
+  (.replace str (js/RegExp. "[&<>\"'/]" "g") (fn [s]
+                                               (entities s))))

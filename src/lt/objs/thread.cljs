@@ -36,8 +36,8 @@
 (object/behavior* ::message
                   :triggers #{:message}
                   :reaction (fn [this m]
-                              (when-let [id (.-obj m)]
-                                (object/raise (object/by-id id)
+                              (when-let [obj (object/by-id (.-obj m))]
+                                (object/raise obj
                                               (if-not (keyword? (.-msg m))
                                                 (keyword (.-msg m))
                                                 (.-msg m))
@@ -59,7 +59,9 @@
                 :tags #{:worker-thread}
                 :queue []
                 :init (fn [this]
-                        (let [worker (.fork cp (files/lt-home "/core/node_modules/lighttable/background/threadworker.js") (clj->js ["--harmony"]) (clj->js {:execPath (files/lt-home (node-exe)) :silent false}))]
+                        (let [worker (.fork cp (files/lt-home "/core/node_modules/lighttable/background/threadworker.js") (clj->js ["--harmony"]) (clj->js {:execPath (files/lt-home (node-exe)) :silent true}))]
+                          (.on (.-stdout worker) "data" (fn [data]
+                                                          (console/loc-log "thread" "stdout" (str data))))
                           (.on worker "message" (fn [m] (object/raise this :message m)))
                           (.send worker (clj->js {:msg "init"
                                                   :obj (object/->id this)

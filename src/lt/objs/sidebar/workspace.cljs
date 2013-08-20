@@ -122,7 +122,24 @@
                   :reaction (fn [ws]
                               (let [{:keys [folders files]} @ws]
                                 (object/merge! tree {:files (mapv root-file files)
-                                                     :folders (mapv root-folder folders)}))))
+                                                     :folders (mapv root-folder folders)
+                                                     :open-dirs #{}}))))
+
+(object/behavior* ::track-and-watch-open-dirs
+                  :triggers #{:open!}
+                  :reaction (fn [this]
+                              (workspace/watch! (:path @this))
+                              (object/update! tree [:open-dirs] conj (:path @this))))
+
+(object/behavior* ::untrack-closed-dirs
+                  :triggers #{:close!}
+                  :reaction (fn [this]
+                              (object/update! tree [:open-dirs] disj (:path @this))))
+
+(object/behavior* ::watch-open-dirs-paths
+                  :triggers #{:watch-paths+}
+                  :reaction (fn [this cur]
+                              (concat cur (:open-dirs @tree))))
 
 (defn find-by-path [path]
   (first (filter #(= (:path @%) path) (object/by-tag :tree-item))))
@@ -405,6 +422,7 @@
 (object/object* ::workspace.root
                 :tags #{:workspace.root}
                 :root? true
+                :open-dirs #{}
                 :files []
                 :folders []
                 :open? true

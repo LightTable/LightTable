@@ -10,8 +10,7 @@
             [lt.objs.opener :as opener]))
 
 (defn rebuild-argv [argstr]
-  (-> (string/replace argstr "<s>" " ")
-      (string/replace "<d>" "-")
+  (-> (subs argstr (.indexOf argstr "--dir"))
       (string/split " ")
       (to-array)))
 

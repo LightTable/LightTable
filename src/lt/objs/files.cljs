@@ -20,9 +20,9 @@
 (object/behavior* ::file-types
                   :triggers #{:object.instant}
                   :type :user
-                  :desc "Editor: Associate file types"
+                  :desc "Files: Associate file types"
                   :reaction (fn [this types]
-                              (object/merge! this (typelist->index @this types))))
+                              (object/merge! files-obj (typelist->index @files-obj types))))
 
 (def files-obj (object/create (object/object* ::files
                                               :tags [:files]
@@ -32,7 +32,7 @@
 (def line-ending (.-EOL os))
 (def separator (.-sep fpath))
 (def available-drives #{})
-(def ignore-pattern #"(^\..*)|\.class$|target/|svn|cvs|\.git|\.pyc|~|\.swp|\.jar")
+(def ignore-pattern #"(^\..*)|\.class$|target/|svn|cvs|\.git|\.pyc|~|\.swp|\.jar|.DS_Store")
 (def pwd (.resolve fpath "."))
 
 (when (= separator "\\")

@@ -50,8 +50,11 @@
                    (fn [res cur]
                      (if (aget (:seen res) (->behavior-name cur))
                        res
-                       (do
-                         (when (:exclusive (->behavior cur))
+                       (let [beh (->behavior cur)]
+                         (when (:exclusive beh)
+                           (when (coll? (:exclusive beh))
+                             (doseq [exclude (:exclusive beh)]
+                               (aset (:seen res) exclude true)))
                            (aset (:seen res) (->behavior-name cur) true))
                          (conj! (:final res) cur)
                          res)))
@@ -159,7 +162,7 @@
   (let [reactions (-> @obj :listeners k)]
     (reduce (fn [res cur]
               (let [func (:reaction (->behavior cur))
-                    args (if (coll? r)
+                    args (if (coll? cur)
                            (concat (rest cur) args)
                            args)]
                 (if-not func

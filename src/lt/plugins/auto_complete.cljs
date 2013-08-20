@@ -124,19 +124,29 @@
 
 (defn get-pattern [ed]
   (let [mode (editor/inner-mode ed)]
-    (or (aget mode "hint-pattern") default-pattern)))
+    (or (:hint-pattern @ed) (aget mode "hint-pattern") default-pattern)))
 
 (defn async-hints [this]
   (w this {:string (editor/->val this)
            :pattern (.-source (get-pattern this))}))
 
-(def hinter (scmd/filter-list {:items (fn []
+(defn text|completion [x]
+  (:text x (:completion x)))
+
+(def hinter (-> (scmd/filter-list {:items (fn []
                                         (when-let [cur (pool/last-active)]
                                           (if (:starting-token @hinter)
-                                            (remove #(= (-> @hinter :starting-token :string) (-> % :completion))
-                                                    (::hints @cur))
-                                            (::hints @cur))))
-                               :key :completion}))
+                                            (remove #(= (-> @hinter :starting-token :string) (:completion %))
+                                                    (object/raise-reduce cur :hints+ []))
+                                            (object/raise-reduce cur :hints+ []))))
+                               :key text|completion})
+                (object/add-tags [:hinter])))
+
+
+(object/behavior* ::textual-hints
+                  :triggers #{:hints+}
+                  :reaction (fn [this hints]
+                              (concat hints (::hints @this))))
 
 (object/behavior* ::escape!
                   :triggers #{:escape!}
@@ -160,14 +170,17 @@
 (object/behavior* ::select
                   :triggers #{:select}
                   :reaction (fn [this c]
-                              (let [token (:token @this)]
-                                (editor/replace (:ed @this)
-                                                {:line (:line token)
-                                                 :ch (:start token)}
-                                                {:line (:line token)
-                                                 :ch (:end token)}
-                                                (:completion c)))
-                                (object/raise this :escape!)))
+                              (println "selecting")
+                              (let [token (:token @this)
+                                    start {:line (:line token)
+                                           :ch (:start token)}
+                                    end {:line (:line token)
+                                         :ch (:end token)}]
+                                (object/merge! this {:active false})
+                                (if (:select c)
+                                  ((:select c) (partial editor/replace (:ed @this) start end))
+                                  (editor/replace (:ed @this) start end (:completion c)))
+                                (object/raise this :escape!))))
 
 (object/behavior* ::select-unknown
                   :triggers #{:select-unknown}
@@ -192,8 +205,6 @@
 
 (defn on-line-change [line ch]
   (object/raise hinter :line-change line ch))
-
-(object/add-tags hinter [:hinter])
 
 (object/behavior* ::async-hint-tokens
                   :triggers #{:hint-tokens}
@@ -240,7 +251,8 @@
                                 (cond
                                  (and (:active @hinter)
                                       (= (:ed @hinter) this)) (object/raise hinter :select!)
-                                 (empty? cur) (keyboard/passthrough)
+                                 (and (empty? cur)
+                                      (not (:force? opts))) (keyboard/passthrough)
                                  (:active @hinter) (do (object/raise hinter :escape!) (start-hinting this))
                                  :else (start-hinting this opts)))))
 
@@ -268,7 +280,7 @@
 (object/behavior* ::auto-show-on-input
                   :triggers #{:input}
                   :type :user
-                  :desc ""
+                  :desc "Auto-complete: Show on change"
                   :reaction (fn [this _ ch]
                               (when-let [t (::timeout @this)]
                                 (js/clearTimeout t))
@@ -281,12 +293,19 @@
 
 (cmd/command {:command :auto-complete
               :hidden true
-              :desc "Auto complete"
+              :desc "Editor: Auto complete"
               :exec (fn []
                       (let [ed (pool/last-active)]
                         (if-not (editor/selection? ed)
                           (object/raise ed :hint)
                           (keyboard/passthrough))))})
+
+(cmd/command {:command :auto-complete.force
+              :hidden true
+              :desc "Editor: Force auto complete"
+              :exec (fn []
+                      (let [ed (pool/last-active)]
+                        (object/raise ed :hint {:force? true})))})
 
 ;;*********************************************************
 ;; Mode extensions

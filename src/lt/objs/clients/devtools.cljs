@@ -73,9 +73,10 @@
   (let [params (:parameters m)]
     (for [p params]
       (do
-        [:span.log-val (if (= (:type p) "object")
-                         (object/->content (object/create ::inspector-object local {:value p}))
-                         (:value p (:text p)))]))))
+        [:span.log-val (cond
+                        (and (= (:type p) "object") (not (-> p :value :value))) "null"
+                        (= (:type p) "object") (object/->content (object/create ::inspector-object local {:value p}))
+                        :else (:value p (:text p)))]))))
 
 (defn msg->string [m]
   (let [params (:parameters m)]
@@ -278,7 +279,8 @@
      :else -1))))
 
 (defn ->name [obj]
-  (let [n (or (-> obj :name) (-> obj :value :description) (:description obj))]
+  (println obj)
+  (let [n (or (-> obj :name) (-> obj :value :description) (:description obj) "UnknownObject")]
     (cond
      (> (.indexOf n "e.fn.e.init") -1) (str "jQuery" (subs n 11))
      :else n)))
@@ -321,7 +323,8 @@
 
 (defn clear-unused-inspectors []
   (doseq [obj (object/by-tag :inspector.object)
-          :when (not (dom/parents (object/->content obj) :body))]
+          :when (or (not (object/->content obj))
+                    (not (dom/parents (object/->content obj) :body)))]
     (object/destroy! obj)))
 
 (object/behavior* ::clean-inspectors-timer

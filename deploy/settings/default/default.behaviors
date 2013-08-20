@@ -4,6 +4,7 @@
  #{:lt.objs.clients.local/startup-with-local-client
    :lt.objs.settings2/load-behaviors
    :lt.objs.settings2/load-keys
+   :lt.objs.settings2/create-user-settings
    :lt.objs.proc/set-path-OSX
    :lt.objs.workspace/reconstitute-last-workspace
    :lt.objs.sidebar.command/init-commands
@@ -28,6 +29,7 @@
    :lt.objs.style/style-on-init
    :lt.objs.app/initial-focus
    :lt.objs.app/close!
+   :lt.objs.menu/remove-menu-close
    :lt.objs.app/refresh
    :lt.objs.app/ready!
    :lt.objs.app/on-show-bind-navigate
@@ -41,13 +43,21 @@
    :lt.objs.intro/show-intro
    (:lt.objs.keyboard/chord-timeout 1000)
    :lt.objs.editor/init-codemirror},
- :behaviors.editor #{:lt.objs.settings2/on-close-remove}
  :browser
  #{:lt.objs.browser/forward! :lt.objs.browser/init!
    :lt.objs.browser/destroy-on-close :lt.objs.browser/focus!
+   :lt.objs.browser/url-focus!
+   :lt.objs.browser/focus-on-show
    :lt.objs.browser/set-client-name :lt.objs.browser/rem-client
    :lt.objs.browser/store-history :lt.objs.browser/refresh!
    :lt.objs.browser/set-active :lt.objs.browser/navigate!
+   :lt.objs.browser/active-context
+   :lt.objs.browser/inactive-context
+   :lt.objs.browser/window-load-click-handler
+   :lt.objs.browser/window-load-key-handler
+   :lt.objs.browser/window-load-lttools
+   :lt.objs.browser/menu!
+   :lt.objs.browser/menu+
    :lt.objs.browser/back!},
  :client
  #{:lt.objs.clients/on-connect-drain :lt.objs.clients/queue!
@@ -91,6 +101,7 @@
    :lt.objs.editor/highlight-current-line
    :lt.objs.sidebar.clients/track-active-client
    :lt.plugins.auto-complete/intra-buffer-string-hints
+   :lt.plugins.auto-complete/textual-hints
    :lt.plugins.auto-paren/close-pair :lt.objs.editor.pool/track-active
    :lt.objs.editor.pool/ed-close :lt.objs.editor/menu!
    :lt.objs.editor.pool/warn-on-active :lt.objs.editor/refresh!
@@ -99,12 +110,33 @@
    :lt.objs.editor/copy-paste-menu+
    :lt.plugins.auto-paren/try-remove-pair
    :lt.plugins.auto-paren/open-pair
-   :lt.plugins.auto-complete/show-hint},
+   :lt.plugins.auto-complete/show-hint
+   :lt.objs.opener/untrack-closed
+   :lt.objs.opener/unwatch-closed
+   (:lt.objs.editor/tab-settings false 2 2)},
  :editor.active #{:lt.objs.statusbar/report-cursor-location},
  :editor.behaviors #{:lt.objs.settings2/on-behaviors-editor-save
-                     :lt.objs.settings2/eval-settings}
+                     :lt.objs.settings2/eval-settings
+                     :lt.objs.langs.behaviors/behavior-hints
+                     :lt.objs.langs.behaviors/show-info-on-move
+                     :lt.objs.langs.behaviors/on-changed
+                     :lt.objs.langs.behaviors/parsed
+                     :lt.objs.langs.behaviors/behavior-hint-pattern
+                     :lt.plugins.auto-complete/auto-show-on-input
+                     }
+ :editor.behaviors.helper #{:lt.objs.langs.behaviors/helper.show!}
+ :editor.behaviors.workspace #{:lt.objs.settings2/workspace-save
+                               :lt.objs.editor.file/dirty-on-change}
  :editor.keymap #{:lt.objs.settings2/on-keymap-editor-save
-                  :lt.objs.settings2/eval-settings}
+                  :lt.objs.settings2/eval-settings
+                  :lt.objs.langs.keymap/keymap-hints
+                  :lt.objs.langs.keymap/show-info-on-move
+                  :lt.objs.langs.keymap/on-changed
+                  :lt.objs.langs.keymap/parsed
+                  :lt.objs.langs.keymap/keymap-hint-pattern
+                  :lt.plugins.auto-complete/auto-show-on-input
+                  }
+ :editor.keymap.helper #{:lt.objs.langs.keymap/helper.show!}
  :editor.clj
  #{:lt.objs.langs.clj/eval-print :lt.objs.langs.clj/on-result-set-ns
    :lt.objs.langs.clj/no-op :lt.objs.langs.clj/clj-exception
@@ -139,11 +171,7 @@
  #{:lt.plugins.auto-complete/remove-on-move-line
    :lt.plugins.auto-complete/remove-on-scroll-inactive},
  :editor.html
- #{:lt.objs.langs.html/eval-on-save :lt.objs.langs.html/on-eval},
- :editor.htmlembedded
- #{:lt.objs.langs.html/eval-on-save :lt.objs.langs.html/on-eval},
- :editor.htmlmixed
- #{:lt.objs.langs.html/eval-on-save :lt.objs.langs.html/on-eval},
+ #{:lt.objs.langs.html/eval-on-save :lt.objs.langs.html/on-eval (:lt.objs.editor/tab-settings false 4 4)},
  :editor.inline-result
  #{:lt.objs.eval/underline-results :lt.objs.eval/inline-results
    :lt.objs.eval/inline-exceptions},
@@ -167,7 +195,8 @@
    :lt.objs.langs.python/python-printer
    :lt.objs.langs.python/python-watch
    :lt.objs.langs.python/python-image
-   [:lt.object/add-tag :watchable]},
+   [:lt.object/add-tag :watchable]
+   (:lt.objs.editor/tab-settings false 4 4)},
  :editor.structural #{:lt.plugins.struct/rem-on-close},
  :editor.transient
  #{:lt.objs.editor.file/dirty-on-change :lt.objs.opener/transient-save
@@ -233,6 +262,7 @@
  :find-bar
  #{:lt.objs.find/show! :lt.objs.find/clear! :lt.objs.find/next!
    :lt.objs.find/focus! :lt.objs.find/hide! :lt.objs.find/prev!
+   :lt.objs.find/replace!
    :lt.objs.find/search!},
  :frame.client
  #{:lt.objs.browser/html-eval :lt.objs.browser/cljs-exec
@@ -263,15 +293,11 @@
  #{:lt.objs.eval/result-menu! :lt.objs.eval/ex-clear},
  :inline.watch #{:lt.plugins.watches/clear!}
  :inspector.object #{:lt.objs.clients.devtools/clear-inspector-object},
- :keybinding
- #{:lt.objs.keybinding/capture! :lt.objs.keybinding/show-mappings
-   :lt.objs.keybinding/add-binding!
-   :lt.objs.keybinding/destroy-on-close},
  :navigate.selector
  #{:lt.objs.sidebar.navigate/escape!
    :lt.objs.sidebar.navigate/pop-transient-on-select
    :lt.objs.sidebar.navigate/open-on-select},
- :navigator #{:lt.objs.sidebar.navigate/focus! :lt.objs.sidebar.navigate/workspace-files},
+ :navigator #{:lt.objs.sidebar.navigate/focus! :lt.objs.sidebar.navigate/focus-on-show :lt.objs.sidebar.navigate/workspace-files},
  :nodejs.client
  #{:lt.objs.clients.tcp-client/init-debugger!
    :lt.objs.clients.tcp-client/start-debugger!
@@ -287,7 +313,10 @@
  :object #{:lt.objs.clients/on-destroy-remove-cb},
  :opener
  #{:lt.objs.opener/open-from-info :lt.objs.opener/open-transient-editor
-   :lt.objs.opener/open-standard-editor},
+   :lt.objs.opener/open-standard-editor
+   :lt.objs.opener/track-open-files
+   :lt.objs.opener/watch-on-open
+   },
  :options-input
  #{:lt.objs.sidebar.command/op-select!
    :lt.objs.sidebar.command/options-escape!
@@ -300,7 +329,9 @@
    :lt.objs.search/on-data :lt.objs.search/clear!
    :lt.objs.search/on-end
    :lt.objs.search/search!
+   :lt.objs.search/done-searching
    :lt.objs.search/on-result
+   :lt.objs.search/focus
    :lt.objs.search/on-close},
  :sidebar
  #{:lt.objs.sidebar/item-toggled
@@ -314,6 +345,7 @@
  #{:lt.objs.sidebar.clients/unset-client
    :lt.objs.sidebar.clients/selecting!
    :lt.objs.sidebar.clients/focus!
+   :lt.objs.sidebar.clients/hide-on-select
    :lt.objs.sidebar.clients/done-selecting},
  :sidebar.command
  #{:lt.objs.sidebar.command/refresh! :lt.objs.sidebar.command/focus!
@@ -321,7 +353,7 @@
    :lt.objs.sidebar.command/post-select-pop
    :lt.objs.sidebar.command/soft-focus!
    :lt.objs.sidebar.command/cancel!
-   :lt.objs.keybinding/show-keybinding-after-command
+   :lt.objs.sidebar.command/focus-on-show
    :lt.objs.sidebar.command/exec-command},
  :sidebar.workspace
  #{:lt.objs.sidebar.workspace/sidebar-menu
@@ -352,6 +384,8 @@
    :lt.objs.sidebar.workspace/start-rename
    :lt.objs.sidebar.workspace/rename-cancel
    :lt.objs.sidebar.workspace/rename-blur},
+ :version #{:lt.objs.version/destroy-on-close
+            :lt.objs.version/on-show-refresh-eds}
  :watchable #{:lt.plugins.watches/watch!
               :lt.plugins.watches/unwatch!
               :lt.plugins.watches/eval-on-watch-or-unwatch}
@@ -360,7 +394,9 @@
    :lt.objs.workspace/stop-watch-on-blur
    :lt.objs.window/track-focus
    :lt.objs.workspace/watch-workspace
-   :lt.objs.menu/set-menu},
+   :lt.objs.menu/set-menu
+   :lt.objs.menu/remove-menu-close
+   },
  :worker-thread [:lt.objs.thread/kill! :lt.objs.thread/send! :lt.objs.thread/queue! :lt.objs.thread/connect :lt.objs.thread/try-send :lt.objs.thread/message]
  :workspace
  #{:lt.objs.sidebar.workspace/on-ws-set
@@ -378,6 +414,8 @@
    :lt.objs.sidebar.workspace/watched.create
    :lt.objs.editor.pool/watched.update
    :lt.objs.settings2/grab-workspace-behaviors
+   :lt.objs.opener/watch-open-files
+   :lt.objs.sidebar.workspace/watch-open-dirs-paths
    :lt.objs.workspace/remove-folder!},
  :workspace.file
  #{:lt.objs.sidebar.workspace/on-open-file
@@ -397,6 +435,8 @@
    :lt.objs.sidebar.workspace/refresh
    :lt.objs.sidebar.workspace/on-menu
    :lt.objs.sidebar.workspace/force-delete-folder
+   :lt.objs.sidebar.workspace/track-and-watch-open-dirs
+   :lt.objs.sidebar.workspace/untrack-closed-dirs
    :lt.objs.sidebar.workspace/new-file!},
  :workspace.folder.root
  #{:lt.objs.sidebar.workspace/on-root-menu

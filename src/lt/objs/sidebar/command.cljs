@@ -115,17 +115,17 @@
 (object/behavior* ::change!
                   :triggers #{:change!}
                   :reaction (fn [this v]
-                              (when-not (= (:search @this) v)
-                                (object/merge! this {:selected 0
-                                                     :search v})
-                                (object/raise this :refresh!))))
+                              (let [v (object/raise-reduce this :change+ v)]
+                                (when-not (= (:search @this) v)
+                                  (object/merge! this {:selected 0
+                                                       :search v})
+                                  (object/raise this :refresh!)))))
 
 (object/behavior* ::escape!
                   :triggers #{:escape!}
                   :reaction (fn [this]
                               (object/raise this :inactive)
-                              (exec! :close-sidebar)
-                              (exec! :focus-last-editor)))
+                              (exec! :close-sidebar)))
 
 (object/behavior* ::options-escape!
                   :triggers #{:escape!}
@@ -233,7 +233,7 @@
                             cnt))
         transform (if transform
                     transform
-                    identity)]
+                    #(do %3))]
     (doseq [[i li res] (map vector (range) lis results)
             :when res]
       (dom/html li (transform (aget res 1) (aget res 4) (if-not (empty? search)
@@ -301,8 +301,7 @@
                   :triggers #{:selected-exec}
                   :reaction (fn [this]
                               (when (= this (:active @sidebar/rightbar))
-                                (object/raise sidebar/rightbar :close!)
-                                (exec! :focus-last-editor))))
+                                (object/raise sidebar/rightbar :close!))))
 
 (object/behavior* ::exec-command
                   :triggers #{:exec!}
@@ -321,6 +320,11 @@
                                 (apply (:exec cmd) args)
                                 (object/raise this :selected-exec cmd)
                                 (object/merge! this {:active nil}))))
+
+(object/behavior* ::focus-on-show
+                  :triggers #{:show}
+                  :reaction (fn [this]
+                              (object/raise this :focus!)))
 
 (object/behavior* ::focus!
                   :triggers #{:focus!}
@@ -364,9 +368,16 @@
        (when (dom/has-class? (:content this) :active)
          " active")))
 
+(defn ->binding [[k v]]
+  (str v (when (> (.indexOf k "emacs") -1)
+           " (Emacs)")
+       (when (> (.indexOf k "vim") -1)
+         " (Vim)")
+       ))
+
 (defn command->display [orig scored highlighted item]
-  (str "<p>" orig "<p>" (when-let [binding (first (keyboard/cmd->bindings (item :command)))]
-                                 (str "<p class='binding'>" (second binding) "</p>"))))
+  (str "<p>" highlighted "<p>" (when-let [binding (seq (keyboard/cmd->bindings (item :command)))]
+                                 (str "<p class='binding'>" (string/join " | " (map ->binding (reverse binding))) "</p>"))))
 
 (object/object* ::sidebar.command
                 :tags #{:sidebar.command}
@@ -411,15 +422,14 @@
 (def command cmd/command)
 
 (defn show-and-focus [opts]
-  (object/raise sidebar/rightbar :toggle sidebar-command opts)
-  (object/raise sidebar-command :focus!))
+  (object/raise sidebar/rightbar :toggle sidebar-command opts))
 
 (defn pre-fill [v]
   (dom/val (dom/$ :.search (object/->content sidebar-command)) v))
 
 (defn show-filled [fill opts]
   (pre-fill fill)
-  (object/raise sidebar/sidebar :toggle sidebar-command (assoc opts :soft? true))
+  (object/raise sidebar/rightbar :toggle sidebar-command (assoc opts :soft? true))
   (object/raise sidebar-command :soft-focus!))
 
 (def by-id cmd/by-id)

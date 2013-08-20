@@ -86,6 +86,7 @@
                   :reaction (fn [editor]
                               (object/raise clj-lang :eval! {:origin editor
                                                              :info (assoc (@editor :info)
+                                                                     :print-length (object/raise-reduce editor :clojure.print-length+ nil)
                                                                      :code (watches/watched-range editor nil nil (if (object/has-tag? editor :editor.cljs)
                                                                                  cljs-watch
                                                                                  clj-watch)))})
@@ -104,7 +105,8 @@
                                              :code (ed/selection editor)
                                              :meta {:start (-> (ed/->cursor editor "start") :line)
                                                     :end (-> (ed/->cursor editor "end") :line)})
-                                           (assoc info :pos pos :code code))]
+                                           (assoc info :pos pos :code code))
+                                    info (assoc info :print-length (object/raise-reduce editor :clojure.print-length+ nil))]
                                 (object/raise clj-lang :eval! {:origin editor
                                                                :info info}))))
 
@@ -233,10 +235,26 @@
                               (notifos/done-working)
                               (notifos/set-msg! "Canceled clj eval." {:class "error"})))
 
+(object/behavior* ::print-length
+                  :triggers #{:clojure.print-length+}
+                  :desc "Clojure: Set the print length for eval (doesn't affect CLJS)"
+                  :type :user
+                  :exclusive true
+                  :reaction (fn [this res len]
+                              len))
+
 (object/object* :langs.clj
                 :tags #{:clojure.lang})
 
 (def clj-lang (object/create :langs.clj))
+
+(object/behavior* ::java-exe
+                  :triggers #{:object.instant}
+                  :desc "Clojure: set the path to the Java executable for clients"
+                  :type :user
+                  :exclusive true
+                  :reaction (fn [this path]
+                              (object/merge! clj-lang {:java-exe path})))
 
 
 (object/behavior* ::connect
@@ -249,11 +267,6 @@
                     :desc "Select a project.clj to connect to for either Clojure or ClojureScript."
                     :connect (fn []
                                (dialogs/file clj-lang :connect))})
-
-(object/tag-behaviors :clients [::handle-cancellation])
-(object/tag-behaviors :clojure.lang [::eval! ::connect])
-(object/tag-behaviors :editor.clj #{::eval-location ::no-op ::eval-print ::eval-print-err ::clj-exception ::on-eval ::on-eval.one ::on-result-set-ns ::clj-result})
-(object/tag-behaviors :editor.cljs #{::eval-location ::no-op ::exec.cljs! ::on-eval ::on-eval.one ::on-code ::cljs-exception ::on-result-set-ns ::on-remote-result})
 
 ;;****************************************************
 ;; watches
@@ -343,7 +356,7 @@
 
 (defn jar-command [path name client]
   ;(println (.which shell "java"))
-  (str "java -jar " (escape-spaces jar-path) " " tcp/port " \"" path "\" " (clients/->id client) " " name ""))
+  (str (or (:java-exe @clj-lang) "java") " -jar " (escape-spaces jar-path) " " tcp/port " \"" path "\" " (clients/->id client) " " name ""))
 
 (defn run-jar [{:keys [path project-path name client]}]
   (let [obj (object/create ::connecting-notifier n (clients/->id client))]
@@ -359,7 +372,8 @@
 
 (defn check-java [obj]
   ;(println (.sync which "java"))
-  (assoc obj :java (or (aget js/process.env "JAVA_HOME")
+  (assoc obj :java (or (:java-exe @clj-lang)
+                       (aget js/process.env "JAVA_HOME")
                        (.which shell "java"))))
 
 (defn check-ltjar [obj]

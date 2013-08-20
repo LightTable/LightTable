@@ -62,7 +62,8 @@
                   :reaction (fn [this]
                               (object/merge! tabs/multi {(:side @this) 0})
                               (object/merge! this {:width 0
-                                                   :open false})))
+                                                   :open false})
+                              (cmd/exec! :tabs.focus-active)))
 
 (object/behavior* ::item-toggled
                   :triggers #{:toggle}
@@ -74,7 +75,9 @@
                                   (when (:active @this)
                                     (dom/remove-class (object/->content (:active @this)) :active))
                                   (object/merge! this {:active item})
-                                  (object/raise this :open!)))))
+                                  (object/raise this :open!)
+                                  (when-not soft?
+                                    (object/raise (:active @this) :show))))))
 
 (defn active-content [active]
   (when active

@@ -5,9 +5,14 @@
             [lt.objs.tabs :as tabs]
             [lt.objs.files :as files]
             [lt.objs.notifos :as notifos]
+            [lt.objs.editor :as editor]
+            [lt.objs.editor.pool :as pool2]
             [lt.objs.workspace :as workspace]
             [clojure.string :as string]
-            [cljs.reader :as reader]))
+            [lt.objs.sidebar.command :as scmd]
+            [lt.util.dom :as dom]
+            [cljs.reader :as reader])
+  (:require-macros [lt.macros :refer [defui]]))
 
 (declare behaviors-editor)
 
@@ -35,15 +40,10 @@
 (defn apply-diff [diff]
   (reset! object/tags (behavior-diff diff @object/tags)))
 
-(defn store! [behs file]
-  (object/update! behaviors-editor [:files] assoc file behs)
-  behs)
-
 (defn parse-file [file final]
   (-> (files/open-sync file)
       :content
       (reader/read-string)
-      (store! file)
       (behavior-diff final)))
 
 (defn default-dir []
@@ -61,8 +61,9 @@
                         (parse-file cur fin))
                       {}
                       (ordered-files))
-        final (if-let [ws-diff (:ws-behaviors @workspace/current-ws)]
-                (behavior-diff ws-diff final)
+        ws-diff (:ws-behaviors @workspace/current-ws)
+        final (if (and false ws-diff (not (empty? ws-diff)))
+                (behavior-diff (reader/read-string ws-diff) final)
                 final)]
     (reset! object/tags final)))
 
@@ -76,41 +77,14 @@
   (if-not (seq objs)
     (notifos/done-working "")
     (do
-      (object/refresh! (first objs))
-      (js/process.nextTick (fn []
+      (try
+        (object/refresh! (first objs))
+        (catch js/global.Error e
+          (.error js/console e))
+        (catch js/Error e
+          (.error js/console e)))
+      (js/global.setImmediate (fn []
                              (refresh-all (next objs)))))))
-
-(defn behavior-list [behs]
-  (println (sort-by first behs))
-  (for [[tag bs] (sort-by first behs)]
-    [:div
-     [:h2 (str tag)]
-     [:ul
-      (for [b bs
-            :let [info (@object/behaviors (if (coll? b)
-                                            (first b)
-                                            b))]]
-        [:li {:class (when (= (:type info) :user)
-                       "user")}
-         [:h3 (:desc info (pr-str b)) (pr-str (:type info))]
-         (when (coll? b) (string/join " " (rest b)))])]]))
-
-
-;;*********************************************************
-;; Object
-;;*********************************************************
-
-(object/object* ::behaviors-editor
-                :tags #{:behaviors.editor}
-                :name "Behaviors"
-                :files {}
-                :init (fn [this]
-                        [:div#behavior-editor
-                         (behavior-list (-> @js/lt.objs.workspace.current-ws :ws-behaviors :+))]
-                        ))
-
-(def behaviors-editor (object/create ::behaviors-editor))
-;(do (tabs/add! behaviors-editor) nil)
 
 ;;*********************************************************
 ;; Behaviors
@@ -138,11 +112,40 @@
 (object/behavior* ::grab-workspace-behaviors
                   :triggers #{:set}
                   :reaction (fn [workspace old]
-                              (apply-diff (-> (:ws-behaviors old)
-                                              (reverse-diff)))
-                              (refresh-diffed (:ws-behaviors old))
-                              (apply-diff (:ws-behaviors @workspace))
-                              (refresh-diffed (:ws-behaviors @workspace))))
+                              (let [old (:ws-behaviors old)
+                                    old (when-not (empty? old)
+                                          (reader/read-string old))
+                                    neue (:ws-behaviors @workspace)
+                                    neue (when-not (empty? neue)
+                                             (reader/read-string neue))]
+                                (when old
+                                  (apply-diff (reverse-diff old))
+                                  (refresh-diffed old))
+                                (when neue
+                                  (apply-diff neue)
+                                  (refresh-diffed neue)))))
+
+(object/behavior* ::workspace-save
+                  :triggers #{:save}
+                  :reaction (fn [editor]
+                              (let [{:keys [path]} (@editor :info)
+                                    final (object/raise-reduce editor :save+ (editor/->val editor))]
+                                (object/merge! workspace/current-ws {:ws-behaviors final})
+                                (object/merge! editor {:dirty false})
+                                (object/raise editor :saved)
+                                (object/raise editor :clean)
+                                (object/raise workspace/current-ws :serialize!))))
+
+(def user-behaviors-path (files/lt-home "/settings/user/user.behaviors"))
+(def user-keymap-path (files/lt-home "/settings/user/user.keymap"))
+
+(object/behavior* ::create-user-settings
+                  :triggers #{:init}
+                  :reaction (fn [app]
+                              (when-not (files/exists? user-behaviors-path)
+                                (files/copy (files/lt-home "/core/misc/example.behaviors") user-behaviors-path))
+                              (when-not (files/exists? user-keymap-path)
+                                (files/copy (files/lt-home "/core/misc/example.keymap") user-keymap-path))))
 
 ;;*********************************************************
 ;; Commands
@@ -154,6 +157,25 @@
                       (object/raise (-> (object/by-tag :app)
                                         (first))
                                     :behaviors.reload))})
+
+(cmd/command {:command :behaviors.modify-user
+              :desc "Settings: User behaviors"
+              :exec (fn []
+                      (cmd/exec! :open-path (files/lt-home "/settings/user/user.behaviors")))})
+
+(cmd/command {:command :behaviors.view-default
+              :desc "Settings: Default behaviors"
+              :exec (fn []
+                      (cmd/exec! :open-path (files/lt-home "/settings/default/default.behaviors")))})
+
+(cmd/command {:command :behaviors.modify-workspace
+              :desc "Settings: Workspace behaviors"
+              :exec (fn []
+                      (cmd/exec! :opener.open-info {:path "workspace.behaviors"
+                                                    :type "text/x-clojure"
+                                                    :name "workspace.behaviors"
+                                                    :tags [:editor.behaviors :editor.behaviors.workspace]
+                                                    :content (:ws-behaviors @workspace/current-ws "")}))})
 
 (object/behavior* ::on-close-remove
                   :triggers #{:close}
@@ -205,7 +227,8 @@
 (object/behavior* ::load-keys
                   :triggers #{:pre-init}
                   :reaction (fn [this]
-                              (load-all-keys)))
+                              (load-all-keys)
+                              (kb/refresh)))
 
 (object/tag-behaviors :app [::load-keys])
 
@@ -218,4 +241,7 @@
                   :triggers #{:saved}
                   :reaction (fn [editor]
                               (load-all-keys)
+                              (kb/refresh)
                               (notifos/set-msg! "keys loaded")))
+
+

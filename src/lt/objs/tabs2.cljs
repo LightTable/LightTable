@@ -334,9 +334,10 @@
 (object/behavior* ::tabset-active
                   :triggers #{:active}
                   :reaction (fn [this]
-                              (ctx/in! :tabset this)
-                              (when-let [active (:active-obj @this)]
-                                (object/raise active :focus!))))
+                              (when-not (= (ctx/->obj :tabset) this)
+                                (ctx/in! :tabset this)
+                                (when-let [active (:active-obj @this)]
+                                  (object/raise active :focus!)))))
 
 (object/behavior* ::tabset-menu
                   :triggers #{:menu!}
@@ -481,11 +482,7 @@
              (::tabset @obj))
     (object/merge! (::tabset @obj) {:active-obj obj})
     (object/raise obj :show)
-    (ensure-visible (->index obj) (::tabset @obj))
-    (when-let [e (@obj :ed)]
-      (editor/focus e)
-      (editor/refresh e)
-      )))
+    (ensure-visible (->index obj) (::tabset @obj))))
 
 (defn num-tabs []
   (reduce (fn [res cur]
@@ -572,6 +569,13 @@
               :exec (fn []
                       (spawn-tabset)
                       (equalize-tabset-widths))})
+
+(cmd/command {:command :tabs.focus-active
+              :desc "Tab: focus active"
+              :hidden true
+              :exec (fn []
+                      (when-let [active (:active-obj @(ctx/->obj :tabset))]
+                        (object/raise active :focus!)))})
 
 (object/behavior* ::init-sortable
                   :triggers #{:pre-init}

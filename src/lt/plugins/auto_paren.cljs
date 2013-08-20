@@ -64,28 +64,27 @@
                                     (editor/replace this (adjust-loc loc -1) (adjust-loc loc 1) ""))
                                   (passthrough)))))
 
-(object/tag-behaviors :editor [::open-pair ::close-pair ::try-remove-pair ::repeat-pair])
 
 (cmd/command {:command :editor.close-pair
               :hidden true
-              :desc "Close pair character"
+              :desc "Editor: Close pair character"
               :exec (fn [c]
                       (object/raise (ctx/->obj :editor.keys.normal) :close-pair! c))})
 
 (cmd/command {:command :editor.open-pair
               :hidden true
-              :desc "Open pair character"
+              :desc "Editor: Open pair character"
               :exec (fn [c]
                       (object/raise (ctx/->obj :editor.keys.normal) :open-pair! c))})
 
 (cmd/command {:command :editor.repeat-pair
               :hidden true
-              :desc "Repeat pair character"
+              :desc "Editor: Repeat pair character"
               :exec (fn [c]
                       (object/raise (ctx/->obj :editor.keys.normal) :repeat-pair! c))})
 
 (cmd/command {:command :editor.backspace-pair
               :hidden true
-              :desc "Pair aware backspace"
+              :desc "Editor: Pair aware backspace"
               :exec (fn [c]
                       (object/raise (ctx/->obj :editor.keys.normal) :backspace! c))})

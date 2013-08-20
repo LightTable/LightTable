@@ -76,21 +76,27 @@
 (def py-path (escape-spaces (files/lt-home "/plugins/python/ltmain.py")))
 
 (defn client-command [info client]
-  (str (or (:venv-py info) "python") " " py-path " " tcp/port " " (clients/->id client)))
+  (str (or (:python-exe @python) (:venv-py info) "python") " " py-path " " tcp/port " " (clients/->id client)))
 
 (defn run-py [{:keys [path project-path name client venv] :as info}]
   (let [n (notifos/working "Connecting..")
-        obj (object/create ::connecting-notifier n)]
+        obj (object/create ::connecting-notifier n)
+        env (if venv
+              {"VIRTUAL_ENV" venv}
+              {})
+        env (if (:ipython-exe @python)
+              (assoc env "LT_IPYTHON_PATH" (:ipython-exe @python))
+              env)]
+    (println env (client-command info client))
     (proc/exec {:command (client-command info client)
                           :cwd (or venv project-path)
-                          :env (if venv
-                                 {"VIRTUAL_ENV" venv}
-                                 {})
+                          :env env
                           :obj obj})))
 
 
 (defn check-python [obj]
-  (assoc obj :python (or (:venv-py obj)
+  (assoc obj :python (or (:python-exe @python)
+                         (:venv-py obj)
                          (.which shell "python"))))
 
 (defn check-client [obj]
@@ -126,6 +132,7 @@
     (cond
      (or (not python) (empty? python)) (do
                                          (clients/rem! client)
+                                         (notifos/done-working)
                                          (popup/popup! {:header "We couldn't find Python."
                                                       :body "In order to evaluate in Python files, a Python interpreter has to be installed and on your system PATH."
                                                       :buttons [{:label "Download Python"
@@ -283,4 +290,20 @@
                     :desc "Select a directory to serve as the root of your python project."
                     :connect (fn []
                                (dialogs/dir python :connect))})
+
+(object/behavior* ::python-exe
+                  :triggers #{:object.instant}
+                  :desc "Python: Set the path to the python executable for clients"
+                  :type :user
+                  :exclusive true
+                  :reaction (fn [this exe]
+                              (object/merge! python {:python-exe exe})))
+
+(object/behavior* ::ipython-exe
+                  :triggers #{:object.instant}
+                  :desc "Python: Set the path to ipython for clients"
+                  :type :user
+                  :exclusive true
+                  :reaction (fn [this exe]
+                              (object/merge! python {:ipython-exe exe})))
 

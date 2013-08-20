@@ -117,12 +117,12 @@
 
 (defn parents [elem sel]
   (let [root (parent ($ :body))]
-  (loop [p (parent elem)]
-    (when (and p
-               (not= p root))
-      (if (.webkitMatchesSelector p (name sel))
-        p
-        (recur (parent p)))))))
+    (loop [p (parent elem)]
+      (when (and p
+                 (not= p root))
+        (if (.webkitMatchesSelector p (name sel))
+          p
+          (recur (parent p)))))))
 
 (defn next [elem]
   (.-nextElementSibling elem))

@@ -16,8 +16,8 @@
 (def find-height 30)
 
 (defui input [this]
-  [:input {:type "text"
-           :placeholder "find"}]
+  [:input.find {:type "text"
+                :placeholder "find"}]
   :keyup (fn []
            (this-as me
                     (object/raise this :search! (dom/val me))))
@@ -29,8 +29,8 @@
           (object/raise bar :inactive)))
 
 (defui replace-input [this]
-  [:input {:type "text"
-           :placeholder "replace"}]
+  [:input.replace {:type "text"
+                   :placeholder "replace"}]
   :keyup (fn []
            (this-as me
                     (object/raise this :replace.changed (dom/val me))))
@@ -41,6 +41,11 @@
           (ctx/out! :find-bar.replace)
           (object/raise bar :inactive)))
 
+(defui replace-all-button [this]
+  [:button "all"]
+  :click (fn []
+           (cmd/exec! :find.replace-all)))
+
 (defn current-ed []
   (editor/->cm-ed (pool/last-active)))
 
@@ -50,10 +55,13 @@
     "none"))
 
 (defn ->val [this]
-  (dom/val (dom/$ :input (object/->content this))))
+  (dom/val (dom/$ :input.find (object/->content this))))
+
+(defn ->replacement [this]
+  (dom/val (dom/$ :input.replace (object/->content this))))
 
 (defn set-val [this v]
-  (dom/val (dom/$ :input (object/->content this)) v))
+  (dom/val (dom/$ :input.find (object/->content this)) v))
 
 (object/behavior* ::show!
                   :triggers #{:show!}
@@ -67,6 +75,7 @@
                                 (let [tabs (ctx/->obj :tabs)]
                                   (object/merge! this {:bottom (:bottom @tabs)
                                                        :left (:left @tabs)
+                                                       :right (:right @tabs)
                                                        :shown true})
                                   (object/raise tabs :bottom! find-height)
                                   ))))
@@ -118,6 +127,14 @@
                               (dom/val (dom/$ :input (object/->content this))
                                        "")))
 
+(object/behavior* ::replace!
+                  :triggers #{:replace!}
+                  :reaction (fn [this all?]
+                              (when-not (:searching? @this)
+                                (object/raise this :search! (->val this)))
+                              (js/CodeMirror.commands.replace (editor/->cm-ed (pool/last-active)) (->replacement this) (:reverse? @this) (boolean all?))
+                              (object/raise this :next!)))
+
 (object/behavior* ::search!
                   :triggers #{:search!}
                   :debounce 50
@@ -140,9 +157,11 @@
                 :init (fn [this]
                         [:div#find-bar {:style {:bottom (bound (subatom this :bottom) ->px)
                                                 :left (bound (subatom (ctx/->obj :tabs) :left) ->px)
+                                                :right (bound (subatom (ctx/->obj :tabs) :right) ->px)
                                                 :display (bound (subatom this :shown) ->shown)}}
                          (input this)
-                         (replace-input this)]))
+                         (replace-input this)
+                         (replace-all-button this)]))
 
 (object/behavior* ::init
                   :triggers #{:init}
@@ -183,6 +202,17 @@
               :desc "Find: Previous find result"
               :exec (fn []
                       (object/raise bar :prev!))})
+
+(cmd/command {:command :find.replace
+              :desc "Find: Replace current"
+              :exec (fn []
+                      (println "here")
+                      (object/raise bar :replace!))})
+
+(cmd/command {:command :find.replace-all
+              :desc "Find: Replace all occurrences"
+              :exec (fn []
+                      (object/raise bar :replace! :all))})
 
 (def line-input (cmd/options-input {:placeholder "line number"}))
 

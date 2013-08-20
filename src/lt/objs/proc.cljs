@@ -75,8 +75,16 @@
                             "windowsVerbatimArguments" (when (= js/process.platform "win32") true)))]
     (add! proc)
     (.on proc "exit" (partial rem! proc))
+    (.on proc "error" #(when @obj
+                         (println (str %) (> (.indexOf (str %) "ENOENT") -1))
+                         (if (> (.indexOf (str %) "ENOENT") -1)
+                           (do
+                             (object/raise obj :proc.error (str "Could not find command: " command))
+                             (object/raise obj :proc.exit)
+                             (.kill proc))
+                           (object/raise obj :proc.error %))))
     (.stderr.on proc "data" #(if-not @obj
-                               (println "ERROR running: " com)
+                               (println "ERROR running: " command)
                                (object/raise obj :proc.error %)))
     (.stdout.on proc "data" #(do
                                (when @obj (object/raise obj :proc.out %))))
@@ -153,7 +161,14 @@
                                          (when-not (empty? out)
                                            (set! js/process.env.PATH out)))))))
 
-(object/tag-behaviors :app [::set-path-OSX])
+(object/behavior* ::global-path
+                  :triggers #{:object.instant}
+                  :desc "App: set global PATH for processes"
+                  :type :user
+                  :exclusive true
+                  :reaction (fn [app path]
+                              (set! js/process.env.PATH path)))
+
 
 (defn var-caps [vs]
   (if (platform/win?)

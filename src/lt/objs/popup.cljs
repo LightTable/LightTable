@@ -67,7 +67,7 @@
            (dom/stop-propagation e)))
 
 (defui popup [this opts]
-       [:div.popup
+       [:div.popup {:tabindex -1}
         [:div
          (popup-content this opts)]]
        :click (fn []
@@ -83,18 +83,21 @@
 
 (cmd/command {:command :popup.exec-active
               :desc "Popup: execute active option"
+              :hidden true
               :exec (fn []
                       (when-let [p (ctx/->obj :popup)]
                         (object/raise p :exec-active)))})
 
 (cmd/command {:command :popup.move-active
               :desc "Popup: move selection"
+              :hidden true
               :exec (fn [dir]
                       (when-let [p (ctx/->obj :popup)]
                         (object/raise p :move-active dir)))})
 
 (cmd/command {:command :popup.escape
               :desc "Popup: escape"
+              :hidden true
               :exec (fn []
                       (when-let [p (ctx/->obj :popup)]
                         (object/raise p :click)))})
@@ -103,6 +106,7 @@
   (let [p (object/create ::popup options)]
     (object/raise p :move-active 0)
     (canvas/add! p)
+    (.focus (object/->content p))
     (ctx/in! :popup p)
     p))
 

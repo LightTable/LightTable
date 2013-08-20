@@ -274,7 +274,6 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {color: #f22;}
   margin: 0;
   padding: 0 4px;
   border-radius: 2px;
-  max-width: 19em;
   overflow: hidden;
   white-space: pre;
   cursor: pointer;

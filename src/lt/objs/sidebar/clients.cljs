@@ -126,6 +126,11 @@
                   :reaction (fn [this]
                               (object/merge! this {:selecting? false})))
 
+(object/behavior* ::hide-on-select
+                  :triggers #{:selected}
+                  :reaction (fn [this]
+                              (object/raise sidebar/rightbar :close!)))
+
 (object/behavior* ::focus!
                   :triggers #{:focus!}
                   :reaction (fn [this]

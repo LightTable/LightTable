@@ -1,5 +1,72 @@
 #Changes
 
+##0.5.0
+
+* ADDED: behaviors files to modify LT's behavior
+* ADDED: behaviors helper for easily modifying behaviors files
+* ADDED: keymap files to bind keys
+* ADDED: keymap helper for easily modifying keymaps
+* ADDED: full set of editor commands from codemirror
+* ADDED: auto-complete on text input behavior
+* ADDED: global PATH setting behavior
+* ADDED: behavior to specify the Python/IPython exes
+* ADDED: behavior to specify the Java exe to use for Clojure
+* ADDED: project-wide search (searcher)
+* ADDED: project-wide replace
+* ADDED: watches for Clojure, ClojureScript, Python, Javascript
+* ADDED: ability to specify a series of commands to run on keypress in keymaps
+* ADDED: keyboard Chords
+* ADDED: CLI for OS X and Linux
+* ADDED: standard menus
+* ADDED: JSHint behvaiors
+* ADDED: Emacs mode
+* ADDED: rainbow parens behaviors
+* ADDED: clojure print-length behavior to prevent infinite seqs from looping
+* ADDED: background processing
+* ADDED: workspace-specific behaviors (per workspace settings)
+* ADDED: behavior to disable animations
+* ADDED: behavior to open a new file on start instead of the welcome screen
+* ADDED: replace
+* ADDED: console count indicator
+* ADDED: visible whitespace behaviors
+* ADDED: vim key mapping behavior
+* ADDED: custom file-type declaration behavior
+* ADDED: on save ensure last char is a newline behavior
+* REDESIGN: remove ever-present left-menu
+* REDESIGN: navigate is much more user-friendly
+* REDESIGN: commands now show keyboard shortcuts under them
+* REDESIGN: cleaner dark and light skin
+* FIX: dramatically simplified deployment (no more ~/.lighttable), all directory local
+* FIX: numerous small consistency issues
+* FIX: many small performance improvements
+* FIX: workspace/file watching is now much more efficient
+* FIX: large workspaces will no longer freeze LT
+* FIX: clojure instarepl is now much more reliable
+* FIX: clojure instarepl errors are a single line and can be clicked to expand
+* FIX: inline results are height constrained and scroll if necessary
+* FIX: skins are now variablized to make it easy to modify colors
+* FIX: focus issues with browsers
+* FIX: international keyboard handling
+* FIX: find (next|prev) now works correctly across tabs
+* FIX: find bar can no longer end up floating over the editor
+* FIX: workspace disappears on refresh/crash #639
+* FIX: pressing cmd-delete can cause LT to hang #604
+* FIX: files should open in the active window #628
+* FIX: browser tabs should have the webpage title as their tab name #643
+* FIX: cannot see full path in tab hover #463
+* FIX: LT crashes pressing the menu key twice #591
+* FIX: cursor/line mismatch #356
+* FIX: syntax error when encoding is specified in python #454
+* FIX: workspace entries are not scrollable #683
+* FIX: EDN tagged data literals should work #554
+* FIX: watching invalid files #651
+* FIX: recursive symlinks causes issues with file watching #658
+* FIX: impossible to copy text out of the instarepl results #650
+* FIX: disable the GPU-blacklist
+* UPDATED: latest codemirror and modes
+* UPDATED: node-webkit 0.7.0
+* UPDATED: lastest clojurescript
+
 ##0.4.12
 
 * FIX: unicode issues in Python results. #546

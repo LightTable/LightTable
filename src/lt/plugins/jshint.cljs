@@ -37,16 +37,22 @@
 
 (object/behavior* ::on-change
                   :debounce 750
+                  :type :user
+                  :desc "JSHint: Run JSHint on change"
                   :triggers #{:change}
                   :reaction (fn [this]
                               (errors this (editor/->val this) (::jshint-options @this))))
 
 (object/behavior* ::on-save
                   :triggers #{:save}
+                  :type :user
+                  :desc "JSHint: Run JSHint on save"
                   :reaction (fn [this]
                               (errors this (editor/->val this) (::jshint-options @this))))
 
 (object/behavior* ::jshint-options
                   :triggers #{:object.instant}
+                  :type :user
+                  :desc "JSHint: Set JSHint options"
                   :reaction (fn [this opts]
                               (object/merge! this {::jshint-options opts})))

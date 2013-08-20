@@ -41,12 +41,13 @@
 (object/behavior* ::remove-trailing-whitespace
                   :triggers #{:save+}
                   :type :user
+                  :desc "Save: Remove trailing whitespace"
                   :exclusive true
                   :reaction (fn [editor content]
                               (.replace content (js/RegExp. "[ \\t]+$" "gm") "")))
 
 (object/behavior* ::last-char-newline
-                  :desc "Ensure the file ends with an appropriate new-line character"
+                  :desc "Save: Ensure the file ends with a new-line"
                   :type :user
                   :exclusive true
                   :triggers #{:save+}

@@ -5,6 +5,7 @@
             [lt.objs.files :as files]
             [lt.objs.command :as cmd]
             [lt.objs.context :as ctx]
+            [lt.objs.notifos :as notifos]
             [lt.objs.platform :as platform]
             [lt.objs.thread :as thread]
             [lt.util.dom :as dom]
@@ -20,17 +21,20 @@
                           (let [replacer (js/require (str js/ltpath "/core/node_modules/replace"))
                                 search (if-let [pattern (re-seq #"^/(.+)/$" (:search opts))]
                                          (js/RegExp. (-> pattern first second))
-                                         (:search opts))]
-                            (replacer (clj->js {:regex search
-                                                :exclude (when (:exclude opts)
-                                                           (js/RegExp. (:exclude opts)))
-                                                :recursive true
-                                                :ignoreCase (-> (re-seq #"[A-Z]" (:search opts))
-                                                                (boolean)
-                                                                (not))
-                                                :paths (:paths opts)
-                                                :result (fn [r]
-                                                          (js/_send obj-id :result r))}))))))
+                                         (:search opts))
+                                final (replacer (clj->js {:regex search
+                                                          :exclude (when (:exclude opts)
+                                                                     (js/RegExp. (:exclude opts)))
+                                                          :recursive true
+                                                          :ignoreCase (-> (re-seq #"[A-Z]" (:search opts))
+                                                                          (boolean)
+                                                                          (not))
+                                                          :replacement (:replacement opts)
+                                                          :paths (:paths opts)
+                                                          :result (fn [r]
+                                                                    (js/_send obj-id :result r))}))]
+                            (raise obj-id :done-searching {:total (.-totalFiles final)
+                                                           :time (.-time final)})))))
 
 (def result-threshold 300)
 
@@ -99,7 +103,7 @@
 (object/behavior* ::clear!
                   :triggers #{:clear!}
                   :reaction (fn [this]
-                              (object/merge! this {:timeout nil :results (array) :result-count 0})
+                              (object/merge! this {:timeout nil :results (array) :result-count 0 ::time nil ::filesSearched nil})
                               (dom/empty (->res this))))
 
 (object/behavior* ::search!
@@ -108,9 +112,29 @@
                               (object/raise this :clear!)
                               (let [info (->search-info this)]
                                 (object/merge! this info)
+                                (notifos/working "Searching workspace...")
                                 (search! this (assoc info
                                                 :exclude (.-source files/ignore-pattern)
                                                 :paths (string->loc (:loc info)))))))
+
+(object/behavior* ::replace!
+                  :triggers #{:replace!}
+                  :reaction (fn [this]
+                              (object/raise this :clear!)
+                              (let [info (->search-info this)]
+                                (object/merge! this info)
+                                (notifos/working "Replacing all in workspace...")
+                                (search! this (assoc info
+                                                :replacement (:replace info)
+                                                :exclude (.-source files/ignore-pattern)
+                                                :paths (string->loc (:loc info)))))))
+
+(object/behavior* ::done-searching
+                  :triggers #{:done-searching}
+                  :reaction (fn [this info]
+                              (object/merge! this {::time (/ (:time info) 1000)
+                                                   ::filesSearched (:total info)})
+                              (notifos/done-working (str "Found " (:result-count @this) " results searching " (:total info) " files in " (/ (:time info) 1000) "s." ))))
 
 (object/behavior* ::on-result
                   :triggers #{:result}
@@ -124,10 +148,19 @@
                                   (dom/append (->res this) (->result-item result)))
                                 (object/update! this [:result-count] + total))))
 
+(object/behavior* ::focus
+                  :triggers #{:focus! :show}
+                  :reaction (fn [this]
+                              (.focus (dom/$ :.search (object/->content this)))))
+
 (defn result-count [this]
-  (list "Num results: " [:span (:result-count this)]
+  (list "Found  " [:span (:result-count this) " results"]
         (when (> (:result-count this) result-threshold)
-          (list " Showing " [:span result-threshold]))))
+          (list " (showing " [:span result-threshold] ")"))
+        (when (::time this)
+          (list " in " (::time this) "s")
+          )
+        ))
 
 (object/object* ::workspace-search
                 :tags #{:searcher}
@@ -159,9 +192,7 @@
 (cmd/command {:command :searcher.show
               :desc "Searcher: Search in workspace"
               :exec (fn []
-                      (tabs/add-or-focus! searcher)
-                      (tabs/active! searcher)
-                      (object/raise searcher :focus))})
+                      (tabs/add-or-focus! searcher))})
 
 
 (def searcher (object/create ::workspace-search))

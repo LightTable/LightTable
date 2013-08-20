@@ -1,0 +1,1 @@
+{:+ {:editor.keys.emacs [(:lt.objs.keyboard/chord-timeout false)]}}

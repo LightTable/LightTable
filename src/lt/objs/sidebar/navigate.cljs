@@ -39,9 +39,6 @@
                                      all-files (.reduce (to-array (:folders ws)) grab-files (array))
                                      other-files (.map (to-array (:files ws)) #(js-obj "full" % "rel" (.basename fpath %)))
                                      final (.concat all-files other-files)]
-                                 (set! *print-fn* (fn [x]
-                                                    (when (and x (not= x "") (not= x "\n"))
-                                                      (.log js/console (js/clojure.string.trim x)))))
                                  (js/_send obj-id :workspace-files final)
                                  ))))
 
@@ -80,6 +77,11 @@
                   :reaction (fn [this]
                               (object/raise (:filter-list @this) :focus!)
                               ))
+
+(object/behavior* ::focus-on-show
+                  :triggers #{:show}
+                  :reaction (fn [this]
+                              (object/raise this :focus!)))
 
 (object/behavior* ::open-on-select
                   :triggers #{:select}
@@ -136,8 +138,7 @@
               :desc "Navigate: open navigate transient"
               :hidden true
               :exec (fn []
-                      (object/raise sidebar/rightbar :toggle sidebar-navigate {:transient? true})
-                      (object/raise sidebar-navigate :focus!))})
+                      (object/raise sidebar/rightbar :toggle sidebar-navigate {:transient? true}))})
 
 (cmd/command {:command :escape-navigate
               :desc "Navigate: exit navigate"
@@ -145,39 +146,3 @@
               :exec (fn []
                       (cmd/exec! :close-sidebar)
                       (cmd/exec! :focus-last-editor))})
-
-;;**********************************************************
-;; Exclude pattern
-;;**********************************************************
-
-(defn set-exclude! [v]
-  (set! files/ignore-pattern (re-pattern v)))
-
-(def pattern-options (cmd/options-input {:placeholder "pattern"
-                                         :value (.-source files/ignore-pattern)}))
-
-(object/behavior* ::set-pattern
-                  :triggers #{:select}
-                  :reaction (fn [this v]
-                              (cmd/exec-active! v)))
-
-(object/add-behavior! pattern-options ::set-pattern)
-
-(cmd/command {:command :set-exclude-pattern
-              :desc "Workspace: hide/exclude files pattern"
-              :options pattern-options
-              :exec (fn [v]
-                      (settings/store! :exclude-pattern v)
-                      (set-exclude! v)
-                      (object/raise workspace/current-ws :refresh)
-                      (notifos/set-msg! "Exclusion pattern set"))})
-
-(object/behavior* ::set-exclude-on-init
-                  :triggers #{:init}
-                  :reaction (fn [this]
-                              (when-let [pattern (settings/fetch :exclude-pattern)]
-                                (object/merge! pattern-options {:value pattern})
-                                (set-exclude! pattern))))
-
-(object/tag-behaviors :app [::set-exclude-on-init])
-

@@ -32,25 +32,11 @@
   (editor/off ed "vim.modeChange" (mode-change-listener ed))
   (object/raise ed :mode-change "normal-editor"))
 
-(object/behavior* ::should-add-vim?
-                  :triggers #{:create}
-                  :reaction (fn [this ed]
-                              (when (settings/fetch :editor.vim)
-                                (make-vim-editor ed))
-                              ))
-
 (object/behavior* ::mode-change
                   :triggers #{:mode-change}
                   :reaction (fn [this mode]
                               (object/remove-tags this (:all mode-tags))
                               (object/add-tags this (mode-tags (keyword mode)))))
-
-(object/behavior* ::ex-command
-                  :triggers #{:ex!}
-                  :reaction (fn [this]
-                              (cmd/show-filled "vim :" {:transient? true
-                                                        :force? true})
-                              ))
 
 (object/behavior* ::find-bar-inactive
                   :triggers #{:inactive}
@@ -62,6 +48,9 @@
 (object/behavior* ::map-keys
                   :triggers #{:object.instant}
                   :desc "Vim: Map vim keys"
+                  :params [{:label "key mappings"
+                            :example "{\"<BS>\" \"<PageUp>\", \"<Space>\" \"<PageDown>\"}"
+                            :type :clj}]
                   :type :user
                   :reaction (fn [this ks]
                               (doseq [[k v] ks]
@@ -71,28 +60,23 @@
                   :triggers #{:object.instant}
                   :desc "Vim: Activate vim mode"
                   :type :user
-                  :exclusive true
+                  :exclusive [:lt.plugins.emacs/activate-emacs]
                   :reaction (fn [this]
                               (when-not (object/has-tag? this :editor.keys.vim)
                                 (make-vim-editor this))))
-
-(command {:command :vim
-          :desc "Vim: Toggle vim mode"
-          :exec (fn []
-                  (let [cur (not (settings/fetch :editor.vim))
-                        toggle-fn (if cur
-                                    make-vim-editor
-                                    make-normal-editor)]
-                    (settings/store! :editor.vim cur)
-                    (doseq [ed (object/by-tag :editor)]
-                      (toggle-fn ed))))
-                  })
 
 (command {:command :vim-save
           :desc "Vim: :w"
           :exec (fn []
                   (cmd/exec! :save)
                   (cmd/exec! :focus-last-editor))})
+
+(command {:command :vim.ex
+          :desc "Vim: ex"
+          :hidden true
+          :exec (fn []
+                  (cmd/show-filled "vim :" {:transient? true
+                                            :force? true}))})
 
 (command {:command :vim-save-quit
           :desc "Vim: :wq"

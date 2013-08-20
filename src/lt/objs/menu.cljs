@@ -84,18 +84,29 @@
                                        {:type "separator"}
                                        {:label "Close file" :key "w" :click #(cmd/exec! :tabs.close)}
                                        ]}
-              {:label "Edit" :submenu [{:label "Undo" :selector "undo:" :key "z"}
-                                       {:label "Redo" :selector "redo:" :key "z" :modifiers "cmd-shift"}
-                                       {:type "separator"}
-                                       {:label "Cut" :selector "cut:" :key "x"}
-                                       {:label "Copy" :selector "copy:" :key "c"}
-                                       {:label "Paste" :selector "paste:" :key "v"}
-                                       {:label "Select All" :selector "selectAll:" :key "a"}
-                                       ]}
+              (if (platform/mac?)
+                {:label "Edit" :submenu [{:label "Undo" :selector "undo:" :key "z"}
+                                         {:label "Redo" :selector "redo:" :key "z" :modifiers "cmd-shift"}
+                                         {:type "separator"}
+                                         {:label "Cut" :selector "cut:" :key "x"}
+                                         {:label "Copy" :selector "copy:" :key "c"}
+                                         {:label "Paste" :selector "paste:" :key "v"}
+                                         {:label "Select All" :selector "selectAll:" :key "a"}
+                                         ]}
+                {:label "Edit" :submenu [{:label "Undo" :click #(cmd/exec! :editor.undo)}
+                                         {:label "Redo" :click #(cmd/exec! :editor.redo)}
+                                         {:type "separator"}
+                                         {:label "Cut" :click #(cmd/exec! :editor.cut) }
+                                         {:label "Copy" :click #(cmd/exec! :editor.copy)}
+                                         {:label "Paste" :click #(cmd/exec! :editor.paste)}
+                                         {:label "Select All" :click #(cmd/exec! :editor.select-all)}
+                                         ]}
+                )
               {:label "View" :submenu [{:label "Workspace" :key "t" :click (fn [] (cmd/exec! :workspace.show))}
                                        {:label "Connections" :click #(cmd/exec! :show-connect)}
                                        {:label "Navigator" :key "o" :click #(cmd/exec! :navigate-workspace-transient)}
                                        {:label "Commands" :key " " :modifiers "ctrl" :click #(cmd/exec! :show-commandbar-transient)}
+                                       {:label "Console" :click #(cmd/exec! :toggle-console)}
                                        ]}
               {:label "Help" :submenu [{:label "Documentation" :click (fn [] (cmd/exec! :show-docs))}
                                        (when-not (platform/mac?)
@@ -106,5 +117,9 @@
 (object/behavior* ::set-menu
                   :triggers #{:focus :init}
                   :reaction (fn [this]
-                              (println "setting the menu")
                               (set! (.-menu window/me) menubar)))
+
+(object/behavior* ::remove-menu-close
+                  :triggers #{:closed :blur}
+                  :reaction (fn [this]
+                              (set! (.-menu window/me) nil)))

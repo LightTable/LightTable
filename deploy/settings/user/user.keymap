@@ -1,7 +1,9 @@
 {:+ {:app {"cmd-k" [:toggle-console]
            "cmd-t" [:workspace.show]
+           "cmd-shift-f" [:searcher.show]
            "cmd-shift-t" [:tabset.new]
            "ctrl-shift-right" [:tabs.move-next-tabset]
            "ctrl-shift-left" [:tabs.move-prev-tabset]}
      :editor {"alt-w" [:editor.watch.watch-selection]
+              "alt-up" [(:emacs.keymap-cmd "Ctrl-Alt-U")]
               "alt-shift-w" [:editor.watch.unwatch]}}}

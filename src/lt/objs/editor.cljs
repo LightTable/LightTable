@@ -14,6 +14,8 @@
         [lt.object :only [object* behavior*]]
         [lt.util.cljs :only [js->clj]]))
 
+(def gui (js/require "nw.gui"))
+(def clipboard (.Clipboard.get gui))
 
 ;;*********************************************************
 ;; commands
@@ -68,9 +70,6 @@
                                    (name (:type context))
                                    "text")
                            :autoClearEmptyLines true
-                           :tabSize 2
-                           :indentUnit 2
-                           :indentWithTabs false
                            :dragDrop false
                            :onDragEvent (fn [] true)
                            :lineNumbers false
@@ -157,6 +156,9 @@
   (let [pos (cursor e side)]
     {:line (.-line pos)
      :ch (.-ch pos)}))
+
+(defn pos->index [e pos]
+  (.indexFromPos (->cm-ed e) (clj->js pos)))
 
 (defn set-val [e v]
   (. (->cm-ed e) (setValue (or v "")))
@@ -275,6 +277,24 @@
 (defn undo [e]
   (.undo (->cm-ed e)))
 
+(defn redo [e]
+  (.redo (->cm-ed e)))
+
+(defn copy [e]
+  (.set clipboard (selection e) "text"))
+
+(defn cut [e]
+  (copy e)
+  (replace-selection e ""))
+
+(defn paste [e]
+  (replace-selection e (.get clipboard "text")))
+
+(defn select-all [e]
+  (set-selection e
+                 {:line (first-line e)}
+                 {:line (last-line e)}))
+
 (defn clear-history [e]
   (.clearHistory e)
   e)
@@ -386,8 +406,6 @@
 ;; Behaviors
 ;;*********************************************************
 
-(def gui (js/require "nw.gui"))
-(def clipboard (.Clipboard.get gui))
 
 (behavior* ::read-only
            :triggers #{:init}
@@ -395,15 +413,36 @@
                        (set-options (:ed @obj) {:readOnly "nocursor"})))
 
 (behavior* ::wrap
-           :triggers #{:object.instant}
+           :triggers #{:object.instant :lt.object/tags-removed}
            :desc "Editor: Wrap lines"
-           :exclusive true
+           :exclusive [::no-wrap]
            :type :user
-           :reaction (fn [obj wrap?]
-                       (set-options obj {:lineWrapping (if (false? wrap?)
-                                                         false
-                                                         true)})
-                       ))
+           :reaction (fn [obj]
+                       (set-options obj {:lineWrapping true})))
+
+(behavior* ::no-wrap
+           :triggers #{:object.instant :lt.object/tags-removed}
+           :desc "Editor: Unwrap lines"
+           :exclusive [::wrap]
+           :type :user
+           :reaction (fn [obj]
+                       (set-options obj {:lineWrapping false})))
+
+(behavior* ::tab-settings
+           :triggers #{:object.instant}
+           :desc "Editor: indent settings (tab size, etc)"
+           :params [{:label "Use tabs?"
+                     :type :boolean}
+                    {:label "Tab size in spaces"
+                     :type :number}
+                    {:label "Spaces per indent"
+                     :type :number}]
+           :type :user
+           :exclusive true
+           :reaction (fn [obj use-tabs? tab-size indent-unit]
+                       (set-options obj {:tabSize tab-size
+                                         :indentWithTabs use-tabs
+                                         :indentUnit indent-unit})))
 
 (object/behavior* ::blink-rate
                   :triggers #{:object.instant}
@@ -471,11 +510,12 @@
 (behavior* ::refresh-on-show
            :triggers #{:show}
            :reaction (fn [obj]
-                       ;(refresh (:ed @obj))
+                       (refresh (:ed @obj))
+                       (object/raise obj :focus!)
                        ))
 
 (behavior* ::focus
-           :triggers #{:show :focus!}
+           :triggers #{:focus!}
            :reaction (fn [obj]
                        (focus (:ed @obj))))
 
@@ -508,29 +548,23 @@
                               :order 1
                               :enabled (boolean (selection? this))
                               :click (fn []
-                                       (.set clipboard (selection this) "text")
-                                       )}
+                                       (copy this))}
                              {:label "Cut"
                               :order 2
                               :enabled (boolean (selection? this))
                               :click (fn []
-                                       (.set clipboard (selection this) "text")
-                                       (replace-selection this "")
-                                       )}
+                                       (cut this))}
                              {:label "Paste"
                               :order 3
                               :enabled (boolean (not (empty? (.get clipboard "text"))))
                               :click (fn []
-                                       (replace-selection this (.get clipboard "text"))
-                                       )}
+                                       (paste this))}
                              {:type "separator"
                               :order 4}
                              {:label "Select all"
                               :order 5
                               :click (fn []
-                                       (set-selection this {:line (first-line this)}
-                                                      {:line (last-line this)})
-                                       )})))
+                                       (select-all this))})))
 
 (object/behavior* ::init-codemirror
                   :triggers #{:init}

@@ -7,48 +7,106 @@
             [cljs.reader :as reader]
             [lt.util.load :as load]
             [lt.util.js :refer [now]]
-            [lt.util.cljs :refer [->dottedkw]]))
+            [lt.util.cljs :refer [->dottedkw js->clj]]))
 
 ;;*********************************************************
 ;; Watching
+;; TODO: The way I did this is awful. Should get cleaned up
 ;;*********************************************************
 
-(def watchr (load/node-module "watchr"))
+(def fs (js/require "fs"))
+(def max-depth 10)
+(def watch-interval 1000)
+
+(defn unwatch [watches path recursive?]
+  (when watches
+    (let [removes (cond
+                    (coll? path) path
+                    (not recursive?) [path]
+                    :else (filter #(> (.indexOf % path) -1) (keys watches)))]
+      (doseq [r (map watches removes)
+              :when (and r (:close r))]
+        ((:close r)))
+      (apply dissoc watches removes))))
+
+(defn alert-file [path]
+  (fn [cur prev]
+    (if (.existsSync fs path)
+      (do
+        (object/raise current-ws :watched.update path cur))
+      (do
+        (unwatch! path)
+        (object/raise current-ws :watched.delete path)))))
+
+(defn alert-folder [path]
+  (fn [cur prev]
+    (if (.existsSync fs path)
+      (do
+        (let [watches (:watches @current-ws)
+              neue (first (filter #(and (not (get watches %))
+                                        (not (re-seq files/ignore-pattern %)))
+                                  (files/full-path-ls path)))]
+          (when neue
+            (watch! neue)
+            (object/raise current-ws :watched.create neue (.statSync fs neue)))))
+      (do
+        (unwatch! path :recursive)
+        (object/raise current-ws :watched.delete path)))))
+
+(defn file->watch [path]
+  (let [alert (alert-file path)]
+    {:path path
+     :alert alert
+     :close (fn []
+              (.unwatchFile fs path alert))}))
+
+(defn folder->watch [path]
+  (let [alert (alert-folder path)]
+     {:path path
+      :alert alert
+      :close (fn []
+              (.unwatchFile fs path alert))}))
+
+(defn watch!
+  ([path] (watch! (transient {}) path nil))
+  ([path recursive?] (watch! (transient {}) path recursive?))
+  ([results path recursive?]
+   (doseq [path (if (coll? path)
+                  path
+                  [path])]
+     (when-not (re-seq files/ignore-pattern path)
+       (if (files/dir? path)
+         (let [recursive? (cond
+                           (not recursive?) 0
+                           (number? recursive?) (dec recursive?)
+                           :else max-depth)
+               watch (folder->watch path)]
+           (when-not (get (:watches @current-ws) path)
+             (assoc! results path watch)
+             (.watchFile fs path (js-obj "interval" watch-interval
+                                         "persistent" false)
+                         (:alert watch)))
+           (when (> recursive? -1)
+             (watch! results (files/full-path-ls path) recursive?)))
+         (when (and (not (get (:watches @current-ws) path))
+                    (not (get results path)))
+           (let [watch (file->watch path)]
+             (assoc! results path watch)
+             (.watchFile fs path (js-obj "interval" watch-interval
+                                         "persistent" false)
+                         (:alert watch)))))))
+     (when-not (number? recursive?)
+       (object/update! current-ws [:watches] merge (persistent! results)))))
+
+(defn unwatch! [path recursive?]
+  (object/merge! current-ws {:watches (unwatch (:watches @current-ws) path recursive?)}))
 
 (defn stop-watching [ws]
-  (doseq [w (::watch @ws)
-          :when w]
-    (.close w))
-  (object/merge! ws {::watch nil}))
+  (unwatch! (keys (:watches @ws))))
 
 (defn watch-workspace [ws]
   (stop-watching ws)
-  (object/merge! ws {::watch
-                     (.watch watchr (js-obj "paths" (apply array (concat (:files @ws) (:folders @ws)))
-                                            "interval" 1000
-                                            "preferredMethods" (array "watchFile" "watch")
-                                            "duplicateDelay" 30
-                                            "ignoreCustomPatterns" files/ignore-pattern
-                                            "listener" (fn [type path stat ostat]
-                                                         (object/raise current-ws (->dottedkw :watched type) path stat)
-                                                         )
-                                            "next" (fn [e w]
-                                                     (when e
-                                                       (.error js/console e)))))}))
-
-(object/behavior* ::stop-watch-on-blur
-                  :triggers #{:blur}
-                  :reaction (fn [window]
-                              ;(stop-watching current-ws)
-                              ))
-
-(object/behavior* ::watch-workspace
-                  :triggers #{:focus}
-                  :reaction (fn [window]
-                              ;(watch-workspace current-ws)
-                              ))
-
-(object/tag-behaviors :window [::stop-watch-on-blur ::watch-workspace])
+  (watch! (object/raise-reduce ws :watch-paths+ [])))
 
 ;;*********************************************************
 ;; Files and folders
@@ -125,7 +183,7 @@
                               (settings/store! :last-workspace (:file @this))))
 
 (object/behavior* ::serialize-workspace
-                  :triggers #{:updated}
+                  :triggers #{:updated :serialize!}
                   :reaction (fn [this]
                               (when-not (@this :file)
                                 (object/merge! this {:file (new-cached-file)}))
@@ -138,9 +196,8 @@
                   :reaction (fn [app]
                               (when (and (= (window/window-number) 0)
                                          (not (:initialized @current-ws)))
-                                (if (settings/fetch :last-workspace)
-                                  (open current-ws (settings/fetch :last-workspace))
-                                  (reconstitute current-ws (settings/fetch :workspace)))) ;;for backwards compat
+                                (when-let [ws (first (all))]
+                                  (open current-ws (-> ws :path (files/basename))))) ;;for backwards compat
                               (object/merge! current-ws {:initialized? true})))
 
 (object/behavior* ::new!
@@ -200,7 +257,7 @@
                               (let [old @this]
                                 (object/merge! this {:files []
                                                      :folders []
-                                                     :ws-behaviors {:+ {} :- {}}})
+                                                     :ws-behaviors ""})
                                 (object/raise this :set old)
                                 (object/raise this :updated))))
 
@@ -213,10 +270,9 @@
                                 (object/raise this :updated))))
 
 (object/behavior* ::watch-on-set
-                  :triggers #{:updated}
+                  :triggers #{:set}
                   :reaction (fn [this]
-                              ;(watch-workspace this)
-                              ))
+                              (watch-workspace this)))
 
 (object/behavior* ::stop-watch-on-close
                   :triggers #{:close :refresh}
@@ -227,8 +283,8 @@
                 :tags #{:workspace}
                 :files []
                 :folders []
-                :ws-behaviors {:+ {}
-                               :- {}}
+                :watches {}
+                :ws-behaviors ""
                 :init (fn [this]
                         nil))
 

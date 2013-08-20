@@ -120,7 +120,7 @@
 (object/behavior* ::initial-focus
                   :triggers #{:show}
                   :reaction (fn [this]
-                              (dom/focus (dom/$ :body))
+                              ;;(dom/focus (dom/$ :body))
                               (.focus win)))
 
 ;;*********************************************************

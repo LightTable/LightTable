@@ -212,17 +212,18 @@
 
 (object/behavior* ::destroy-on-cleared
                   :triggers #{:cleared}
-                  :reacion (fn [this]
-                             (object/destroy! this)))
+                  :reaction (fn [this]
+                              (object/destroy! this)))
 
 (object/behavior* ::clear-mark
                   :triggers #{:clear!}
                   :reaction (fn [this]
-                              (js/CodeMirror.off (:line @this) "change" (:listener @this))
-                              (js/CodeMirror.off (:line @this) "delete" (:delete @this))
-                              (.clear (:mark @this))
-                              (object/raise this :clear)
-                              (object/raise this :cleared)))
+                              (when (deref (:ed @this))
+                                (js/CodeMirror.off (:line @this) "change" (:listener @this))
+                                (js/CodeMirror.off (:line @this) "delete" (:delete @this))
+                                (.clear (:mark @this))
+                                (object/raise this :clear)
+                                (object/raise this :cleared))))
 
 (object/behavior* ::changed
                   :triggers #{:changed}
@@ -246,7 +247,6 @@
 (object/behavior* ::move-mark
                   :triggers #{:move!}
                   :reaction (fn [this ch]
-                              (println "moving")
                                 (let [orig (:mark @this)
                                       loc (.find orig)
                                       cur-line (ed/lh->line (:ed @this) (:line @this))]
@@ -314,7 +314,8 @@
 ;;****************************************************
 
 (defui ->underline-result [this info]
-  [:div {:class "underline-result"}
+  [:div {:class (str "underline-result " (when (-> info :class) (:class info)))}
+   [:span.spacer (->spacing (ed/line (:ed info) (-> info :loc :line)))]
    [:pre (:result info)]]
   :click (fn []
            (object/raise this :click))
@@ -337,7 +338,8 @@
                                                 :widget (ed/line-widget (ed/->cm-ed (:ed info))
                                                                         (-> info :loc :line)
                                                                         content
-                                                                        {:coverGutter false})))
+                                                                        {:coverGutter false
+                                                                         :above (-> info :above)})))
                           content)))
 
 (object/behavior* ::underline-results
@@ -394,7 +396,8 @@
 (object/behavior* ::ex-clear
                   :triggers #{:clear!}
                   :reaction (fn [this]
-                              (ed/remove-line-widget (ed/->cm-ed (:ed @this)) (:widget @this))
+                              (when (ed/->cm-ed (:ed @this))
+                                (ed/remove-line-widget (ed/->cm-ed (:ed @this)) (:widget @this)))i
                               (object/destroy! this)))
 
 (object/behavior* ::ex-menu!

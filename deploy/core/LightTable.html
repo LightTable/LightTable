@@ -49,7 +49,8 @@
          try {
            lt.objs.app.init();
          } catch (e) {
-           console.error(e);
+             console.error(e);
+             console.log(e.stack);
          }
        }
       }, 40);

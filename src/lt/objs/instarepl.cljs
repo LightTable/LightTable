@@ -26,7 +26,8 @@
                                     info (if (editor/selection? ed)
                                            (assoc info :local true :code (editor/selection ed) :auto? false :meta {:start (-> (editor/->cursor ed "start") :line)})
                                            (assoc info :local true :code v :auto? auto? :pos (when pos? (editor/->cursor ed)))
-                                           )]
+                                           )
+                                    info (assoc info :print-length (object/raise-reduce obj :clojure.print-length+ nil))]
                                 (notifos/working "")
                                 (clients/send (eval/get-client! {:origin obj
                                                                  :info info

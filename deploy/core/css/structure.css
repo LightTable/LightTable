@@ -1,7 +1,7 @@
 /* structure */
 
-html { background:#202020; overflow:hidden; height:100vh; }
-body { background:#202020; height:100vh; width:100vw;  font-family: "Verdana", "Courier New", "Inconsolata", monospace; font-size:10pt; overflow:hidden;}
+html { overflow:hidden; height:100vh; }
+body { height:100vh; width:100vw;  font-family: "Verdana", "Courier New", "Inconsolata", monospace; font-size:10pt; overflow:hidden;}
 input { border:none; padding:5px; outline:none; border-radius:2px; font-size:10pt; }
 a {text-decoration:none; }
 ul { list-style:none; }
@@ -21,18 +21,19 @@ body { -webkit-user-select: none; }
 
 .CodeMirror { font-size:11pt; font-family: "Inconsolata", "Ubuntu Mono", "Consolas", monospace; }
 
-.result-mark {-webkit-user-select: text; margin-left:6px; max-width:700px; overflow:hidden; display:inline-block; width:auto; }
-.result-mark .truncated { display:inline-block; white-space:nowrap; cursor:pointer; padding:0 5px; border-radius:3px; box-sizing:border-box;}
-.result-mark .full { display:none; padding:0 5px; vertical-align:top; max-height:50%; overflow-y:auto;  white-space:pre-wrap; border-radius:3px; }
+.result-mark {-webkit-user-select: text; margin-left:6px; max-width:700px; overflow:hidden; display:inline-block; width:-webkit-fit-content; vertical-align:top; }
+.result-mark .truncated { display:inline-block; white-space:nowrap; cursor:pointer; padding:0 5px; border-radius:2px; box-sizing:border-box; vertical-align:top; }
+.result-mark .full { display:none; padding:0 5px; vertical-align:top; max-height:50%; overflow-y:auto; width:-webkit-fit-content; white-space:pre-wrap; border-radius:2px; vertical-align:top; }
 .result-mark.open .full { display:inline-block; }
 .result-mark.open .truncated { display:none; }
 
-.inline-exception { box-sizing:border-box; padding:5px 0px; padding-left:10px; -webkit-user-select:text; white-space:pre-wrap; }
-.inline-exception pre { display:inline-block; white-space:pre-wrap;  padding:4px 10px; padding-bottom:6px; }
-.inline-exception .spacer { display:inline-block; white-space:pre; }
+.inline-exception { box-sizing:border-box; padding:5px 0px; padding-left:10px; -webkit-user-select:text; white-space:nowrap; overflow:hidden; }
+.inline-exception pre { display:inline-block; white-space:pre-wrap;  padding:4px 10px !important; padding-bottom:6px !important; border-radius:2px; vertical-align:top; overflow:hidden; }
+.inline-exception .spacer { display:inline-block; white-space:pre; vertical-align:top; }
 
-.underline-result{ box-sizing:border-box; padding:5px 0px; -webkit-user-select:text; white-space:pre-wrap; width:100%;}
-.underline-result pre { white-space:pre-wrap; padding:15px 10px !important; border-radius:2px; }
+.underline-result{ box-sizing:border-box; padding:5px 0px; -webkit-user-select:text; white-space:nowrap; padding-left:10px; }
+.underline-result pre { display:inline-block; white-space:pre-wrap; padding:15px 10px !important; border-radius:2px; }
+.underline-result .spacer { display:inline-block; white-space:pre; vertical-align:top; }
 
 .dragimage { display:block; height:0; width:0; cursor:default; }
 .sortable-placeholder { box-sizing:border-box; border:1px solid #777; border-top:none; }
@@ -52,7 +53,6 @@ body { -webkit-user-select: none; }
 #multi { z-index:20; position:fixed; left:0px; right:0px; top:0px; bottom:0px; padding-right:10px; overflow:hidden; }
 #multi .tabsets { left:0; right:0; position:absolute; top:0; bottom:34px; max-width:100%; width:100%; overflow:hidden; white-space:nowrap; }
 #multi .tabset { box-sizing:border-box; position:relative; overflow:hidden; width:100%; height:100%; float:none; vertical-align:top; display:inline-block; white-space:normal; }
-#multi .tabset + .tabset { border-left:2px solid #444; }
 #multi .list { display:block; background:transparent; overflow-y:hidden; overflow-x:hidden; margin:0 8px; z-index:10000000; }
 #multi .list:hover { overflow-x:auto; height:36px; z-index:1000; }
 #multi .list ul { height:36px; width:auto; white-space:nowrap; }
@@ -105,7 +105,7 @@ body { -webkit-user-select: none; }
 #instarepl .result-mark { border-radius:2px; display:inline-block; vertical-align:top; }
 #instarepl .result-mark .truncated { display:inline-block; overflow:hidden; }
 #instarepl .result-mark.open .truncated { display:none; overflow:hidden; vertical-align:top; }
-#instarepl .result-mark.open .full { display:inline-block; overflow:hidden; vertical-align:top; }
+#instarepl .result-mark.open .full { display:inline-block; overflow-y:auto; vertical-align:top; }
 #instarepl .use-result .truncated { max-width: 100px; }
 #instarepl .result-result .truncated { display:none; }
 #instarepl .result-result .full { display:inline-block; overflow:auto !important; }
@@ -169,7 +169,6 @@ body { -webkit-user-select: none; }
 #right-bar .command.options .selector { display:none; }
 #right-bar .command.selector .options { display:none; overflow:hidden; }
 #right-bar .command li { padding:5px 5px; line-height:1.2em; }
-#right-bar .command li + li { border-top:1px solid #606060; }
 #right-bar .command .binding { font-size:8pt; }
 
 #side .workspace { position:relative; height:100%; overflow:hidden; padding-top:0px; }
@@ -203,7 +202,6 @@ body { -webkit-user-select: none; }
 #right-bar .navigate { height:100%; overflow:auto; box-sizing:border-box; }
 #right-bar .navigate em { font-weight:normal; }
 #right-bar .navigate li { border:none; padding:5px 5px; cursor:default; overflow:hidden; direction:rtl; width:100%; box-sizing:border-box; white-space:nowrap; }
-#right-bar .navigate li + li { border-top:1px solid #606060; }
 #right-bar .navigate p { font-size:8pt; }
 #right-bar .navigate h2 { font-size:11pt; }
 #right-bar .navigate .selected, #side .navigate li:hover { border-radius:2px}
@@ -263,7 +261,9 @@ body { -webkit-user-select: none; }
 .vertical-grip { background: transparent; width:7px; height:100%; z-index:10000000; position:absolute; top:0; right:0; cursor:col-resize; }
 
 #find-bar {z-index:1000; position:fixed; right:0; height:30px; background:transparent;}
-#find-bar input { border:none; font-size:11pt; font-family:"Inconsolata", "Ubuntu Mono", "Consolas", monospace; width:100%; height:30px; box-sizing:border-box; padding:5px; padding-left:10px; outline:none; }
+#find-bar input { display:inline-block; font-size:11pt; font-family:"Inconsolata", "Ubuntu Mono", "Consolas", monospace; border-radius:0;  width:50%; height:30px; box-sizing:border-box; padding:5px; padding-left:10px; outline:none; }
+#find-bar button { position:absolute; right:-3px; z-index: 100000; padding:6px 10px;}
+
 
 .docs { width:100%; height:100%; }
 .docs iframe { width:100%; height:100%; }
@@ -274,45 +274,41 @@ body { -webkit-user-select: none; }
 #browser input { font-size:10pt; padding-left:10px; background:#444; width:-webkit-calc(100% - 60px); padding:5px 12px; vertical-align:middle;}
 #browser button { width:20px; height:26px; padding:4px 5px; box-sizing:border-box; border-radius:0px; vertical-align:middle; }
 
-#keybinding { overflow:auto; height:100%; padding-top:20px; }
-#keybinding .binder { float:left; padding:0 50px; padding-left:50px; width:40%; box-sizing:border-box; position:relative; }
-#keybinding .binder input { width:100%; box-sizing:border-box; font-size:10pt;  border:none; outline:none; padding:10px; border-radius:2px; }
-#keybinding .capture { position:relative; margin-top:130px;}
-#keybinding h3 { font-size:14pt; margin:10px 0; }
-#keybinding .all-mappings { height:100%; overflow:auto; margin-top:0px; float:right; padding-left:5%; width:55%; border-left:2px solid #505050;box-sizing:border-box;}
-#keybinding .all-mappings td { vertical-align:top; padding:10px 5px; }
-#keybinding .all-mappings td > ul > li { margin-bottom:0px; border-radius:2px; padding:2px 10px; cursor:default; }
-#keybinding .all-mappings td li em { display:inline-block; padding:10px;}
-#keybinding .all-mappings .remove { display:none; float:right; cursor:default; padding: 5px 8px; margin-top:5px; border-radius:2px; }
-#keybinding .all-mappings li:hover .remove { display:inline; }
-#keybinding ul.keys { float:left; display:inline-block; }
-#keybinding ul.keys li { float:left; display:inline-block; padding:10px;  border-radius:2px; }
-#keybinding ul.keys li + li { margin-left:5px; }
-#keybinding .filter-list { position:relative; }
-#keybinding .filter-list ul {height: 100px; overflow:auto; display:none; position:absolute; top:35px; width:100%; z-index:10; border-radius:2px; padding:5px 0px; box-sizing:border-box;}
-#keybinding .filter-list li { padding:0 10px; border-radius:2px; }
-#keybinding input:focus + * { display:block; }
-#keybinding button { float:right; margin-top:30px; padding:10px;}
-#keybinding .mappings { margin-top:10px; }
-
 #side .tab-settings .filter-list { position:relative; }
 #side .tab-settings .filter-list ul {height: 100px; overflow:auto; display:none; position:absolute; top:35px; width:100%; z-index:10; border-radius:2px; padding:5px 0px; box-sizing:border-box;}
 #side .tab-settings .filter-list li { padding:0 10px; border-radius:2px; }
 #side .tab-settings .filter-list input:focus + * { display:block; }
 
-#behavior-editor {overflow-y:auto;}
-#behavior-editor div { background: transparent; margin-bottom:5px; }
-#behavior-editor li { background: #444; margin-left:20px; margin-bottom:5px; }
-#behavior-editor li.user { color:green; }
-#behavior-editor h3 { color:red; }
+#behavior-editor {overflow-y:auto; position:relative; height:100%; }
+#behavior-editor .behaviors > div { background: transparent; padding:7px; margin:0; margin-bottom:15px; }
+#behavior-editor li { margin-left:0px; margin-bottom:5px; }
+#behavior-editor h2 { font-size:11pt; margin-bottom:10px; }
+#behavior-editor .file {position:absolute; padding:0; background:none; top:0; height:30px; left:0px; right:0px; }
+#behavior-editor .file li { display:inline-block; padding:5px;}
+#behavior-editor .behaviors {position:absolute; left:0px; right:0px; top:40px; bottom:0px; overflow:auto;}
+#behavior-editor .behaviors li { padding:5px 10px; border-radius:2px; display:block; position:relative; }
+#behavior-editor .instance-editor {padding:10px;}
+#behavior-editor .instance-editor dt {display:inline-block; width:20%; vertical-align:top; }
+#behavior-editor .instance-editor dd {display:inline-block; clear:right; width:80%; overflow:hidden; position:relative; }
+#behavior-editor .instance-editor .ex { font-size:10pt; font-family:"Inconsolata", "Ubuntu Mono", "Consolas", monospace; white-space:pre; padding-top:5px;}
+#behavior-editor .filter-list { box-sizing:border-box; position:relative; }
+#behavior-editor .filter-list > ul { overflow-y:auto;  }
+#behavior-editor .filter-list li { border-radius:2px; }
+#behavior-editor .CodeMirror {height:auto; width:auto; margin:0; padding:0; border-radius:2px; }
+#behavior-editor .CodeMirror-scroll {height:auto; width:auto;}
+#behavior-editor .hidden {display:none !important;}
+#behavior-editor h3 { }
+#behavior-editor h3 .remove { position:absolute; right:0; top:0; padding:5px 10px; border-radius:2px; }
+#behavior-editor h3 .remove:hover { background:var(accent-foreground); color:var(accent-background); }
+
 
 .search-results { overflow-y:auto; overflow-x:hidden; overflow:hidden; position:relative; }
 .search-results input { width:90%; }
 .search-results .res { position:absolute; overflow:auto; width:100%; top:0; bottom:130px; }
 .search-results .searcher { margin-bottom:10px; margin-top:10px; position:absolute; bottom:0px; width:100%; }
-.search-results .res li { background:transparent; padding:7px 0; border-bottom:0px solid #444; }
+.search-results .res li { background:transparent; padding:7px 0; margin-bottom:5px; border-bottom:0px solid #444; }
 .search-results .path .file { font-size:11pt; margin-right:10px; }
-.search-results .path { font-size:10pt; margin-bottom:0px; }
+.search-results .path { font-size:10pt; margin-bottom:3px; }
 .search-results em { border-radius:2px; }
 .search-results pre { display:inline-block; white-space:nowrap; vertical-align:top;}
 .search-results p { white-space:nowrap; cursor:default;}
@@ -355,6 +351,7 @@ body { -webkit-user-select: none; }
 .animated #bottombar { -webkit-transition:height 0.1s ease-in-out, left 0.1s ease-in-out, right 0.1s ease-in-out; }
 .animated #side { -webkit-transition:width 0.1s ease-in-out; }
 .animated #right-bar { -webkit-transition:width 0.10s ease-in-out; }
+.animated #find-bar {  -webkit-transition:left 0.1s ease-in-out, right 0.10s ease-in-out; }
 
 .dragging .frame-shade { display:block !important; }
 

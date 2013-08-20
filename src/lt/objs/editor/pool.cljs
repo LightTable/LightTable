@@ -191,91 +191,12 @@
       (dom/focus js/document.body)
       (editor/focus ed))))
 
-(defn set-syntax [ed {:keys [mode item] :as all}]
-  (let [type (string/lower-case item)
-        prev-type (-> @ed :info :type)]
-    (object/update! ed [:info] assoc :type type)
-    (editor/set-mode ed mode)
-    (when prev-type
-      (object/remove-tags ed [(->dottedkw :editor prev-type)]))
-    (object/add-tags ed [(->dottedkw :editor type)])))
-
 (defn create [info]
   (let [ed (object/create :lt.objs.editor/editor info)]
     (object/add-tags ed (:tags info []))
     (object/raise pool :create ed info)
+    (object/raise ed :create)
     ed))
-
-(object/add-behavior! canvas/canvas ::focus-last-on-focus)
-(object/tag-behaviors :app [::stop-close-dirty ::stop-reload-dirty])
-(object/tag-behaviors :editor [::ed-close ::track-active ::warn-on-active])
-(object/tag-behaviors :workspace [::watched.rename ::watched.delete ::watched.update])
-
-(def default-tab-settings {:indentWithTabs false
-                           :indentUnit 2
-                           :tabSize 2})
-(def tab-size (cmd/options-input {:placeholder "Tab size"}))
-(def indent-unit (cmd/options-input {:placeholder "Indent unit"}))
-(def use-tabs (cmd/filter-list {:items [{:item "true" :value true} {:item "false" :value false}]
-                                :key :item
-                                :set-on-select true
-                                :placeholder "Use tabs?"}))
-
-(object/object* ::tab-options
-                :tags #{:tab-options}
-                :init (fn [this]
-                        [:div.tab-settings
-                         [:label "Tab size (width of a tab character)"]
-                         (object/->content tab-size)
-                         [:label "Indent unit (spaces per indent)"]
-                         (object/->content indent-unit)
-                         [:label "Indent with tabs?"]
-                         (object/->content use-tabs)]))
-
-(object/behavior* ::focus-options
-                  :triggers #{:focus!}
-                  :reaction (fn [this]
-                              (object/raise tab-size :focus!)))
-
-(object/behavior* ::set-tab-settings
-                  :triggers #{:select}
-                  :reaction (fn [this v]
-                              (cmd/exec-active! {:indentWithTabs (:value (cmd/current-selected use-tabs))
-                                                 :indentUnit (js/parseInt (dom/val (object/->content indent-unit)))
-                                                 :tabSize (js/parseInt (dom/val (object/->content tab-size)))
-                                                 })))
-
-(object/behavior* ::add-tab-settings
-                  :triggers #{:create}
-                  :reaction (fn [this ed]
-                              (let [stts (or (settings/fetch :tab-settings) default-tab-settings)]
-                                (editor/set-options ed stts))
-                              ))
-
-(object/behavior* ::init-tab-settings
-                  :triggers #{:init}
-                  :reaction (fn [this]
-                              (let [stts (or (settings/fetch :tab-settings) default-tab-settings)]
-                                (object/merge! tab-size {:value (:tabSize stts)})
-                                (object/merge! indent-unit {:value (:indentUnit stts)})
-                                (cmd/set-and-select use-tabs (if (:indentWithTabs stts)
-                                                               "true"
-                                                               "false")))))
-
-(object/add-behavior! tab-size ::set-tab-settings)
-(object/add-behavior! indent-unit ::set-tab-settings)
-(object/add-behavior! use-tabs ::set-tab-settings)
-(object/tag-behaviors :tab-options [::focus-options])
-(object/tag-behaviors :editor.pool [::add-tab-settings])
-(object/tag-behaviors :app [::init-tab-settings])
-
-(cmd/command {:command :change-tab-settings
-              :desc "Settings: Set tab size/behavior"
-              :options (object/create ::tab-options)
-              :exec (fn [opts]
-                      (settings/store! :tab-settings opts)
-                      (object/raise pool :options-changed opts)
-                      )})
 
 (cmd/command {:command :focus-last-editor
               :desc "Editor: Focus last active editor"
@@ -283,57 +204,20 @@
               :exec (fn []
                       (focus-last))})
 
-(def syntaxes [{:item "CSS" :mode "css"}
-               {:item "HTML" :mode "htmlmixed"}
-               {:item "Javascript" :mode "javascript"}
-               {:item "JSON" :mode "javascript"}
-               {:item "C" :mode "text/x-c"}
-               {:item "C++" :mode "text/x-c++src"}
-               {:item "C++ Header" :mode "text/x-c++hdr"}
-               {:item "Java" :mode "text/x-java"}
-               {:item "C#" :mode "text/x-csharp"}
-               {:item "Scala" :mode "text/x-scala"}
-               {:item "CoffeeScript" :mode "text/x-coffeescript"}
-               {:item "Common Lisp" :mode "text/x-common-lisp"}
-               {:item "Diff" :mode "text/x-diff"}
-               {:item "Patch" :mode "text/x-diff"}
-               {:item "Erlang" :mode "text/x-erlang"}
-               {:item "Go" :mode "text/x-go"}
-               {:item "Groovy" :mode "text/x-groovy"}
-               {:item "Haml" :mode "text/x-haml"}
-               {:item "Haskell" :mode "text/x-haskell"}
-               {:item "Haxe" :mode "text/x-haxe"}
-               {:item "LESS" :mode "text/x-less"}
-               {:item "Lua" :mode "text/x-lua"}
-               {:item "OCaml" :mode "text/x-ocaml"}
-               {:item "Pascal" :mode "text/x-pascal"}
-               {:item "Perl" :mode "text/x-perl"}
-               {:item "PHP" :mode "text/x-php"}
-               {:item "Plain Text" :mode "plaintext"}
-               {:item "SQL" :mode "text/x-plsql"}
-               {:item "Ini" :mode "text/x-ini"}
-               {:item "R" :mode "text/x-rsrc"}
-               {:item "Rust" :mode "text/x-rustsrc"}
-               {:item "LaTeX" :mode "text/x-stex"}
-               {:item "Sass" :mode "text/x-sass"}
-               {:item "Scheme" :mode "text/x-scheme"}
-               {:item "Shell" :mode "text/x-sh"}
-               {:item "SCSS" :mode "text/x-scss"}
-               {:item "St" :mode "text/x-stsrc"}
-               {:item "Smarty" :mode "text/x-smarty"}
-               {:item "SPARQL" :mode "text/x-sparql-query"}
-               {:item "Visual Basic" :mode "text/x-vb"}
-               {:item "XML" :mode "text/x-xml"}
-               {:item "Ruby" :mode "ruby"}
-               {:item "Clojure" :mode "clj"}
-               {:item "ClojureScript" :mode "cljs"}
-               {:item "Yaml" :mode "yaml"}
-               {:item "Python" :mode "python"}
-               {:item "Markdown" :mode "markdown"}])
 
-(def syntax-selector (cmd/filter-list {:items syntaxes
-                                       :key :item
+(def syntax-selector (cmd/filter-list {:items (fn []
+                                                (sort-by :name (-> @files/files-obj :types vals)))
+                                       :key :name
                                        :placeholder "Syntax"}))
+
+(defn set-syntax [ed new-syn]
+  (let [prev-info (-> @ed :info)]
+    (when prev-info
+      (println "removing tags: " (:tags prev-info))
+      (object/remove-tags ed (:tags prev-info)))
+    (object/update! ed [:info] merge (dissoc new-syn :name))
+    (editor/set-mode ed (:mime new-syn))
+    (object/add-tags ed (:tags new-syn))))
 
 (object/behavior* ::set-syntax
                   :triggers #{:select}
@@ -346,6 +230,7 @@
               :desc "Editor: Set current editor syntax"
               :options syntax-selector
               :exec (fn [syn]
+                      (println syn)
                       (if-let [last (last-active)]
                         (set-syntax last syn)
                         (notifos/set-msg! "Set syntax requires an active editor")))})
@@ -425,3 +310,284 @@
                             v (not (editor/option ed :lineWrapping))]
                         (editor/set-options ed {:lineWrapping v}))
                       )})
+
+(cmd/command {:command :editor.select-all
+              :desc "Editor: Select all"
+              :hidden true
+              :exec (fn []
+                      (when-let [ed (last-active)]
+                        (js/CodeMirror.commands.selectAll (editor/->cm-ed ed))))})
+
+(cmd/command {:command :editor.kill-line
+              :desc "Editor: Kill line"
+              :hidden true
+              :exec (fn []
+                      (when-let [ed (last-active)]
+                        (js/CodeMirror.commands.killLine (editor/->cm-ed ed))))})
+
+(cmd/command {:command :editor.delete-line
+              :desc "Editor: Delete line"
+              :hidden true
+              :exec (fn []
+                      (when-let [ed (last-active)]
+                        (js/CodeMirror.commands.deleteLine (editor/->cm-ed ed))))})
+
+(cmd/command {:command :editor.delete-line-left
+              :desc "Editor: Delete line left"
+              :hidden true
+              :exec (fn []
+                      (when-let [ed (last-active)]
+                        (js/CodeMirror.commands.delLineLeft (editor/->cm-ed ed))))})
+
+(cmd/command {:command :editor.undo
+              :desc "Editor: Undo"
+              :hidden true
+              :exec (fn []
+                      (when-let [ed (last-active)]
+                        (js/CodeMirror.commands.undo (editor/->cm-ed ed))))})
+
+(cmd/command {:command :editor.redo
+              :desc "Editor: Redo"
+              :hidden true
+              :exec (fn []
+                      (when-let [ed (last-active)]
+                        (js/CodeMirror.commands.redo (editor/->cm-ed ed))))})
+
+(cmd/command {:command :editor.doc-start
+              :desc "Editor: Move to first line"
+              :hidden true
+              :exec (fn []
+                      (when-let [ed (last-active)]
+                        (js/CodeMirror.commands.goDocStart (editor/->cm-ed ed))))})
+
+(cmd/command {:command :editor.doc-end
+              :desc "Editor: Move to last line"
+              :hidden true
+              :exec (fn []
+                      (when-let [ed (last-active)]
+                        (js/CodeMirror.commands.goDocEnd (editor/->cm-ed ed))))})
+
+(cmd/command {:command :editor.line-start
+              :desc "Editor: Move to start of the line"
+              :hidden true
+              :exec (fn []
+                      (when-let [ed (last-active)]
+                        (js/CodeMirror.commands.goLineStart (editor/->cm-ed ed))))})
+
+(cmd/command {:command :editor.line-start-smart
+              :desc "Editor: Move to first non-whitespace char in the line"
+              :hidden true
+              :exec (fn []
+                      (when-let [ed (last-active)]
+                        (js/CodeMirror.commands.gotoLineStartSmart (editor/->cm-ed ed))))})
+
+(cmd/command {:command :editor.line-end
+              :desc "Editor: Move to end of the line"
+              :hidden true
+              :exec (fn []
+                      (when-let [ed (last-active)]
+                        (js/CodeMirror.commands.goLineEnd (editor/->cm-ed ed))))})
+
+(cmd/command {:command :editor.line-right
+              :desc "Editor: Goto the right of the line"
+              :hidden true
+              :exec (fn []
+                      (when-let [ed (last-active)]
+                        (js/CodeMirror.commands.goLineRight (editor/->cm-ed ed))))})
+
+(cmd/command {:command :editor.line-left
+              :desc "Editor: Goto the left of the line"
+              :hidden true
+              :exec (fn []
+                      (when-let [ed (last-active)]
+                        (js/CodeMirror.commands.goLineLeft (editor/->cm-ed ed))))})
+
+(cmd/command {:command :editor.line-up
+              :desc "Editor: Previous line"
+              :hidden true
+              :exec (fn []
+                      (when-let [ed (last-active)]
+                        (js/CodeMirror.commands.goLineUp (editor/->cm-ed ed))))})
+
+(cmd/command {:command :editor.line-down
+              :desc "Editor: Next line"
+              :hidden true
+              :exec (fn []
+                      (when-let [ed (last-active)]
+                        (js/CodeMirror.commands.goLineDown (editor/->cm-ed ed))))})
+
+(cmd/command {:command :editor.page-up
+              :desc "Editor: Page up"
+              :hidden true
+              :exec (fn []
+                      (when-let [ed (last-active)]
+                        (js/CodeMirror.commands.goPageUp (editor/->cm-ed ed))))})
+
+(cmd/command {:command :editor.page-down
+              :desc "Editor: Page down"
+              :hidden true
+              :exec (fn []
+                      (when-let [ed (last-active)]
+                        (js/CodeMirror.commands.goPageDown (editor/->cm-ed ed))))})
+
+(cmd/command {:command :editor.char-left
+              :desc "Editor: Move left one character"
+              :hidden true
+              :exec (fn []
+                      (when-let [ed (last-active)]
+                        (js/CodeMirror.commands.goCharLeft (editor/->cm-ed ed))))})
+
+(cmd/command {:command :editor.char-right
+              :desc "Editor: Move right one character"
+              :hidden true
+              :exec (fn []
+                      (when-let [ed (last-active)]
+                        (js/CodeMirror.commands.goCharRight (editor/->cm-ed ed))))})
+
+
+(cmd/command {:command :editor.column-left
+              :desc "Editor: Move left one column"
+              :hidden true
+              :exec (fn []
+                      (when-let [ed (last-active)]
+                        (js/CodeMirror.commands.goColumnLeft (editor/->cm-ed ed))))})
+
+(cmd/command {:command :editor.column-right
+              :desc "Editor: Move right one column"
+              :hidden true
+              :exec (fn []
+                      (when-let [ed (last-active)]
+                        (js/CodeMirror.commands.goColumnRight (editor/->cm-ed ed))))})
+
+(cmd/command {:command :editor.word-left
+              :desc "Editor: Move left one word"
+              :hidden true
+              :exec (fn []
+                      (when-let [ed (last-active)]
+                        (js/CodeMirror.commands.goWordLeft (editor/->cm-ed ed))))})
+
+(cmd/command {:command :editor.word-right
+              :desc "Editor: Move right one word"
+              :hidden true
+              :exec (fn []
+                      (when-let [ed (last-active)]
+                        (js/CodeMirror.commands.goWordRight (editor/->cm-ed ed))))})
+
+(cmd/command {:command :editor.group-left
+              :desc "Editor: Move left one group"
+              :hidden true
+              :exec (fn []
+                      (when-let [ed (last-active)]
+                        (js/CodeMirror.commands.goGroupLeft (editor/->cm-ed ed))))})
+
+(cmd/command {:command :editor.group-right
+              :desc "Editor: Move right one group"
+              :hidden true
+              :exec (fn []
+                      (when-let [ed (last-active)]
+                        (js/CodeMirror.commands.goGroupRight (editor/->cm-ed ed))))})
+
+(cmd/command {:command :editor.delete-char-left
+              :desc "Editor: Delete character to the left"
+              :hidden true
+              :exec (fn []
+                      (when-let [ed (last-active)]
+                        (js/CodeMirror.commands.delCharBefore (editor/->cm-ed ed))))})
+
+(cmd/command {:command :editor.delete-char-right
+              :desc "Editor: Delete character to the right"
+              :hidden true
+              :exec (fn []
+                      (when-let [ed (last-active)]
+                        (js/CodeMirror.commands.delCharAfter (editor/->cm-ed ed))))})
+
+(cmd/command {:command :editor.delete-word-left
+              :desc "Editor: Delete word to the left"
+              :hidden true
+              :exec (fn []
+                      (when-let [ed (last-active)]
+                        (js/CodeMirror.commands.delWordBefore (editor/->cm-ed ed))))})
+
+(cmd/command {:command :editor.delete-word-right
+              :desc "Editor: Delete word to the right"
+              :hidden true
+              :exec (fn []
+                      (when-let [ed (last-active)]
+                        (js/CodeMirror.commands.delWordAfter (editor/->cm-ed ed))))})
+
+(cmd/command {:command :editor.delete-group-left
+              :desc "Editor: Delete group to the left"
+              :hidden true
+              :exec (fn []
+                      (when-let [ed (last-active)]
+                        (js/CodeMirror.commands.delGroupBefore (editor/->cm-ed ed))))})
+
+(cmd/command {:command :editor.delete-group-right
+              :desc "Editor: Delete group to the right"
+              :hidden true
+              :exec (fn []
+                      (when-let [ed (last-active)]
+                        (js/CodeMirror.commands.delGroupAfter (editor/->cm-ed ed))))})
+
+(cmd/command {:command :editor.transpose-chars
+              :desc "Editor: Transpose characters"
+              :hidden true
+              :exec (fn []
+                      (when-let [ed (last-active)]
+                        (js/CodeMirror.commands.transposeChars (editor/->cm-ed ed))))})
+
+(cmd/command {:command :editor.new-line-indent
+              :desc "Editor: Newline and indent"
+              :hidden true
+              :exec (fn []
+                      (when-let [ed (last-active)]
+                        (js/CodeMirror.commands.newlineAndIndent (editor/->cm-ed ed))))})
+
+(cmd/command {:command :editor.toggle-overwrite
+              :desc "Editor: Toggle overwrite"
+              :hidden true
+              :exec (fn []
+                      (when-let [ed (last-active)]
+                        (js/CodeMirror.commands.toggleOverwrite (editor/->cm-ed ed))))})
+
+(cmd/command {:command :editor.cut
+              :desc "Editor: Cut"
+              :hidden true
+              :exec (fn []
+                      (when-let [ed (last-active)]
+                        (editor/cut ed)))})
+
+(cmd/command {:command :editor.copy
+              :desc "Editor: Copy"
+              :hidden true
+              :exec (fn []
+                      (when-let [ed (last-active)]
+                        (editor/copy ed)))})
+
+(cmd/command {:command :editor.paste
+              :desc "Editor: Paste"
+              :hidden true
+              :exec (fn []
+                      (when-let [ed (last-active)]
+                        (editor/paste ed)))})
+
+(cmd/command {:command :editor.select-all
+              :desc "Editor: Select all"
+              :hidden true
+              :exec (fn []
+                      (when-let [ed (last-active)]
+                        (editor/select-all ed)))})
+
+(cmd/command {:command :editor.undo
+              :desc "Editor: Undo"
+              :hidden true
+              :exec (fn []
+                      (when-let [ed (last-active)]
+                        (editor/undo ed)))})
+
+(cmd/command {:command :editor.redo
+              :desc "Editor: Redo"
+              :hidden true
+              :exec (fn []
+                      (when-let [ed (last-active)]
+                        (editor/redo ed)))})

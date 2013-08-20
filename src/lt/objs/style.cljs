@@ -36,7 +36,7 @@
   [:link {:rel "stylesheet"
           :type "text/css"
           :id "skin-style"
-          :href (bound (subatom settings/settings [:skin]) #(deploy/in-lt (str "core/css/skins/" (or % "dark") ".css")))}])
+          :href (bound (subatom settings/settings [:skin]) #(str "/core/css/skins/" (or % "dark") ".css"))}])
 
 (object/object* ::styles
                 :triggers []
@@ -151,6 +151,10 @@
 (object/behavior* ::set-skin
                   :triggers #{:object.instant}
                   :desc "Style: Set Light Table skin"
+                  :params [{:label "skin"
+                            :type :list
+                            :key :item
+                            :items get-skins}]
                   :type :user
                   :reaction (fn [this skin]
                               (settings/store! :skin skin)))
@@ -169,7 +173,7 @@
   [:link {:rel "stylesheet"
           :type "text/css"
           :id (str "theme-" name)
-          :href (str "css/themes/" name ".css")}])
+          :href (str "/core/css/themes/" name ".css")}])
 
 (defn load-theme [name]
   (when-not (empty? prev-theme)
@@ -191,6 +195,10 @@
 (object/behavior* ::set-theme
                   :triggers #{:object.instant :show}
                   :desc "Style: Set the editor theme"
+                  :params [{:label "theme"
+                            :type :list
+                            :key :item
+                            :items get-themes}]
                   :type :user
                   :exclusive true
                   :reaction (fn [this sel]

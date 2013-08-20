@@ -1,5 +1,5 @@
 {:+ {:app [:lt.plugins.vim/init
-           (:lt.plugins.vim/map-keys {":" ":ex"
+           (:lt.plugins.vim/map-keys {":" ":ltexec vim.ex"
                                       "?" ":ltexec vim.find true"
                                       "/" ":ltexec vim.find"
                                       "n" ":ltexec find.next"

@@ -10,6 +10,7 @@
             [lt.objs.window :as window]
             [lt.util.load :as load]
             [lt.util.js :refer [every]]
+            [clojure.string :as string]
             [fetch.core :as fetch])
   (:require-macros [fetch.macros :refer [letrem]]
                    [lt.macros :refer [defui]]))
@@ -34,6 +35,20 @@
 
 (def version-timeout (* 5 60 1000))
 (def version (get-versions))
+
+(defn str->version [s]
+  (let [[major minor patch] (string/split (subs s 0 (.indexOf s "-")) ".")]
+    {:major (js/parseInt major)
+     :minor (js/parseInt minor)
+     :patch (js/parseInt patch)}))
+
+(defn compare-versions [v1 v2]
+  (if (= v1 v2)
+    false
+    (every? identity (map #(>= % %2) (vals v2) (vals v1)))))
+
+(defn is-newer? [v1 v2]
+  (compare-versions (str->version v1) (str->version v2)))
 
 (defn exec-path []
   (.-execPath js/process))
@@ -89,7 +104,7 @@
                  (when (re-seq version-regex data)
                    (if (and (not= data "")
                             (not= data (:version version))
-                            (and js/window.setup (.compareVersions js/window.setup data (:version version)))
+                            (is-newer? (:version version) data)
                             (not= js/localStorage.fetchedVersion data))
                      (do
                        (set! js/localStorage.fetchedVersion data)
@@ -118,9 +133,7 @@
                                       )}]}))
 
 (defn check-nw-version [obj]
-  (assoc obj :nw-version (and js/window.setup (.compareVersions js/window.setup
-                                           (binary-version)
-                                           (:nw version "0.3.6-pre")))))
+  (assoc obj :nw-version (is-newer? (binary-version) (:nw version))))
 
 (defn notify [obj]
   (let [{:keys [nw-version]} obj]

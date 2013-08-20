@@ -17,7 +17,7 @@
 (object/behavior* ::on-show-refresh-eds
                   :triggers #{:show}
                   :reaction (fn [this]
-                              (object/raise (:ed @this) :refresh)
+                              (object/raise (:ed @this) :show)
                               ))
 
 (object/behavior* ::destroy-on-close
@@ -26,12 +26,9 @@
                               (object/destroy! this)))
 
 (object/object* ::version-pane
-                :triggers []
-                :behaviors [::destroy-on-close ::on-show-refresh-eds]
+                :tags #{:version}
                 :name "Version"
-                :preview ""
                 :init (fn [this]
-
                         (let [main (pool/create {:type "markdown" :content (-> (files/lt-home "/core/changelog.md")
                                                                                (files/open-sync)
                                                                                (:content))})]

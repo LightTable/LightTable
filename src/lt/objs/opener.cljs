@@ -4,6 +4,7 @@
             [lt.objs.editor.pool :as pool]
             [lt.objs.sidebar.command :as cmd]
             [lt.objs.editor.file :as fed]
+            [lt.objs.workspace :as workspace]
             [lt.objs.tabs :as tabs]
             [lt.objs.app :as app]
             [lt.objs.notifos :as notifos]
@@ -44,10 +45,8 @@
                   :triggers #{:new!}
                   :reaction (fn [this path dirty?]
                               (let [last (pool/last-active)
-                                    type (if last
-                                           (-> last deref :info :type)
-                                           "plaintext")
-                                    info (merge {:name "untitled" :type type} (path->info path))
+                                    info (merge {:type "plaintext" :tags [:editor.plaintext] :mime "plaintext" :name "untitled"}
+                                                (path->info path))
                                     ed (pool/create info)]
                                 (object/add-tags ed [:editor.transient])
                                 (object/merge! ed {:dirty dirty?})
@@ -84,7 +83,6 @@
                   :triggers #{:open-info!}
                   :reaction (fn [obj info]
                               (let [ed (pool/create info)]
-                                (object/add-tags ed [:editor.transient])
                                 (object/raise obj :open ed)
                                 (tabs/add! ed)
                                 (tabs/active! ed))))
@@ -108,9 +106,39 @@
                                                      (tabs/add! ed)
                                                      (tabs/active! ed))))))))
 
+(object/behavior* ::track-open-files
+                  :triggers #{:open}
+                  :reaction (fn [this ed]
+                              (when-let [path (-> @ed :info :path)]
+                                (object/update! this [:open-files] conj path))))
+
+(object/behavior* ::untrack-closed
+                  :triggers #{:destroy}
+                  :reaction (fn [this]
+                              (when-let [path (-> @this :info :path)]
+                                (object/update! opener [:open-files] disj (-> @this :info :path)))))
+
+(object/behavior* ::unwatch-closed
+                  :triggers #{:close.force}
+                  :reaction (fn [ed]
+                              (when-let [path (-> @ed :info :path)]
+                                (workspace/unwatch! (-> @ed :info :path)))))
+
+(object/behavior* ::watch-on-open
+                  :triggers #{:open}
+                  :reaction (fn [this ed]
+                              (when-let [path (-> @ed :info :path)]
+                                (workspace/watch! (-> @ed :info :path)))))
+
+(object/behavior* ::watch-open-files
+                  :triggers #{:watch-paths+}
+                  :reaction (fn [this cur]
+                              (concat cur (:open-files @opener))))
+
 (object/object* ::opener
                 :tags #{:opener}
                 :triggers #{}
+                :open-files #{}
                 :behaviors [::open-standard-editor]
                 :init (fn [this]))
 
@@ -144,6 +172,11 @@
                       (when-let [ed (pool/last-active)]
                         (object/raise ed :save-as-rename!)))
                       })
+
+(cmd/command {:command :opener.open-info
+              :desc "Opener: open info"
+              :exec (fn [info]
+                      (object/raise opener :open-info! info))})
 
 (set! js/window.ondragover  (fn [e]
                               (set! (.-dataTransfer.dropEffect e) "move")

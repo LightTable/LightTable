@@ -56,17 +56,17 @@
 
 (object/behavior* ::load-js
                   :triggers #{:object.instant}
-                  :desc "Load a javascript file"
-                  :params {"path" "The path of the file to load"
-                           "sync?" "Whether to load the JS synchronously"}
+                  :desc "App: Load a javascript file"
+                  :params [{:label "path"}
+                           {:label "sync?"}]
                   :type :user
                   :reaction (fn [this path sync?]
                               (load/js path sync?)))
 
 (object/behavior* ::load-css
                   :triggers #{:object.instant}
-                  :desc "Load a css file"
-                  :params {"path" "The pad of the css file to load"}
+                  :desc "App: Load a css file"
+                  :params [{:label "path"}]
                   :type :user
                   :reaction (fn [this path]
                               (load/css path)))

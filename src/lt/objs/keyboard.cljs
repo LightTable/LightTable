@@ -50,14 +50,15 @@
 (refresh)
 
 (defn ->keystr [ev]
-  (str (when (.-altKey ev) "alt-")
-       (when (or (.-altGraphKey ev) altgr) "altgr-")
-       (when (.-ctrlKey ev) "ctrl-")
-       (when (.-metaKey ev) (if (platform/mac?)
-                              "cmd-"
-                              "meta-"))
-       (when (.-shiftKey ev) "shift-")
-       (. (or (.-key ev) "") toLowerCase)))
+  (str
+   (when (.-ctrlKey ev) "ctrl-")
+   (when (.-metaKey ev) (if (platform/mac?)
+                          "cmd-"
+                          "meta-"))
+   (when (.-altKey ev) "alt-")
+   (when (or (.-altGraphKey ev) altgr) "altgr-")
+   (when (.-shiftKey ev) "shift-")
+   (. (or (.-key ev) "") toLowerCase)))
 
 (defn chord|mapping [ev]
   (let [current (aget chords :current)
@@ -139,7 +140,7 @@
 
 (object/behavior* ::chord-timeout
                   :triggers #{:object.instant}
-                  :desc "Set the timeout for chords"
+                  :desc "App: Set the timeout for chorded shortcuts"
                   :type :user
                   :reaction (fn [this timeout]
                               (set! chord-timeout timeout)))

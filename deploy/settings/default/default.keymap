@@ -40,13 +40,20 @@
              "right" [(:popup.move-active -1)]}
      :sidebar.clients {"esc" [:hide-connect]}
      :searcher.search {"enter" [:searcher.search]}
-     :searcher.replace {"enter" [:searcher.replace]}
+     :searcher.replace {"pmeta-enter" [:searcher.replace]}
      :searcher.location {"enter" [:searcher.search]}
      :find-bar {"shift-enter" [:find.prev],
                 "esc" [:find.clear :find.hide],
                 "enter" [:find.next]}
+     :find-bar.replace {"pmeta-enter" [:find.replace-all],
+                        "esc" [:find.clear :find.hide],
+                        "enter" [:find.replace]}
      :find-bar.vim {"enter" [:find.hide]}
-     :browser.url-bar {"enter" [:browser.url-bar.navigate!]},
+     :browser { "pmeta-l" [:browser.url-bar.focus]
+                "pmeta-left" [:browser.back]
+                "pmeta-right" [:browser.forward]}
+     :browser.url-bar {"enter" [:browser.url-bar.navigate!]
+                       "esc" [:browser.focus-content]},
      :filter-list.input {"down" [(:filter-list.input.move-selection 1)],
                          "esc" [(:filter-list.input.escape! :force)],
                          "enter" [:filter-list.input.select!],

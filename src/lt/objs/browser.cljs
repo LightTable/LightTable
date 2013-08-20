@@ -7,9 +7,11 @@
             [lt.objs.eval :as eval]
             [lt.objs.clients :as clients]
             [lt.objs.sidebar.clients :as scl]
+            [lt.objs.menu :as menu]
             [lt.objs.context :as ctx]
             [lt.objs.editor :as editor]
             [lt.objs.keyboard :as keyboard]
+            [lt.objs.notifos :as notifos]
             [lt.objs.clients.devtools :as devtools]
             [lt.util.dom :as dom]
             [clojure.string :as string]
@@ -37,6 +39,7 @@
            (ctx/in! :browser.url-bar this)
            (object/raise this :active))
   :blur (fn []
+          (object/raise this :inactive)
           (ctx/out! :browser.url-bar)))
 
 (defui backward [this]
@@ -123,6 +126,7 @@
 (object/behavior* ::destroy-on-close
                   :triggers #{:close}
                   :reaction (fn [this]
+                              (object/raise this :inactive)
                               (object/destroy! this)))
 
 (object/behavior* ::rem-client
@@ -140,11 +144,8 @@
                               (let [bar (dom/$ :input (object/->content this))
                                     frame (to-frame this)
                                     url (check-http (or n (dom/val bar)))]
-                                (object/merge! this {:url url :urlvalue url})
-                                (set! (.-window.parent frame) frame)
-                                (set! (.-window.top frame) frame)
-                                )
-                              ))
+                                (notifos/working)
+                                (object/merge! this {:url url :urlvalue url :loading-counter (inc (:loading-counter @this 0))}))))
 
 (object/behavior* ::store-history
                   :triggers #{:navigate}
@@ -162,10 +163,15 @@
                                   )
                                 (object/update! this [:history-pos] inc))))
 
+(object/behavior* ::url-focus!
+                  :triggers #{:url.focus!}
+                  :reaction (fn [this]
+                              (dom/focus (dom/$ :input (object/->content this)))))
+
 (object/behavior* ::focus!
                   :triggers #{:focus!}
                   :reaction (fn [this]
-                              (dom/focus (dom/$ :input (object/->content this)))))
+                              (dom/focus (dom/$ :iframe (object/->content this)))))
 
 (object/behavior* ::back!
                   :triggers #{:back!}
@@ -191,6 +197,68 @@
                               (let [frame (to-frame this)]
                                 (.location.reload frame))))
 
+(object/behavior* ::menu!
+                  :triggers #{:menu!}
+                  :reaction (fn [this e]
+                       (let [items (sort-by :order (object/raise-reduce this :menu+ []))]
+                                (-> (menu/menu items)
+                                    (menu/show-menu (.-clientX e) (.-clientY e))))
+                       (dom/prevent e)
+                       (dom/stop-propagation e)))
+
+(object/behavior* ::menu+
+                  :triggers #{:menu+}
+                  :reaction (fn [this menu]
+                              (conj menu
+                                    {:label "forward"
+                                     :order 0
+                                     :click (fn [e]
+                                              (cmd/exec! :browser.forward))}
+                                    {:label "back"
+                                     :order 0
+                                     :click (fn [e]
+                                              (cmd/exec! :browser.back))})
+
+
+                       ))
+
+(object/behavior* ::window-load-click-handler
+                  :triggers #{:window.loaded}
+                  :reaction (fn [this window loc]
+                              (.document.addEventListener window "contextmenu"
+                                                          (fn [e]
+                                                            (object/raise this :menu! e)))
+                              (.document.addEventListener window "click"
+                                                          (fn [e]
+                                                            (object/raise this :active)
+                                                            (.log js/console (.-clientX e))
+                                                            (when (and
+                                                                   (= (.-target.nodeName e) "A")
+                                                                   (or (and (platform/mac?) (.-metaKey e))
+                                                                       (.-ctrlKey e)))
+                                                              (.preventDefault e)
+                                                              (.stopPropagation e)
+                                                              (cmd/exec! :add-browser-tab (.-target.href e))))
+                                                          true)))
+
+(object/behavior* ::window-load-key-handler
+                  :triggers #{:window.loaded}
+                  :reaction (fn [this window loc]
+                              (let [script (.document.createElement window "script")]
+                                (set! (.-type script) "text/javascript")
+                                (set! (.-innerHTML script) (:content (files/open-sync "core/node_modules/lighttable/util/keyevents.js")))
+                                (.document.head.appendChild window script))
+                              (.document.addEventListener window "keydown"
+                                                          (fn [e]
+                                                            (when (keyboard/capture e)
+                                                              (dom/prevent e)
+                                                              (dom/stop-propagation e)))
+                                                          true)))
+(object/behavior* ::window-load-lttools
+                  :triggers #{:window.loaded}
+                  :reaction (fn [this window loc]
+                              (set! (.-lttools window) utils)))
+
 (object/behavior* ::init!
                   :triggers #{:init}
                   :reaction (fn [this]
@@ -198,16 +266,9 @@
                                     bar (dom/$ :input (object/->content this))]
                                 (set! (.-onload frame) (fn []
                                                          (let [loc (.-contentWindow.location.href frame)]
+                                                           (object/raise this :window.loaded (.-contentWindow frame) loc)
                                                            (set! (.-contentWindow.onhashchange frame) (fn []
                                                                                                         (dom/val bar (.-contentWindow.location.href frame))))
-                                                           (set! (.-contentWindow.lttools frame) utils)
-                                                           (.contentWindow.eval frame (:content (files/open-sync "core/node_modules/lighttable/util/keyevents.js")))
-                                                           (.contentWindow.document.addEventListener frame "keydown"
-                                                            (fn [e]
-                                                              (when (keyboard/capture e)
-                                                                (dom/prevent e)
-                                                                (dom/stop-propagation e)))
-                                                            true)
                                                            (devtools/clear-scripts!)
                                                            (dom/val bar loc)
                                                            (object/raise this :navigate loc)))))))
@@ -221,12 +282,29 @@
                                             "browser")]
                                 (object/merge! this {:name title})
                                 (tabs/refresh! this)
+                                (dotimes [x (:loading-counter @this)]
+                                  (notifos/done-working))
                                 (object/merge! (:client @this) {:name loc}))))
 
 (object/behavior* ::set-active
                   :triggers #{:active :show}
                   :reaction (fn [this]
                               (ctx/in! :global.browser this)))
+
+(object/behavior* ::active-context
+                  :triggers #{:active :show}
+                  :reaction (fn [this]
+                              (ctx/in! :browser this)))
+
+(object/behavior* ::focus-on-show
+                  :triggers #{:show}
+                  :reaction (fn [this]
+                              (object/raise this :focus!)))
+
+(object/behavior* ::inactive-context
+                  :triggers #{:inactive}
+                  :reaction (fn [this]
+                              (ctx/out! :browser)))
 
 (object/behavior* ::handle-send!
                   :triggers #{:send!}
@@ -330,10 +408,41 @@
 
 (cmd/command {:command :browser.url-bar.navigate!
               :desc "BrowserUrlBar: navigate to location"
+              :hidden true
               :exec (fn [loc]
                       (when-let [b (ctx/->obj :browser.url-bar)]
                         (when @b
                           (object/raise b :navigate! loc))))})
+
+(cmd/command {:command :browser.url-bar.focus
+              :desc "Browser: focus url"
+              :hidden true
+              :exec (fn [loc]
+                      (when-let [b (ctx/->obj :browser)]
+                        (when @b
+                          (object/raise b :url.focus!))))})
+
+(cmd/command {:command :browser.focus-content
+              :desc "Browser: focus content"
+              :hidden true
+              :exec (fn []
+                      (when-let [b (ctx/->obj :browser)]
+                        (when @b
+                          (object/raise b :focus!))))})
+
+(cmd/command {:command :browser.back
+              :desc "Browser: back"
+              :exec (fn []
+                      (when-let [b (ctx/->obj :browser)]
+                        (when @b
+                          (object/raise b :back!))))})
+
+(cmd/command {:command :browser.forward
+              :desc "Browser: forward"
+              :exec (fn []
+                      (when-let [b (ctx/->obj :browser)]
+                        (when @b
+                          (object/raise b :forward!))))})
 
 (cmd/command {:command :add-browser-tab
               :desc "Browser: add browser tab"
