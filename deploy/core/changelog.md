@@ -32,6 +32,7 @@
 * ADDED: vim key mapping behavior
 * ADDED: custom file-type declaration behavior
 * ADDED: on save ensure last char is a newline behavior
+* ADDED: console context menu
 * REDESIGN: remove ever-present left-menu
 * REDESIGN: navigate is much more user-friendly
 * REDESIGN: commands now show keyboard shortcuts under them
@@ -62,6 +63,10 @@
 * FIX: watching invalid files #651
 * FIX: recursive symlinks causes issues with file watching #658
 * FIX: impossible to copy text out of the instarepl results #650
+* FIX: shebang in JS errors out #656
+* FIX: python doesn't report errors on start #646
+* FIX: rename in the workspace tree doesn't correctly set the new syntax
+* FIX: `move tab to next tabset` caused weird "unknown" tab to appear
 * FIX: disable the GPU-blacklist
 * UPDATED: latest codemirror and modes
 * UPDATED: node-webkit 0.7.0

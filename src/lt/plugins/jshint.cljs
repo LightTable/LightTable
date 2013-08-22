@@ -54,5 +54,8 @@
                   :triggers #{:object.instant}
                   :type :user
                   :desc "JSHint: Set JSHint options"
+                  :params [{:label "options"
+                            :example "{:maxparams 2}"
+                            :type :clj}]
                   :reaction (fn [this opts]
                               (object/merge! this {::jshint-options opts})))

@@ -34,9 +34,10 @@
                                                           :result (fn [r]
                                                                     (js/_send obj-id :result r))}))]
                             (raise obj-id :done-searching {:total (.-totalFiles final)
-                                                           :time (.-time final)})))))
+                                                           :time (.-time final)
+                                                           :replace? (boolean (:replacement opts))})))))
 
-(def result-threshold 300)
+(def result-threshold 500)
 
 (defmulti location identity)
 
@@ -47,7 +48,7 @@
   [loc])
 
 (defn string->loc [loc-str]
-  (mapcat (comp location string/trim) (string/split loc-str ",")))
+  (mapcat (comp location string/trim) (remove empty? (string/split loc-str ","))))
 
 (defn ->res [this]
   (dom/$ :.res (object/->content this)))
@@ -79,6 +80,11 @@
   :blur (fn []
           (ctx/out! :searcher.replace)))
 
+(defui replace-all-button [this]
+  [:button.replace "all"]
+  :click (fn [e]
+           (cmd/exec! :searcher.replace)))
+
 (defui location-box [this]
   [:input.loc {:type "text" :placeholder "Locations" :value "<workspace>"}]
   :focus (fn []
@@ -103,7 +109,7 @@
 (object/behavior* ::clear!
                   :triggers #{:clear!}
                   :reaction (fn [this]
-                              (object/merge! this {:timeout nil :results (array) :result-count 0 ::time nil ::filesSearched nil})
+                              (object/merge! this {:timeout nil :results (array) :result-count 0 ::time nil ::filesSearched nil :position [0 -1]})
                               (dom/empty (->res this))))
 
 (object/behavior* ::search!
@@ -111,31 +117,78 @@
                   :reaction (fn [this]
                               (object/raise this :clear!)
                               (let [info (->search-info this)]
-                                (object/merge! this info)
-                                (notifos/working "Searching workspace...")
-                                (search! this (assoc info
-                                                :exclude (.-source files/ignore-pattern)
-                                                :paths (string->loc (:loc info)))))))
+                                (when-not (empty? (:search info))
+                                  (object/merge! this info)
+                                  (notifos/working "Searching workspace...")
+                                  (search! this (assoc info
+                                                  :exclude (.-source files/ignore-pattern)
+                                                  :paths (string->loc (:loc info))))))))
 
 (object/behavior* ::replace!
                   :triggers #{:replace!}
                   :reaction (fn [this]
                               (object/raise this :clear!)
                               (let [info (->search-info this)]
-                                (object/merge! this info)
-                                (notifos/working "Replacing all in workspace...")
-                                (search! this (assoc info
-                                                :replacement (:replace info)
-                                                :exclude (.-source files/ignore-pattern)
-                                                :paths (string->loc (:loc info)))))))
+                                (when-not (empty? (:search info))
+                                  (object/merge! this info)
+                                  (notifos/working "Replacing all in workspace...")
+                                  (search! this (assoc info
+                                                  :replacement (:replace info)
+                                                  :exclude (.-source files/ignore-pattern)
+                                                  :paths (string->loc (:loc info))))))))
 
 (object/behavior* ::done-searching
                   :triggers #{:done-searching}
                   :reaction (fn [this info]
                               (object/merge! this {::time (/ (:time info) 1000)
                                                    ::filesSearched (:total info)})
-                              (notifos/done-working (str "Found " (:result-count @this) " results searching " (:total info) " files in " (/ (:time info) 1000) "s." ))))
+                              (if (:replace? info)
+                                (do
+                                  (notifos/done-working (str "Replaced " (:result-count @this) " results in " (/ (:time info) 1000) "s." ))
+                                  (dom/empty (->res this)))
+                                (notifos/done-working (str "Found " (:result-count @this) " results searching " (:total info) " files in " (/ (:time info) 1000) "s." )))))
 
+(object/behavior* ::next!
+                  :triggers #{:next!}
+                  :reaction (fn [this]
+                              (when (> (.-length (:results @this)) 0)
+                                (let [all (:results @this)
+                                      [file result] (:position @this)
+                                      cur (aget all file)
+                                      [file result] (if (>= (inc result) (.-results.length cur))
+                                                      (if (>= (inc file) (.-length all))
+                                                        [0 0]
+                                                        [(inc file) 0])
+                                                      [file (inc result)])
+                                      neue (aget all file)]
+                                  (object/merge! this {:position [file result]})
+                                  (cmd/exec! :open-path (.-file neue))
+                                  (cmd/exec! :goto-line (-> (.-results neue)
+                                                            (aget result)
+                                                            (.-line)))))))
+
+(object/behavior* ::prev!
+                  :triggers #{:prev!}
+                  :reaction (fn [this]
+                              (when (> (.-length (:results @this)) 0)
+                                (let [all (:results @this)
+                                      [file result] (:position @this)
+                                      cur (aget all file)
+                                      [file result] (if (< (dec result) 0)
+                                                      (if (< (dec file) 0)
+                                                        [(dec (.-length all)) (-> (aget all (dec (.-length all)))
+                                                                                  (.-results.length)
+                                                                                  (dec))]
+                                                        [(dec file) (-> (aget all (dec file))
+                                                                        (.-results.length)
+                                                                        (dec))])
+                                                      [file (dec result)])
+                                      neue (aget (:results @this) file)]
+                                  (object/merge! this {:position [file result]})
+                                  (cmd/exec! :open-path (.-file neue))
+                                  (cmd/exec! :goto-line (-> (.-results neue)
+                                                            (aget result)
+                                                            (.-line)))))))
 (object/behavior* ::on-result
                   :triggers #{:result}
                   :reaction (fn [this result]
@@ -146,6 +199,7 @@
                                              result)]
                                 (when (< (:result-count @this) result-threshold)
                                   (dom/append (->res this) (->result-item result)))
+                                (.push (:results @this) result)
                                 (object/update! this [:result-count] + total))))
 
 (object/behavior* ::focus
@@ -176,7 +230,7 @@
                          [:div.searcher
                           [:p (bound this result-count)]
                           (search-box this)
-                          (replace-box this)
+                          [:div (replace-box this) (replace-all-button)]
                           (location-box this)
                           ]
                          ]
@@ -190,9 +244,18 @@
                         (object/raise searcher :search! info)))})
 
 (cmd/command {:command :searcher.show
-              :desc "Searcher: Search in workspace"
+              :desc "Searcher: Show"
               :exec (fn []
                       (tabs/add-or-focus! searcher))})
 
+(cmd/command {:command :searcher.next
+              :desc "Searcher: Next result"
+              :exec (fn []
+                      (object/raise searcher :next!))})
+
+(cmd/command {:command :searcher.prev
+              :desc "Searcher: Prev result"
+              :exec (fn []
+                      (object/raise searcher :prev!))})
 
 (def searcher (object/create ::workspace-search))

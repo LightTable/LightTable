@@ -24,7 +24,8 @@
       (js->clj :keywordize-keys true)))
 
 (defn open-paths [paths add?]
-  (doseq [path paths]
+  (doseq [path paths
+          :when (not= path (.-execPath js/process))]
     (if (files/exists? path)
       (if (files/dir? path)
         (object/raise workspace/current-ws :add.folder! path)

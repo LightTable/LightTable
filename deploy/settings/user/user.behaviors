@@ -7,6 +7,7 @@
                                       "j" "gj",
                                       "k" "gk"})
            :lt.objs.intro/show-new-file
+           (:lt.objs.langs.python/ipython-exe "foo")
            ],
 
      :editor [:lt.plugins.vim/activate-vim
@@ -36,7 +37,7 @@
      :editor.python [(:lt.objs.style/set-theme "tomorrow-night")
                      (:lt.objs.editor/tab-settings false 2 4)],
 
-     :files [(:lt.objs.files/file-types [{:exts [:wisp],
+     :filter-list [(:lt.objs.files/file-types [{:exts [:wisp],
                                           :mime "text/x-clojurescript",
                                           :name "Wisp",
                                           :tags [:editor.wisp]}])]},

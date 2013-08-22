@@ -397,8 +397,6 @@
                  (let [ed (make nil info)]
                    (object/merge! obj {:ed ed :info (dissoc info :content)})
                    (wrap-object-events ed obj)
-                   (when-let [line-nos (settings/fetch :line-numbers)]
-                     (set-options ed {:lineNumbers line-nos}))
                    (->elem ed)
                    )))
 
@@ -428,6 +426,22 @@
            :reaction (fn [obj]
                        (set-options obj {:lineWrapping false})))
 
+(behavior* ::line-numbers
+           :triggers #{:object.instant :lt.object/tags-removed}
+           :desc "Editor: Show line numbers"
+           :exclusive [::hide-line-numbers]
+           :type :user
+           :reaction (fn [this]
+                       (set-options this {:lineNumbers true})))
+
+(behavior* ::hide-line-numbers
+           :triggers #{:object.instant :lt.object/tags-removed}
+           :desc "Editor: Hide line numbers"
+           :exclusive [::line-numbers]
+           :type :user
+           :reaction (fn [this]
+                       (set-options this {:lineNumbers false})))
+
 (behavior* ::tab-settings
            :triggers #{:object.instant}
            :desc "Editor: indent settings (tab size, etc)"
@@ -444,6 +458,21 @@
                                          :indentWithTabs use-tabs
                                          :indentUnit indent-unit})))
 
+(object/behavior* ::read-only
+                  :triggers #{:object.instant}
+                  :desc "Editor: make editor read-only"
+                  :exclusive [::not-read-only]
+                  :reaction (fn [this]
+                              (object/update! this [:info :name] str " (read-only)")
+                              (set-options this {:readOnly true})))
+
+(object/behavior* ::not-read-only
+                  :triggers #{:object.instant}
+                  :desc "Editor: make editor writable"
+                  :exclusive [::read-only]
+                  :reaction (fn [this]
+                              (set-options this {:readOnly false})))
+
 (object/behavior* ::blink-rate
                   :triggers #{:object.instant}
                   :desc "Editor: set cursor blink rate"
@@ -452,7 +481,7 @@
                   :reaction (fn [this rate]
                               (if rate
                                 (set-options this {:cursorBlinkRate rate})
-                                (set-options this {:cursorBlinkRate 100000000000}))))
+                                (set-options this {:cursorBlinkRate 0}))))
 
 (behavior* ::active-on-focus
            :triggers #{:focus}

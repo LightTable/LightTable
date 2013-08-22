@@ -11,6 +11,7 @@
             [lt.objs.popup :as popup]
             [lt.plugins.watches :as watches]
             [lt.util.load :as load]
+            [clojure.string :as string]
             [lt.util.dom :refer [$ append]]
             [lt.util.cljs :refer [js->clj]])
   (:require-macros [lt.macros :refer [defui]]))
@@ -82,18 +83,22 @@
         opts-str (.stringify js/JSON opts)]
     (str "lttools.watch(" src ", " opts-str ")" semi)))
 
+(defn clean-code [src]
+  (string/replace src (js/RegExp. "\n*#!.*\n" "gm") ""))
+
 (object/behavior* ::on-eval
                   :triggers #{:eval}
                   :reaction (fn [editor]
                               (object/raise js-lang :eval! {:origin editor
                                                              :info (assoc (@editor :info)
-                                                                     :code (watches/watched-range editor nil nil src->watch))})))
+                                                                     :code (-> (watches/watched-range editor nil nil src->watch)
+                                                                               (clean-code)))})))
 
 (object/behavior* ::on-eval.one
                   :triggers #{:eval.one}
                   :reaction (fn [editor]
                               (try
-                                (let [code (ed/->val editor)
+                                (let [code (clean-code (ed/->val editor))
                                       pos (ed/->cursor editor)
                                       {:keys [start end] :as meta} (pos->form code pos)
                                       form (when meta (watches/watched-range editor start end src->watch))

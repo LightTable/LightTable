@@ -1,10 +1,9 @@
 /* Loosely based on the Midnight Textmate theme */
 
-#multi.night { background: #0a001f; }
-.cm-s-night { background: #0a001f; color: #f8f8f8; }
+.cm-s-night.CodeMirror, #multi.theme-night { background: #0a001f; color: #f8f8f8; }
 .cm-s-night div.CodeMirror-selected { background: #447 !important; }
-.cm-s-night .CodeMirror-gutter { background: #0a001f; border-right: 1px solid #aaa; }
-.cm-s-night .CodeMirror-gutter-text { color: #f8f8f8; }
+.cm-s-night .CodeMirror-gutters { background: #0a001f; border-right: 1px solid #aaa; }
+.cm-s-night .CodeMirror-linenumber { color: #f8f8f8; }
 .cm-s-night .CodeMirror-cursor { border-left: 1px solid white !important; }
 
 .cm-s-night span.cm-comment { color: #6900a1; }
@@ -20,3 +19,6 @@
 .cm-s-night span.cm-comment { color: #6900a1; }
 .cm-s-night span.cm-builtin, .cm-s-night span.cm-special { color: #ff9e59; }
 .cm-s-night span.cm-link { color: #845dc4; }
+
+.cm-s-night .CodeMirror-activeline-background {background: #1C005A !important;}
+.cm-s-night .CodeMirror-matchingbracket {outline:1px solid grey; color:white !important;}

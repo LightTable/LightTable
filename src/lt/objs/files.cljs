@@ -21,6 +21,8 @@
                   :triggers #{:object.instant}
                   :type :user
                   :desc "Files: Associate file types"
+                  :params [{:label "types"
+                            :example "[{:exts [:wisp],\n  :mime \"text/x-clojurescript\",\n  :name \"Wisp\",\n  :tags [:editor.wisp]}]"}]
                   :reaction (fn [this types]
                               (object/merge! files-obj (typelist->index @files-obj types))))
 
@@ -189,6 +191,14 @@
 
 (defn basename [path]
   (.basename fpath path))
+
+(defn writable? [path]
+  (let [perm (-> (.statSync fs path)
+                 (.mode.toString 8)
+                 (js/parseInt 10)
+                 (str))
+        perm (subs perm (- (count perm) 3))]
+    (#{"7" "6" "3" "2"} (first perm))))
 
 (defn resolve [base cur]
   (.resolve fpath base cur))

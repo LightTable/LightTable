@@ -1,4 +1,4 @@
-.cm-s-codemirror { background: #fff; }
+.cm-s-codemirror, #multi.theme-codemirror { background: #fff; }
 .cm-s-codemirror span.cm-keyword {color: #708;}
 .cm-s-codemirror span.cm-atom {color: #219;}
 .cm-s-codemirror span.cm-number {color: #164;}

@@ -133,6 +133,9 @@
 (defn text|completion [x]
   (:text x (:completion x)))
 
+(defn text+completion [x]
+  (str (:text x) (:completion x)))
+
 (def hinter (-> (scmd/filter-list {:items (fn []
                                         (when-let [cur (pool/last-active)]
                                           (if (:starting-token @hinter)
@@ -170,7 +173,6 @@
 (object/behavior* ::select
                   :triggers #{:select}
                   :reaction (fn [this c]
-                              (println "selecting")
                               (let [token (:token @this)
                                     start {:line (:line token)
                                            :ch (:start token)}
@@ -178,7 +180,7 @@
                                          :ch (:end token)}]
                                 (object/merge! this {:active false})
                                 (if (:select c)
-                                  ((:select c) (partial editor/replace (:ed @this) start end))
+                                  ((:select c) (partial editor/replace (:ed @this) start end) c)
                                   (editor/replace (:ed @this) start end (:completion c)))
                                 (object/raise this :escape!))))
 

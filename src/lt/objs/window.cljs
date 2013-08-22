@@ -167,19 +167,19 @@
 (.on me "focus" (fn []
                   (object/raise me-obj :focus)))
 
-(cmd/command {:command :zoom-in
+(cmd/command {:command :window.zoom-in
               :desc "Window: Zoom in"
               :exec (fn []
                       (set! (.-zoomLevel me) (+ (.-zoomLevel me) 0.5))
                       )})
 
-(cmd/command {:command :zoom-out
+(cmd/command {:command :window.zoom-out
               :desc "Window: Zoom out"
               :exec (fn []
                       (set! (.-zoomLevel me) (- (.-zoomLevel me) 0.5))
                       )})
 
-(cmd/command {:command :zoom-reset
+(cmd/command {:command :window.zoom-reset
               :desc "Window: Zoom reset"
               :exec (fn []
                       (set! (.-zoomLevel me) 0)

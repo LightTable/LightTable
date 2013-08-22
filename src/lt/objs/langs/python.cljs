@@ -87,7 +87,6 @@
         env (if (:ipython-exe @python)
               (assoc env "LT_IPYTHON_PATH" (:ipython-exe @python))
               env)]
-    (println env (client-command info client))
     (proc/exec {:command (client-command info client)
                           :cwd (or venv project-path)
                           :env env
@@ -306,4 +305,3 @@
                   :exclusive true
                   :reaction (fn [this exe]
                               (object/merge! python {:ipython-exe exe})))
-

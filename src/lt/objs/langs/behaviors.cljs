@@ -1,8 +1,10 @@
 (ns lt.objs.langs.behaviors
   (:require [lt.object :as object]
             [lt.objs.context :as ctx]
+            [lt.objs.command :as cmd]
             [lt.util.dom :as dom]
             [lt.objs.editor :as editor]
+            [lt.util.js :refer [wait]]
             [lt.util.cljs :refer [js->clj]])
   (:require-macros [lt.macros :refer [background defui]]))
 
@@ -20,13 +22,12 @@
         level (-> (get-in token [:state :overlay :rainbowstack])
                   (last)
                   (:level))]
-    (println level)
     (cond
      (not level) :none
      (= level 1) :root
      (= level 2) :tag
      (= level 3) :behavior
-     (= level 4) :behavior
+     (= level 4) :behavior-param
      :else :param)))
 
 (defn locate [idx positions]
@@ -51,41 +52,62 @@
     (when res
       (index-of res params)))))
 
-(defn ->wrapped-behavior [beh]
+(defn wrapped-replacement [replace cur]
+  (replace (+ "(" (:completion cur) " )"))
+  (cmd/exec! :editor.char-left))
+
+(defn ->wrapped-behavior [beh cur]
   (if (:params beh)
-    (str "(" (:name beh) ")")
-    (str (:name beh))))
+    (assoc cur :select wrapped-replacement :completion (str (:name beh)))
+    (assoc cur :completion (str (:name beh)))))
+
+(defn user-behavior-completions []
+  (map #(if-not (:desc %)
+          (->wrapped-behavior % {:text (str (:name %))})
+          (->wrapped-behavior % {:text (:desc %)}))
+       (filter #(= (:type %) :user) (vals @object/behaviors))))
 
 (def completions {:root [{:completion ":+"}
                          {:completion ":-"}]
                   :tag (fn []
                          (map #(do {:completion (str %) :text (str %)}) (keys @object/tags)))
-                  :behavior (fn []
-                              (map #(if-not (:desc %)
-                                      {:completion (->wrapped-behavior %) :text (str (:name %))}
-                                      {:completion (->wrapped-behavior %) :text (:desc %)})
-                                   (filter #(= (:type %) :user) (vals @object/behaviors))))})
+                  :behavior user-behavior-completions
+                  :behavior-param (fn [beh idx]
+                                    (cond
+                                     (not beh) (user-behavior-completions)
+                                     (-> beh :behavior :params) (let [params (-> beh :behavior :params )
+                                                                      cur (or (param-index idx (:args beh)) (if (> (count (:args beh)) 0)
+                                                                                                              (dec (count (:args beh)))
+                                                                                                              0))
+                                                                      param (get params cur)]
+                                                                  (when (= (:type param) :list)
+                                                                    (if (fn? (:items param))
+                                                                      ((:items param))
+                                                                      (:items param))))
+                                     :else nil)
+                                    )})
 
 (object/behavior* ::behavior-hints
                   :triggers #{:hints+}
                   :reaction (fn [this hints]
                               (let [comps (completions (pos->state this))]
-                                (pos->behavior this)
                                 (if-not comps
                                   hints
                                   (if (fn? comps)
-                                    (comps)
+                                    (let [idx (->index this)]
+                                      (comps (pos->behavior this (- idx 2)) (dec idx)))
                                     comps)))))
 
 (object/behavior* ::show-info-on-move
                   :triggers #{:move}
-                  :debounce 100
+                  :debounce 200
                   :reaction (fn [this]
                               (let [idx (->index this)]
-                                (when-let [beh (pos->behavior this idx)]
+                                (if-let [beh (or (pos->behavior this idx) (pos->behavior this (dec idx)))]
                                   (when (-> beh :behavior :desc)
-                                    (object/raise helper :show! this beh (param-index idx (-> beh :args)))
-                                  )))))
+                                    (object/raise helper :show! this beh (param-index idx (-> beh :args))))
+                                  (object/raise helper :clear!)
+                                  ))))
 
 (object/behavior* ::behavior-hint-pattern
                   :triggers #{:object.instant}
@@ -118,13 +140,12 @@
   [:div
    [:h2 (:desc beh (:name beh))]
    (when (:params beh)
-     [:div "[ "
-     (interpose [:span.spacer "|"]
+     [:div
                 (for [p (:params beh)]
         [:span.param (:label p)
          (when (:example p)
-           [:pre.example (:example p)])]))
-      " ]"])])
+           (list " =>" [:pre.example (:example p)]))])
+      ])])
 
 (defn set-param [this idx]
     (let [lis (dom/$$ "span.param" (object/->content this))]
@@ -138,6 +159,17 @@
 (object/object* ::helper
                 :tags #{:editor.behaviors.helper})
 
+(object/behavior* ::helper.clear!
+                  :desc "Behaviors.helper: clear"
+                  :triggers #{:clear!}
+                  :reaction (fn [this]
+                                  (when (:mark @this)
+                                    (object/raise (:mark @this) :clear!))
+                                  (object/merge! this {:content nil})
+                                  (object/merge! this {:mark nil
+                                                       :behavior nil
+                                                       :line nil
+                                                       :ed nil})))
 
 (object/behavior* ::helper.show!
                   :desc "Behaviors.helper: show"

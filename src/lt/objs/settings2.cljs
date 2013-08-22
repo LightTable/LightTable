@@ -177,6 +177,16 @@
                                                     :tags [:editor.behaviors :editor.behaviors.workspace]
                                                     :content (:ws-behaviors @workspace/current-ws "")}))})
 
+(cmd/command {:command :keymap.modify-user
+              :desc "Settings: User keymap"
+              :exec (fn []
+                      (cmd/exec! :open-path (files/lt-home "/settings/user/user.keymap")))})
+
+(cmd/command {:command :keymap.view-default
+              :desc "Settings: Default keymap"
+              :exec (fn []
+                      (cmd/exec! :open-path (files/lt-home "/settings/default/default.keymap")))})
+
 (object/behavior* ::on-close-remove
                   :triggers #{:close}
                   :reaction (fn [this]

@@ -206,7 +206,6 @@
 (cmd/command {:command :find.replace
               :desc "Find: Replace current"
               :exec (fn []
-                      (println "here")
                       (object/raise bar :replace!))})
 
 (cmd/command {:command :find.replace-all

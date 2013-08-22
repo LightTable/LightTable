@@ -172,6 +172,7 @@
                                 (when-let [ed (first (by-path old))]
                                   (fileman/update-stats neue)
                                   (object/update! ed [:info] assoc :path neue :name (files/basename neue))
+                                  (set-syntax-by-path ed neue)
                                   (when-let [ts (:lt.objs.tabs/tabset @ed)]
                                     (object/raise ts :tab.updated)))
                                 (let [open (filter #(= 0 (.indexOf (-> @% :info :path) old)) (object/by-tag :editor))]
@@ -213,11 +214,13 @@
 (defn set-syntax [ed new-syn]
   (let [prev-info (-> @ed :info)]
     (when prev-info
-      (println "removing tags: " (:tags prev-info))
       (object/remove-tags ed (:tags prev-info)))
     (object/update! ed [:info] merge (dissoc new-syn :name))
     (editor/set-mode ed (:mime new-syn))
     (object/add-tags ed (:tags new-syn))))
+
+(defn set-syntax-by-path [ed path]
+  (set-syntax ed (files/path->type path)))
 
 (object/behavior* ::set-syntax
                   :triggers #{:select}
@@ -230,7 +233,6 @@
               :desc "Editor: Set current editor syntax"
               :options syntax-selector
               :exec (fn [syn]
-                      (println syn)
                       (if-let [last (last-active)]
                         (set-syntax last syn)
                         (notifos/set-msg! "Set syntax requires an active editor")))})

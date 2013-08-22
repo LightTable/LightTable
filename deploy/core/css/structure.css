@@ -279,31 +279,8 @@ body { -webkit-user-select: none; }
 #side .tab-settings .filter-list li { padding:0 10px; border-radius:2px; }
 #side .tab-settings .filter-list input:focus + * { display:block; }
 
-#behavior-editor {overflow-y:auto; position:relative; height:100%; }
-#behavior-editor .behaviors > div { background: transparent; padding:7px; margin:0; margin-bottom:15px; }
-#behavior-editor li { margin-left:0px; margin-bottom:5px; }
-#behavior-editor h2 { font-size:11pt; margin-bottom:10px; }
-#behavior-editor .file {position:absolute; padding:0; background:none; top:0; height:30px; left:0px; right:0px; }
-#behavior-editor .file li { display:inline-block; padding:5px;}
-#behavior-editor .behaviors {position:absolute; left:0px; right:0px; top:40px; bottom:0px; overflow:auto;}
-#behavior-editor .behaviors li { padding:5px 10px; border-radius:2px; display:block; position:relative; }
-#behavior-editor .instance-editor {padding:10px;}
-#behavior-editor .instance-editor dt {display:inline-block; width:20%; vertical-align:top; }
-#behavior-editor .instance-editor dd {display:inline-block; clear:right; width:80%; overflow:hidden; position:relative; }
-#behavior-editor .instance-editor .ex { font-size:10pt; font-family:"Inconsolata", "Ubuntu Mono", "Consolas", monospace; white-space:pre; padding-top:5px;}
-#behavior-editor .filter-list { box-sizing:border-box; position:relative; }
-#behavior-editor .filter-list > ul { overflow-y:auto;  }
-#behavior-editor .filter-list li { border-radius:2px; }
-#behavior-editor .CodeMirror {height:auto; width:auto; margin:0; padding:0; border-radius:2px; }
-#behavior-editor .CodeMirror-scroll {height:auto; width:auto;}
-#behavior-editor .hidden {display:none !important;}
-#behavior-editor h3 { }
-#behavior-editor h3 .remove { position:absolute; right:0; top:0; padding:5px 10px; border-radius:2px; }
-#behavior-editor h3 .remove:hover { background:var(accent-foreground); color:var(accent-background); }
-
-
 .search-results { overflow-y:auto; overflow-x:hidden; overflow:hidden; position:relative; }
-.search-results input { width:90%; }
+.search-results input { width:100%; }
 .search-results .res { position:absolute; overflow:auto; width:100%; top:0; bottom:130px; }
 .search-results .searcher { margin-bottom:10px; margin-top:10px; position:absolute; bottom:0px; width:100%; }
 .search-results .res li { background:transparent; padding:7px 0; margin-bottom:5px; border-bottom:0px solid #444; }
@@ -313,6 +290,8 @@ body { -webkit-user-select: none; }
 .search-results pre { display:inline-block; white-space:nowrap; vertical-align:top;}
 .search-results p { white-space:nowrap; cursor:default;}
 .search-results .line { display:inline-block; margin-right:5px; padding:0 5px; }
+.search-results div div { position:relative; }
+.search-results  button { position:absolute; right:-3px; padding:5px 10px; border-radius:3px; }
 
 .struct-tree { overflow:auto; height:100%; }
 .struct-tree span { margin:0 2px; }

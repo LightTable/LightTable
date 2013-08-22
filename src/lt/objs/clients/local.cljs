@@ -44,7 +44,7 @@
           (object/raise clients/clients :message [cb :editor.eval.js.exception {:ex e :meta (:meta data)}])))))
 
 (defmethod on-message :editor.eval.css [_ data cb]
-  (let [name (string/replace (:name data) #"\." "-")
+  (let [name (string/replace (str "local-" (:name data)) #"\." "-")
         cur ($ (str "#" name))]
     (when cur
       (remove cur))

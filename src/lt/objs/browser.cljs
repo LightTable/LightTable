@@ -336,11 +336,12 @@
 
 (object/behavior* ::js-eval-file
                   :triggers #{:editor.eval.js.file!}
-                  :reaction (fn [this msg clj-msg]
+                  :reaction (fn [this msg clj-msg cb]
                               (when-let [ed (clients/cb->obj (first clj-msg))]
                                 (let [data (last msg)]
-                                  (set! (.-code data) (str (-> clj-msg last :code) "\n\n//@ sourceURL=" (-> clj-msg last :path)))
+                                  (set! (.-code data) (str (-> clj-msg last :code) "\n\n//# sourceURL=" (-> clj-msg last :path)))
                                   (devtools/eval-in-frame (:frame-id @this) msg (fn [res]
+                                                                                  (when cb (cb))
                                                                              ;;TODO: check for exception, otherwise, assume success
                                                                                (object/raise ed :editor.eval.js.file.success)))))))
 
@@ -384,23 +385,36 @@
                                       (handle-cb (first clj-msg) :editor.eval.cljs.exception {:ex e
                                                                                               :meta (:meta form)})))))))
 
+(defn eval-js-form [this msg clj-msg]
+  (set! (.-code (last msg)) (eval/append-source-file (-> clj-msg last :code) (-> clj-msg last :path)))
+  (devtools/eval-in-frame (:frame-id @this) msg
+                          (fn [res]
+                            (let [result (devtools/inspector->result res)
+                                  req (last clj-msg)
+                                  result (assoc result :meta (:meta req) :no-inspect true)]
+                              (if-not (:ex result)
+                                (handle-cb (first clj-msg) :editor.eval.js.result result)
+                                (handle-cb (first clj-msg) :editor.eval.js.exception result)))))
+  (object/raise this :editor.eval.js.change-live! msg clj-msg))
+
+(defn must-eval-file? [clj-msg]
+  ;;we eval the whole file if there's no meta, or this file isn't loaded in the current page
+  (or (not (-> clj-msg last :meta))
+      (not (devtools/find-script devtools/local (-> clj-msg last :path)))))
+
+
 (object/behavior* ::js-eval
                   :triggers #{:editor.eval.js!}
                   :reaction (fn [this msg clj-msg]
-                              (if (or (not (-> clj-msg last :meta))
-                                      (not (devtools/find-script devtools/local (-> clj-msg last :path))))
-                                (object/raise this :editor.eval.js.file! msg clj-msg)
-                                (do
-                                  (set! (.-code (last msg)) (eval/append-source-file (-> clj-msg last :code) (-> clj-msg last :path)))
-                                  (devtools/eval-in-frame (:frame-id @this) msg
-                                                          (fn [res]
-                                                            (let [result (devtools/inspector->result res)
-                                                                  req (last clj-msg)
-                                                                  result (assoc result :meta (:meta req) :no-inspect true)]
-                                                              (if-not (:ex result)
-                                                                (handle-cb (first clj-msg) :editor.eval.js.result result)
-                                                                (handle-cb (first clj-msg) :editor.eval.js.exception result)))))))
-                              (object/raise this :editor.eval.js.change-live! msg clj-msg)))
+                              (if (must-eval-file? clj-msg)
+                                (when-let [ed (clients/cb->obj (first clj-msg))]
+                                  (let [data (last msg)
+                                        origcode (.-code data)]
+                                    (set! (.-code data) (str (editor/->val ed) "\n\n//# sourceURL=" (-> clj-msg last :path)))
+                                    (devtools/eval-in-frame (:frame-id @this) msg (fn [res]
+                                                                                    (set! (.-code (last msg)) origcode)
+                                                                                    (eval-js-form this msg clj-msg)))))
+                                (eval-js-form this msg clj-msg))))
 
 ;;*********************************************************
 ;; Commands

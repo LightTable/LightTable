@@ -85,9 +85,6 @@
   (when (and obj @obj (::tabset @obj))
     (first (first (filter #(= obj (second %)) (map-indexed vector (:objs @(::tabset @obj))))))))
 
-(defn wrap-multi-behaviors [e]
-  (object/add-behavior! e ::on-destroy-remove))
-
 (defn ->name [e]
   (or
    (-> @e :info :name)
@@ -362,7 +359,7 @@
 
 (object/object* ::tabset
                 :objs []
-                :active-obj (atom {})
+                :active-obj nil
                 :count 0
                 :tags #{:tabset}
                 :width 100
@@ -416,7 +413,8 @@
 (defn add-tabset [ts]
   (object/update! multi [:tabsets] conj ts)
   (dom/append (:tabsets-elem @multi) (object/->content ts))
-  (object/raise ts :active))
+  ;(object/raise ts :active)
+  )
 
 (defn rem-tabset [ts prev?]
   (let [to-ts (if prev?
@@ -452,10 +450,9 @@
           (active! active))
         ))))
 
-(defn add! [obj & [ts]]
+(defn add! [obj ts]
   (when-let [cur-tabset (or ts (ctx/->obj :tabset))]
     (object/add-tags obj [:tabset.tab])
-    (wrap-multi-behaviors obj)
     (object/update! cur-tabset [:objs] conj obj)
     (object/merge! obj {::tabset cur-tabset})
     (add-watch (subatom obj [:dirty]) :tabs (fn [_ _ _ cur]
@@ -490,17 +487,15 @@
           0
           (:tabsets @multi)))
 
-(num-tabs)
-
 (append (object/->content canvas/canvas) (:content @multi))
 
 (cmd/command {:command :tabs.move-next-tabset
               :desc "Tab: Move tab to next tabset"
               :exec (fn []
                       (when-let [ts (ctx/->obj :tabset)]
-                        (let [cur (-> @ts :active-obj)
+                        (let [cur (@ts :active-obj)
                               next (or (next-tabset ts) (prev-tabset ts))]
-                        (when (and cur @cur next (not= next ts))
+                        (when (and cur next (not= next ts))
                           (rem! cur)
                           (add! cur next)
                           (active! cur)))))})
@@ -509,9 +504,9 @@
               :desc "Tab: Move tab to previous tabset"
               :exec (fn []
                       (when-let [ts (ctx/->obj :tabset)]
-                        (let [cur (-> @ts :active-obj)
+                        (let [cur (@ts :active-obj)
                               next (or (prev-tabset ts) (next-tabset ts))]
-                        (when (and cur @cur next (not= next ts))
+                        (when (and cur next (not= next ts))
                           (rem! cur)
                           (add! cur next)
                           (active! cur)))))})
@@ -578,11 +573,12 @@
                         (object/raise active :focus!)))})
 
 (object/behavior* ::init-sortable
-                  :triggers #{:pre-init}
+                  :triggers #{:init}
                   :reaction (fn [app]
                               (js/initSortable js/window)))
 
 (object/tag-behaviors :app [::init-sortable])
+
 
 (object/behavior* ::init
                   :triggers #{:init}

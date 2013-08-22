@@ -18,12 +18,14 @@
 (.on js/process "uncaughtException" #(error %))
 
 (defui console-ui [this]
-       [:ul.console])
+  [:ul.console]
+  :contextmenu (fn [e]
+                 (object/raise this :menu! e)))
 
 (object/behavior* ::on-close
                   :triggers #{:close}
                   :reaction (fn [this]
-                              (object/merge! this {:current-ui sidebar-console})
+                              (object/merge! this {:current-ui :bottom})
                               (tabs/rem! this)))
 
 (object/object* ::console
@@ -31,7 +33,7 @@
                 :name "console"
                 :dirty false
                 :init (fn [this]
-                        (object/merge! this {:current-ui sidebar-console})
+                        (object/merge! this {:current-ui :bottom})
                         (console-ui this)
                         ))
 
@@ -42,14 +44,12 @@
   [:li {:class class} l])
 
 (defn ->ui [c]
-  (if (= (:current-ui @c) :self)
-    (object/->content c)
-    (object/->content (:current-ui @c))))
+  (object/->content c))
 
 (defn write [$console msg]
   (when (> (count (dom/children $console)) console-limit)
     (dom/remove (aget (dom/children $console) 0)))
-  (when-not (bottombar/active? sidebar-console)
+  (when-not (bottombar/active? console)
     (statusbar/dirty))
   (append $console msg))
 
@@ -97,41 +97,59 @@
   (dom/empty (->ui console)))
 
 (object/object* ::sidebar.console
-                :triggers #{}
-                :behaviors []
+                :tags #{:console}
                 :label "console"
                 :order 4
                 :init (fn [this]
-                        [:ul.console
-
-                         ]
+                        (console-ui this)
                         ))
 
-(def sidebar-console (object/create ::sidebar.console))
 (def console (object/create ::console))
+
+(object/behavior* ::menu+
+                  :triggers #{:menu+}
+                  :reaction (fn [this]
+                              (conj items
+                                    {:label "Clear"
+                                     :order 1
+                                     :click (fn []
+                                              (cmd/exec! :clear-console))}
+                                    (when (not= :tab (:current-ui @console))
+                                      {:label "Hide console"
+                                       :order 2
+                                       :click (fn []
+                                                (cmd/exec! :toggle-console))})
+                                    (when (not= :tab (:current-ui @console))
+                                      {:label "Open console tab"
+                                       :order 3
+                                       :click (fn []
+                                                (cmd/exec! :toggle-console)
+                                                (cmd/exec! :console-tab))}))))
 
 (object/behavior* ::statusbar-console-toggle
                   :triggers #{:toggle}
                   :reaction (fn [this]
-                              (object/raise bottombar/bottombar :toggle sidebar-console)
-                              (when (bottombar/active? sidebar-console)
-                                (dom/scroll-top (object/->content sidebar-console) 10000000000)
+                              (object/raise bottombar/bottombar :toggle console)
+                              (when (bottombar/active? console)
+                                (dom/scroll-top (object/->content console) 10000000000)
                                 (statusbar/clean))
                               ))
 
-(bottombar/add-item sidebar-console)
+(bottombar/add-item console)
 
 (cmd/command {:command :console-tab
               :desc "Console: Open the console in a tab"
               :exec (fn []
-                      (object/merge! console {:current-ui :self})
+                      (object/merge! console {:current-ui :tab})
                       (tabs/add! console)
                       )})
 
 (cmd/command {:command :toggle-console
-              :desc "Console: Toggle bottom console"
+              :desc "Console: Toggle console"
               :exec (fn []
-                      (object/raise statusbar/console-toggle :toggle))})
+                      (if (= (:current-ui @console) :tab)
+                        (do (tabs/active! console) (statusbar/clean))
+                        (object/raise statusbar/console-toggle :toggle)))})
 
 (cmd/command {:command :clear-console
               :desc "Console: Clear console"

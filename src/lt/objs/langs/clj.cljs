@@ -238,6 +238,8 @@
 (object/behavior* ::print-length
                   :triggers #{:clojure.print-length+}
                   :desc "Clojure: Set the print length for eval (doesn't affect CLJS)"
+                  :params [{:label "length"
+                            :type :number}]
                   :type :user
                   :exclusive true
                   :reaction (fn [this res len]

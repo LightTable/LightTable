@@ -54,7 +54,17 @@
 ;;(append ($ :#sidebar-wrapper) (window-buttons))
 ;;(append ($ :#multi) (button :fullscreen fullscreen))
 
-(cmd/command {:command :toggle-fullscreen
+(cmd/command {:command :window.fullscreen
               :desc "Window: Toggle fullscreen"
               :exec (fn []
                       (fullscreen))})
+
+(cmd/command {:command :window.minimize
+              :desc "Window: Minimize"
+              :exec (fn []
+                      (minimize))})
+
+(cmd/command {:command :window.maximize
+              :desc "Window: Maximize"
+              :exec (fn []
+                      (maximize))})

@@ -98,20 +98,19 @@
     "http://app.kodowa.com/latest-version/nw"))
 
 (defn check-version [& [notify?]]
-  (when-not (settings/fetch :no-update)
-    (fetch/xhr (version-url) {}
-               (fn [data]
-                 (when (re-seq version-regex data)
-                   (if (and (not= data "")
-                            (not= data (:version version))
-                            (is-newer? (:version version) data)
-                            (not= js/localStorage.fetchedVersion data))
-                     (do
-                       (set! js/localStorage.fetchedVersion data)
-                       (set! version (assoc version :version data))
-                       (fetch-and-deploy data))
-                     (when notify?
-                       (notifos/set-msg! (str "At latest version: " (:version version))))))))))
+  (fetch/xhr (version-url) {}
+             (fn [data]
+               (when (re-seq version-regex data)
+                 (if (and (not= data "")
+                          (not= data (:version version))
+                          (is-newer? (:version version) data)
+                          (not= js/localStorage.fetchedVersion data))
+                   (do
+                     (set! js/localStorage.fetchedVersion data)
+                     (set! version (assoc version :version data))
+                     (fetch-and-deploy data))
+                   (when notify?
+                     (notifos/set-msg! (str "At latest version: " (:version version)))))))))
 
 (defn binary-version []
   (aget js/process.versions "node-webkit"))
@@ -157,24 +156,10 @@
 
 (object/behavior* ::check-version
                   :triggers #{:init}
+                  :type :user
+                  :desc "App: Automatically check for updates"
                   :reaction (fn [this]
                               (when (= (window/window-number) 0)
                                 (set! js/localStorage.fetchedVersion nil))
                               (check-version)
                               (every version-timeout check-version)))
-
-;;*********************************************************
-;; Commands
-;;*********************************************************
-
-(cmd/command {:command :toggle-auto-update
-              :desc "Settings: Toggle auto-update"
-              :exec (fn []
-                      (if-not (settings/fetch :no-update)
-                        (do
-                          (settings/store! :no-update true)
-                          (notifos/set-msg! "disabled auto updating"))
-                        (do
-                          (settings/store! :no-update false)
-                          (notifos/set-msg! "auto updating enabled"))))})
-

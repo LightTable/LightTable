@@ -50,6 +50,11 @@
                   :reaction (fn [this]
                               (.kill (:worker @this))))
 
+(object/behavior* ::shutdown-worker-on-close
+                  :triggers #{:closed}
+                  :reaction (fn [app]
+                              (object/raise worker :kill!)))
+
 (defn node-exe []
   (if (platform/win?)
     "/plugins/node/node.exe"
@@ -62,6 +67,8 @@
                         (let [worker (.fork cp (files/lt-home "/core/node_modules/lighttable/background/threadworker.js") (clj->js ["--harmony"]) (clj->js {:execPath (files/lt-home (node-exe)) :silent true}))]
                           (.on (.-stdout worker) "data" (fn [data]
                                                           (console/loc-log "thread" "stdout" (str data))))
+                          (.on (.-stderr worker) "data" (fn [data]
+                                                          (console/loc-log "thread" "stderr" (str data) "error")))
                           (.on worker "message" (fn [m] (object/raise this :message m)))
                           (.send worker (clj->js {:msg "init"
                                                   :obj (object/->id this)

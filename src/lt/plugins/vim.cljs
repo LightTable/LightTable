@@ -48,8 +48,8 @@
 (object/behavior* ::map-keys
                   :triggers #{:object.instant}
                   :desc "Vim: Map vim keys"
-                  :params [{:label "key mappings"
-                            :example "{\"<BS>\" \"<PageUp>\", \"<Space>\" \"<PageDown>\"}"
+                  :params [{:label "keys"
+                            :example "{\"<BS>\" \"<PageUp>\",\n \"<Space>\" \"<PageDown>\"}"
                             :type :clj}]
                   :type :user
                   :reaction (fn [this ks]

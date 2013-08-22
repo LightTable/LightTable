@@ -16,9 +16,9 @@
                               (object/raise this :destroy)))
 
 (defn ->lt-image [stts]
-  (deploy/in-lt (str "core/img/lighttabletext" (if (= (:skin stts) "light")
-                                            "light"
-                                            "dark") ".png")))
+  (str "/core/img/lighttabletext" (if (= (:skin stts) "light")
+                                    "light"
+                                    "dark") ".png"))
 
 (defui docs []
   [:button "Light Table's docs"]

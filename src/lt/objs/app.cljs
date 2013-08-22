@@ -25,6 +25,7 @@
 (defn open-window []
   (let [id (store-swap! :window-id inc)
         w (.Window.open gui (str "LightTable.html?id=" id) (clj->js {:toolbar false
+                                                                     :icon "core/img/lticon.png"
                                                                      :new-instance true
                                                                      :min_height 400
                                                                      :min_width 400

@@ -20,6 +20,7 @@
    :lt.objs.app/restore-position-on-init
    :lt.objs.cli/open-on-args
    :lt.objs.cli/open!
+   :lt.objs.thread/shutdown-worker-on-close
    :lt.objs.clients.tcp-client/kill-on-closed
    :lt.objs.animations/animate-on-init
    :lt.objs.app/store-position-on-close :lt.objs.canvas/append-canvas
@@ -86,7 +87,9 @@
  #{:lt.objs.sidebar.command/escape!
    :lt.objs.sidebar.command/select-hidden
    :lt.objs.sidebar.command/select-command},
- :console #{:lt.objs.console/on-close},
+ :console #{:lt.objs.console/on-close
+            :lt.objs.menu/menu!
+            :lt.objs.console/menu+},
  :docs #{:lt.objs.docs/on-close-destroy},
  :editor
  #{:lt.objs.editor/active-on-focus
@@ -111,8 +114,10 @@
    :lt.plugins.auto-paren/try-remove-pair
    :lt.plugins.auto-paren/open-pair
    :lt.plugins.auto-complete/show-hint
+   :lt.objs.editor/not-read-only
    :lt.objs.opener/untrack-closed
    :lt.objs.opener/unwatch-closed
+   :lt.objs.editor/hide-line-numbers
    (:lt.objs.editor/tab-settings false 2 2)},
  :editor.active #{:lt.objs.statusbar/report-cursor-location},
  :editor.behaviors #{:lt.objs.settings2/on-behaviors-editor-save
@@ -124,7 +129,8 @@
                      :lt.objs.langs.behaviors/behavior-hint-pattern
                      :lt.plugins.auto-complete/auto-show-on-input
                      }
- :editor.behaviors.helper #{:lt.objs.langs.behaviors/helper.show!}
+ :editor.behaviors.helper #{:lt.objs.langs.behaviors/helper.show!
+                            :lt.objs.langs.behaviors/helper.clear!}
  :editor.behaviors.workspace #{:lt.objs.settings2/workspace-save
                                :lt.objs.editor.file/dirty-on-change}
  :editor.keymap #{:lt.objs.settings2/on-keymap-editor-save
@@ -197,6 +203,7 @@
    :lt.objs.langs.python/python-image
    [:lt.object/add-tag :watchable]
    (:lt.objs.editor/tab-settings false 4 4)},
+ :editor.read-only #{:lt.objs.editor/read-only}
  :editor.structural #{:lt.plugins.struct/rem-on-close},
  :editor.transient
  #{:lt.objs.editor.file/dirty-on-change :lt.objs.opener/transient-save
@@ -316,6 +323,7 @@
    :lt.objs.opener/open-standard-editor
    :lt.objs.opener/track-open-files
    :lt.objs.opener/watch-on-open
+   :lt.objs.opener/check-read-only
    },
  :options-input
  #{:lt.objs.sidebar.command/op-select!
@@ -330,6 +338,8 @@
    :lt.objs.search/on-end
    :lt.objs.search/search!
    :lt.objs.search/done-searching
+   :lt.objs.search/next!
+   :lt.objs.search/prev!
    :lt.objs.search/on-result
    :lt.objs.search/focus
    :lt.objs.search/on-close},

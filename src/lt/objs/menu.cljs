@@ -106,8 +106,13 @@
                                        {:label "Connections" :click #(cmd/exec! :show-connect)}
                                        {:label "Navigator" :key "o" :click #(cmd/exec! :navigate-workspace-transient)}
                                        {:label "Commands" :key " " :modifiers "ctrl" :click #(cmd/exec! :show-commandbar-transient)}
+                                       {:type "separator"}
                                        {:label "Console" :click #(cmd/exec! :toggle-console)}
                                        ]}
+
+              {:label "Window" :submenu [{:label "Minimize" :click #(cmd/exec! :window.minimize)}
+                                         {:label "Maximize" :click #(cmd/exec! :window.maximize)}
+                                         {:label "Fullscreen" :click #(cmd/exec! :window.fullscreen)}]}
               {:label "Help" :submenu [{:label "Documentation" :click (fn [] (cmd/exec! :show-docs))}
                                        (when-not (platform/mac?)
                                          {:label "About Light Table" :click #(cmd/exec! :version)})]}
@@ -117,9 +122,21 @@
 (object/behavior* ::set-menu
                   :triggers #{:focus :init}
                   :reaction (fn [this]
-                              (set! (.-menu window/me) menubar)))
+                              (when (or (platform/mac?)
+                                        (not (.-menu window/me)))
+                                (set! (.-menu window/me) menubar))))
 
 (object/behavior* ::remove-menu-close
                   :triggers #{:closed :blur}
                   :reaction (fn [this]
-                              (set! (.-menu window/me) nil)))
+                              (when (platform/mac?)
+                                (set! (.-menu window/me) nil))))
+
+(object/behavior* ::menu!
+                  :triggers #{:menu!}
+                  :reaction (fn [this e]
+                              (let [items (sort-by :order (filter identity (object/raise-reduce this :menu+ [])))]
+                                (-> (menu items)
+                                    (show-menu (.-clientX e) (.-clientY e))))
+                              (dom/prevent e)
+                              (dom/stop-propagation e)))

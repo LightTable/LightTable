@@ -52,6 +52,6 @@
     ))
 
 (cmd/command {:command :version
-              :desc "Settings: Light Table version"
+              :desc "App: Light Table version"
               :exec (fn [_]
                        (add))})

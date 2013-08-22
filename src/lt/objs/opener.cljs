@@ -79,6 +79,15 @@
                                 (object/raise this :save-as)
                                 (object/raise this :save))))
 
+(object/behavior* ::check-read-only
+                  :desc "Opener: check if file is read only"
+                  :triggers #{:open}
+                  :reaction (fn [this ed]
+                              (when-let [path (-> @ed :info :path)]
+                                (when (files/exists? path)
+                                  (when-not (files/writable? path)
+                                    (object/add-tags ed [:editor.read-only]))))))
+
 (object/behavior* ::open-from-info
                   :triggers #{:open-info!}
                   :reaction (fn [obj info]
@@ -164,7 +173,8 @@
 (cmd/command {:command :save
               :desc "File: Save file"
               :exec (fn []
-                      (object/raise (pool/last-active) :save))})
+                      (when-let [ed (pool/last-active)]
+                        (object/raise ed :save)))})
 
 (cmd/command {:command :save-as
               :desc "File: Save file as.."

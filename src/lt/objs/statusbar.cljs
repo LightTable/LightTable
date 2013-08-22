@@ -1,6 +1,7 @@
 (ns lt.objs.statusbar
   (:require [lt.object :as object]
             [lt.objs.canvas :as canvas]
+            [lt.objs.command :as cmd]
             [lt.objs.bottombar :as bottombar]
             [lt.objs.editor :as ed]
             [lt.util.dom :as dom]
@@ -119,10 +120,9 @@
 
 (defui toggle-span [this]
   [:span {:class (bound this toggle-class)}
-   "foo"
    (bound this :dirty)]
   :click (fn []
-           (object/raise this :toggle)))
+           (cmd/exec! :toggle-console)))
 
 (defn toggle-class [{:keys [dirty class]}]
   (str "console-toggle " (when class (str class " ")) (when (> dirty 0) "dirty")))

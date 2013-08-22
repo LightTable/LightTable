@@ -3,7 +3,8 @@
             [lt.objs.context :as ctx]
             [lt.objs.command :as cmd]
             [lt.util.dom :as dom]
-            [lt.objs.editor :as editor])
+            [lt.objs.editor :as editor]
+            [lt.util.cljs :refer [js->clj]])
   (:require-macros [lt.macros :refer [background defui]]))
 
 (def parser (background (fn [obj-id contents]
@@ -12,9 +13,8 @@
                                 parser (-> (js/require (str js/ltpath "/core/node_modules/lighttable/background/behaviorsParser.js"))
                                            (.-parseKeymap))
                                 parsed (-> (StringStream. contents)
-                                           (parser)
-                                           (js->clj :keywordize-keys true))]
-                            (raise obj-id :parsed parsed)))))
+                                           (parser))]
+                            (js/_send obj-id :parsed parsed)))))
 
 (defn pos->state [ed]
   (let [token (editor/->token ed (editor/->cursor ed))
@@ -74,7 +74,7 @@
 
 (object/behavior* ::show-info-on-move
                   :triggers #{:move}
-                  :debounce 100
+                  :debounce 200
                   :reaction (fn [this]
                               (let [idx (->index this)]
                                 (when-let [beh (pos->key this idx)]
@@ -95,7 +95,8 @@
 (object/behavior* ::parsed
                   :triggers #{:parsed}
                   :reaction (fn [this results]
-                              (object/merge! this results)))
+                              (object/merge! this (js->clj results :keywordize-keys true))
+                              (object/raise this :move)))
 
 (defn inline [this ed opts]
   (object/create :lt.objs.eval/inline-result {:ed ed
