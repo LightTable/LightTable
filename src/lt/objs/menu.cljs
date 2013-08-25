@@ -76,6 +76,9 @@
                                      {:label "Quit Light Table" :key "q" :selector "closeAllWindows:"}]})
               {:label "File" :submenu [{:label "New file" :key "n" :click #(cmd/exec! :new-file)}
                                        {:label "Open file" :key "o" :click #(cmd/exec! :open-file) :modifiers "cmd-shift"}
+                                       {:label "Open folder" :click #(do
+                                                                       (cmd/exec! :workspace.show :force)
+                                                                       (cmd/exec! :workspace.add-folder))}
                                        {:label "Save file" :key "s" :click #(cmd/exec! :save)}
                                        {:label "Save file as.." :key "s" :click #(cmd/exec! :save-as) :modifiers "cmd-shift"}
                                        {:type "separator"}

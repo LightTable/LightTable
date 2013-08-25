@@ -62,16 +62,19 @@
                   :reaction (fn [this]
                               (object/merge! tabs/multi {(:side @this) 0})
                               (object/merge! this {:width 0
+                                                   :active false
                                                    :open false})
                               (cmd/exec! :tabs.focus-active)))
+
 
 (object/behavior* ::item-toggled
                   :triggers #{:toggle}
                   :reaction (fn [this item {:keys [force? transient? soft?]}]
-                              (if (and (= (:active @this) item)
+                              (if (and (not force?)
+                                       (= (:active @this) item)
                                        (:open @this))
                                 (object/raise this :close!)
-                                (do
+                                (when (not= (:active @this) item)
                                   (when (:active @this)
                                     (dom/remove-class (object/->content (:active @this)) :active))
                                   (object/merge! this {:active item})

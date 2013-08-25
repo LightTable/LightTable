@@ -566,8 +566,8 @@
 
 (cmd/command {:command :workspace.show
               :desc "Workspace: Toggle workspace tree"
-              :exec (fn []
-                      (object/raise sidebar/sidebar :toggle sidebar-workspace {:transient? false}))})
+              :exec (fn [force?]
+                      (object/raise sidebar/sidebar :toggle sidebar-workspace {:transient? false :force? force?}))})
 
 (cmd/command {:command :workspace.rename.cancel!
               :desc "Workspace: Cancel rename"
