@@ -98,11 +98,23 @@
     (when (> cnt 0)
       (aget (aget cur i) 0))))
 
+(defn ensure-visible [this]
+  (let [list (dom/$ "ul" (object/->content this))
+        elem (dom/$ ".selected" list)]
+    (cond
+     (< (.-offsetTop elem) (.-scrollTop list)) (set! (.-scrollTop list) (- (.-offsetTop elem) 15))
+     (> (+ (.-offsetTop elem) (.-offsetHeight elem))
+        (+ (.-scrollTop list) (.-clientHeight list))) (set! (.-scrollTop list)
+                                                            (- (+ (.-offsetTop elem) (.-offsetHeight elem) 15) (.-clientHeight list)))
+     :else nil)))
+
 (object/behavior* ::move-selection
                   :triggers #{:move-selection}
                   :reaction (fn [this dir]
+                              (println "moving selection")
                               (object/update! this [:selected] + dir)
                               (object/raise this :refresh!)
+                              (ensure-visible this)
                               ))
 
 (object/behavior* ::set-selection!

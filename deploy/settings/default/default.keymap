@@ -2,6 +2,7 @@
            "pmeta-shift-n" [:window.new]
            "pmeta-o" [:navigate-workspace-transient]
            "pmeta-shift-o" [:open-file]
+           "pmeta-shift-f" [:searcher.show]
            "pmeta-n" [:new-file]
            "ctrl-space" [:show-commandbar-transient]}
      :editor {"pmeta-enter" [:eval-editor-form]
@@ -22,6 +23,8 @@
      :tabs {"pmeta-w" [:tabs.close]
             "pmeta-shift-[" [:tabs.prev]
             "pmeta-shift-]" [:tabs.next]
+            "ctrl-tab" [:tabs.next]
+            "ctrl-shift-tab" [:tabs.prev]
             "pmeta-1" [(:tabs.goto 0)]
             "pmeta-2" [(:tabs.goto 1)]
             "pmeta-3" [(:tabs.goto 2)]

@@ -34,4 +34,5 @@
                       (let [docs (object/create ::docs)]
                         (cmd/exec! :tabset.new)
                         (tabs/add! docs)
-                        (tabs/active! docs)))})
+                        (tabs/active! docs)
+                        (cmd/exec! :tabs.move-next-tabset)))})

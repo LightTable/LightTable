@@ -39,13 +39,13 @@
 (defn path->info [path]
   (when path
     (let [type (files/path->type path)]
-      {:name (files/basename path) :path path :type (:mime type) :tags (:tags type)})))
+      {:name (files/basename path) :path path :mime (:mime type) :tags (:tags type)})))
 
 (object/behavior* ::open-transient-editor
                   :triggers #{:new!}
                   :reaction (fn [this path dirty?]
                               (let [last (pool/last-active)
-                                    info (merge {:type "plaintext" :tags [:editor.plaintext] :mime "plaintext" :name "untitled"}
+                                    info (merge {:mime "plaintext" :tags [:editor.plaintext] :name "untitled"}
                                                 (path->info path))
                                     ed (pool/create info)]
                                 (object/add-tags ed [:editor.transient])

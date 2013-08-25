@@ -19,7 +19,7 @@
   [:li (object/->content (:ed info))])
 
 (defn add-item! [codex info]
-  (let [ed (pool/create {:content fake-content :name "fake codex editor" :type "cljs"})]
+  (let [ed (pool/create {:content fake-content :name "fake codex editor" :mime "cljs"})]
     (dom/append (object/->content codex) (codex-item (assoc info :ed ed)))
     ed))
 

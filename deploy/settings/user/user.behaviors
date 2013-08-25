@@ -3,11 +3,11 @@
                                       "0" "^",
                                       "<BS>" "<PageUp>",
                                       "<Space>" "<PageDown>",
-                                      "jj" "jj"
                                       "j" "gj",
                                       "k" "gk"})
+           (:lt.objs.langs.python/python-exe "/path/to/python")
+
            :lt.objs.intro/show-new-file
-           (:lt.objs.langs.python/ipython-exe "foo")
            ],
 
      :editor [:lt.plugins.vim/activate-vim
@@ -34,8 +34,7 @@
 
      :editor.plaintext [:lt.objs.editor/wrap],
 
-     :editor.python [(:lt.objs.style/set-theme "tomorrow-night")
-                     (:lt.objs.editor/tab-settings false 2 4)],
+     :editor.python [(:lt.objs.style/set-theme "tomorrow-night")],
 
      :filter-list [(:lt.objs.files/file-types [{:exts [:wisp],
                                           :mime "text/x-clojurescript",

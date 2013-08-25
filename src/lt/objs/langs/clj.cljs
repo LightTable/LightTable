@@ -138,7 +138,7 @@
                   :triggers #{:eval!}
                   :reaction (fn [this event]
                               (let [{:keys [info origin]} event
-                                    command (->dottedkw :editor.eval (-> info :type mime->type))
+                                    command (->dottedkw :editor.eval (-> info :mime mime->type))
                                     client (-> @origin :client :default)]
                                 (notifos/working)
                                 (clients/send (eval/get-client! {:command command
@@ -307,6 +307,7 @@
                   :triggers #{:proc.out}
                   :reaction (fn [this data]
                               (let [out (.toString data)]
+                                (.write console/core-log (str (:name @this) "[stdout]: " data))
                                 (object/update! this [:buffer] str out)
                                 (if (> (.indexOf out "Connected") -1)
                                   (do
@@ -322,6 +323,7 @@
                   :triggers #{:proc.error}
                   :reaction (fn [this data]
                               (let [out (.toString data)]
+                                (.write console/core-log (str (:name @this) "[stderr]: " data))
                                 (when-not (> (.indexOf (:buffer @this) "Connected") -1)
                                   (object/update! this [:buffer] str data)
                                   ))
@@ -363,6 +365,7 @@
 (defn run-jar [{:keys [path project-path name client]}]
   (let [obj (object/create ::connecting-notifier n (clients/->id client))]
     (notifos/working "Connecting..")
+    (.write console/core-log (str "STARTING CLIENT: " (jar-command project-path name client)))
     (proc/exec {:command (jar-command project-path name client)
                 :cwd project-path
                 :obj obj})))

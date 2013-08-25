@@ -279,7 +279,6 @@
      :else -1))))
 
 (defn ->name [obj]
-  (println obj)
   (let [n (or (-> obj :name) (-> obj :value :description) (:description obj) "UnknownObject")]
     (cond
      (> (.indexOf n "e.fn.e.init") -1) (str "jQuery" (subs n 11))

@@ -34,7 +34,7 @@
                 :name "Markdown"
                 :preview ""
                 :init (fn [this]
-                        (let [main (pool/create {:type "markdown" :content ""})
+                        (let [main (pool/create {:mime "text/x-markdown" :content ""})
                               main-ed (:ed @main)]
                           (object/parent! this main)
                         [:div#markdown-preview

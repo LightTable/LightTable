@@ -247,20 +247,25 @@
 (object/behavior* ::move-mark
                   :triggers #{:move!}
                   :reaction (fn [this ch]
+                              (when ch
                                 (let [orig (:mark @this)
                                       loc (.find orig)
                                       cur-line (ed/lh->line (:ed @this) (:line @this))]
                                   (if (or (not loc)
                                           (empty? (.-text (:line @this))))
                                     (object/raise this :clear!)
-                                    (when (and ch
-                                               (>= (.-to.ch ch) (.-ch loc)))
+                                    (when (or (and (> (.-line loc) (.-to.line ch))
+                                                   (empty? (string/trim (ed/line (:ed @this) (.-line loc)))))
+                                              (or (and (>= (.-to.ch ch) (.-ch loc))
+                                                       (= (.-to.line ch) (.-line loc)))
+                                                  (> (.-to.line ch) (.-from.line ch))))
                                       (object/merge! this {:mark (ed/bookmark (ed/->cm-ed (:ed @this))
                                                                                   {:line cur-line}
                                                                                   {:widget (object/->content this)
                                                                                    :insertLeft true})})
                                       (when orig
-                                        (.clear orig)))))))
+                                        (.clear orig))))))))
+
 
 (object/object* ::inline-result
                 :triggers #{:click :double-click :clear!}
@@ -443,6 +448,14 @@
                                             :when widget]
                                       (object/raise widget :clear!)))
                                   (object/update! this [:widgets] assoc [line :inline] ex-obj)))))
+
+(object/behavior* ::eval-on-change
+                  :triggers #{:change}
+                  :desc "Editor: Eval when the editor changes"
+                  :type :user
+                  :debounce 300
+                  :reaction (fn [this]
+                              (object/raise this :eval)))
 
 (cmd/command {:command :clear-inline-results
               :desc "Eval: Clear inline results"

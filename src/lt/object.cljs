@@ -149,10 +149,19 @@
                        (concat (rest r) args)
                        args)]
           :when func]
+    (try
     (with-time
       (apply func obj args)
       (when-not (= trigger :object.behavior.time)
-        (raise obj :object.behavior.time r time)))))
+        (raise obj :object.behavior.time r time)))
+      (catch js/Error e
+        (.error js/console (str "Invalid behavior: " (-> (->behavior r) :name)))
+        (.error js/console e)
+        )
+      (catch js/global.Error e
+        (.error js/console (str "Invalid behavior: " (-> (->behavior r) :name)))
+        (.error js/console e)
+        ))))
 
 (defn raise [obj k & args]
   (let [reactions (-> @obj :listeners k)]

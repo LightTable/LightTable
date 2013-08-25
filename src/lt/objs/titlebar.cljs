@@ -39,7 +39,7 @@
   )
 
 (defui button [class action label]
-       [:span {:class (name class)}
+       [:span {:class (str "button " (name class))}
         [:span label]]
        :click (fn []
                 (action)))
@@ -50,9 +50,7 @@
    (button :minimize minimize "-")
    (button :maximize maximize "+")])
 
-;;We no longer need the window buttons as we're using a frame on all platforms
-;;(append ($ :#sidebar-wrapper) (window-buttons))
-;;(append ($ :#multi) (button :fullscreen fullscreen))
+(append ($ :#multi) (button :fullscreen fullscreen "-"))
 
 (cmd/command {:command :window.fullscreen
               :desc "Window: Toggle fullscreen"

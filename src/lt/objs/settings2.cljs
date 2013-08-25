@@ -4,6 +4,7 @@
             [lt.objs.keyboard :as kb]
             [lt.objs.tabs :as tabs]
             [lt.objs.files :as files]
+            [lt.objs.console :as console]
             [lt.objs.notifos :as notifos]
             [lt.objs.editor :as editor]
             [lt.objs.editor.pool :as pool2]
@@ -14,7 +15,15 @@
             [cljs.reader :as reader])
   (:require-macros [lt.macros :refer [defui]]))
 
-(declare behaviors-editor)
+(defn safe-read [s file]
+  (try
+    (reader/read-string s)
+    (catch js/global.Error e
+      (console/error (str "Invalid settings file: " file "\n" e))
+      nil)
+    (catch js/Error e
+      (console/error (str "Invalid settings file: " file "\n" e))
+      nil)))
 
 (defn +behaviors [cur m]
   (reduce (fn [res [k v]]
@@ -28,10 +37,12 @@
           cur
           m))
 
-(defn behavior-diff [{add :+ rem :-} final]
-  (-> final
-      (+behaviors add)
-      (-behaviors rem)))
+(defn behavior-diff [{add :+ rem :- :as diff} final]
+  (if-not diff
+    final
+    (-> final
+        (+behaviors add)
+        (-behaviors rem))))
 
 (defn reverse-diff [{add :+ rem :-}]
   {:+ rem
@@ -43,8 +54,8 @@
 (defn parse-file [file final]
   (-> (files/open-sync file)
       :content
-      (reader/read-string)
-      (behavior-diff final)))
+      (safe-read file)
+      (behavior-diff final file)))
 
 (defn default-dir []
   (if js/process.env.LTLOCAL
@@ -63,7 +74,7 @@
                       (ordered-files))
         ws-diff (:ws-behaviors @workspace/current-ws)
         final (if (and false ws-diff (not (empty? ws-diff)))
-                (behavior-diff (reader/read-string ws-diff) final)
+                (behavior-diff (safe-read ws-diff "workspace.behaviors") final)
                 final)]
     (reset! object/tags final)))
 
@@ -172,7 +183,7 @@
               :desc "Settings: Workspace behaviors"
               :exec (fn []
                       (cmd/exec! :opener.open-info {:path "workspace.behaviors"
-                                                    :type "text/x-clojure"
+                                                    :mime "text/x-clojure"
                                                     :name "workspace.behaviors"
                                                     :tags [:editor.behaviors :editor.behaviors.workspace]
                                                     :content (:ws-behaviors @workspace/current-ws "")}))})

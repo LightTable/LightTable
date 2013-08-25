@@ -10,7 +10,9 @@
             [lt.objs.opener :as opener]))
 
 (defn rebuild-argv [argstr]
-  (-> (subs argstr (.indexOf argstr "--dir"))
+  (-> (subs argstr (.indexOf argstr "<d><d>dir"))
+      (string/replace "<d>" "-")
+      (string/replace "<s>" " ")
       (string/split " ")
       (to-array)))
 
@@ -39,6 +41,14 @@
   (or (window/app-fetch (window/window-number) :args)
       (and (= (window/window-number) 0) (first (app/args)))))
 
+(defn is-lt-binary? [path]
+  (#{"ltbin" "node-webkit" "LightTable.exe" "LightTable"} (string/trim (files/basename path))))
+
+(defn valid-path? [path]
+  (and (string? path)
+       (not (empty? path))
+       (not (is-lt-binary? path))))
+
 ;;*********************************************************
 ;; Behaviors
 ;;*********************************************************
@@ -50,7 +60,7 @@
                                 (let [args-str (or (window/app-extract! (window/window-number) :args)
                                                    (first (app/args)))
                                       args (parse-args (rebuild-argv args-str))
-                                      paths (map #(files/resolve (:dir args) %) (filter (complement empty?) (:_ args)))
+                                      paths (map #(files/resolve (:dir args) %) (filter valid-path? (:_ args)))
                                       open-dir? (some files/dir? paths)]
                                   (when open-dir?
                                     (object/merge! workspace/current-ws {:initialized? true}))
@@ -61,7 +71,7 @@
                   :reaction (fn [this path]
                               (when (= (app/fetch :focusedWindow) (window/window-number))
                                 (let [args (parse-args (rebuild-argv path))
-                                      paths (map #(files/resolve (:dir args) %) (filter (complement empty?) (:_ args)))
+                                      paths (map #(files/resolve (:dir args) %) (filter valid-path? (:_ args)))
                                       open-dir? (some files/dir? paths)]
                                   (if (or (:new args)
                                           (and open-dir? (not (:add args))))

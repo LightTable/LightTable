@@ -59,15 +59,15 @@
       (clear-props)
       (set-props (dissoc context :content))
       (set-val (:content context))
-      (set-options {:mode (name (:type context))
+      (set-options {:mode (name (:mime context))
                     :readOnly false
                     :dragDrop false
                     :lineNumbers false
                     :lineWrapping true})))
 
 (defn make [$elem context]
-  (let [e (->editor $elem {:mode (if (:type context)
-                                   (name (:type context))
+  (let [e (->editor $elem {:mode (if (:mime context)
+                                   (name (:mime context))
                                    "text")
                            :autoClearEmptyLines true
                            :dragDrop false

@@ -227,6 +227,12 @@
                   :reaction (fn [this v]
                               (cmd/exec-active! v)))
 
+(object/behavior* ::init-syntax-selector
+                  :triggers #{:init}
+                  :reaction (fn [app]
+                              (object/raise syntax-selector :refresh!)))
+
+
 (object/add-behavior! syntax-selector ::set-syntax)
 
 (cmd/command {:command :set-syntax

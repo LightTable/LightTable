@@ -294,6 +294,8 @@
                   :triggers #{:object.instant}
                   :desc "Python: Set the path to the python executable for clients"
                   :type :user
+                  :params [{:label "path"
+                            :type :path}]
                   :exclusive true
                   :reaction (fn [this exe]
                               (object/merge! python {:python-exe exe})))
@@ -303,5 +305,7 @@
                   :desc "Python: Set the path to ipython for clients"
                   :type :user
                   :exclusive true
+                  :params [{:label "path"
+                            :type :path}]
                   :reaction (fn [this exe]
                               (object/merge! python {:ipython-exe exe})))

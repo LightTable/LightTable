@@ -165,7 +165,7 @@
                 :name "Instarepl"
                 :live true
                 :init (fn [this]
-                        (let [main (-> (pool/create {:type "clj" :content default-content :ns "user"})
+                        (let [main (-> (pool/create {:mime "text/x-clojure" :content default-content :ns "user"})
                                        (object/remove-tags [:editor.clj])
                                        (object/add-tags [:editor.clj.instarepl :editor.transient]))]
                           (object/parent! this main)
@@ -190,9 +190,10 @@
               :exec (fn []
                       (let [cur (pool/last-active)
                             info (:info @cur)]
-                        (if-not (= (:type info) "clj")
+                        (if-not (= (:mime info) "text/x-clojure")
                           (notifos/set-msg! "Instarepl only works for Clojure" {:class "error"})
                           (let [content (editor/->val cur)
+                                dirty (:dirty @cur)
                                 inst (object/create ::instarepl)
                                 ed (:main @inst)]
                             (object/merge! ed {:info info
@@ -203,7 +204,7 @@
                             (object/remove-tags ed [:editor.transient])
                             (object/add-tags ed [:editor.file-backed])
                             (editor/set-val ed content)
-                            (object/raise cur :close)
+                            (object/raise cur :close.force)
                             (tabs/add! inst)
                             (tabs/active! inst)
                             ))

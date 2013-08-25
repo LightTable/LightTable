@@ -26,6 +26,16 @@
                   :reaction (fn [this types]
                               (object/merge! files-obj (typelist->index @files-obj types))))
 
+(object/behavior* ::file.ignore-pattern
+                  :triggers #{:object.instant}
+                  :type :user
+                  :exclusive true
+                  :desc "Files: Set ignore pattern"
+                  :params [{:label "pattern"
+                            :example "\"\\\\.git|\\\\.pyc\""}]
+                  :reaction (fn [this pattern]
+                              (set! ignore-pattern (js/RegExp. pattern))))
+
 (def files-obj (object/create (object/object* ::files
                                               :tags [:files]
                                               :exts {}

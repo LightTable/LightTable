@@ -29,7 +29,7 @@
                 :tags #{:version}
                 :name "Version"
                 :init (fn [this]
-                        (let [main (pool/create {:type "markdown" :content (-> (files/lt-home "/core/changelog.md")
+                        (let [main (pool/create {:mime "markdown" :content (-> (files/lt-home "/core/changelog.md")
                                                                                (files/open-sync)
                                                                                (:content))})]
                           (object/merge! this {:ed main})

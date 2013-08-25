@@ -10,7 +10,7 @@
 ;;***************************************************
 
 (defn create* [info]
-  (.Doc js/CodeMirror (:content info) (:type info)))
+  (.Doc js/CodeMirror (:content info) (:mime info)))
 
 (defn linked* [doc info]
   (let [{:keys [from to shared-history type]} info
@@ -35,7 +35,7 @@
   ([doc] (create-sub doc nil))
   ([doc info] (create (assoc info :doc (linked* doc info)))))
 
-;(def orig (create {:content "hey\nzomg\nwoot\ncool\nlah" :type "text/x-clojure"}))
+;(def orig (create {:content "hey\nzomg\nwoot\ncool\nlah" :mime "text/x-clojure"}))
 ;(def sub (create-sub orig {:from 1 :to 2}))
 
 (defn ->cm-doc [doc]

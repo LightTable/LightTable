@@ -111,11 +111,12 @@
 .CodeMirror-gutters { padding-left:8px; background: #f0f0f0; border:0; }
 .CodeMirror-linenumber { color:#555; }
 
-.CodeMirror-hints { position: absolute; z-index: 1000000000000000; overflow: hidden; list-style: none;  margin: 0; padding: 2px;  border-radius: 2px; border: 1px solid var(pane-bg);  background: var(pane-bg); font-size: 90%; font-family: inherit;  max-height: 20em; overflow-y: auto; }
-.CodeMirror-hints ul li { margin: 0; padding: 0 4px; border-radius: 2px; max-width: 19em; overflow: hidden; white-space: pre; color: var(fg); cursor: pointer; }
+.CodeMirror-hints { position: absolute; z-index: 1000000000000000; overflow: hidden; list-style: none;  margin: 0; padding: 2px;  border-radius: 2px; border: 1px solid var(pane-bg);  background: var(pane-bg); font-size: 90%; font-family: inherit;  max-height: 20em; }
+.CodeMirror-hints ul { overflow-y:auto; max-height:20em; }
+.CodeMirror-hints ul li { margin: 0; padding: 0 4px; border-radius: 2px; max-width: 60em; overflow: hidden; white-space: pre; color: #ccc; cursor: pointer; }
 .CodeMirror-hints input { display:none; }
 .CodeMirror-hints .selected { background: var(highlight-bg); color: var(highlight-fg); }
-.CodeMirror-hints::-webkit-scrollbar-thumb { background: var(pane-scrollbar); border-color: var(pane-scrollbar); }
+.CodeMirror-hints ul::-webkit-scrollbar-thumb { background: var(pane-scrollbar); border-color: var(pane-scrollbar); }
 
 /**********************************************************
 * Shared
@@ -124,8 +125,8 @@
 html { background: var(bg); }
 body { background: var(bg); color: var(fg); }
 a {text-decoration:none; color: var(fg); }
-button { background:var(button-bg); color:var(button-fg); }
-button:hover, button:focus { background:var(button-active-bg); color: var(button-active-fg); }
+.button, button { background:var(button-bg); color:var(button-fg); }
+.button:hover, .button:focus, button:hover, button:focus { background:var(button-active-bg); color: var(button-active-fg); }
 input { color: var(highlight-fg); background:var(highlight-bg); }
 
 ::-webkit-input-placeholder { color: var(placeholder-fg); }
@@ -136,10 +137,7 @@ input { color: var(highlight-fg); background:var(highlight-bg); }
 ::-webkit-scrollbar-corner { background:transparent; }
 ::selection { background: var(placeholder-fg); }
 
-.inline-result { background:none; }
-.inline-result .truncated { background: var(dark-accent-background); color:var(accent-foreground); }
-.inline-result .inline { background: var(dark-accent-background); color:var(accent-foreground); }
-.inline-result.open .full { background: var(dark-accent-background); color:var(accent-foreground); }
+.inline-result { background: var(dark-accent-background); color:var(accent-foreground); }
 
 .inline-exception pre { background: var(error-bg); color: var(error-fg); }
 
@@ -229,6 +227,7 @@ input { color: var(highlight-fg); background:var(highlight-bg); }
 #right-bar .clients .list .active {background:var(highlight-bg); color: inherit; border-color: var(pane-border); }
 #right-bar .clients .list .active * {color: inherit; }
 #right-bar .clients .list .active h2 {color:  var(highlight-fg); }
+#right-bar .clients .list .active .button:hover { background:var(button-active-bg); color:var(button-active-fg); }
 #right-bar .clients .connector li { border-top:1px solid var(pane-border); border-bottom:1px solid var(pane-border); }
 #right-bar .clients .connector li:first-child {border:none;}
 #right-bar .clients .connector li:last-child {border-bottom:none;}
@@ -284,10 +283,10 @@ input { color: var(highlight-fg); background:var(highlight-bg); }
 .behavior-helper-result div { white-space:nowrap; width:-webkit-fit-content; background:var(usage-bg); padding:0px 5px; border-radius:2px; margin-top:0px; }
 .behavior-helper-result div > * { border-radius:2px; padding:0px !important; }
 .behavior-helper-result h2 { display:block; width:-webkit-fit-content; white-space:nowrap; }
-.behavior-helper-result div > span.param { display:inline-block; margin-right:0px; padding:0px 5px !important; margin-top:5px; }
+.behavior-helper-result div > span.param { display:inline-block; margin-right:8px; margin-bottom:3px; padding:2px 5px !important; margin-top:5px; border:1px solid var(usage-fg); }
 .behavior-helper-result div > span.spacer { display:inline-block; margin:0 5px; }
 .behavior-helper-result .active { background: var(usage-fg); color:var(usage-bg); border-radius:2px; display:inline-block; }
-.behavior-helper-result .example { display:inline-block; width:auto;}
+.behavior-helper-result .example { display:inline-block; width:auto; vertical-align:top; padding:0; margin:0; margin-left:5px; border:none; }
 
 /**********************************************************
 * Theme specific
