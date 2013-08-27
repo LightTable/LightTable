@@ -234,9 +234,11 @@
 
 (defui item [this x]
   [:li {:index x}]
-  :click (fn []
-           (object/raise this :set-selection! x)
-           (object/raise this :select! x)))
+  :mousedown (fn [e]
+               (dom/prevent e)
+               (dom/stop-propagation e)
+               (object/raise this :set-selection! x)
+               (object/raise this :select! x)))
 
 (defn fill-lis [{:keys [lis size search selected key transform]} results]
   (let [cnt (count results)

@@ -328,20 +328,6 @@
                       (when-let [ed (last-active)]
                         (js/CodeMirror.commands.delLineLeft (editor/->cm-ed ed))))})
 
-(cmd/command {:command :editor.undo
-              :desc "Editor: Undo"
-              :hidden true
-              :exec (fn []
-                      (when-let [ed (last-active)]
-                        (js/CodeMirror.commands.undo (editor/->cm-ed ed))))})
-
-(cmd/command {:command :editor.redo
-              :desc "Editor: Redo"
-              :hidden true
-              :exec (fn []
-                      (when-let [ed (last-active)]
-                        (js/CodeMirror.commands.redo (editor/->cm-ed ed))))})
-
 (cmd/command {:command :editor.doc-start
               :desc "Editor: Move to first line"
               :hidden true

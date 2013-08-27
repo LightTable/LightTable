@@ -1,6 +1,8 @@
 (ns lt.objs.dev
   (:require [lt.object :as object]
             [lt.util.js :refer [wait ]]
+            [lt.objs.settings :as settings]
+            [lt.objs.notifos :as notifos]
             [lt.objs.command :as cmd]))
 
 (def win (.Window.get (js/require "nw.gui")))

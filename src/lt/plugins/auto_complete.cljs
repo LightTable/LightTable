@@ -157,7 +157,7 @@
                               (let [elem (object/->content this)]
                                 (when (:line @this)
                                   (js/CodeMirror.off (:line @this) "change" on-line-change))
-                                (object/remove-tags (:ed @this) [:editor.hinting])
+                                (object/remove-tags (:ed @this) [:editor.hinting]) selection
                                 (when (or force? (= 0 (count (:cur @this))))
                                   (keyboard/passthrough))
                                 (object/merge! this {:active false

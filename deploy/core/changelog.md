@@ -1,5 +1,12 @@
 #Changes
 
+##0.5.2
+
+* FIX: auto-update wasn't correctly handling version
+* FIX: include latest lein-light clojure client
+* FIX: a couple of issues with light skin
+* FIX: clicking on the auto-completer doesn't complete
+
 ##0.5.1
 
 * FIX CRASH: Chromium crashes on pasting in a standard input on OS X

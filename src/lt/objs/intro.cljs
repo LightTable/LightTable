@@ -1,6 +1,7 @@
 (ns lt.objs.intro
   (:require [lt.object :as object]
             [lt.objs.settings :as settings]
+            [lt.objs.style :as style]
             [lt.objs.deploy :as deploy]
             [lt.objs.cli :as cli]
             [lt.objs.command :as cmd]
@@ -37,7 +38,7 @@
                 :init (fn [this]
                         [:div#intro
                          [:h1
-                          [:img {:height 40 :src (bound settings/settings ->lt-image)}]]
+                          [:img {:height 40 :src (bound style/styles ->lt-image)}]]
                          [:p "Welcome to the latest version of Light Table. To see the full list of what's been added/changed, checkout the " (changelog) ".
                           Some of the highlights include deeper Javascript support, inline browsers, and Python eval! If you're new, you might want to take a look at " (docs) "to get started."]
                          ]))

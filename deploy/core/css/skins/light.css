@@ -48,7 +48,7 @@
 
   var-overlay-dimmer: rgba(255,255,255,0.7);
 
-  var-accent-foreground: #216BFF;
+  var-accent-foreground: #213BfF;
   var-accent-background: #BFD4FF;
   var-light-accent-background: #75A3FF;
   var-light-accent-foreground: #216BFF;
@@ -113,7 +113,7 @@
 
 .CodeMirror-hints { position: absolute; z-index: 1000000000000000; overflow: hidden; list-style: none;  margin: 0; padding: 2px;  border-radius: 2px; border: 1px solid var(pane-bg);  background: var(pane-bg); font-size: 90%; font-family: inherit;  max-height: 20em; }
 .CodeMirror-hints ul { overflow-y:auto; max-height:20em; }
-.CodeMirror-hints ul li { margin: 0; padding: 0 4px; border-radius: 2px; max-width: 60em; overflow: hidden; white-space: pre; color: #ccc; cursor: pointer; }
+.CodeMirror-hints ul li { margin: 0; padding: 0 4px; border-radius: 2px; max-width: 60em; overflow: hidden; white-space: pre; color: var(highlight-fg); cursor: pointer; }
 .CodeMirror-hints input { display:none; }
 .CodeMirror-hints .selected { background: var(highlight-bg); color: var(highlight-fg); }
 .CodeMirror-hints ul::-webkit-scrollbar-thumb { background: var(pane-scrollbar); border-color: var(pane-scrollbar); }
@@ -181,7 +181,7 @@ input { color: var(highlight-fg); background:var(highlight-bg); }
 
 .popup { background:var(overlay-dimmer); }
 .popup > div > div { background:var(accent-background); color:var(accent-foreground); }
-.popup .button { background: transparent; border:2px solid var(accent-foreground); }
+.popup .button { background: transparent; border:2px solid var(accent-foreground); color:var(accent-foreground); }
 .popup .button:hover, .popup .button.active { background:var(accent-foreground); color:var(accent-background); }
 .popup ::-webkit-scrollbar-thumb { background: var(accent-foreground); border:1px solid var(accent-foreground); }
 
@@ -308,3 +308,6 @@ input { color: var(highlight-fg); background:var(highlight-bg); }
 #right-bar .clients .button { background:var(highlight-bg); }
 #right-bar .clients .active .button { background:var(button-bg); }
 #right-bar .clients .active .button:hover { background:var(button-active-bg); color:var(button-active-fg); }
+
+#find-bar input + input { border-left:1px solid var(pane-border); }
+#find-bar ::-webkit-input-placeholder { color:var(fg); }

@@ -37,7 +37,7 @@
 (def version (get-versions))
 
 (defn str->version [s]
-  (let [[major minor patch] (string/split (subs s 0 (.indexOf s "-")) ".")]
+  (let [[major minor patch] (string/split s ".")]
     {:major (js/parseInt major)
      :minor (js/parseInt minor)
      :patch (js/parseInt patch)}))
@@ -79,7 +79,8 @@
         (on "end" cb))))
 
 (defn move-tmp []
-  (files/move! (str home-path "/tmp/*") home-path)
+  (doseq [file (files/full-path-ls (str home-path "/tmp/"))]
+    (.cp shell "-rf" file home-path))
   (.rm shell "-rf" (str home-path "/tmp*")))
 
 (defn fetch-and-deploy [ver]
