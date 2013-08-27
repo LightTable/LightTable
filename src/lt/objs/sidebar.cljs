@@ -60,6 +60,8 @@
 (object/behavior* ::close!
                   :triggers #{:close!}
                   :reaction (fn [this]
+                              (when (:active @this)
+                                (dom/remove-class (object/->content (:active @this)) :active))
                               (object/merge! tabs/multi {(:side @this) 0})
                               (object/merge! this {:width 0
                                                    :active false

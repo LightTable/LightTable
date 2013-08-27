@@ -130,8 +130,7 @@
 (cmd/command {:command :navigate-workspace
               :desc "Navigate: open navigate"
               :exec (fn []
-                      (object/raise sidebar/rightbar :toggle sidebar-navigate {:force? true
-                                                                              :transient? false})
+                      (object/raise sidebar/rightbar :toggle sidebar-navigate {:transient? false})
                       (object/raise sidebar-navigate :focus!))})
 
 (cmd/command {:command :navigate-workspace-transient

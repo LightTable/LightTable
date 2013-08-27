@@ -71,6 +71,7 @@
  :clients
  #{:lt.objs.langs.clj/handle-cancellation
    :lt.objs.clients/raise-on-object
+   :lt.objs.langs.python/ipython-error
    :lt.objs.langs.python/pyzmq-error},
  :clients.devtools
  #{:lt.objs.clients.devtools/clear-queue-on-connect

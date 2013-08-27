@@ -144,11 +144,6 @@
 ;; Commands
 ;;*********************************************************
 
-(cmd/command {:command :app.refresh
-              :desc "Window: Refresh Light Table"
-              :exec (fn []
-                      (object/raise app :refresh))})
-
 (cmd/command {:command :window.new
               :desc "Window: Open new window"
               :exec (fn []

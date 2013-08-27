@@ -8,6 +8,7 @@
             [lt.objs.clients :as clients]
             [lt.objs.sidebar.clients :as scl]
             [lt.objs.menu :as menu]
+            [lt.objs.platform :as platform]
             [lt.objs.context :as ctx]
             [lt.objs.editor :as editor]
             [lt.objs.keyboard :as keyboard]

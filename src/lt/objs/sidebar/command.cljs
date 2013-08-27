@@ -111,7 +111,6 @@
 (object/behavior* ::move-selection
                   :triggers #{:move-selection}
                   :reaction (fn [this dir]
-                              (println "moving selection")
                               (object/update! this [:selected] + dir)
                               (object/raise this :refresh!)
                               (ensure-visible this)
@@ -142,7 +141,8 @@
 (object/behavior* ::options-escape!
                   :triggers #{:escape!}
                   :reaction (fn [this]
-                              (object/raise sidebar-command :cancel!)))
+                              (object/raise sidebar-command :cancel!)
+                              (exec! :close-sidebar)))
 
 (object/behavior* ::set-on-select
                   :triggers #{:select}

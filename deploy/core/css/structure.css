@@ -88,9 +88,9 @@ body { -webkit-user-select: none; }
 .console .log-val + .log-val:before { content: ", " }
 
 #multi .fullscreen { display:none; position:absolute; right:8px; top:8px; cursor:default; border-radius:3px; width:13px; height:13px; font-size:11pt; line-height:0.77em; padding-left:3px; box-sizing:border-box; }
-.win.fullscreen #multi .fullscreen { display:block; }
+.windows.fullscreen #multi .fullscreen { display:block; }
 .linux.fullscreen #multi .fullscreen { display:block; }
-.win.fullscreen #multi .tabset:last-child .list {width:calc(100% - 40px);}
+.windows.fullscreen #multi .tabset:last-child .list {width:calc(100% - 40px);}
 .linux.fullscreen #multi .tabset:last-child .list {width:calc(100% - 40px);}
 
 #intro { padding:50px; }

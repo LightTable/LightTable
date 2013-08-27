@@ -39,7 +39,8 @@
   )
 
 (defui button [class action label]
-       [:span {:class (str "button " (name class))}
+       [:span {:class (str "button " (name class))
+               :title "Exit fullscreen"}
         [:span label]]
        :click (fn []
                 (action)))

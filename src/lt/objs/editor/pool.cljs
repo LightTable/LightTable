@@ -298,26 +298,7 @@
               :desc "Editor: Smart indent line(s)"
               :exec (fn []
                       (when-let [cur (last-active)]
-                        (let [line (-> cur (editor/->cursor "start") :line)]
-                          (if (editor/selection? cur)
-                            (editor/indent-selection cur "smart")
-                            (editor/indent-line cur line "smart")))))})
-
-(cmd/command {:command :line-numbers
-              :desc "Editor: Toggle line numbers"
-              :exec (fn []
-                      (let [v (not (settings/fetch :line-numbers))]
-                        (settings/store! :line-numbers v)
-                        (object/raise pool :line-numbers-change v))
-                      )})
-
-(cmd/command {:command :toggle-wrap
-              :desc "Editor: Toggle line wrapping for current"
-              :exec (fn []
-                      (let [ed (last-active)
-                            v (not (editor/option ed :lineWrapping))]
-                        (editor/set-options ed {:lineWrapping v}))
-                      )})
+                        (editor/indent-selection cur "smart")))})
 
 (cmd/command {:command :editor.select-all
               :desc "Editor: Select all"

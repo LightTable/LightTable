@@ -5,8 +5,7 @@
                                       "<Space>" "<PageDown>",
                                       "j" "gj",
                                       "k" "gk"})
-           (:lt.objs.langs.python/python-exe "/path/to/python")
-
+           (:lt.objs.langs.python/python-exe nil)
            :lt.objs.intro/show-new-file
            ],
 

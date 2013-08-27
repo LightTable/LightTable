@@ -1,5 +1,31 @@
 #Changes
 
+##0.5.1
+
+* FIX CRASH: Chromium crashes on pasting in a standard input on OS X
+* FIX: require not defined evaluating file with no ns macro #726
+* FIX: Unable to set! \*warn-on-reflection\* #725
+* FIX: Cannot recover from LT window maximize #724
+* FIX: Don't bind ctrl-shift-right/left by default #723
+* FIX: make instarepl fails even for clojure files #721
+* FIX: filter lists don't ensure the selection is visible #719
+* FIX: Invalid user behaviors prevents the app from starting #717
+* FIX: Cmd-G not correctly bound in the find-bar #704
+* FIX: Missing shebang in ./LightTable for linux #701
+* FIX: Eval of clj files will fail without an namespace #700
+* FIX: Escape in goto line should close command panel #696
+* FIX: Set behaviors and keymaps to show auto complete on input
+* FIX: remove toggle line numbers and toggle whitespace commands
+* FIX: remove refresh light table command
+* FIX: remove spurious print on startup
+* FIX: remove spurious prints in python client
+* FIX: watches require you to manually import sys
+* FIX: move to IPython 1.0+
+* FIX: windows 8 pops up command prompts on start
+* ADDED: Ctrl-tab as a default keybinding for switching tabs
+* ADDED: File -> Open folder menu item
+* UPDATED: node-webkit 0.7.2
+
 ##0.5.0
 
 * ADDED: behaviors files to modify LT's behavior

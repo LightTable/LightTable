@@ -187,7 +187,7 @@ input { color: var(highlight-fg); background:var(highlight-bg); }
 
 .popup { background:var(overlay-dimmer); }
 .popup > div > div { background:var(accent-background); color:var(accent-foreground); }
-.popup .button { background: transparent; border:2px solid var(accent-foreground); }
+.popup .button { background: transparent; border:2px solid var(accent-foreground); color:var(accent-foreground); }
 .popup .button:hover, .popup .button.active { background:var(accent-foreground); color:var(accent-background); }
 .popup ::-webkit-scrollbar-thumb { background: var(accent-foreground); border:1px solid var(accent-foreground); }
 

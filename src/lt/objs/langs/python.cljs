@@ -56,7 +56,7 @@
                                                :body [:span "Looks like there was an issue trying to connect
                                                       to the project. Here's what we got:" [:pre (:buffer @this)]]
                                                :buttons [{:label "close"}]})
-                                )
+                                (clients/rem! (:client @this)))
                               (proc/kill-all (:procs @this))
                               (object/destroy! this)
                               ))
@@ -64,8 +64,8 @@
 (object/object* ::connecting-notifier
                 :triggers []
                 :behaviors [::on-exit ::on-error ::on-out]
-                :init (fn [this notifier]
-                        (object/merge! this {:notifier notifier :buffer ""})
+                :init (fn [this client]
+                        (object/merge! this {:client client :buffer ""})
                         nil))
 
 (defn escape-spaces [s]
@@ -80,7 +80,7 @@
 
 (defn run-py [{:keys [path project-path name client venv] :as info}]
   (let [n (notifos/working "Connecting..")
-        obj (object/create ::connecting-notifier n)
+        obj (object/create ::connecting-notifier client)
         env (if venv
               {"VIRTUAL_ENV" venv}
               {})
@@ -269,6 +269,18 @@
                                 (set! pyzmq-warned true)
                                 (popup/popup! {:header "Some IPython dependencies are missing."
                                                :body "Looks like you have IPython installed, but you also need pyzmq in order for Light Table to take advantage of the IPython client. You can continue with the default client for a scaled down experience."
+                                               :buttons [{:label "Install instructions"
+                                                          :action (fn []
+                                                                    (platform/open "http://ipython.org/ipython-doc/stable/install/install.html"))}
+                                                         {:label "ok"}]}))))
+
+(object/behavior* ::ipython-error
+                  :triggers #{:python.client.error.ipython-version}
+                  :reaction (fn [this]
+                              (when-not pyzmq-warned
+                                (set! pyzmq-warned true)
+                                (popup/popup! {:header "Light Table requires IPython 1.0+"
+                                               :body "Looks like you have an older version of IPython installed. You can continue with the default client for a scaled down experience."
                                                :buttons [{:label "Install instructions"
                                                           :action (fn []
                                                                     (platform/open "http://ipython.org/ipython-doc/stable/install/install.html"))}

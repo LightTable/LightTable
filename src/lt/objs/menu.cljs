@@ -105,7 +105,7 @@
                                          {:label "Select All" :click #(cmd/exec! :editor.select-all)}
                                          ]}
                 )
-              {:label "View" :submenu [{:label "Workspace" :key "t" :click (fn [] (cmd/exec! :workspace.show))}
+              {:label "View" :submenu [{:label "Workspace" :click (fn [] (cmd/exec! :workspace.show))}
                                        {:label "Connections" :click #(cmd/exec! :show-connect)}
                                        {:label "Navigator" :key "o" :click #(cmd/exec! :navigate-workspace-transient)}
                                        {:label "Commands" :key " " :modifiers "ctrl" :click #(cmd/exec! :show-commandbar-transient)}
