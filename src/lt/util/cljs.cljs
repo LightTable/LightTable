@@ -81,3 +81,5 @@
     (coll? x) (apply array (map clj->js x))
     :else x))
 
+(defn str-contains? [str x]
+  (> (.indexOf str x) -1))

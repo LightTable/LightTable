@@ -84,16 +84,23 @@
                               (object/raise this :eval.one)))
 
 (cmd/command {:command :editor.watch.watch-selection
-              :desc "Editor: watch selection"
+              :desc "Editor: Watch selection"
               :exec (fn []
                       (when-let [ed (pool/last-active)]
                         (object/raise ed :watch!))
                       )})
 
 (cmd/command {:command :editor.watch.unwatch
-              :desc "Editor: remove watch under cursor"
+              :desc "Editor: Remove watch under cursor"
               :exec (fn []
                       (when-let [ed (pool/last-active)]
                         (object/raise ed :unwatch!))
                       )})
+
+(cmd/command {:command :editor.watch.remove-all
+              :desc "Editor: Clear all watches"
+              :exec (fn []
+                      (when-let [ed (pool/last-active)]
+                        (doseq [w (vals (:watches @ed))]
+                          (object/raise (:inline-result w) :clear!))))})
 

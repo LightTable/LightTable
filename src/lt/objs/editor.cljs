@@ -442,6 +442,14 @@
            :reaction (fn [this]
                        (set-options this {:lineNumbers false})))
 
+(behavior* ::scroll-past-end
+           :triggers #{:object.instant :lt.object/tags-removed}
+           :desc "Editor: Allow scrolling past the end of the file"
+           :exclusive true
+           :type :user
+           :reaction (fn [this]
+                       (set-options this {:scrollPastEnd true})))
+
 (behavior* ::tab-settings
            :triggers #{:object.instant}
            :desc "Editor: indent settings (tab size, etc)"
@@ -602,6 +610,7 @@
                               (load/js "core/node_modules/codemirror/comment.js" :sync)
                               (load/js "core/node_modules/codemirror/active-line.js" :sync)
                               (load/js "core/node_modules/codemirror/overlay.js" :sync)
+                              (load/js "core/node_modules/codemirror/scrollpastend.js" :sync)
                               (doseq [mode (files/ls "core/node_modules/codemirror/modes")
                                       :when (= (files/ext mode) "js")]
                                 (load/js (str "core/node_modules/codemirror/modes/" mode) :sync))

@@ -66,11 +66,6 @@
 (object/behavior* ::show!
                   :triggers #{:show!}
                   :reaction (fn [this]
-                              (let [e (pool/last-active)]
-                                (when e
-                                  (when-let [sel (editor/selection e)]
-                                    (when-not (empty? sel)
-                                      (set-val this sel)))))
                               (when-not (:shown @this)
                                 (let [tabs (ctx/->obj :tabs)]
                                   (object/merge! this {:bottom (:bottom @tabs)
@@ -93,24 +88,27 @@
                                 (let [tabs (ctx/->obj :tabs)]
                                   (object/merge! this {:shown false})
                                   (object/raise tabs :bottom! (- find-height))
-                                  (editor/focus (pool/last-active))
+                                  (when-let [ed (pool/last-active)]
+                                    (editor/focus ed))
                                   ))))
 
 (object/behavior* ::next!
                   :triggers #{:next!}
                   :reaction (fn [this]
-                              (if (and (:searching? @this)
-                                       (= (:searching.for @(pool/last-active)) (->val this)))
-                                (js/CodeMirror.commands.findNext (current-ed) (:reverse? @this))
-                                (object/raise this :search! (->val this)))))
+                              (when-let [cur (pool/last-active)]
+                                (if (and (:searching? @this)
+                                         (= (:searching.for @cur) (->val this)))
+                                  (js/CodeMirror.commands.findNext (current-ed) (:reverse? @this))
+                                  (object/raise this :search! (->val this))))))
 
 (object/behavior* ::prev!
                   :triggers #{:prev!}
                   :reaction (fn [this]
-                              (if (and (:searching? @this)
-                                       (= (:searching.for @(pool/last-active)) (->val this)))
-                                (js/CodeMirror.commands.findPrev (current-ed) (:reverse? @this))
-                                (object/raise this :search! (->val this)))))
+                              (when-let [cur (pool/last-active)]
+                                (if (and (:searching? @this)
+                                         (= (:searching.for @cur) (->val this)))
+                                  (js/CodeMirror.commands.findPrev (current-ed) (:reverse? @this))
+                                  (object/raise this :search! (->val this))))))
 
 (object/behavior* ::focus!
                   :triggers #{:focus!}
@@ -123,7 +121,8 @@
                   :triggers #{:clear!}
                   :reaction (fn [this]
                               (object/merge! this {:searching? false})
-                              (js/CodeMirror.commands.clearSearch (editor/->cm-ed (pool/last-active)))
+                              (when-let [ed (pool/last-active)]
+                                (js/CodeMirror.commands.clearSearch (editor/->cm-ed ed)))
                               (dom/val (dom/$ :input (object/->content this))
                                        "")))
 
@@ -141,10 +140,10 @@
                   :reaction (fn [this v]
                               (if (empty? v)
                                 (object/raise this :clear!)
-                                (do
+                                (when-let [e (pool/last-active)]
                                   (object/merge! this {:searching? true})
-                                  (object/merge! (pool/last-active) {:searching.for v})
-                                  (let [ed (editor/->cm-ed (pool/last-active))]
+                                  (object/merge! e {:searching.for v})
+                                  (let [ed (editor/->cm-ed e)]
                                     (js/CodeMirror.commands.find ed v (:reverse? @this)))))))
 
 (object/object* ::find-bar
@@ -181,6 +180,14 @@
                       (object/merge! bar {:reverse? rev?})
                       (object/raise bar :show!)
                       (object/raise bar :focus!))})
+
+(cmd/command {:command :find.fill-selection
+              :desc "Find: Fill with selection"
+              :exec (fn []
+                      (when-let [e (pool/last-active)]
+                        (when-let [sel (editor/selection e)]
+                          (when-not (empty? sel)
+                            (set-val bar sel)))))})
 
 (cmd/command {:command :find.clear
               :desc "Find: Clear the find bar"

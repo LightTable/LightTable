@@ -74,7 +74,7 @@
     (for [p params]
       (do
         [:span.log-val (cond
-                        (and (= (:type p) "object") (not (-> p :value :value))) "null"
+                        (and (= (:type p) "object") (:value p) (not (-> p :value :value))) "null"
                         (= (:type p) "object") (object/->content (object/create ::inspector-object local {:value p}))
                         :else (:value p (:text p)))]))))
 

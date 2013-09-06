@@ -1,6 +1,6 @@
 ;; User behaviors
 ;; -----------------------------
-;; Behaviors are stored as a set of diffs that are merged together together
+;; Behaviors are stored as a set of diffs that are merged together
 ;; to create the final set of functionality that makes up Light Table. You can
 ;; modify these diffs to either add or subtract functionality.
 ;;

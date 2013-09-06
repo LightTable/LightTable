@@ -113,8 +113,7 @@
 (object/behavior* ::on-code
                   :triggers #{:editor.eval.cljs.code}
                   :reaction (fn [this result]
-                              (object/raise this :exec.cljs! result)
-                              ))
+                              (object/raise this :exec.cljs! result)))
 
 (object/behavior* ::exec.cljs!
                   :triggers #{:exec.cljs!}
@@ -175,7 +174,6 @@
 (object/behavior* ::clj-result
                   :triggers #{:editor.eval.clj.result}
                   :reaction (fn [obj res]
-                              (notifos/done-working)
                               (when (:out res)
                                 (println (:out res)))
                               (doseq [result (-> res :results)
@@ -185,6 +183,7 @@
                                 (if (:stack result)
                                   (object/raise obj :editor.eval.clj.exception result)
                                   (do
+                                    (notifos/done-working)
                                     (object/raise obj :editor.result (:result result) loc))))
                               ))
 
@@ -193,8 +192,8 @@
                   :reaction (fn [obj res]
                               (notifos/done-working)
                               (let [meta (:meta res)
-                                    loc {:line (dec (:end-line meta)) :ch (:end-column meta)
-                                         :start-line (dec (:line meta))}]
+                                    loc {:line (dec (:end-line meta)) :ch (:end-column meta 0)
+                                         :start-line (dec (:line meta 1))}]
                                 (notifos/set-msg! (:result res) {:class "error"})
                                 (object/raise obj :editor.exception (:stack res) loc))
                               ))
@@ -254,6 +253,7 @@
                   :triggers #{:object.instant}
                   :desc "Clojure: set the path to the Java executable for clients"
                   :type :user
+                  :params [{:label "path"}]
                   :exclusive true
                   :reaction (fn [this path]
                               (object/merge! clj-lang {:java-exe path})))

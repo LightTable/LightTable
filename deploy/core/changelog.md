@@ -1,5 +1,25 @@
 #Changes
 
+##0.5.3
+
+* FIX: logging on inline browser wasn't always showing inspectables
+* FIX: Asserts do not correctly show as errors #767
+* FIX: Workspace inline rename not full width #758
+* FIX: Watches don't work in the instarepl #753
+* FIX: Horizontal scroll overlays line numbers (ibdknox theme) #751
+* FIX: Exiting findbar with no editors open causes errors #747
+* FIX: Separate fill selection from find #742
+* FIX: Keymaps should be modifier order insensitive #739
+* FIX: Vim re-indent '=' doesn't work with multiple lines #732
+* FIX: Watches in Python #730
+* FIX: SyntaxError when file encoding is explicitly specified #454
+* ADDED: `Editor: Allow scrolling past the end of the file` behavior
+* ADDED: `Editor: Save on focus lost` behavior (add to the :window tag)
+* ADDED: `Editor: Save all on focus lost` behavior (add to the :window tag)
+* ADDED: `File: Save all` command
+* ADDED: `Editor: Clear all watches` command #743
+* ADDED: `Find: Fill selection` command
+
 ##0.5.2
 
 * FIX: auto-update wasn't correctly handling version

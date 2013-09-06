@@ -12,13 +12,11 @@
 
      :editor [:lt.plugins.vim/activate-vim
               :lt.objs.editor/no-wrap
-              :lt.plugins.rainbow-parens/rainbow-parens
+              :lt.objs.editor/scroll-past-end
               :lt.plugins.auto-complete/auto-show-on-input
               (:lt.objs.style/set-theme "ibdknox")],
 
-     :editor.behaviors [:lt.plugins.rainbow-parens/rainbow-parens],
-
-     :editor.clj [:lt.plugins.rainbow-parens/rainbow-parens],
+     :editor.aurora [:lt.plugins.rainbow-parens/rainbow-parens]
 
      :editor.clj.instarepl [:lt.plugins.rainbow-parens/rainbow-parens
                             (:lt.objs.langs.clj/print-length 1000)],
@@ -28,17 +26,22 @@
      :editor.javascript [(:lt.plugins.jshint/jshint-options {:maxparams false})
                          :lt.plugins.jshint/on-save],
 
-     :editor.keymap [:lt.plugins.rainbow-parens/rainbow-parens],
-
      :editor.markdown [:lt.objs.editor/wrap],
 
      :editor.plaintext [:lt.objs.editor/wrap],
 
      :editor.python [(:lt.objs.style/set-theme "tomorrow-night")],
 
-     :filter-list [(:lt.objs.files/file-types [{:exts [:wisp],
+     :window [:lt.objs.opener/save-all-on-focus-lost]
+
+     :files [(:lt.objs.files/file-types [{:exts [:aurora],
+                                          :mime "text/x-clojurescript",
+                                          :name "Aurora",
+                                          :tags [:editor.aurora]}])
+             (:lt.objs.files/file-types [{:exts [:wisp],
                                           :mime "text/x-clojurescript",
                                           :name "Wisp",
                                           :tags [:editor.wisp]}])]},
 
- :- {:app [:lt.objs.intro/show-intro]}}
+ :- {:app [:lt.objs.intro/show-intro]
+     :editor [:lt.objs.editor/highlight-current-line]}}

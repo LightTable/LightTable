@@ -12,6 +12,7 @@
             [clojure.string :as string]
             [lt.objs.sidebar.command :as scmd]
             [lt.util.dom :as dom]
+            [lt.util.cljs :refer [str-contains?]]
             [cljs.reader :as reader])
   (:require-macros [lt.macros :refer [defui]]))
 
@@ -207,8 +208,27 @@
 ;;app is first run.
 (object/tag-behaviors :app [::initial-behaviors])
 
+(defn ->ordered-keystr [k]
+  (let [char (-> (string/split k "-") last)]
+    (str (when (str-contains? k "ctrl")
+           "ctrl-")
+         (when (str-contains? k "cmd")
+           "cmd-")
+         (when (str-contains? k "meta")
+           "meta-")
+         (when (str-contains? k "alt")
+           "alt-")
+         (when (str-contains? k "altgr")
+           "altgr-")
+         (when (str-contains? k "shift")
+           "shift-")
+         char)))
+
 (defn fix-keys [[k v]]
-  [(string/replace k "pmeta" kb/meta) v])
+  (let [k (string/replace k "pmeta" kb/meta)
+        keys (string/split k " ")]
+  ;;ctrl cmd alt altgr shift
+  [(reduce #(str % " " %2) (map ->ordered-keystr keys)) v]))
 
 (defn +keys [cur m]
   (reduce (fn [res [k v]]

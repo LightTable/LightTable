@@ -17,8 +17,8 @@
                 :ex #{:editor.keys.vim.ex}})
 
 (defn mode-change-listener [ed]
-  (fn [mode]
-    (object/raise ed :mode-change mode)))
+  (fn [info]
+    (object/raise ed :mode-change (.-mode info))))
 
 (defn make-vim-editor [ed]
   (editor/set-options ed {:keyMap "vim"})

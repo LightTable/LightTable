@@ -144,6 +144,23 @@
                   :reaction (fn [this cur]
                               (concat cur (:open-files @opener))))
 
+(object/behavior* ::save-on-focus-lost
+                  :triggers #{:blur}
+                  :desc "Editor: Save on focus lost"
+                  :type :user
+                  :reaction (fn [this]
+                              (if (object/has-tag? this :editor)
+                                (object/raise this :save)
+                                (cmd/exec! :save))
+                              ))
+
+(object/behavior* ::save-all-on-focus-lost
+                  :triggers #{:blur}
+                  :desc "Editor: Save all on focus lost"
+                  :type :user
+                  :reaction (fn [this]
+                              (cmd/exec! :save-all)))
+
 (object/object* ::opener
                 :tags #{:opener}
                 :triggers #{}
@@ -174,6 +191,12 @@
               :desc "File: Save file"
               :exec (fn []
                       (when-let [ed (pool/last-active)]
+                        (object/raise ed :save)))})
+
+(cmd/command {:command :save-all
+              :desc "File: Save all"
+              :exec (fn []
+                      (doseq [ed (object/by-tag :editor.file-backed)]
                         (object/raise ed :save)))})
 
 (cmd/command {:command :save-as

@@ -7,6 +7,7 @@
             [lt.objs.console :as console]
             [lt.objs.langs.clj :as clj]
             [lt.objs.notifos :as notifos]
+            [lt.plugins.watches :as watches]
             [lt.objs.tabs :as tabs]
             [lt.util.dom :refer [prevent]]
             [lt.objs.sidebar.command :as cmd]
@@ -21,12 +22,11 @@
                   :triggers #{:eval}
                   :reaction (fn [obj auto? pos?]
                               (let [ed (:ed @obj)
-                                    v (editor/->val ed)
+                                    v (watches/watched-range obj nil nil clj/clj-watch)
                                     info (-> @obj :info)
                                     info (if (editor/selection? ed)
                                            (assoc info :local true :code (editor/selection ed) :auto? false :meta {:start (-> (editor/->cursor ed "start") :line)})
-                                           (assoc info :local true :code v :auto? auto? :pos (when pos? (editor/->cursor ed)))
-                                           )
+                                           (assoc info :local true :code v :auto? auto? :pos (when pos? (editor/->cursor ed))))
                                     info (assoc info :print-length (object/raise-reduce obj :clojure.print-length+ nil))]
                                 (notifos/working "")
                                 (clients/send (eval/get-client! {:origin obj
@@ -108,6 +108,11 @@
                               (editor/focus (:main @this))
                               ))
 
+(object/behavior* ::reroute-watches
+                  :triggers #{:editor.eval.clj.watch}
+                  :reaction (fn [this r]
+                              (object/raise (:main @this) :editor.eval.clj.watch r)))
+
 (object/behavior* ::live-toggle
                   :triggers #{:live.toggle!}
                   :reaction (fn [this]
@@ -160,7 +165,7 @@
 
 (object/object* ::instarepl
                 :triggers []
-                :behaviors [::sonar-result ::clj-exception ::on-show-refresh-eds ::destroy-on-close
+                :behaviors [::sonar-result ::clj-exception ::on-show-refresh-eds ::destroy-on-close ::reroute-watches
                             ::live-toggle ::no-op ::cleanup-on-destroy :lt.objs.langs.clj/eval-print-err :lt.objs.langs.clj/eval-print]
                 :name "Instarepl"
                 :live true

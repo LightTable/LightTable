@@ -2543,6 +2543,7 @@ window.CodeMirror = (function() {
 
     var sel = doc.sel;
     sel.goalColumn = null;
+    if (bias == null) bias = posLess(head, sel.head) ? -1 : 1;
     // Skip over atomic spans.
     if (checkAtomic || !posEq(anchor, sel.anchor))
       anchor = skipAtomic(doc, anchor, bias, checkAtomic != "push");
@@ -3187,9 +3188,11 @@ window.CodeMirror = (function() {
     operation: function(f){return runInOp(this, f);},
 
     refresh: operation(null, function() {
+      var badHeight = this.display.cachedTextHeight == null;
       clearCaches(this);
       updateScrollPos(this, this.doc.scrollLeft, this.doc.scrollTop);
       regChange(this);
+      if (badHeight) estimateLineHeights(this);
     }),
 
     swapDoc: operation(null, function(doc) {
@@ -5488,7 +5491,12 @@ window.CodeMirror = (function() {
     spanAffectsWrapping = function(str, i) {
       return /\-[^ \-?]|\?[^ !\'\"\),.\-\/:;\?\]\}]/.test(str.slice(i - 1, i + 1));
     };
-  else if (webkit && !/Chrome\/(?:29|[3-9]\d|\d\d\d)\./.test(navigator.userAgent))
+  else if (webkit && /Chrome\/(?:29|[3-9]\d|\d\d\d)\./.test(navigator.userAgent))
+    spanAffectsWrapping = function(str, i) {
+      var code = str.charCodeAt(i - 1);
+      return code >= 8208 && code <= 8212;
+    };
+  else if (webkit)
     spanAffectsWrapping = function(str, i) {
       if (i > 1 && str.charCodeAt(i - 1) == 45) {
         if (/\w/.test(str.charAt(i - 2)) && /[^\-?\.]/.test(str.charAt(i))) return true;

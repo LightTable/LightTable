@@ -188,7 +188,7 @@ body { -webkit-user-select: none; }
 #side .workspace > ul > li > div > ul.sub { margin:0; }
 #side .workspace ul.root > div > ul:empty:before { content:"Add files or folders to the workspace or open a recent one to get started."; float:left; padding:5px; width:80%; margin-top:40px;  }
 #side .workspace input.rename { display:none; }
-#side .workspace li.renaming > input.rename { display:block; }
+#side .workspace li.renaming > input.rename { display:block; width:100%; }
 #side .workspace li.renaming > .tree-item > p { display:none; }
 #side .workspace.recents .wstree { display:none; }
 #side .workspace.recents .recent { display:block; width:100%; overflow:hidden; }

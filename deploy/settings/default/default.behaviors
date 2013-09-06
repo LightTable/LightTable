@@ -166,7 +166,9 @@
    :lt.objs.instarepl/no-op :lt.objs.instarepl/eval-on-change
    :lt.objs.instarepl/close-parent
    :lt.plugins.rainbow-parens/rainbow-parens
-   :lt.objs.editor.find/find-in-editor},
+   :lt.objs.editor.find/find-in-editor
+   :lt.objs.langs.clj/clj-watch-result
+   [:lt.object/add-tag :watchable]},
  :editor.cljs
  #{:lt.objs.langs.clj/on-result-set-ns :lt.objs.langs.clj/exec.cljs!
    :lt.objs.langs.clj/no-op :lt.objs.langs.clj/eval-location

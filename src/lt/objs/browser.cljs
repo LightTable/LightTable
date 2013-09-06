@@ -226,13 +226,15 @@
 (object/behavior* ::window-load-click-handler
                   :triggers #{:window.loaded}
                   :reaction (fn [this window loc]
+                              (.document.addEventListener window "blur"
+                                                          (fn [e]
+                                                            (object/raise this :inactive e)))
                               (.document.addEventListener window "contextmenu"
                                                           (fn [e]
                                                             (object/raise this :menu! e)))
                               (.document.addEventListener window "click"
                                                           (fn [e]
                                                             (object/raise this :active)
-                                                            (.log js/console (.-clientX e))
                                                             (when (and
                                                                    (= (.-target.nodeName e) "A")
                                                                    (or (and (platform/mac?) (.-metaKey e))
@@ -240,7 +242,7 @@
                                                               (.preventDefault e)
                                                               (.stopPropagation e)
                                                               (cmd/exec! :add-browser-tab (.-target.href e))))
-                                                          true)))
+                                                          )))
 
 (object/behavior* ::window-load-key-handler
                   :triggers #{:window.loaded}

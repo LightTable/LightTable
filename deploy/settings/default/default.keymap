@@ -13,7 +13,8 @@
      :editor.keys.normal {"\"" [(:editor.repeat-pair "\"")]
                           "(" [(:editor.open-pair "(")]
                           ")" [(:editor.close-pair ")")]
-                          "pmeta-f" [:find.show]
+                          "pmeta-f" [:find.fill-selection
+                                     :find.show]
                           "tab" [:auto-complete]
                           "pmeta-g" [:find.next]
                           "pmeta-shift-g" [:find.prev]
@@ -58,9 +59,7 @@
                         "esc" [:find.clear :find.hide],
                         "enter" [:find.replace]}
      :find-bar.vim {"enter" [:find.hide]}
-     :browser { "pmeta-l" [:browser.url-bar.focus]
-                "pmeta-left" [:browser.back]
-                "pmeta-right" [:browser.forward]}
+     :browser { "pmeta-l" [:browser.url-bar.focus] }
      :browser.url-bar {"enter" [:browser.url-bar.navigate!]
                        "esc" [:browser.focus-content]},
      :filter-list.input {"down" [(:filter-list.input.move-selection 1)],
