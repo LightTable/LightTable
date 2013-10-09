@@ -31,8 +31,8 @@
                                      walkdir (js/require (str js/ltpath "/core/node_modules/lighttable/background/walkdir2.js"))
                                      grab-files (fn [all-files folder]
                                                   (let [root-length (inc (count (.dirname fpath folder)))
-                                                        walked (walkdir folder (clj->js {:filter (js/RegExp. pattern)
-                                                                                         :limit 8000}))]
+                                                        walked (walkdir folder (js-obj "filter" (js/RegExp. pattern)
+                                                                                        "limit" 8000))]
                                                     (.concat all-files (.map (.-paths walked)
                                                                              #(js-obj "full" %
                                                                                       "rel" (subs % root-length))))))

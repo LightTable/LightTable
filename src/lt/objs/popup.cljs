@@ -24,7 +24,7 @@
 (object/behavior* ::refocus-on-close
                   :triggers #{:close}
                   :reaction (fn [this]
-                              (object/raise canvas/canvas :focus!)))
+                              (cmd/exec! :tabs.focus-active)))
 
 (object/behavior* ::change-active-button
                   :triggers #{:move-active}

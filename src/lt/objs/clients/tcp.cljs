@@ -90,7 +90,7 @@
 (object/behavior* ::send!
                   :triggers #{:send!}
                   :reaction (fn [this msg]
-                              (send-to (:socket @this) msg)))
+                              (send-to (:socket @this) (array (:cb msg) (:command msg) (-> msg :data clj->js)))))
 
 (object/tag-behaviors :tcp.client [::send!])
 

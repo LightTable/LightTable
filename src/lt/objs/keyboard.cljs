@@ -13,7 +13,7 @@
 (def capturing? true)
 (def keys (atom {}))
 (def key-map (atom {}))
-(def chords (js-obj :current nil :chords #{}))
+(def chords (js-obj "current" nil "chords" #{}))
 (def chord-timeout 1000)
 
 (defn activity []
@@ -35,21 +35,21 @@
           #{}
           ks))
 
-(defn merge-keys [_ _ _ ctx]
-  (let [ctx-set (object/specificity-sort ctx)
+(defn merge-keys [ctx]
+  (let [ctx-set (object/specificity-sort ctx :down)
         ks @keys
         neue (apply merge {} (map ks ctx-set))]
-    (set! chords (js-obj :current nil :chords (extract-chords neue)))
+    (set! chords (js-obj "current" nil "chords" (extract-chords neue)))
     (reset! key-map neue)))
 
 (defn refresh []
-  (merge-keys nil nil nil (ctx/current)))
+  (merge-keys (ctx/current)))
 
 ;;When the context changes, create our new keymap
-(add-watch ctx/contexts :commands2 merge-keys)
+(add-watch ctx/contexts :commands2 (fn [_ _ _ ctx] (merge-keys ctx)))
 (refresh)
 
-(defn ->keystr [ev]
+(defn ->keystr [key ev]
   (str
    (when (.-ctrlKey ev) "ctrl-")
    (when (.-metaKey ev) (if (platform/mac?)
@@ -58,22 +58,22 @@
    (when (.-altKey ev) "alt-")
    (when (or (.-altGraphKey ev) altgr) "altgr-")
    (when (.-shiftKey ev) "shift-")
-   (. (or (.-key ev) "") toLowerCase)))
+   (. (or key "") toLowerCase)))
 
-(defn chord|mapping [ev]
-  (let [current (aget chords :current)
-        cur-chords (aget chords :chords)
+(defn chord|mapping [key char ev]
+  (let [current (aget chords "current")
+        cur-chords (aget chords "chords")
         [ks ch] (if current
-                  [(str current " " (->keystr ev)) (str current " " (aget ev "char"))]
-                  [(->keystr ev) (aget ev "char")])]
+                  [(str current " " (->keystr key ev)) (str current " " char)]
+                  [(->keystr key ev) char])]
     (if-let [chord (or (cur-chords ch) (cur-chords ks))]
       (do
-        (aset chords :current chord)
+        (aset chords "current" chord)
         (when chord-timeout
-          (wait chord-timeout #(aset chords :current nil)))
+          (wait chord-timeout #(aset chords "current" nil)))
         [])
       (do
-        (aset chords :current nil)
+        (aset chords "current" nil)
         (or (@key-map ch) (@key-map ks) (when current []))))))
 
 (def ^:dynamic *capture* true)
@@ -102,41 +102,41 @@
     (cmd/exec! cmd))
   *capture*)
 
-(defn capture [ev]
+(defn capture [key char ev]
   (activity)
   (binding [*capture* true]
-    (when-let [cs (chord|mapping ev)]
+    (when-let [cs (chord|mapping key char ev)]
       (doseq [c cs]
         (trigger c))
       *capture*)))
 
-(defn capture-up [ev]
-  (or (@key-map (aget ev "char")) (@key-map (->keystr ev))))
+(defn capture-up [key char ev]
+  (or (@key-map char) (@key-map (->keystr key ev))))
 
 (def meta (if (platform/mac?)
             "cmd"
             "ctrl"))
 
 (defn cmd->bindings [cmd]
-    (filter #(-> % second seq)
-            (for [[ctx ms] @keys]
-              [ctx (-> (filter #(= (-> % second first) cmd) ms)
-                       first
-                       first)])))
+  (filter #(-> % second seq)
+          (for [[ctx ms] @keys]
+            [ctx (-> (filter #(= (-> % second first) cmd) ms)
+                     first
+                     first)])))
 
-(utev/capture :keydown
-              (fn [ev]
-                (when (and capturing?
-                           (capture ev))
-                  (.preventDefault ev)
-                  (.stopPropagation ev))))
+(set! js/Mousetrap.handleKey
+      (fn [key char ev]
+        (when (and capturing?
+                   (capture key char ev))
+          (.preventDefault ev)
+          (.stopPropagation ev))))
 
-(utev/capture :keyup
-              (fn [ev]
-                (when (and capturing?
-                           (capture-up ev))
-                  (.preventDefault ev)
-                  (.stopPropagation ev))))
+(set! js/Mousetrap.handleKeyUp
+      (fn [key char ev]
+        (when (and capturing?
+                   (capture-up key char ev))
+          (.preventDefault ev)
+          (.stopPropagation ev))))
 
 (object/behavior* ::chord-timeout
                   :triggers #{:object.instant}

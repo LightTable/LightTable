@@ -250,13 +250,14 @@
                               (let [script (.document.createElement window "script")]
                                 (set! (.-type script) "text/javascript")
                                 (set! (.-innerHTML script) (:content (files/open-sync "core/node_modules/lighttable/util/keyevents.js")))
-                                (.document.head.appendChild window script))
-                              (.document.addEventListener window "keydown"
-                                                          (fn [e]
-                                                            (when (keyboard/capture e)
-                                                              (dom/prevent e)
-                                                              (dom/stop-propagation e)))
-                                                          true)))
+                                (.document.head.appendChild window script)
+                                (aset (aget window "Mousetrap") "handleKey"
+                                      (fn [key char e]
+                                        (when (keyboard/capture key char e)
+                                          (dom/prevent e)
+                                          (dom/stop-propagation e))))
+                                )))
+
 (object/behavior* ::window-load-lttools
                   :triggers #{:window.loaded}
                   :reaction (fn [this window loc]
@@ -312,7 +313,7 @@
 (object/behavior* ::handle-send!
                   :triggers #{:send!}
                   :reaction (fn [this msg]
-                              (object/raise this (keyword (str (second msg) "!")) msg (js->clj msg :keywordize-keys true))
+                              (object/raise this (keyword (str (:command msg) "!")) msg)
                               ))
 
 (object/behavior* ::handle-refresh!
@@ -328,9 +329,9 @@
 
 (object/behavior* ::change-live
                   :triggers #{:editor.eval.js.change-live!}
-                  :reaction (fn [this msg clj-msg]
-                              (when-let [ed (clients/cb->obj (first clj-msg))]
-                                 (devtools/changelive! ed (-> clj-msg last :path) (js/lt.plugins.watches.watched-range ed nil nil js/lt.objs.langs.js.src->watch)
+                  :reaction (fn [this msg]
+                              (when-let [ed (clients/cb->obj (:cb msg))]
+                                 (devtools/changelive! ed (-> msg :data :path) (js/lt.plugins.watches.watched-range ed nil nil js/lt.objs.langs.js.src->watch)
                                                        (fn [res]
                                                          ;;TODO: check for exception, otherwise, assume success
                                                          (object/raise ed :editor.eval.js.change-live.success)
@@ -339,25 +340,25 @@
 
 (object/behavior* ::js-eval-file
                   :triggers #{:editor.eval.js.file!}
-                  :reaction (fn [this msg clj-msg cb]
-                              (when-let [ed (clients/cb->obj (first clj-msg))]
-                                (let [data (last msg)]
-                                  (set! (.-code data) (str (-> clj-msg last :code) "\n\n//# sourceURL=" (-> clj-msg last :path)))
-                                  (devtools/eval-in-frame (:frame-id @this) msg (fn [res]
-                                                                                  (when cb (cb))
-                                                                             ;;TODO: check for exception, otherwise, assume success
-                                                                               (object/raise ed :editor.eval.js.file.success)))))))
+                  :reaction (fn [this msg cb]
+                              (when-let [ed (clients/cb->obj (:cb msg))]
+                                (let [data (:data msg)
+                                      data (assoc data :code (str (:code data) "\n\n//# sourceURL=" (:path data)))]
+                                  (devtools/eval-in-frame (:frame-id @this) data (fn [res]
+                                                                                   (when cb (cb))
+                                                                                   ;;TODO: check for exception, otherwise, assume success
+                                                                                   (object/raise ed :editor.eval.js.file.success)))))))
 
 (object/behavior* ::html-eval
                   :triggers #{:editor.eval.html!}
-                  :reaction (fn [this msg clj-msg]
-                              (when-let [ed (clients/cb->obj (first clj-msg))]
+                  :reaction (fn [this msg]
+                              (when-let [ed (clients/cb->obj (:cb msg))]
                                 (object/raise this :client.refresh!))))
 
 (object/behavior* ::css-eval
                   :triggers #{:editor.eval.css!}
-                  :reaction (fn [this msg clj-msg]
-                              (let [info (last clj-msg)
+                  :reaction (fn [this msg]
+                              (let [info (:data msg)
                                     frame (to-frame (:frame-id @this))
                                     node-name (string/replace (:name info) #"\." "-")
                                     node (.document.querySelector frame (str "#" node-name))
@@ -374,50 +375,48 @@
 
 (object/behavior* ::cljs-exec
                   :triggers #{:editor.eval.cljs.exec!}
-                  :reaction (fn [this msg clj-msg]
+                  :reaction (fn [this msg]
                               (let [frame-id (:frame-id @this)
                                     frame (to-frame frame-id)
                                     window (devtools/get-frame-window frame-id)
-                                    info (last clj-msg)]
+                                    info (:data msg)]
                                 (doseq [form (:results info)]
                                   (try
                                     ;;TODO: this is a hack for bad compiler output. We need to just move to the latest cljs
-                                    (handle-cb (first clj-msg) :editor.eval.cljs.result {:result (eval/cljs-result-format (.eval.call window window (string/replace (:code form) ")goog" ")\ngoog")))
-                                                                                         :meta (:meta form)})
+                                    (handle-cb (:cb msg) :editor.eval.cljs.result {:result (eval/cljs-result-format (.eval.call window window (string/replace (:code form) ")goog" ")\ngoog")))
+                                                                                   :meta (:meta form)})
                                     (catch (.-Error window) e
-                                      (handle-cb (first clj-msg) :editor.eval.cljs.exception {:ex e
-                                                                                              :meta (:meta form)})))))))
+                                      (handle-cb (:cb msg) :editor.eval.cljs.exception {:ex e
+                                                                                        :meta (:meta form)})))))))
 
-(defn eval-js-form [this msg clj-msg]
-  (set! (.-code (last msg)) (eval/append-source-file (-> clj-msg last :code) (-> clj-msg last :path)))
-  (devtools/eval-in-frame (:frame-id @this) msg
-                          (fn [res]
-                            (let [result (devtools/inspector->result res)
-                                  req (last clj-msg)
-                                  result (assoc result :meta (:meta req) :no-inspect true)]
-                              (if-not (:ex result)
-                                (handle-cb (first clj-msg) :editor.eval.js.result result)
-                                (handle-cb (first clj-msg) :editor.eval.js.exception result)))))
-  (object/raise this :editor.eval.js.change-live! msg clj-msg))
+(defn eval-js-form [this msg]
+  (let [data (assoc (:data msg) :code (eval/append-source-file (-> msg :data :code) (-> msg :data :path)))]
+    (devtools/eval-in-frame (:frame-id @this) data
+                            (fn [res]
+                              (let [result (devtools/inspector->result res)
+                                    req (:data msg)
+                                    result (assoc result :meta (:meta req) :no-inspect true)]
+                                (if-not (:ex result)
+                                  (handle-cb (:cb msg) :editor.eval.js.result result)
+                                  (handle-cb (:cb msg) :editor.eval.js.exception result)))))
+    (object/raise this :editor.eval.js.change-live! msg)))
 
-(defn must-eval-file? [clj-msg]
+(defn must-eval-file? [msg]
   ;;we eval the whole file if there's no meta, or this file isn't loaded in the current page
-  (or (not (-> clj-msg last :meta))
-      (not (devtools/find-script devtools/local (-> clj-msg last :path)))))
+  (or (not (-> msg :data :meta))
+      (not (devtools/find-script devtools/local (-> msg :data :path)))))
 
 
 (object/behavior* ::js-eval
                   :triggers #{:editor.eval.js!}
-                  :reaction (fn [this msg clj-msg]
-                              (if (must-eval-file? clj-msg)
-                                (when-let [ed (clients/cb->obj (first clj-msg))]
-                                  (let [data (last msg)
-                                        origcode (.-code data)]
-                                    (set! (.-code data) (str (editor/->val ed) "\n\n//# sourceURL=" (-> clj-msg last :path)))
-                                    (devtools/eval-in-frame (:frame-id @this) msg (fn [res]
-                                                                                    (set! (.-code (last msg)) origcode)
-                                                                                    (eval-js-form this msg clj-msg)))))
-                                (eval-js-form this msg clj-msg))))
+                  :reaction (fn [this msg]
+                              (if (must-eval-file? msg)
+                                (when-let [ed (object/by-id (:cb msg))]
+                                  (let [data (:data msg)
+                                        data (assoc data :code (str (editor/->val ed) "\n\n//# sourceURL=" (-> data :path)))]
+                                    (devtools/eval-in-frame (:frame-id @this) data (fn [res]
+                                                                                    (eval-js-form this msg)))))
+                                (eval-js-form this msg))))
 
 ;;*********************************************************
 ;; Commands

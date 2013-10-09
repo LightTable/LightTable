@@ -23,13 +23,13 @@
 (defn make-vim-editor [ed]
   (editor/set-options ed {:keyMap "vim"})
   (object/add-tags ed [:editor.keys.vim])
-  (editor/on ed "vim.modeChange" (mode-change-listener ed))
+  (editor/on ed "vim-mode-change" (mode-change-listener ed))
   (object/raise ed :mode-change "normal"))
 
 (defn make-normal-editor [ed]
   (editor/set-options ed {:keyMap "default"})
   (object/remove-tags ed [:editor.keys.vim])
-  (editor/off ed "vim.modeChange" (mode-change-listener ed))
+  (editor/off ed "vim-mode-change" (mode-change-listener ed))
   (object/raise ed :mode-change "normal-editor"))
 
 (object/behavior* ::mode-change

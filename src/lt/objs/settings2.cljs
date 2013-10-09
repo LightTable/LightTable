@@ -209,7 +209,9 @@
 (object/tag-behaviors :app [::initial-behaviors])
 
 (defn ->ordered-keystr [k]
-  (let [char (-> (string/split k "-") last)]
+  (let [char (if (= (last k) "-")
+               "-"
+               (-> (string/split k "-") last))]
     (str (when (str-contains? k "ctrl")
            "ctrl-")
          (when (str-contains? k "cmd")

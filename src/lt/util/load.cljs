@@ -14,13 +14,16 @@
 (defn js
   ([file] (js file false))
   ([file sync]
+   (let [file (if-not (= (first file) (.-sep fpath))
+                (.join fpath pwd file)
+                file)]
    (if sync
-     (js/window.eval (-> (.readFileSync fs (.join fpath pwd file))
+     (js/window.eval (-> (.readFileSync fs file)
                          (.toString)
                          (prep file)))
      (.readFile fs (.join fpath pwd file) (fn [content]
                                             (js/window.eval (-> (.toString content)
-                                                                (prep file))))))))
+                                                                (prep file)))))))))
 
 (defn css [file]
    (let [link (js/document.createElement "link")]

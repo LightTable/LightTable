@@ -101,11 +101,17 @@
         obj))))
 
 (defn ->message [command data only? cb]
-  (let [cb-id (swap! cb-id inc)
+  (let [cb (if-not cb
+             clients
+             cb)
+        cb-id (when (fn? cb)
+                (gensym "client-cb"))
         [only? cb :as pair] (->cb only? cb)]
     (when cb
       (store-cb pair cb-id))
-    (array cb-id (name command) (clj->js data))))
+    {:cb (or cb-id (object/->id cb))
+     :command (name command)
+     :data data}))
 
 ;;**********************************************************
 ;; common
@@ -117,15 +123,19 @@
 
 ;;return client based on path and type
 (defn discover* [command {:keys [path]}]
-  (filter (fn [cur]
-            (let [{:keys [dir commands]} (if (satisfies? IDeref cur)
-                                           @cur
-                                           cur)]
-              (and (if (and path dir)
-                     (subpath? dir path)
-                     true)
-                   (get commands command))))
-          (vals @cs)))
+  (let [all (filter (fn [cur]
+                      (let [{:keys [dir commands]} (if (satisfies? IDeref cur)
+                                                     @cur
+                                                     cur)]
+                        (and (if (and path dir)
+                               (subpath? dir path)
+                               true)
+                             (get commands command))))
+                    (vals @cs))
+        with-dir (filter #(@% :dir) all)]
+    (if (and path (seq with-dir))
+      with-dir
+      all)))
 
 (defn discover [command info]
   (let [[found & others :as all] (discover* command info)]
@@ -139,7 +149,8 @@
     (object/raise client :try-send! message)))
 
 (defn close! [client]
-  (send client :client.close))
+  (send client :client.close)
+  (object/raise client :close!))
 
 (defn cancel-all! [client]
   (send client :client.cancel-all))
@@ -176,9 +187,10 @@
 (object/behavior* ::handle-message
                   :triggers #{:message}
                   :reaction (fn [obj [cb-id command data :as msg]]
-                              (if (callback? cb-id)
-                                (call cb-id (keyword command) data)
-                                (object/raise clients (keyword command) data))))
+                              (cond
+                               (callback? cb-id) (call cb-id (keyword command) data)
+                               (object/by-id cb-id) (object/raise (object/by-id cb-id) (keyword command) data)
+                               :else (object/raise clients (keyword command) data))))
 
 (object/behavior* ::notify-connect
                   :triggers #{:connect}

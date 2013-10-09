@@ -113,6 +113,11 @@
                   :reaction (fn [this r]
                               (object/raise (:main @this) :editor.eval.clj.watch r)))
 
+(object/behavior* ::on-focus-focus-ed
+                  :triggers #{:focus!}
+                  :reaction (fn [this]
+                              (object/raise (:main @this) :focus!)))
+
 (object/behavior* ::live-toggle
                   :triggers #{:live.toggle!}
                   :reaction (fn [this]
@@ -130,8 +135,8 @@
 
 (defn ->type|val [r vs]
   (cond
-   (= (:root r) "result") ["result" (-> r :cur last)]
-   (= (:root r) "ex") ["exception" (-> r :cur last clean-ex)]
+   (= (:root r) :result) ["result" (-> r :cur last)]
+   (= (:root r) :ex) ["exception" (-> r :cur last clean-ex)]
    :else ["use" (get vs (:root r))]))
 
 (defn inline [this res opts]
@@ -164,9 +169,7 @@
                 (object/raise this :live.toggle!)))
 
 (object/object* ::instarepl
-                :triggers []
-                :behaviors [::sonar-result ::clj-exception ::on-show-refresh-eds ::destroy-on-close ::reroute-watches
-                            ::live-toggle ::no-op ::cleanup-on-destroy :lt.objs.langs.clj/eval-print-err :lt.objs.langs.clj/eval-print]
+                :tags #{:instarepl}
                 :name "Instarepl"
                 :live true
                 :init (fn [this]
@@ -219,3 +222,10 @@
               :desc "Instarepl: Open a clojure instarepl"
               :exec (fn []
                       (add))})
+
+(cmd/command {:command :instarepl.toggle-live
+              :desc "Instarepl: Toggle live mode"
+              :exec (fn []
+                      (when-let [ed (pool/last-active)]
+                        (when (object/parent ed)
+                          (object/raise (object/parent ed) :live.toggle!))))})

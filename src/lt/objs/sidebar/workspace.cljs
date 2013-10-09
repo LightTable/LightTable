@@ -548,6 +548,13 @@
                                   (show-menu (.-clientX e) (.-clientY e)))
                               ))
 
+(object/behavior* ::workspace.open-on-start
+                  :triggers #{:init}
+                  :type :user
+                  :desc "Workspace: Show workspace on start"
+                  :reaction (fn [this]
+                              (cmd/exec! :workspace.show)))
+
 (object/tag-behaviors :sidebar.workspace [::sidebar-menu ::recent! ::tree! ::recent.select!])
 
 (def sidebar-workspace (object/create ::sidebar.workspace))

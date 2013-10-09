@@ -328,6 +328,12 @@ body { -webkit-user-select: none; }
 .jshintmarks { width:5px; }
 .jshinterror { height:1em; display:inline-block; width:5px; }
 
+.inline-doc { line-height:1em; background:#303030; padding:5px 20px; border-radius:3px; }
+.inline-doc h1 { font-size:12pt; margin:0; }
+.inline-doc h3 { margin:0; color:var(fg); }
+.underline-result .inline-doc pre { padding:0 !important; margin:0; margin-top:5px; color:var(fg); }
+
+
 .animated #multi {  -webkit-transition:bottom 0.1s ease-in-out, left 0.1s ease-in-out, right 0.10s ease-in-out; }
 .animated #bottombar { -webkit-transition:height 0.1s ease-in-out, left 0.1s ease-in-out, right 0.1s ease-in-out; }
 .animated #side { -webkit-transition:width 0.1s ease-in-out; }

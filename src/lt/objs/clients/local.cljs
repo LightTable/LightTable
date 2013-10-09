@@ -59,11 +59,8 @@
 (object/behavior* ::send!
                   :triggers #{:send!}
                   :reaction (fn [this data]
-                              (let [[cb command data] (->clj data)]
-                                (on-message (keyword command) data cb))
+                                (on-message (keyword (:command data)) (:data data) (:cb data))
                               ))
-
-(object/tag-behaviors :client.local [::send!])
 
 (defn init []
   (clients/handle-connection! {:name client-name

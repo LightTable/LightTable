@@ -3,9 +3,14 @@
            "cmd-shift-f" [:searcher.show]
            "cmd-shift-t" [:tabset.new]
            "ctrl-shift-right" [:tabs.move-next-tabset]
-           "ctrl-shift-left" [:tabs.move-prev-tabset]}
+           "ctrl-shift-left" [:tabs.move-prev-tabset]
+           "alt-left" [:tabset.prev]
+           "alt-right" [:tabset.next]}
      :editor {"alt-w" [:editor.watch.watch-selection]
               "alt-up" [(:emacs.keymap-cmd "Ctrl-Alt-U")]
-              "cmd-e" [:find.fill-selection]
+              "alt-m" [:editor.line-start-smart]
               "alt-shift-w" [:editor.watch.unwatch]
-              "cmd-shift-/" [:toggle-comment-selection]}}}
+              "cmd-shift-/" [:toggle-comment-selection]}
+     :editor.keys.normal {"cmd-d" [:editor.doc]}
+     :editor.keys.vim.normal {"cmd-d" [:editor.doc.toggle]}
+     }}

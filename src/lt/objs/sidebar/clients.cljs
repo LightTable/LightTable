@@ -79,8 +79,9 @@
    [:p (i :desc)]
    ]
   :click (fn []
+           (object/raise this :selected)
            ((:connect i))
-           (object/raise this :selected)))
+           ))
 
 (defui connect-ui [this]
   [:div {:class (bound this connector?)

@@ -157,7 +157,8 @@
                               (let [elem (object/->content this)]
                                 (when (:line @this)
                                   (js/CodeMirror.off (:line @this) "change" on-line-change))
-                                (object/remove-tags (:ed @this) [:editor.hinting]) selection
+                                (object/remove-tags (:ed @this) [:editor.hinting :editor.keys.hinting.active])
+                                (ctx/out! [:editor.keys.hinting.active])
                                 (when (or force? (= 0 (count (:cur @this))))
                                   (keyboard/passthrough))
                                 (object/merge! this {:active false
@@ -222,12 +223,14 @@
                                 (async-hints this))
                               ))
 
+
 (defn start-hinting [this opts]
   (let [pos (editor/->cursor this)
         token (get-token this pos)
         line (editor/line-handle this (:line pos))
         elem (object/->content hinter)]
-    (object/add-tags this [:editor.hinting])
+    (object/add-tags this [:editor.hinting :editor.keys.hinting.active])
+    (ctx/in! [:editor.keys.hinting.active] this)
     (object/merge! hinter {:token token
                            :starting-token token
                            :ed this
@@ -292,6 +295,14 @@
                                                                                         (= (:ed @hinter) this))
                                                                            (object/raise this :hint {:select-single false}))
                                                                          ))}))))
+
+(cmd/command {:command :auto-complete.remove
+              :hidden true
+              :desc "Editor: Auto complete hide"
+              :exec (fn []
+                      (when (:active @hinter)
+                        (object/raise hinter :escape!))
+                      (keyboard/passthrough))})
 
 (cmd/command {:command :auto-complete
               :hidden true

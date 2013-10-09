@@ -32,8 +32,6 @@
 
      :editor.python [(:lt.objs.style/set-theme "tomorrow-night")],
 
-     :window [:lt.objs.opener/save-all-on-focus-lost]
-
      :files [(:lt.objs.files/file-types [{:exts [:aurora],
                                           :mime "text/x-clojurescript",
                                           :name "Aurora",

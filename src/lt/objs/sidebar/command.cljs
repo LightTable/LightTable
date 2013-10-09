@@ -383,9 +383,9 @@
          " active")))
 
 (defn ->binding [[k v]]
-  (str v (when (> (.indexOf k "emacs") -1)
+  (str v (when (> (.indexOf (str k) "emacs") -1)
            " (Emacs)")
-       (when (> (.indexOf k "vim") -1)
+       (when (> (.indexOf (str k) "vim") -1)
          " (Vim)")
        ))
 

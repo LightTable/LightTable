@@ -135,6 +135,9 @@
 (defn ->token-js [e pos]
   (.getTokenAt (->cm-ed e) (clj->js pos)))
 
+(defn ->token-type [e pos]
+  (.getTokenTypeAt (->cm-ed e) (clj->js pos)))
+
 (defn ->coords [e]
   (js->clj (.cursorCoords (->cm-ed e)) :keywordize-keys true :force-obj true))
 
@@ -463,7 +466,7 @@
            :exclusive true
            :reaction (fn [obj use-tabs? tab-size indent-unit]
                        (set-options obj {:tabSize tab-size
-                                         :indentWithTabs use-tabs
+                                         :indentWithTabs use-tabs?
                                          :indentUnit indent-unit})))
 
 (object/behavior* ::read-only

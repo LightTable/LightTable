@@ -354,7 +354,7 @@
               :hidden true
               :exec (fn []
                       (when-let [ed (last-active)]
-                        (js/CodeMirror.commands.gotoLineStartSmart (editor/->cm-ed ed))))})
+                        (js/CodeMirror.commands.goLineStartSmart (editor/->cm-ed ed))))})
 
 (cmd/command {:command :editor.line-end
               :desc "Editor: Move to end of the line"

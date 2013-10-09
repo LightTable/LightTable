@@ -84,7 +84,7 @@
     (str "lttools.watch(" src ", " opts-str ")" semi)))
 
 (defn clean-code [src]
-  (string/replace src (js/RegExp. "\n*#!.*\n" "gm") ""))
+  (string/replace src (js/RegExp. "\n*#!.*\n" "gm") "\n"))
 
 (object/behavior* ::on-eval
                   :triggers #{:eval}

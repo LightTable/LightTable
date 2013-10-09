@@ -4,6 +4,7 @@
             [lt.objs.command :as cmd]
             [lt.util.dom :as dom]
             [lt.objs.editor :as editor]
+            [clojure.string :as string]
             [lt.util.cljs :refer [js->clj]])
   (:require-macros [lt.macros :refer [background defui]]))
 
@@ -35,12 +36,21 @@
 (defn ->index [this]
   (editor/pos->index this (editor/cursor this)))
 
+(defn str->ns-keyword [s]
+  (when s
+   (let [s (if (= ":" (first s))
+             (subs s 1)
+             s)
+         parts (string/split s "/")]
+     (when parts
+       (apply keyword parts)))))
+
 (defn pos->key [this idx]
   (let [res (locate idx (:positions @this))]
     (when (and res (:command res))
       (assoc res :command ((:commands @cmd/manager) (-> (:command res)
-                                                        (subs 1)
-                                                        (keyword)))))))
+                                                        (str->ns-keyword)
+                                                         ))))))
 
 (defn index-of [needle haystack]
   (first (keep-indexed #(when (= %2 needle) %1) haystack)))

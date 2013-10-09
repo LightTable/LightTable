@@ -146,7 +146,7 @@
 (set! (.-frameWindow js/window) get-frame-window)
 
 (defn eval-in-frame [frame-id msg cb]
-  (send local {:id (next-id) :method "Runtime.evaluate" :params {:expression (str "window.frameWindow('" frame-id "').eval('" (-> msg last (aget "code") extra-escape) "')")}}
+  (send local {:id (next-id) :method "Runtime.evaluate" :params {:expression (str "window.frameWindow('" frame-id "').eval('" (-> msg :code extra-escape) "')")}}
         cb))
 
 (defn clear-scripts! []

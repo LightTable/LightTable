@@ -2,6 +2,7 @@
   (:require [lt.object :as object]
             [lt.objs.clients :as clients]
             [lt.objs.files :as files]
+            [lt.objs.context :as ctx]
             [lt.objs.app :as app]
             [lt.objs.clients.tcp :as tcp]
             [lt.objs.sidebar.clients :as scl]
@@ -17,9 +18,12 @@
             [lt.objs.eval :as eval]
             [lt.objs.notifos :as notifos]
             [lt.plugins.watches :as watches]
+            [lt.util.dom :as dom]
+            [lt.util.js :as util]
             [lt.util.load :as load]
             [lt.util.cljs :refer [->dottedkw]]
-            [clojure.string :as string]))
+            [clojure.string :as string])
+  (:require-macros [lt.macros :refer [defui]]))
 
 (def shell (load/node-module "shelljs"))
 (def cur-path (.pwd shell))
@@ -59,10 +63,11 @@
 (def local-name "LightTable-REPL")
 
 (defn unescape-unicode [s]
-  (string/replace s
-                  #"\\x(..)"
-                  (fn [res r]
-                    (js/String.fromCharCode (js/parseInt r 16)))))
+  (when (string? s)
+    (string/replace s
+                    #"\\x(..)"
+                    (fn [res r]
+                      (js/String.fromCharCode (js/parseInt r 16))))))
 
 (defn cljs-result-format [n]
   (cond
@@ -77,9 +82,9 @@
     (if project-path
       (do
         (check-all {:path path
-                    :client (clients/client! :clojure.client)}))
+                    :client (clients/client! :nrepl.client)}))
       (or (clients/by-name local-name)
-          (run-local-server (clients/client! :clojure.client))))))
+          (run-local-server (clients/client! :nrepl.client))))))
 
 (object/behavior* ::on-eval
                   :triggers #{:eval}
@@ -150,7 +155,8 @@
                   :triggers #{:editor.eval.cljs.code
                               :editor.eval.clj.result}
                   :reaction (fn [obj res]
-                              (when-not (= (-> @obj :info :ns) (:ns res))
+                              (when (and (:ns res)
+                                         (not= (-> @obj :info :ns) (:ns res)))
                                 (object/update! obj [:info] assoc :ns (:ns res)))))
 
 (object/behavior* ::no-op
@@ -165,7 +171,7 @@
                               (notifos/done-working)
                               (let [meta (:meta res)
                                     result (try
-                                             (unescape-unicode (:result res))
+                                             (unescape-unicode (or (:result res) ""))
                                              )]
                                 (object/raise obj :editor.result result {:line (dec (:end-line meta))
                                                                          :start-line (dec (:line meta))
@@ -221,12 +227,15 @@
 (object/behavior* ::eval-print
                   :triggers #{:editor.eval.clj.print}
                   :reaction (fn [this str]
-                              (console/loc-log (files/basename (or (-> @this :name) (-> @this :info :path))) nil (string/trim str))))
+                              (console/loc-log (files/basename (or (-> @this :name) (-> @this :info :path) "unknown"))
+                                               (when (object/has-tag? this :nrepl.client)
+                                                 "stdout")
+                                               (string/trim (:out str)))))
 
 (object/behavior* ::eval-print-err
                   :triggers #{:editor.eval.clj.print.err}
                   :reaction (fn [this str]
-                              (console/error str)))
+                              (console/error (:out str))))
 
 (object/behavior* ::handle-cancellation
                   :triggers #{:editor.eval.clj.cancel}
@@ -258,6 +267,9 @@
                   :reaction (fn [this path]
                               (object/merge! clj-lang {:java-exe path})))
 
+;;****************************************************
+;; Connectors
+;;****************************************************
 
 (object/behavior* ::connect
                   :triggers #{:connect}
@@ -269,6 +281,45 @@
                     :desc "Select a project.clj to connect to for either Clojure or ClojureScript."
                     :connect (fn []
                                (dialogs/file clj-lang :connect))})
+(defui server-input []
+  [:input {:type "text" :placeholder "host:port" :value "localhost:"}]
+  :focus (fn []
+           (ctx/in! :popup.input))
+  :blur (fn []
+          (ctx/out! :popup.input)))
+
+(defn connect-to-remote [server]
+  (let [[host port] (string/split server ":")]
+    (when (and host port)
+      (let [client (clients/client! :nrepl.client.remote)]
+        (object/merge! client {:port port
+                               :host host
+                               :name server})
+        (object/raise client :connect!)))))
+
+(defn remote-connect []
+  (let [input (server-input)
+        p (popup/popup! {:header "Connect to a remote nREPL server."
+                         :body [:div
+                                [:p "In order to connect to a remote nrepl server, make sure the server is started (e.g. lein repl :headless)
+                                 and that you have included the lighttable.nrepl.handler/lighttable-ops middleware."]
+                                [:label "Server: "]
+                                input
+                                ]
+                         :buttons [{:label "cancel"}
+                                   {:label "connect"
+                                    :action (fn []
+                                              (connect-to-remote (dom/val input)))}]})]
+    (dom/focus input)
+    (.setSelectionRange input 1000 1000)
+    ))
+
+(scl/add-connector {:name "Clojure (remote nREPL)"
+                    :desc "Enter in the host:port address of an nREPL server to connect to"
+                    :connect (fn []
+                               (remote-connect)
+                               )})
+
 
 ;;****************************************************
 ;; watches
@@ -279,7 +330,7 @@
     (str "(js/lttools.watch " src " (clj->js " (pr-str meta) "))")))
 
 (defn clj-watch [meta src]
-  (str "(lighttable.hub.clj.eval/watch " src " " (pr-str meta) ")"))
+  (str "(lighttable.nrepl.eval/watch " src " " (pr-str meta) ")"))
 
 (object/behavior* ::cljs-watch-result
                   :triggers #{:editor.eval.cljs.watch}
@@ -288,15 +339,87 @@
                                 (let [str-result (pr-str (:result res))
                                       str-result (if (= str-result "#<[object Object]>")
                                                    (console/util-inspect (:result res) false 1)
-                                                   str-result)]
+                                                   str-result)
+                                      str-result (util/escape str-result)]
                                   (object/raise (:inline-result watch) :update! str-result)))))
 
 (object/behavior* ::clj-watch-result
                   :triggers #{:editor.eval.clj.watch}
                   :reaction (fn [editor res]
                               (when-let [watch (get (:watches @editor) (-> res :meta :id))]
-                                (let [str-result (:result res)]
+                                (let [str-result (:result res)
+                                      str-result (util/escape str-result)]
                                   (object/raise (:inline-result watch) :update! str-result)))))
+
+
+;;****************************************************
+;; doc
+;;****************************************************
+
+(object/behavior* ::clj-doc
+                  :triggers #{:editor.doc}
+                  :reaction (fn [editor]
+                              (let [token (find-symbol-at-cursor editor)
+                                    command :editor.clj.doc
+                                    info (assoc (@editor :info)
+                                           :loc (:loc token)
+                                           :sym (:string token)
+                                           :print-length (object/raise-reduce editor :clojure.print-length+ nil)
+                                           :code (watches/watched-range editor nil nil cljs-watch))]
+                                (when token
+                              (clients/send (eval/get-client! {:command command
+                                                               :info info
+                                                               :origin editor
+                                                               :create try-connect})
+                                            command info :only editor)))
+                              ))
+
+(object/behavior* ::print-clj-doc
+                  :triggers #{:editor.clj.doc}
+                  :reaction (fn [editor result]
+                              (object/raise editor :editor.doc.show!
+                              {:name (str (:name result))
+                               :args (pr-str (:arglists result))
+                               :loc (:loc result)
+                               :doc (:doc result)})))
+
+(defn symbol-token? [s]
+  (re-seq #"[\w\$_\-\.\*\+\/\?\><!]" s))
+
+(defn find-symbol-at-cursor [editor]
+  (let [loc (ed/->cursor editor)
+        token-left (ed/->token editor loc)
+        token-right (ed/->token editor (update-in loc [:ch] inc))]
+    (or (when (symbol-token? (:string token-right))
+          (assoc token-right :loc loc))
+        (when (symbol-token? (:string token-right))
+          (assoc token-left :loc loc)))))
+
+(object/behavior* ::cljs-doc
+                  :triggers #{:editor.doc}
+                  :reaction (fn [editor]
+                              (let [token (find-symbol-at-cursor editor)
+                                    command :editor.cljs.doc
+                                    info (assoc (@editor :info)
+                                           :loc (:loc token)
+                                           :sym (:string token)
+                                           :print-length (object/raise-reduce editor :clojure.print-length+ nil)
+                                           :code (watches/watched-range editor nil nil cljs-watch))]
+                                (when token
+                              (clients/send (eval/get-client! {:command command
+                                                               :info info
+                                                               :origin editor
+                                                               :create try-connect})
+                                            command info :only editor)))))
+
+(object/behavior* ::print-cljs-doc
+                  :triggers #{:editor.cljs.doc}
+                  :reaction (fn [editor result]
+                              (object/raise editor :editor.doc.show!
+                                            {:name (str (:name result))
+                                             :loc (:loc result)
+                                             :args (pr-str (second (:arglists result)))
+                                             :doc (:doc result)})))
 
 
 ;;****************************************************
@@ -309,10 +432,13 @@
                               (let [out (.toString data)]
                                 (.write console/core-log (str (:name @this) "[stdout]: " data))
                                 (object/update! this [:buffer] str out)
-                                (if (> (.indexOf out "Connected") -1)
+                                (if (> (.indexOf out "nREPL server started") -1)
                                   (do
                                     (notifos/done-working)
                                     (object/merge! this {:connected true})
+                                    (let [client (clients/by-id (:cid @this))]
+                                      (object/merge! client {:port (-> (re-seq #"port ([\d]+)" out) first second)})
+                                      (object/raise client :connect!))
                                     ;(object/destroy! this)
                                     )
                                   (when-not (:connected @this)
@@ -324,10 +450,11 @@
                   :reaction (fn [this data]
                               (let [out (.toString data)]
                                 (.write console/core-log (str (:name @this) "[stderr]: " data))
-                                (when-not (> (.indexOf (:buffer @this) "Connected") -1)
+                                (when-not (> (.indexOf (:buffer @this) "nREPL server started") -1)
                                   (object/update! this [:buffer] str data)
                                   ))
                               ))
+
 
 (object/behavior* ::on-exit
                   :triggers #{:proc.exit}
@@ -353,22 +480,33 @@
                         (object/merge! this {:notifier notifier :buffer "" :cid cid})
                         nil))
 
+(defn wrap-quotes [s]
+  (str "\"" s "\""))
+
 (defn escape-spaces [s]
   (if (= files/separator "\\")
-    (str "\"" s "\"")
+    (wrap-quotes s)
     (string/replace s #" " "\\ ")))
+
 
 (defn jar-command [path name client]
   ;(println (.which shell "java"))
   (str (or (:java-exe @clj-lang) "java") " -jar " (escape-spaces jar-path) " " tcp/port " \"" path "\" " (clients/->id client) " " name ""))
 
 (defn run-jar [{:keys [path project-path name client]}]
-  (let [obj (object/create ::connecting-notifier n (clients/->id client))]
+  (let [obj (object/create ::connecting-notifier n (clients/->id client))
+        args ["-jar" jar-path (wrap-quotes project-path) (clients/->id client)]]
     (notifos/working "Connecting..")
     (.write console/core-log (str "STARTING CLIENT: " (jar-command project-path name client)))
-    (proc/exec {:command (jar-command project-path name client)
+    (proc/exec {:command (or (:java-exe @clj-lang) "java")
+                :args (if name
+                        (conj args name)
+                        args)
                 :cwd project-path
-                :obj obj})))
+                :obj obj})
+
+    (object/merge! client {:dir project-path})
+    (object/raise client :try-connect!)))
 
 (defn run-local-server [client]
   (check-all {:path (str home-path "/plugins/clojure/")

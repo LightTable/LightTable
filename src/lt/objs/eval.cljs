@@ -167,9 +167,9 @@
           len (if (> nl -1)
                 nl
                 (:trunc-length opts 50))]
-    (if (> (count r) len)
-      (subs r 0 len)
-      r))))
+      (if (> (count r) len)
+        (subs r 0 len)
+        r))))
 
 (defui ->inline-res [this info]
   (let [r (:result info)

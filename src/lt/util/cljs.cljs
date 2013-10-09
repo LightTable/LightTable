@@ -51,35 +51,57 @@
   vectors, and JavaScript objects into ClojureScript maps.  With
   option ':keywordize-keys true' will convert object fields from
   strings to keywords."
-  [x & options]
-  (let [{:keys [keywordize-keys force-obj obj-type]} options
-        keyfn (if keywordize-keys keyword str)
-        f (fn thisfn [x]
-            (cond
-              (seq? x) (doall (map thisfn x))
-              (coll? x) (into (empty x) (map thisfn x))
-              (goog.isArray x) (vec (map thisfn x))
-              (or force-obj
-                  (identical? x (js/Object x))
-                  (identical? (type x) js/Object)
-                  (identical? (type x) js/global.Object)) (into {} (for [k (js-keys x)]
-                                                                     [(keyfn k)
-                                                                      (thisfn (aget x k))]))
-              :else x))]
-    (f x)))
+  ([x] (js->clj x {:keywordize-keys false}))
+  ([x & opts]
+    (cond
+      (satisfies? IEncodeClojure x)
+      (-js->clj x (apply array-map opts))
+
+      (seq opts)
+      (let [{:keys [keywordize-keys force-obj]} opts
+            keyfn (if keywordize-keys keyword str)
+            f (fn thisfn [x]
+                (cond
+                  (seq? x)
+                  (doall (map thisfn x))
+
+                  (coll? x)
+                  (into (empty x) (map thisfn x))
+
+                 (keyword? x)
+                 x
+
+                  (or (array? x)
+                      (identical? (type x) js/global.Array))
+                  (vec (map thisfn x))
+
+                  (or force-obj
+                      (identical? x (js/Object x))
+                      (identical? (type x) js/Object)
+                      (identical? (type x) js/global.Object))
+                  (into {} (for [k (js-keys x)]
+                             [(keyfn k) (thisfn (aget x k))]))
+
+                  :else x))]
+        (f x)))))
 
 (defn clj->js
-  "Recursively transforms ClojureScript maps into Javascript objects,
-   other ClojureScript colls into JavaScript arrays, and ClojureScript
-   keywords into JavaScript strings."
-  [x]
-  (cond
-    (string? x) x
-    (keyword? x) (name x)
-    (map? x) (.-strobj (reduce (fn [m [k v]]
-               (assoc m (clj->js k) (clj->js v))) {} x))
-    (coll? x) (apply array (map clj->js x))
-    :else x))
+   "Recursively transforms ClojureScript values to JavaScript.
+sets/vectors/lists become Arrays, Keywords and Symbol become Strings,
+Maps become Objects. Arbitrary keys are encoded to by key->js."
+   [x]
+   (when-not (nil? x)
+     (if (satisfies? IEncodeJS x)
+       (-clj->js x)
+       (cond
+         (keyword? x) (name x)
+         (symbol? x) (str x)
+         (map? x) (let [m (js-obj)]
+                    (doseq [[k v] x]
+                      (aset m (key->js k) (clj->js v)))
+                    m)
+         (coll? x) (apply array (map clj->js x))
+         :else x))))
 
 (defn str-contains? [str x]
   (> (.indexOf str x) -1))

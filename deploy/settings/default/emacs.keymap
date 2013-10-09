@@ -1,4 +1,8 @@
-{:+ {:editor.keys.emacs {"ctrl-w" [(:emacs.keymap-cmd "Ctrl-W")]
+{:+ {:editor.keys.hinting.active {"tab" [:auto-complete]
+                                  "esc" [:auto-complete.remove]
+                                  "down" [(:filter-list.input.move-selection 1)],
+                                  "up" [(:filter-list.input.move-selection -1)]}
+     :editor.keys.emacs {"ctrl-w" [(:emacs.keymap-cmd "Ctrl-W")]
                          "ctrl-k" [(:emacs.keymap-cmd "Ctrl-K")]
                          "alt-w" [(:emacs.keymap-cmd "Alt-W")]
                          "ctrl-y" [(:emacs.keymap-cmd "Ctrl-Y")]

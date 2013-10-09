@@ -92,8 +92,10 @@
     proc)))
 
 (defn exec [com]
-  (let [{:keys [command obj cwd env]} com
-        commands (parse-commands command)
+  (let [{:keys [command obj cwd env args] :as this} com
+        commands (if-not args
+                   (parse-commands command)
+                   [this])
         ;;spawn and store them
         procs (doall(for [c commands]
                       (simple-spawn* obj c cwd env)))]

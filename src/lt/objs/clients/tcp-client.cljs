@@ -73,7 +73,7 @@
 (defn escape-spaces [s]
   (if (= files/separator "\\")
     (str "\"" s "\"")
-    (string/replace s #" " "\\ ")))
+    s))
 
 (def ltnode-path (escape-spaces (files/lt-home "/plugins/nodejs/ltnodeclient.js")))
 
@@ -87,7 +87,8 @@
                  (object/merge! client {:port port
                                         :proc obj})
                  (notifos/working "Connecting..")
-                 (proc/exec {:command (client-command client path port)
+                 (proc/exec {:command "node"
+                             :args [(str "--debug=" port) ltnode-path path tcp/port (clients/->id client)]
                              :cwd (files/parent path)
                              :env {"NODE_PATH" (files/join (files/parent path) "node_modules")}
                              :obj obj})
@@ -193,15 +194,15 @@
   src)
 
 (defn handle-message [client msg]
-  (global-eval client (str "global.lttools.handle(" (.stringify js/JSON msg) ")")))
+  (global-eval client (str "global.lttools.handle(" (.stringify js/JSON (array (:cb msg) (:command msg) (-> msg :data clj->js))) ")")))
 
 (object/behavior* ::send!
                   :triggers #{:send!}
                   :reaction (fn [this msg]
-                              (when (= "client.close" (second msg))
+                              (when (= "client.close" (:command msg))
                                 (object/merge! (:proc @this) {:disconnecting true}))
                               (handle-message this msg)
-                              (when (= "editor.eval.js" (second msg))
+                              (when (= "editor.eval.js" (:command msg))
                                 ;(object/raise this :changelive! (js->clj (last msg) :keywordize-keys true))
                                 )
                               ))

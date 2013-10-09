@@ -196,7 +196,8 @@
 (cmd/command {:command :save-all
               :desc "File: Save all"
               :exec (fn []
-                      (doseq [ed (object/by-tag :editor.file-backed)]
+                      (doseq [ed (object/by-tag :editor.file-backed)
+                              :when (:dirty @ed)]
                         (object/raise ed :save)))})
 
 (cmd/command {:command :save-as

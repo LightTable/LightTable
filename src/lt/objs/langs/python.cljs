@@ -71,12 +71,9 @@
 (defn escape-spaces [s]
   (if (= files/separator "\\")
     (str "\"" s "\"")
-    (string/replace s #" " "\\ ")))
+    s))
 
-(def py-path (escape-spaces (files/lt-home "/plugins/python/ltmain.py")))
-
-(defn client-command [info client]
-  (str (or (:python-exe @python) (:venv-py info) "python") " " py-path " " tcp/port " " (clients/->id client)))
+(def py-path (files/lt-home "/plugins/python/ltmain.py"))
 
 (defn run-py [{:keys [path project-path name client venv] :as info}]
   (let [n (notifos/working "Connecting..")
@@ -87,10 +84,11 @@
         env (if (:ipython-exe @python)
               (assoc env "LT_IPYTHON_PATH" (:ipython-exe @python))
               env)]
-    (proc/exec {:command (client-command info client)
-                          :cwd (or venv project-path)
-                          :env env
-                          :obj obj})))
+    (proc/exec {:command (or (:python-exe @python) (:venv-py info) "python")
+                :args [(escape-spaces py-path) tcp/port (clients/->id client)]
+                :cwd (or venv project-path)
+                :env env
+                :obj obj})))
 
 
 (defn check-python [obj]

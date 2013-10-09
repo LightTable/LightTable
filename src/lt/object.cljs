@@ -42,7 +42,7 @@
     listeners))
 
 (defn specificity-sort [xs dir]
-  (sort-by #(do [(count (string/split "." %)) %]) (if dir < >) xs))
+  (sort-by #(do [(count (string/split "." (str %))) (str %)]) (if dir < >) xs))
 
 (defn tags->behaviors [ts]
   (let [duped (apply concat (map @tags (specificity-sort ts :down)))
