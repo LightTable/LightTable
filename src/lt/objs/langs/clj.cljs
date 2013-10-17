@@ -21,7 +21,7 @@
             [lt.util.dom :as dom]
             [lt.util.js :as util]
             [lt.util.load :as load]
-            [lt.util.cljs :refer [->dottedkw]]
+            [lt.util.cljs :refer [->dottedkw str-contains?]]
             [clojure.string :as string])
   (:require-macros [lt.macros :refer [defui]]))
 
@@ -492,14 +492,19 @@
     (wrap-quotes s)
     (string/replace s #" " "\\ ")))
 
+(defn windows-escape [s]
+  (if (and (str-contains? s " ") (platform/win?))
+    (wrap-quotes s)
+    s))
+
 
 (defn jar-command [path name client]
   ;(println (.which shell "java"))
-  (str (or (:java-exe @clj-lang) "java") " -jar " (escape-spaces jar-path) " " tcp/port " \"" path "\" " (clients/->id client) " " name ""))
+  (str (or (:java-exe @clj-lang) "java") " -jar " (windows-escape jar-path) " " name))
 
 (defn run-jar [{:keys [path project-path name client]}]
   (let [obj (object/create ::connecting-notifier n (clients/->id client))
-        args ["-jar" jar-path (wrap-quotes project-path) (clients/->id client)]]
+        args ["-jar" (windows-escape jar-path)]]
     (notifos/working "Connecting..")
     (.write console/core-log (str "STARTING CLIENT: " (jar-command project-path name client)))
     (proc/exec {:command (or (:java-exe @clj-lang) "java")

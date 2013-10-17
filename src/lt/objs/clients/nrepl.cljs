@@ -86,7 +86,7 @@
 
 (object/behavior* ::init-remote-session
                   :triggers #{:new-session}
-                  :reaction (fn [this]
+                  :reaction (fn [this session]
                               (object/merge! this {:session session})
                               (send this {:op "client.init"
                                           :id (clients/->id this)
@@ -117,8 +117,10 @@
                   :triggers #{:new-session}
                   :reaction (fn [this session]
                               (object/merge! this {:session session})
-                              (send this {:op "client.init"})
-                              ))
+                              (send this {:op "client.init"
+                                          :id (clients/->id this)
+                                          :data (pr-str {:settings {:client-id (clients/->id this)
+                                                                    :dir (:dir @this)}})})))
 
 (object/behavior* ::nrepl-message
                   :triggers #{::message}
