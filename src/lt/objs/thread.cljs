@@ -66,9 +66,14 @@
                 :init (fn [this]
                         (let [worker (.fork cp (files/lt-home "/core/node_modules/lighttable/background/threadworker.js") (clj->js ["--harmony"]) (clj->js {:execPath (files/lt-home (node-exe)) :silent true}))]
                           (.on (.-stdout worker) "data" (fn [data]
-                                                          (console/loc-log "thread" "stdout" (str data))))
+                                                          (console/loc-log {:file "thread"
+                                                                            :line "stdout"
+                                                                            :content (str data)})))
                           (.on (.-stderr worker) "data" (fn [data]
-                                                          (console/loc-log "thread" "stderr" (str data) "error")))
+                                                          (console/loc-log {:file "thread"
+                                                                            :line "stderr"
+                                                                            :content (str data)
+                                                                            :class "error"})))
                           (.on worker "message" (fn [m] (object/raise this :message m)))
                           (.send worker (clj->js {:msg "init"
                                                   :obj (object/->id this)

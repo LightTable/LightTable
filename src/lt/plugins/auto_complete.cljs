@@ -290,11 +290,11 @@
                               (when-let [t (::timeout @this)]
                                 (js/clearTimeout t))
                               (when-not (non-token-change? this ch)
-                              (object/merge! this {::timeout (wait 50 (fn []
-                                                                         (when-not (and (:active @hinter)
-                                                                                        (= (:ed @hinter) this))
-                                                                           (object/raise this :hint {:select-single false}))
-                                                                         ))}))))
+                                (object/merge! this {::timeout (wait 100 (fn []
+                                                                           (when-not (and (:active @hinter)
+                                                                                          (= (:ed @hinter) this))
+                                                                             (object/raise this :hint {:select-single false}))
+                                                                           ))}))))
 
 (cmd/command {:command :auto-complete.remove
               :hidden true

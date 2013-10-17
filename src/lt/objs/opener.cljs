@@ -5,6 +5,7 @@
             [lt.objs.sidebar.command :as cmd]
             [lt.objs.editor.file :as fed]
             [lt.objs.workspace :as workspace]
+            [lt.objs.popup :as popup]
             [lt.objs.tabs :as tabs]
             [lt.objs.app :as app]
             [lt.objs.notifos :as notifos]
@@ -160,6 +161,13 @@
                   :type :user
                   :reaction (fn [this]
                               (cmd/exec! :save-all)))
+
+(object/behavior* ::save-failed
+                  :triggers #{:files.save.error}
+                  :reaction (fn [this path e]
+                              (popup/popup! {:header (str "Failed to save: " (files/basename path))
+                                             :body [:pre (when e (str e))]
+                                             :buttons [{:label "cancel"}]})))
 
 (object/object* ::opener
                 :tags #{:opener}

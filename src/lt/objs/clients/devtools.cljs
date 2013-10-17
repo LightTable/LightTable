@@ -125,13 +125,23 @@
         stack (if-not stack
                 (first (-> msg :stackTrace))
                 stack)]
-    (console/loc-log (files/basename (:url stack)) (:lineNumber stack) (msg->log msg) nil (msg->string msg))))
+    (console/loc-log {:file (files/basename (:url stack))
+                      :line (:lineNumber stack)
+                      :content (msg->log msg)
+                      :str-content (msg->string msg)})))
 
 (defmethod handle-log-msg "warning" [msg]
-  (console/loc-log (files/basename (:url msg)) (:line msg) (:text msg) "warning" (:text msg)))
+  (console/loc-log {:file (files/basename (:url msg))
+                    :line (:line msg)
+                    :class "warning"
+                    :content (:text msg)
+                    :str-content (:text msg)}))
 
 (defmethod handle-log-msg :default [msg]
-  (console/loc-log (files/basename (:url msg)) (:line msg) (:text msg) nil (:text msg)))
+  (console/loc-log {:file (files/basename (:url msg))
+                    :line (:line msg)
+                    :content (:text msg)
+                    :str-content (:text msg)}))
 
 (defn extra-escape [code]
   (-> code

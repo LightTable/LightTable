@@ -368,7 +368,8 @@
         (.-mode))))
 
 (defn adjust-loc [loc dir]
-  (update-in loc [:ch] + dir))
+  (when loc
+    (update-in loc [:ch] + dir)))
 
 (defn get-char [ed dir]
   (let [loc (->cursor ed)]
@@ -378,6 +379,14 @@
 
 (defn indent-line [e l dir]
   (.indentLine (->cm-ed e) l dir))
+
+(defn indent-lines [e from to dir]
+  (let [ed (->cm-ed e)
+        diff (- (:line to) (:line from))]
+    (if (zero? diff)
+      (.indentLine ed (:line to) dir)
+      (dotimes [x (inc diff)]
+        (.indentLine ed (+ (:line from) x))))))
 
 (defn indent-selection [e dir]
   (.indentSelection (->cm-ed e) dir))
@@ -566,6 +575,8 @@
 
 (behavior* ::highlight-current-line
            :triggers #{:object.instant}
+           :type :user
+           :desc "Editor: Highlight the current line"
            :exclusive true
            :reaction (fn [this]
                        (set-options this {:styleActiveLine true})))

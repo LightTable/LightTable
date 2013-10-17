@@ -9,33 +9,60 @@
             [cljs.reader :as reader]))
 
 (def bencode (node-module "bencode"))
+(def Buffer (js/require "buffer"))
 (def net (js/require "net"))
 
 (defn encode [msg]
   (.encode bencode (clj->js msg)))
 
-(defn decode [msg]
-  (loop [msg msg
-         msgs []]
-    (if (empty? msg)
-      msgs
-      (let [neue (js->clj (.decode bencode msg "utf-8") :keywordize-keys true)
-            pos (.-decode.position bencode)]
-        (if (and pos (>= pos (count msg)))
-          (conj msgs neue)
-          (recur (subs msg pos) (conj msgs neue)))))))
+(defn create-buffer [size]
+  (let [b (.-Buffer Buffer)]
+    (new b size)))
+
+(defn decode [client msg]
+  (let [msgs (array)]
+    (loop [msg msg]
+      (if (<= (.-length msg) 0)
+        (object/merge! client {:buffer nil})
+        (try
+          (let [neue (js->clj (.decode bencode msg "utf-8") :keywordize-keys true)
+                pos (.-decode.position bencode)]
+            (.push msgs neue)
+            (if (and pos (>= pos (.-length msg)))
+              (object/merge! client {:buffer nil})
+              (recur (.slice msg pos))))
+          (catch js/global.Error e
+            (object/merge! client {:buffer msg})
+            ))))
+    msgs))
+
+(def queue (array))
+(def queue-index 0)
+(def running? false)
+
+(defn non-blocking-loop [client]
+  (when (> queue-index 20)
+    (.splice queue 0 queue-index)
+    (set! queue-index 0))
+  (object/raise client ::message (aget queue queue-index))
+  (if (>= queue-index (.-length queue))
+    (do
+      (set! running? false)
+      (set! queue-index 0)
+      (set! queue (array)))
+    (js/global.setImmediate (fn []
+                              (set! queue-index (inc queue-index))
+                              (non-blocking-loop client)))))
 
 (defn try-decode [client data]
-  (let [buffer (str (:buffer @client) data)
-        decoded (try
-                  (decode buffer)
-                  (catch js/global.Error e
-                    (object/update! client [:buffer] str data)
-                    nil))]
-    (when decoded
-      (object/merge! client {:buffer ""})
-      (doseq [m decoded]
-        (object/raise client ::message m)))))
+  (let [buffer (if (:buffer @client)
+                 (.Buffer.concat Buffer (array (:buffer @client) data))
+                 data)
+        decoded (decode client buffer)]
+    (set! queue (.concat queue decoded))
+    (when-not running?
+      (set! running? true)
+      (non-blocking-loop client))))
 
 
 (defn connect-to [host port client]

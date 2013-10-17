@@ -227,15 +227,19 @@
 (object/behavior* ::eval-print
                   :triggers #{:editor.eval.clj.print}
                   :reaction (fn [this str]
-                              (console/loc-log (files/basename (or (-> @this :name) (-> @this :info :path) "unknown"))
-                                               (when (object/has-tag? this :nrepl.client)
-                                                 "stdout")
-                                               (string/trim (:out str)))))
+                              (when (not= "\n" (:out str))
+                                (console/loc-log {:file (files/basename (or (-> @this :name) (-> @this :info :path) "unknown"))
+                                                  :line (when (object/has-tag? this :nrepl.client)
+                                                          "stdout")
+                                                  :id (:id str)
+                                                  :content (:out str)}
+                                                 ))))
 
 (object/behavior* ::eval-print-err
                   :triggers #{:editor.eval.clj.print.err}
                   :reaction (fn [this str]
-                              (console/error (:out str))))
+                              (when (not= "\n" (:out str))
+                                (console/error (:out str)))))
 
 (object/behavior* ::handle-cancellation
                   :triggers #{:editor.eval.clj.cancel}

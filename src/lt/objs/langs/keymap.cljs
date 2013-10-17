@@ -42,7 +42,7 @@
              (subs s 1)
              s)
          parts (string/split s "/")]
-     (when parts
+     (when (seq parts)
        (apply keyword parts)))))
 
 (defn pos->key [this idx]

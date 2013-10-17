@@ -22,6 +22,9 @@
 (object/behavior* ::on-close-destroy
                   :triggers #{:close}
                   :reaction (fn [this]
+                              (when-let [ts (:lt.objs.tabs/tabset @this)]
+                                (when (= (count (:objs @ts)) 1)
+                                  (tabs/rem-tabset ts)))
                               (object/raise this :destroy)))
 
 ;;*********************************************************

@@ -300,6 +300,12 @@
                       (when-let [cur (last-active)]
                         (editor/indent-selection cur "smart")))})
 
+(cmd/command {:command :editor.selection.clear
+              :desc "Editor: Clear selection"
+              :exec (fn []
+                      (when-let [cur (last-active)]
+                        (editor/move-cursor cur (editor/->cursor cur))))})
+
 (cmd/command {:command :editor.select-all
               :desc "Editor: Select all"
               :hidden true

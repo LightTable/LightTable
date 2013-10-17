@@ -14,11 +14,6 @@ body { -webkit-user-select: none; }
 #loader { position:absolute; top:0; left:0; right:0; bottom:0; width:100vw; height:100vh; display:table; text-align:center; box-sizing:border-box; vertical-align:middle;}
 #loader p { display:table-cell; vertical-align:middle; text-align:center; }
 
-::-webkit-scrollbar { width: 7px; height: 7px; }
-::-webkit-scrollbar-track { border-radius: 2px; }
-::-webkit-scrollbar-thumb { border-radius: 2px; }
-::-webkit-scrollbar-corner { background:transparent; }
-
 .CodeMirror { font-size:11pt; font-family: "Inconsolata", "Ubuntu Mono", "Consolas", monospace; }
 
 .result-mark {-webkit-user-select: text; margin-left:6px; max-width:700px; max-height:50%; overflow-y:auto; overflow-x:hidden; padding:0 5px; display:inline-block; border-radius:2px; width:-webkit-fit-content; vertical-align:top; }

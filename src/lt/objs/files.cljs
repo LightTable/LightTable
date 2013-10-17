@@ -2,6 +2,7 @@
   (:refer-clojure :exclude [open exists?])
   (:require [lt.object :as object]
             [lt.util.load :as load]
+            [clojure.string :as string]
             [lt.util.js :refer [now]]))
 
 (def fs (js/require "fs"))
@@ -35,6 +36,7 @@
                             :example "\"\\\\.git|\\\\.pyc\""}]
                   :reaction (fn [this pattern]
                               (set! ignore-pattern (js/RegExp. pattern))))
+
 
 (def files-obj (object/create (object/object* ::files
                                               :tags [:files]
@@ -96,9 +98,13 @@
       (not n) "\r\n"
       :else "\n")))
 
+(defn bomless-read [path]
+  (let [content (.readFileSync fs path "utf-8")]
+    (string/replace content "\uFEFF" "")))
+
 (defn open [path cb]
   (try
-    (let [content (.readFileSync fs path "utf-8")]
+    (let [content (bomless-read path)]
       ;;TODO: error handling
       (when content
         (let [e (ext path)]
@@ -108,16 +114,16 @@
           (object/raise files-obj :files.open content))
         ))
     (catch js/Error e
-      (object/raise files-obj :files.open.error path)
+      (object/raise files-obj :files.open.error path e)
       (when cb (cb nil e)))
     (catch js/global.Error e
-      (object/raise files-obj :files.open.error path)
+      (object/raise files-obj :files.open.error path e)
       (when cb (cb nil e)))
     ))
 
 (defn open-sync [path]
   (try
-    (let [content (.readFileSync fs path "utf-8")]
+    (let [content (bomless-read path)]
       ;;TODO: error handling
       (when content
         (let [e (ext path)]
@@ -140,11 +146,11 @@
     (object/raise files-obj :files.save path)
     (when cb (cb))
     (catch js/global.Error e
-      (object/raise files-obj :files.save.error path)
+      (object/raise files-obj :files.save.error path e)
       (when cb (cb e))
       )
     (catch js/Error e
-      (object/raise files-obj :files.save.error path)
+      (object/raise files-obj :files.save.error path e)
       (when cb (cb e))
       )))
 

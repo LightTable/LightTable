@@ -43,6 +43,7 @@
    :lt.objs.tabs/init
    :lt.objs.find/init
    :lt.objs.intro/show-intro
+   :lt.objs.menu/recreate-menu
    (:lt.objs.keyboard/chord-timeout 1000)
    (:lt.objs.files/file.ignore-pattern "(^\\..*)|\\.class$|target/|svn|cvs|\\.git|\\.pyc|~|\\.swp|\\.jar|.DS_Store|\\.nrepl-port")
    (:lt.objs.style/set-skin "dark")
@@ -106,7 +107,6 @@
    :lt.objs.editor/context-on-inactive
    :lt.objs.editor/refresh-on-show
    :lt.objs.editor/destroy-on-close
-   :lt.objs.editor/highlight-current-line
    :lt.objs.sidebar.clients/track-active-client
    :lt.plugins.auto-complete/intra-buffer-string-hints
    :lt.plugins.auto-complete/textual-hints
@@ -234,7 +234,8 @@
  :evaler #{:lt.objs.eval/alert-on-no-client},
 
 
- :files [(:lt.objs.files/file-types [{:name "CSS" :exts [:css] :mime "text/css" :tags [:editor.css]}
+ :files [:lt.objs.opener/save-failed
+         (:lt.objs.files/file-types [{:name "CSS" :exts [:css] :mime "text/css" :tags [:editor.css]}
                                      {:name "C" :exts [:c] :mime "text/x-c" :tags [:editor.c]}
                                      {:name "C++" :exts [:cpp :mm :cc] :mime "text/x-c++src" :tags [:editor.cpp]}
                                      {:name "C++ Header" :exts [:h] :mime "text/x-c++hdr" :tags [:editor.cpph]}

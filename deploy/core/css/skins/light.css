@@ -129,6 +129,11 @@ a {text-decoration:none; color: var(fg); }
 .button:hover, .button:focus, button:hover, button:focus { background:var(button-active-bg); color: var(button-active-fg); }
 input { color: var(highlight-fg); background:var(highlight-bg); }
 
+::-webkit-scrollbar { width: 7px; height: 7px; }
+::-webkit-scrollbar-track { border-radius: 2px; }
+::-webkit-scrollbar-thumb { border-radius: 2px; }
+::-webkit-scrollbar-corner { background:transparent; }
+
 ::-webkit-input-placeholder { color: var(placeholder-fg); }
 ::-webkit-scrollbar {background: transparent;}
 ::-webkit-scrollbar-track { background: transparent; }
@@ -182,6 +187,9 @@ input { color: var(highlight-fg); background:var(highlight-bg); }
 .popup { background:var(overlay-dimmer); }
 .popup > div > div { background:var(accent-background); color:var(accent-foreground); }
 .popup .button { background: transparent; border:2px solid var(accent-foreground); color:var(accent-foreground); }
+.popup label { margin-right:10px; display:block; }
+.popup input { background: transparent; padding:8px 10px; border:2px solid var(accent-foreground); color:var(accent-foreground); width:60%; }
+.popup input::-webkit-input-placeholder { color:var(accent-foreground); }
 .popup .button:hover, .popup .button.active { background:var(accent-foreground); color:var(accent-background); }
 .popup ::-webkit-scrollbar-thumb { background: var(accent-foreground); border:1px solid var(accent-foreground); }
 

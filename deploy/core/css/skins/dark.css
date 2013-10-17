@@ -135,6 +135,11 @@ a {text-decoration:none; color: var(fg); }
 .button:hover, .button:focus, button:hover, button:focus { background:var(button-active-bg); color: var(button-active-fg); }
 input { color: var(highlight-fg); background:var(highlight-bg); }
 
+::-webkit-scrollbar { width: 7px; height: 7px; }
+::-webkit-scrollbar-track { border-radius: 2px; }
+::-webkit-scrollbar-thumb { border-radius: 2px; }
+::-webkit-scrollbar-corner { background:transparent; }
+
 ::-webkit-input-placeholder { color: var(placeholder-fg); }
 ::-webkit-scrollbar {background: transparent;}
 ::-webkit-scrollbar-track { background: transparent; }

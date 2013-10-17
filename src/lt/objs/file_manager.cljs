@@ -40,8 +40,9 @@
 (defn save* [path content cb]
   (files/save path content (fn [data]
                              (update-stats path)
-                             (when cb
-                             	(cb data)))))
+                             (when-not data
+                               (when cb
+                                 (cb data))))))
 
 (defn save [path content cb]
   (let [updated (files/stats path)

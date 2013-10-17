@@ -1,5 +1,56 @@
 #Changes
 
+##0.5.10
+
+* FIX: Watches would send to the wrong client in some remote nrepl scenarios
+
+##0.5.9
+
+* FIX: when you remove the expression being watched, remove the watch
+* FIX: don't expand watches when you type to the left or right of them
+* FIX: Opening the docs and then closing them will close the created tabset if it's the only tab in it
+* FIX: Allow both {:- {:app ["key"]}} and {:- {:app {"key" [..]}}} for keymap removal
+* FIX: iPython figures now auto-close
+* ADDED: Evaling a file or multiple expressions in python will now return results for each expression found
+* ADDED: Basic paredit commands! `Paredit: Grow right`, `Paredit: Grow left`, `Paredit: Shrink right`, `Paredit: Shrink left`, `Paredit: Select expression`, `Paredit: Clear selection and return cursor`
+
+##0.5.8
+
+* FIX: On Windows using a menu item would eventually cause a crash.
+
+##0.5.7
+
+* FIX: Exceptions in menu items can theoretically crash LT. #837
+* FIX: Remove unicode BOM on file open #826
+* FIX: Failed saves popup a warning #519
+* FIX: behavior specificity ordering issue
+* FIX: properly escape searcher results #834
+* FIX: allow ctrl-space to be overridden on mac #835
+* FIX: in the case of constant nrepl messages some would occassionally get dropped
+* CHANGED: don't enable highlight line by default, due to performance issues
+* ADDED: `App: add to the global ENV for processes` behavior that merges a map of vars into the environment when clients are started.
+* ADDED: try to reflect keybindings in menus on OSX
+* UPDATED: latest CodeMirror
+
+##0.5.6
+
+* FIX: handle massive numbers of messages from nrepl without blocking
+* ADDED: Clojure prints can now stream, allowing you to (print) and see the result without flushing.
+
+##0.5.5
+
+* FIX: allow skins to use the default scrollbar style
+* FIX: println does not work in console when called from Compojure routes fixed in latest #808
+* FIX: LightTable 0.5.4 from archive not starting on Linux 64-bit fixed in latest #810
+* FIX: some shortcuts don't work properly fixed in latest #802
+* FIX: print does not behave like println or pprint fixed in latest #812
+* FIX: Unable to load org.clojure/core.memoize library 0.5.3+ fixed in latest #794
+* FIX: Unable to set! *unchecked-math* fixed in latest #804
+* FIX: Watches triggered from outside their own namespace do not update #817
+* FIX: Emacs mode doesn't allow tab auto-completion #768
+* CHANGED: Clojure clients now use nREPL
+* ADDED: Connect to a remote nREPL server
+
 ##0.5.4
 
 * FIX: Save-all is saving un-modified files #771

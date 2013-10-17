@@ -1,9 +1,11 @@
 (ns lt.objs.menu
   (:require [lt.object :as object]
             [lt.objs.command :as cmd]
+            [lt.objs.keyboard :as keyboard]
             [lt.objs.platform :as platform]
             [lt.objs.window :as window]
-            [lt.util.dom :as dom]))
+            [lt.util.dom :as dom]
+            [clojure.string :as string]))
 
 (def gui (js/require "nw.gui"))
 
@@ -26,7 +28,17 @@
   (let [mi (.-MenuItem gui)
         opts (if-not (:submenu opts)
                opts
-               (assoc opts :submenu (submenu (:submenu opts))))]
+               (assoc opts :submenu (submenu (:submenu opts))))
+        opts2 (if (:click opts)
+               (assoc opts :click (fn []
+                                    (try
+                                      (when-let [func (:click opts)]
+                                        (func))
+                                      (catch js/Error e
+                                        (.error js/console e))
+                                      (catch js/global.Error e
+                                        (.error js/console e)))))
+               opts)]
     (mi. (clj->js opts))))
 
 (defn clear! [menu]
@@ -63,64 +75,91 @@
   (doseq [i items
           :when i]
     (.append menubar (menu-item i)))
-  (set! (.-menu window/me) menubar))
+  (when-not (.-menu window/me)
+    (set! (.-menu window/me) menubar)))
 
 
-(set-menubar [
-              (when (platform/mac?)
-                {:label "" :submenu [{:label "About Light Table" :click (fn [] (cmd/exec! :version))}
-                                     {:type "separator"}
-                                     {:label "Hide Light Table" :key "h" :selector "hide:"}
-                                     {:label "Hide Others" :key "h" :modifiers "cmd-alt" :selector "hideOtherApplications:"}
-                                     {:type "separator"}
-                                     {:label "Quit Light Table" :key "q" :selector "closeAllWindows:"}]})
-              {:label "File" :submenu [{:label "New file" :key "n" :click #(cmd/exec! :new-file)}
-                                       {:label "Open file" :key "o" :click #(cmd/exec! :open-file) :modifiers "cmd-shift"}
-                                       {:label "Open folder" :click #(do
-                                                                       (cmd/exec! :workspace.show :force)
-                                                                       (cmd/exec! :workspace.add-folder))}
-                                       {:label "Save file" :key "s" :click #(cmd/exec! :save)}
-                                       {:label "Save file as.." :key "s" :click #(cmd/exec! :save-as) :modifiers "cmd-shift"}
+(defn command->menu-binding [cmd]
+  (let [ks (first (keyboard/cmd->current-binding cmd))
+        ks (string/split ks "-")]
+    (when (seq ks)
+      {:key (if (= "space" (last ks))
+              " "
+              (last ks))
+       :modifiers (when (> (count ks) 1)
+                    (string/join "-" (butlast ks)))})))
+
+(defn cmd-item [label cmd opts]
+  (merge
+   {:label label
+    :click (fn [] (cmd/exec! cmd))}
+   opts
+   (command->menu-binding cmd opts)))
+
+
+(defn main-menu []
+  (set-menubar [
+                (when (platform/mac?)
+                  {:label "" :submenu [(cmd-item "About Light Table" :version)
                                        {:type "separator"}
-                                       {:label "New window" :key "n" :modifiers "cmd-shift" :click #(cmd/exec! :window.new)}
-                                       {:label "Close window" :key "w" :modifiers "cmd-shift" :click #(cmd/exec! :window.close)}
+                                       {:label "Hide Light Table" :key "h" :selector "hide:"}
+                                       {:label "Hide Others" :key "h" :modifiers "cmd-alt" :selector "hideOtherApplications:"}
                                        {:type "separator"}
-                                       {:label "Close file" :key "w" :click #(cmd/exec! :tabs.close)}
-                                       ]}
-              (if (platform/mac?)
-                {:label "Edit" :submenu [{:label "Undo" :selector "undo:" :key "z"}
-                                         {:label "Redo" :selector "redo:" :key "z" :modifiers "cmd-shift"}
+                                       (cmd-item "Quit Light Table" :quit {:key "q"})]})
+                {:label "File" :submenu [(cmd-item "New file" :new-file {:key "n"})
+                                         (cmd-item "Open file" :open-file {:key "o" :modifiers "cmd-shift"})
+                                         {:label "Open folder" :click #(do
+                                                                         (cmd/exec! :workspace.show :force)
+                                                                         (cmd/exec! :workspace.add-folder))}
+                                         (cmd-item "Save file" :save {:key "s"})
+                                         (cmd-item "Save file as.." :save-as {:key "s" :modifiers "cmd-shift"})
                                          {:type "separator"}
-                                         {:label "Cut" :selector "cut:" :key "x"}
-                                         {:label "Copy" :selector "copy:" :key "c"}
-                                         {:label "Paste" :selector "paste:" :key "v"}
-                                         {:label "Select All" :selector "selectAll:" :key "a"}
-                                         ]}
-                {:label "Edit" :submenu [{:label "Undo" :click #(cmd/exec! :editor.undo)}
-                                         {:label "Redo" :click #(cmd/exec! :editor.redo)}
+                                         (cmd-item "New window" :window.new {:key "n" :modifiers "cmd-shift"})
+                                         (cmd-item "Close window" :window.close {:key "w" :modifiers "cmd-shift"})
                                          {:type "separator"}
-                                         {:label "Cut" :click #(cmd/exec! :editor.cut) }
-                                         {:label "Copy" :click #(cmd/exec! :editor.copy)}
-                                         {:label "Paste" :click #(cmd/exec! :editor.paste)}
-                                         {:label "Select All" :click #(cmd/exec! :editor.select-all)}
+                                         (cmd-item "Close file" :tabs.close {:key "w"})
                                          ]}
-                )
-              {:label "View" :submenu [{:label "Workspace" :click (fn [] (cmd/exec! :workspace.show))}
-                                       {:label "Connections" :click #(cmd/exec! :show-connect)}
-                                       {:label "Navigator" :key "o" :click #(cmd/exec! :navigate-workspace-transient)}
-                                       {:label "Commands" :key " " :modifiers "ctrl" :click #(cmd/exec! :show-commandbar-transient)}
-                                       {:type "separator"}
-                                       {:label "Console" :click #(cmd/exec! :toggle-console)}
-                                       ]}
+                (if (platform/mac?)
+                  {:label "Edit" :submenu [(cmd-item "Undo" :editor.undo {:selector "undo:" :key "z"})
+                                           (cmd-item "Redo" :editor.redo {:selector "redo:" :key "z" :modifiers "cmd-shift"})
+                                           {:type "separator"}
+                                           (cmd-item "Cut" :editor.cut {:selector "cut:" :key "x"})
+                                           (cmd-item "Copy" :editor.copy {:selector "copy:" :key "c"})
+                                           (cmd-item "Paste" :editor.paste {:selector "paste:" :key "v"})
+                                           (cmd-item "Select All" :editor.select-all {:selector "selectAll:" :key "a"})
+                                           ]}
+                  {:label "Edit" :submenu [(cmd-item "Undo" :editor.undo)
+                                           (cmd-item "Redo" :editor.redo)
+                                           {:type "separator"}
+                                           (cmd-item "Cut" :editor.cut)
+                                           (cmd-item "Copy" :editor.copy)
+                                           (cmd-item "Paste" :editor.paste)
+                                           (cmd-item "Select All" :editor.select-all)
+                                           ]}
+                  )
+                {:label "View" :submenu [(cmd-item "Workspace" :workspace.show)
+                                         (cmd-item "Connections" :show-connect)
+                                         (cmd-item "Navigator" :navigate-workspace-transient)
+                                         (cmd-item "Commands" :show-commandbar-transient)
+                                         {:type "separator"}
+                                         (cmd-item "Console" :toggle-console)]}
 
-              {:label "Window" :submenu [{:label "Minimize" :click #(cmd/exec! :window.minimize)}
-                                         {:label "Maximize" :click #(cmd/exec! :window.maximize)}
-                                         {:label "Fullscreen" :click #(cmd/exec! :window.fullscreen)}]}
-              {:label "Help" :submenu [{:label "Documentation" :click (fn [] (cmd/exec! :show-docs))}
-                                       (when-not (platform/mac?)
-                                         {:label "About Light Table" :click #(cmd/exec! :version)})]}
-              ]
-             )
+                {:label "Window" :submenu [(cmd-item "Minimize" :window.minimize)
+                                           (cmd-item "Maximize" :window.maximize)
+                                           (cmd-item "Fullscreen" :window.fullscreen)]}
+                {:label "Help" :submenu [(cmd-item "Documentation" :show-docs)
+                                         (when-not (platform/mac?)
+                                           (cmd-item "About Light Table" :version))]}
+                ]))
+
+(main-menu)
+
+(object/behavior* ::recreate-menu
+                  :debounce 20
+                  :triggers #{:app.keys.load :init}
+                  :reaction (fn [app]
+                              (when (platform/mac?)
+                                (main-menu))))
 
 (object/behavior* ::set-menu
                   :triggers #{:focus :init}

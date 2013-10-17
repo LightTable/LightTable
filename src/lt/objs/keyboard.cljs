@@ -2,6 +2,7 @@
   (:refer-clojure :exclude [keys])
   (:require [clojure.string :as string]
             [lt.object :as object]
+            [lt.objs.app :as app]
             [lt.objs.command :as cmd]
             [lt.objs.settings :as settings]
             [lt.objs.platform :as platform]
@@ -40,7 +41,8 @@
         ks @keys
         neue (apply merge {} (map ks ctx-set))]
     (set! chords (js-obj "current" nil "chords" (extract-chords neue)))
-    (reset! key-map neue)))
+    (reset! key-map neue)
+    (object/raise app/app :app.keys.change)))
 
 (defn refresh []
   (merge-keys (ctx/current)))
@@ -123,6 +125,11 @@
             [ctx (-> (filter #(= (-> % second first) cmd) ms)
                      first
                      first)])))
+
+(defn cmd->current-binding [cmd]
+  (first (filter #((-> % second set) cmd) @key-map)))
+
+@key-map
 
 (set! js/Mousetrap.handleKey
       (fn [key char ev]

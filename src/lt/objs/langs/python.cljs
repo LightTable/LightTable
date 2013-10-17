@@ -241,7 +241,9 @@
 (object/behavior* ::python-printer
                   :triggers #{:editor.eval.python.print}
                   :reaction (fn [editor p]
-                              (console/loc-log (files/basename (:file p)) "stdout" (:msg p))))
+                              (console/loc-log {:file (files/basename (:file p))
+                                                :line "stdout"
+                                                :content (:msg p)})))
 
 (object/behavior* ::eval!
                   :triggers #{:eval!}

@@ -23,13 +23,14 @@
         range (when start
                 (ed/mark doc start (update-in end [:ch] inc) {:inclusiveLeft true :inclusiveRight true}))
         ;;add watch ranges
-        watches (doall (for [[id watch] (:watches @ed)
-                             :let [watch (:mark watch)
-                                   pos (.find watch)
-                                   mark (ed/mark doc (.-from pos) (.-to pos) {:className "watched"})]]
-                         (do
-                           (set! (.-ltwatchid mark) id)
-                           mark)))]
+        watches (doall (filter identity
+                               (for [[id watch] (:watches @ed)
+                                     :let [watch (:mark watch)
+                                           pos (.find watch)
+                                           mark (when pos (ed/mark doc (.-from pos) (.-to pos) {:className "watched"}))]]
+                                 (when mark
+                                   (set! (.-ltwatchid mark) id)
+                                   mark))))]
     ;;replace watched ranges with code
     (doseq [watch watches
             :let [pos (.find watch)
@@ -58,9 +59,11 @@
                                 (let [id (-> (gensym "watch")
                                              (str))
                                       mark (ed/mark this (:from sel) (:to sel) {:className "watched"
-                                                                                :inclusiveLeft true
-                                                                                :inclusiveRight true})
+                                                                                :inclusiveLeft false
+                                                                                :inclusiveRight false})
                                       res (inline this {:type :watch :id id} (:to sel))]
+                                  (.on mark "hide" (fn []
+                                                     (object/raise res :clear!)))
                                   (set! (.-lttype mark) :watch)
                                   (set! (.-ltwatchid mark) id)
                                   (object/update! this [:watches] assoc id {:mark mark

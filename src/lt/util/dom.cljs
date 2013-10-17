@@ -34,6 +34,8 @@
   (-nth [this n not-found]
         (or (.item this n) not-found)))
 
+(defn text-node [text]
+  (js/document.createTextNode text))
 
 (defn $$ [query elem]
   (let [elem (or elem js/document)

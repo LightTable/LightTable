@@ -12,6 +12,7 @@
 (def shell (load/node-module "shelljs"))
 (def spawn (.-spawn (js/require "child_process")))
 (def cur-path (.pwd shell))
+(def custom-env (atom {}))
 
 (def procs (atom #{}))
 
@@ -61,11 +62,13 @@
       (.stdout.on "data" #(when @obj (object/raise obj :proc.out %)))
       (.on "exit" #(when @obj (object/raise obj :proc.exit %)))))
 
-(defn merge-env [o]
-  (if-not o
+(defn merge-env [env]
+  (if-not env
     js/process.env
-    (clj->js (into o (for [k (js/Object.keys js/process.env)]
-                       [k (aget js/process.env k)])))))
+    (clj->js (merge (into {} (for [k (js/Object.keys js/process.env)]
+                               [k (aget js/process.env k)]))
+                    env
+                    @custom-env))))
 
 (defn simple-spawn* [obj {:keys [command args]} cwd? env]
   (let [proc (spawn command
@@ -109,7 +112,6 @@
                               (kill-all)))
 
 (object/add-behavior! app/app ::kill-procs-on-close)
-
 
 ;;*******************************************************
 ;; Testing
@@ -167,9 +169,19 @@
                   :triggers #{:object.instant}
                   :desc "App: set global PATH for processes"
                   :type :user
+                  :params [{:label "path"}]
                   :exclusive true
                   :reaction (fn [app path]
                               (set! js/process.env.PATH path)))
+
+(object/behavior* ::global-env
+                  :triggers #{:object.instant}
+                  :desc "App: add to the global ENV for processes"
+                  :params [{:label "env map"}]
+                  :type :user
+                  :exclusive true
+                  :reaction (fn [app kvs]
+                              (reset! custom-env kvs)))
 
 
 (defn var-caps [vs]

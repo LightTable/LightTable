@@ -6,6 +6,7 @@
             [lt.objs.statusbar :as statusbar]
             [lt.objs.tabs :as tabs]
             [crate.binding :refer [bound]]
+            [clojure.string :as string]
             [lt.util.js :refer [wait]]
             [lt.util.dom :refer [$ append empty] :as dom])
   (:require-macros [crate.def-macros :refer [defpartial]]
@@ -63,18 +64,28 @@
     (dom/scroll-top $console 10000000000)
     nil))
 
-(defn loc-log [file line content class str-version]
+(defn try-update [{:keys [content id]}]
+  (when id
+    (when-let [pre (dom/$ (str "#console" id) (->ui console))]
+      (dom/append pre (dom/text-node content))
+      true)))
+
+(defn loc-log [{:keys [file line content class str-version id] :as msg}]
+  (when content
   (when (or (string? content) str-version) (.write core-log (str file "[" line "]: " (if (string? content)
                                                                       content
                                                                       str-version) "\n")))
-  (verbatim [:table
-             [:tr
-              [:td.loc
-               [:em.file file
+  (when-not (try-update msg)
+    (verbatim [:table
+               [:tr
+                [:td.loc
+                 [:em.file file
                   (when line [:em.line "[" line "]"])
                   ": "]]
-              [:td [:pre content]]]]
-            class))
+                [:td [:pre (when id {:id (str "console" id)}) (if (string? content)
+                                                                (string/replace content #"^\s+" "")
+                                                                content)]]]]
+              class))))
 
 (defn log [l class str-version]
   (when-not (= "" l)

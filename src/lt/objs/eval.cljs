@@ -271,21 +271,22 @@
                 :triggers #{:click :double-click :clear!}
                 :tags #{:inline :inline.result}
                 :init (fn [this info]
-                        (let [content (->inline-res this info)
-                              delete (fn [_]
-                                       (object/raise this :clear!))
-                              listener (fn [line change]
-                                         (object/raise this :move! change))]
-                          (js/CodeMirror.on (:line info) "change" listener)
-                          (js/CodeMirror.on (:line info) "delete" delete)
-                          (object/merge! this (assoc info
-                                                :listener listener
-                                                :delete delete
-                                                :mark (ed/bookmark (ed/->cm-ed (:ed info))
-                                                                   {:line (-> info :loc :line)}
-                                                                   {:widget content
-                                                                    :insertLeft true})))
-                          content)))
+                        (when-let [ed (ed/->cm-ed (:ed info))]
+                          (let [content (->inline-res this info)
+                                delete (fn [_]
+                                         (object/raise this :clear!))
+                                listener (fn [line change]
+                                           (object/raise this :move! change))]
+                            (js/CodeMirror.on (:line info) "change" listener)
+                            (js/CodeMirror.on (:line info) "delete" delete)
+                            (object/merge! this (assoc info
+                                                  :listener listener
+                                                  :delete delete
+                                                  :mark (ed/bookmark ed
+                                                                     {:line (-> info :loc :line)}
+                                                                     {:widget content
+                                                                      :insertLeft true})))
+                            content))))
 
 
 

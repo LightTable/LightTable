@@ -240,14 +240,16 @@
 
 (defn -keys [cur m]
   (reduce (fn [res [k v]]
-            (update-in res [k] #(apply dissoc % v)))
+            (update-in res [k] #(apply dissoc % (if (map? v)
+                                                  (keys v)
+                                                  v))))
           cur
           m))
 
 (defn key-diff [{add :+ rem :-} final]
   (-> final
-      (+keys add)
-      (-keys rem)))
+      (-keys rem)
+      (+keys add)))
 
 (defn parse-key-file [file final]
   (-> (files/open-sync file)
@@ -271,7 +273,8 @@
                   :triggers #{:pre-init}
                   :reaction (fn [this]
                               (load-all-keys)
-                              (kb/refresh)))
+                              (kb/refresh)
+                              (object/raise (first (object/by-tag :app)) :app.keys.load)))
 
 (object/tag-behaviors :app [::load-keys])
 
@@ -285,6 +288,7 @@
                   :reaction (fn [editor]
                               (load-all-keys)
                               (kb/refresh)
+                              (object/raise (first (object/by-tag :app)) :app.keys.load)
                               (notifos/set-msg! "keys loaded")))
 
 
