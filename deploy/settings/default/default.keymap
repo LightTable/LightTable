@@ -47,6 +47,8 @@
      :popup.input {"left" [:passthrough],
                    "right" [:passthrough]}
      :sidebar.clients {"esc" [:hide-connect]}
+     :sidebar.doc.search.input {"enter" [:docs.search.exec]
+                                "esc" [:docs.search.hide]}
      :searcher.search {"enter" [:searcher.search]}
      :searcher.replace {"pmeta-enter" [:searcher.replace]}
      :searcher.location {"enter" [:searcher.search]}

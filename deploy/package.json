@@ -3,6 +3,9 @@
   "main": "app://lighttable/core/LightTable.html",
 	"js-flags": "--harmony",
 	"single-instance": true,
+	"webkit": {
+		"plugin": true
+	},
 	"chromium-args" : "--disable-accelerated-video --enable-webgl --enable-webaudio --ignore-gpu-blacklist --force-compositing-mode --remote-debugging-port=10138 --harmony --enable-devtools-experiments --enable-experimental-web-platform-features --enable-experimental-webkit-features",
 	"window": {
 		"icon": "core/img/lticon.png",
@@ -12,6 +15,6 @@
 		"min_width": 400,
 		"show":false,
 		"toolbar": false,
-		"frame": true
+		"frame": false
 	}
 }

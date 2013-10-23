@@ -399,12 +399,14 @@
                               (ed/focus (:ed @this))
                               (object/raise this :clear!)))
 
+
 (object/behavior* ::ex-clear
                   :triggers #{:clear!}
                   :reaction (fn [this]
                               (when (ed/->cm-ed (:ed @this))
                                 (ed/remove-line-widget (ed/->cm-ed (:ed @this)) (:widget @this)))i
-                              (object/destroy! this)))
+                              (object/raise this :clear)
+                              (object/raise this :cleared)))
 
 (object/behavior* ::ex-menu!
                   :triggers #{:menu!}

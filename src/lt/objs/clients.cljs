@@ -82,7 +82,8 @@
                                        (= v cb)) %))))
 
 (defn callback? [id]
-  (@callbacks id))
+  (when id
+    (@callbacks id)))
 
 (defn call [id command data]
   (let [[only? obj] (callback? id)]

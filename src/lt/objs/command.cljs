@@ -14,7 +14,15 @@
                                 (:command k)
                                 k))))
 
-(defn exec! [cmd & args]
+(defn completions []
+  (map #(if-not (:desc %)
+          {:completion (str (:command %)) :text (str (:command %))}
+          {:completion (str (:command %)) :text (:desc %)})
+       (vals (:commands @manager))))
+
+(defn exec!
+  "Execute a Light Table command with the given args"
+  [cmd & args]
   (let [cmd (by-id cmd)]
     (when (and cmd
                (:exec cmd))

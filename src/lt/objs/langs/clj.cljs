@@ -305,7 +305,7 @@
   (let [input (server-input)
         p (popup/popup! {:header "Connect to a remote nREPL server."
                          :body [:div
-                                [:p "In order to connect to a remote nrepl server, make sure the server is started (e.g. lein repl :headless)
+                                [:p "In order to connect to an nrepl server, make sure the server is started (e.g. lein repl :headless)
                                  and that you have included the lighttable.nrepl.handler/lighttable-ops middleware."]
                                 [:label "Server: "]
                                 input
@@ -381,11 +381,9 @@
 (object/behavior* ::print-clj-doc
                   :triggers #{:editor.clj.doc}
                   :reaction (fn [editor result]
-                              (object/raise editor :editor.doc.show!
-                              {:name (str (:name result))
-                               :args (pr-str (:arglists result))
-                               :loc (:loc result)
-                               :doc (:doc result)})))
+                              (if-not result
+                                (notifos/set-msg! "No docs found.")
+                                (object/raise editor :editor.doc.show! result))))
 
 (defn symbol-token? [s]
   (re-seq #"[\w\$_\-\.\*\+\/\?\><!]" s))
@@ -419,11 +417,21 @@
 (object/behavior* ::print-cljs-doc
                   :triggers #{:editor.cljs.doc}
                   :reaction (fn [editor result]
-                              (object/raise editor :editor.doc.show!
-                                            {:name (str (:name result))
-                                             :loc (:loc result)
-                                             :args (pr-str (second (:arglists result)))
-                                             :doc (:doc result)})))
+                              (if-not result
+                                (notifos/set-msg! "No docs found.")
+                                (object/raise editor :editor.doc.show! result))))
+
+(object/behavior* ::clj-doc-search
+                  :triggers #{:types+}
+                  :reaction (fn [this cur]
+                              (conj cur {:label "clj" :trigger :docs.clj.search :file-types #{"Clojure"}})
+                              ))
+
+(object/behavior* ::cljs-doc-search
+                  :triggers #{:types+}
+                  :reaction (fn [this cur]
+                              (conj cur {:label "cljs" :trigger :docs.cljs.search :file-types #{"ClojureScript"}})
+                              ))
 
 
 ;;****************************************************

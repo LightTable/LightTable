@@ -256,34 +256,36 @@
 (object/behavior* ::set-width-final!
                   :triggers #{:end-drag}
                   :reaction (fn [this e]
-                              (let [width (dom/width (object/->content multi))
-                                    left (:left @multi)
-                                    cx (.-clientX e)
-                                   new-loc (- (+ width left) cx)
-                                    new-perc (floored (int (- 100 (previous-tabset-width this) (to-perc width new-loc))))
-                                    prev-width (:width @this)
-                                    ts (next-tabset this)
-                                    new-perc (if (>= new-perc (+ (:width @ts) prev-width))
-                                               (+ (:width @ts) prev-width)
-                                               new-perc)
-                                    next-width (floored
-                                                    (if-not ts
-                                                      1
-                                                      (+ (:width @ts) (- prev-width new-perc))))]
-                                (cond
-                                 (= new-perc 0) (rem-tabset this)
-                                 (= next-width 0) (rem-tabset ts :prev)
-                                 :else
-                                 (when-not (= cx 0)
-                                   (if (or (< new-perc 0) )
-                                     (object/merge! this {:width 100})
-                                     (when (and (not= cx 0)
-                                                (>= new-perc 0)
-                                                (>= next-width 0))
-                                       (object/merge! this {:width new-perc})
-                                       (if ts
-                                         (object/merge! ts {:width next-width})
-                                         (spawn-tabset)))))))))
+                              (when-let [ts (next-tabset this)]
+                                (let [width (dom/width (object/->content multi))
+                                      left (:left @multi)
+                                      cx (.-clientX e)
+                                      new-loc (- (+ width left) cx)
+                                      new-perc (floored (int (- 100 (previous-tabset-width this) (to-perc width new-loc))))
+                                      prev-width (:width @this)
+                                      new-perc (if (>= new-perc (+ (:width @ts) prev-width))
+                                                 (+ (:width @ts) prev-width)
+                                                 new-perc)
+                                      next-width (floored
+                                                  (if-not ts
+                                                    1
+                                                    (+ (:width @ts) (- prev-width new-perc))))]
+                                  (cond
+                                   (= new-perc 0) (rem-tabset this)
+                                   (= next-width 0) (rem-tabset ts :prev)
+                                   :else
+                                   (when-not (= cx 0)
+                                     (if (or (< new-perc 0) )
+                                       (object/merge! this {:width 100})
+                                       (when (and (not= cx 0)
+                                                  ts
+                                                  (>= new-perc 0)
+                                                  (>= next-width 0))
+                                         (object/merge! this {:width new-perc})
+                                         (if ts
+                                           (object/merge! ts {:width next-width})
+                                           (spawn-tabset)
+                                           )))))))))
 
 (defn temp-width [ts w]
   (dom/css (object/->content ts) {:width (->perc w)
@@ -314,6 +316,7 @@
                                 (if (or (< new-perc 0) )
                                   (temp-width this 100)
                                   (when (and (not= cx 0)
+                                             ts
                                              (>= new-perc 0)
                                              (>= next-width 0))
                                     (temp-width this new-perc)

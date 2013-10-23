@@ -142,6 +142,8 @@
                                          (cmd-item "Navigator" :navigate-workspace-transient)
                                          (cmd-item "Commands" :show-commandbar-transient)
                                          {:type "separator"}
+                                         (cmd-item "Language docs" :docs.search.show)
+                                         {:type "separator"}
                                          (cmd-item "Console" :toggle-console)]}
 
                 {:label "Window" :submenu [(cmd-item "Minimize" :window.minimize)

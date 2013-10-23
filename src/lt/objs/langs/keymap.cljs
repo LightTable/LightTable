@@ -65,11 +65,7 @@
                          {:completion ":-"}]
                   :tag (fn []
                          (map #(do {:completion (str %) :text (str %)}) (keys @object/tags)))
-                  :key (fn []
-                         (map #(if-not (:desc %)
-                                 {:completion (str (:command %)) :text (str (:command %))}
-                                 {:completion (str (:command %)) :text (:desc %)})
-                              (vals (:commands @cmd/manager))))})
+                  :key cmd/completions})
 
 (object/behavior* ::keymap-hints
                   :triggers #{:hints+}

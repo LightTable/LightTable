@@ -231,13 +231,14 @@
                      :behaviors (set (:behaviors obj))
                      :tags (set (conj (:tags obj) :object))))
         inst (store-inst inst)
+        _ (merge! inst (update-listeners inst))
         content (when (:init obj)
                   (apply (:init obj) inst args))
         content (if (vector? content)
                   (crate/html content)
                   content)
         final (merge! inst {:content content})]
-    (merge! inst (update-listeners inst))
+
     (add-watch inst ::change (fn [_ _ _ _]
                                (raise inst :object.change)))
     (raise* inst (trigger->behaviors :object.instant (:tags @inst)) nil)
@@ -278,7 +279,8 @@
   (instances-by-type type))
 
 (defn by-id [id]
-  (@instances id))
+  (when id
+    (@instances id)))
 
 (defn instances-by-type [type]
   (filter #(= type (::type (deref %))) (vals @instances)))

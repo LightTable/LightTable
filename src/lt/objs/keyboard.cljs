@@ -129,11 +129,10 @@
 (defn cmd->current-binding [cmd]
   (first (filter #((-> % second set) cmd) @key-map)))
 
-@key-map
-
 (set! js/Mousetrap.handleKey
       (fn [key char ev]
         (when (and capturing?
+                   (string? key)
                    (capture key char ev))
           (.preventDefault ev)
           (.stopPropagation ev))))
@@ -141,6 +140,7 @@
 (set! js/Mousetrap.handleKeyUp
       (fn [key char ev]
         (when (and capturing?
+                   (string? key)
                    (capture-up key char ev))
           (.preventDefault ev)
           (.stopPropagation ev))))

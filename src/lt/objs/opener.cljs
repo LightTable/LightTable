@@ -1,5 +1,6 @@
 (ns lt.objs.opener
   (:require [lt.object :as object]
+            [lt.objs.metrics :as metrics]
             [lt.objs.editor :as editor]
             [lt.objs.editor.pool :as pool]
             [lt.objs.sidebar.command :as cmd]
@@ -40,7 +41,7 @@
 (defn path->info [path]
   (when path
     (let [type (files/path->type path)]
-      {:name (files/basename path) :path path :mime (:mime type) :tags (:tags type)})))
+      {:name (files/basename path) :type-name (:name type) :path path :mime (:mime type) :tags (:tags type)})))
 
 (object/behavior* ::open-transient-editor
                   :triggers #{:new!}
@@ -111,6 +112,8 @@
                                                  (fn [{:keys [content type line-ending]}]
                                                    (let [type (files/path->type path)
                                                          ed (pool/create (merge {:content content :line-ending line-ending} (path->info path)))]
+                                                     (metrics/capture! :editor.open {:type (:name type)
+                                                                                     :lines (editor/last-line ed)})
                                                      (object/add-tags ed [:editor.file-backed])
                                                      (object/raise obj :open ed)
                                                      (tabs/add! ed)

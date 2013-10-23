@@ -161,8 +161,7 @@
 (cmd/command {:command :show-connect
               :desc "Connect: Show connect bar"
               :exec (fn []
-                      (object/raise sidebar/rightbar :toggle clients {:force? true
-                                                                     :transient? false})
+                      (object/raise sidebar/rightbar :toggle clients)
                       (object/raise clients :focus!)
                       )})
 

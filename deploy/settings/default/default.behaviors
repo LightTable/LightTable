@@ -42,6 +42,7 @@
    :lt.objs.clients.devtools/connect-on-init
    :lt.objs.tabs/init
    :lt.objs.find/init
+   :lt.plugins.doc/init-doc-search
    :lt.objs.intro/show-intro
    :lt.objs.menu/recreate-menu
    (:lt.objs.keyboard/chord-timeout 1000)
@@ -96,7 +97,8 @@
             :lt.objs.menu/menu!
             :lt.objs.console/menu+},
  :docs #{:lt.objs.docs/on-close-destroy},
- :docable [:lt.plugins.doc/editor.doc.show!]
+ :docable [:lt.plugins.doc/editor.doc.show!
+           :lt.plugins.doc/doc-menu+]
  :editor
  #{:lt.objs.editor/active-on-focus
    :lt.objs.editor/on-tags-added
@@ -126,7 +128,7 @@
    :lt.objs.editor/no-wrap
    (:lt.objs.style/set-theme "default")
    (:lt.objs.editor/tab-settings false 2 2)
-   [:lt.object/add-tag :docable]},
+   },
  :editor.active #{:lt.objs.statusbar/report-cursor-location},
  :editor.behaviors #{:lt.objs.settings2/on-behaviors-editor-save
                      :lt.objs.settings2/eval-settings
@@ -163,7 +165,9 @@
    :lt.plugins.rainbow-parens/rainbow-parens
    :lt.objs.langs.clj/clj-doc
    :lt.objs.langs.clj/print-clj-doc
-   [:lt.object/add-tag :watchable]},
+   [:lt.object/add-tag :watchable]
+   [:lt.object/add-tag :docable]
+   },
  :editor.clj.instarepl
  #{:lt.objs.instarepl/on-eval-one :lt.objs.instarepl/set-parent-title
    :lt.objs.instarepl/on-eval-sonar :lt.objs.instarepl/dirty-parent
@@ -174,7 +178,9 @@
    :lt.objs.langs.clj/clj-watch-result
    :lt.objs.langs.clj/clj-doc
    :lt.objs.langs.clj/print-clj-doc
-   [:lt.object/add-tag :watchable]},
+   [:lt.object/add-tag :watchable]
+   [:lt.object/add-tag :docable]
+   },
  :editor.cljs
  #{:lt.objs.langs.clj/on-result-set-ns :lt.objs.langs.clj/exec.cljs!
    :lt.objs.langs.clj/no-op :lt.objs.langs.clj/eval-location
@@ -185,6 +191,7 @@
    :lt.objs.langs.clj/cljs-doc
    :lt.objs.langs.clj/print-cljs-doc
    :lt.plugins.rainbow-parens/rainbow-parens
+   [:lt.object/add-tag :docable]
    [:lt.object/add-tag :watchable]},
  :editor.css
  #{:lt.objs.langs.css/on-eval :lt.objs.langs.css/eval-on-save},
@@ -255,6 +262,7 @@
                                      {:name "INI" :exts [:ini] :mime "text/x-ini" :tags [:editor.ini]}
                                      {:name "Javascript" :exts [:js :json] :mime "text/javascript" :tags [:editor.javascript]}
                                      {:name "Java" :exts [:java] :mime "text/x-java" :tags [:editor.java]}
+                                     {:name "Julia" :exts [:jl] :mime "text/x-julia" :tags [:editor.julia]}
                                      {:name "LaTeX" :exts [:latex :tex] :mime "text/x-stex" :tags [:editor.latex]}
                                      {:name "LESS" :exts [:less] :mime "text/x-less" :tags [:editor.less]}
                                      {:name "Lua" :exts [:lua] :mime "text/x-lua" :tags [:editor.lua]}
@@ -306,8 +314,10 @@
    :lt.plugins.auto-complete/select-unknown
    :lt.plugins.auto-complete/line-change},
  :html.lang #{:lt.objs.langs.html/eval!},
+ :inline.doc [:lt.plugins.doc/clear]
  :inline.exception
  #{:lt.objs.eval/ex-menu! :lt.objs.eval/ex-clear
+   :lt.objs.eval/destroy-on-clear
    :lt.objs.eval/ex-shrink-on-double-click},
  :inline.result
  #{:lt.objs.eval/shrink-on-double-click :lt.objs.eval/result-menu!
@@ -321,7 +331,7 @@
    :lt.objs.instarepl/move-mark
    :lt.objs.instarepl/shrink-on-double-click},
  :inline.underline-result
- #{:lt.objs.eval/result-menu! :lt.objs.eval/ex-clear},
+ #{:lt.objs.eval/result-menu! :lt.objs.eval/ex-clear :lt.objs.eval/destroy-on-clear},
  :inline.watch #{:lt.plugins.watches/clear!}
  :inspector.object #{:lt.objs.clients.devtools/clear-inspector-object},
  :instarepl #{
@@ -423,6 +433,16 @@
    :lt.objs.sidebar.command/cancel!
    :lt.objs.sidebar.command/focus-on-show
    :lt.objs.sidebar.command/exec-command},
+ :sidebar.docs.search [:lt.plugins.doc/sidebar.doc.search.exec
+                       :lt.plugins.doc/doc.search.results
+                       :lt.objs.langs.clj/clj-doc-search
+                       :lt.objs.langs.clj/cljs-doc-search
+                       :lt.plugins.doc/focus!
+                       :lt.plugins.doc/set-item
+                       :lt.plugins.doc/clear!
+                       :lt.plugins.doc/no-client
+                       :lt.plugins.doc/cur-from-last-editor
+                       ]
  :sidebar.workspace
  #{:lt.objs.sidebar.workspace/sidebar-menu
    :lt.objs.sidebar.workspace/recent! :lt.objs.sidebar.workspace/tree!

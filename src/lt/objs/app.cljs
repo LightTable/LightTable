@@ -124,6 +124,23 @@
                               ;;(dom/focus (dom/$ :body))
                               (.focus win)))
 
+(object/behavior* ::run-on-init
+                  :triggers #{:init}
+                  :desc "App: Run commands on start"
+                  :params [{:label "commands"
+                            :type :list
+                            :items cmd/completions}]
+                  :type :user
+                  :reaction (fn [this & commands]
+                              (when (seq commands)
+                                (let [commands (if (-> commands first vector?)
+                                                 (first commands)
+                                                 commands)]
+                                  (doseq [c commands]
+                                    (if (coll? c)
+                                      (apply cmd/exec! c)
+                                      (cmd/exec! c)))))))
+
 ;;*********************************************************
 ;; Object
 ;;*********************************************************

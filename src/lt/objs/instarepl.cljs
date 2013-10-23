@@ -1,5 +1,6 @@
 (ns lt.objs.instarepl
   (:require [lt.object :as object]
+            [lt.objs.metrics :as metrics]
             [lt.objs.eval :as eval]
             [lt.objs.clients :as clients]
             [lt.objs.editor :as editor]
@@ -221,6 +222,7 @@
 (cmd/command {:command :instarepl
               :desc "Instarepl: Open a clojure instarepl"
               :exec (fn []
+                      (metrics/capture! :editor.clj.instarepl)
                       (add))})
 
 (cmd/command {:command :instarepl.toggle-live

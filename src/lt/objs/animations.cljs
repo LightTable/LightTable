@@ -27,7 +27,7 @@
                               (on)))
 
 (object/behavior* ::toggle-animations
-                  :desc "Enable or disable UI animations"
+                  :desc "App: Enable or disable UI animations"
                   :triggers #{:object.instant}
                   :type :user
                   :reaction (fn [this active?]

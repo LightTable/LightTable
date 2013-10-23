@@ -1,8 +1,37 @@
 #Changes
 
+##0.5.16
+
+* FIX: python watches were broken in certain cases #856
+
+##0.5.15
+
+* FIX: if no documentation is found report that in the statusbar and don't show empty blocks
+* FIX: requesting docs from a Clojure file outside of a project doesn't load in Clojure.core
+* UPDATED: lein-light-nrepl 0.0.6
+
+##0.5.14
+
+* FIX: only Clojure/ClojureScript should currently have the `:docable` tag
+* FIX: css bug that causes doc search to disappear
+
+##0.5.13
+
+* FIX: Clicking the connections menu item should toggle the connections pane
+* ADDED: Parameter help for the `App: Run command on start` behaviors
+* ADDED: Inline documentation for Clojure/ClojureScript (right click, or `Docs: Toggle documentation at cursor`)
+* ADDED: Documentation search for Clojure/ClojureScript (view -> Language docs, `Docs: Search language docs`)
+* ADDED: Julia syntax highlighting
+* UPDATED: lein-light-nrepl 0.0.5
+
+##0.5.12
+
+* FIX: Don't try to handle keys without full information #849
+* ADDED: `App: Run commands on start` behavior to let you run whatever when LT is opened. I.e. make full screen, toggle the workspace tree, etc.
+
 ##0.5.11
 
-* FIX: Path with spaces prevent the Clojure client from working on windows
+* FIX: Paths with spaces prevent the Clojure client from working on windows
 * FIX: remote nRepl prints weren't always reliable
 * FIX: in remote nRepls it was possible to try to send to disconnected clients
 * UPDATED: lein-light-nrepl 0.0.4

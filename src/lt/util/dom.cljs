@@ -51,6 +51,11 @@
   (.appendChild parent child)
   parent)
 
+(defn prepend [parent child]
+  (if (.-firstChild parent)
+    (.insertBefore parent child (.-firstChild parent))
+    (append parent child)))
+
 (defn add-class [elem class]
   (when (and elem (not (empty? (name class))))
     (.add (.-classList elem) (name class))))
@@ -100,8 +105,7 @@
     (.removeChild p elem)))
 
 (defn empty [elem]
-  (while (seq (.-children elem))
-    (.removeChild elem (aget (.-children elem) 0))))
+  (set! (.-innerHTML elem) ""))
 
 (defn val [elem & [v]]
   (if-not v
@@ -223,4 +227,10 @@
 
 (defn ready [func]
   (on js/document :DOMContentLoaded func))
+
+(defn fragment [items]
+  (let [frag (.createDocumentFragment js/document)]
+    (doseq [i items]
+      (.appendChild frag i))
+    frag))
 

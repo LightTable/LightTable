@@ -13,7 +13,7 @@
                            :paredit.select.clear]
               "alt-shift-w" [:editor.watch.unwatch]
               "cmd-shift-/" [:toggle-comment-selection]}
-     :editor.keys.normal {"cmd-d" [:editor.doc]}
+     :editor.keys.normal {"cmd-d" [:editor.doc.toggle]}
      :editor.keys.vim.normal {"cmd-d" [:editor.doc.toggle]
 
                               "shift-alt-s" [(:paredit.select.parent "(")]
