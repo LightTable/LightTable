@@ -34,14 +34,14 @@
   (let [{:keys [behaviors dir]} plug
         behs (-> (files/open-sync (files/join dir behaviors))
                  (:content)
-                 (string/replace "$DIR" dir)
-                 (reader/read-string))]
-    (walk/prewalk (fn [x]
-                    (when (list? x)
-                      (alter-meta! x assoc ::dir dir))
-                    x)
-                  behs)
-    behs))
+                 (settings/safe-read))]
+    (when behs
+      (walk/prewalk (fn [x]
+                      (when (list? x)
+                        (alter-meta! x assoc ::dir dir))
+                      x)
+                    behs)
+      behs)))
 
 (defn local-module [plugin-name module-name]
   (files/join plugins-dir plugin-name "node_modules" module-name))
