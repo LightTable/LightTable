@@ -50,7 +50,7 @@
 (defn by-path [path]
   (when path
     (let [path (string/lower-case path)]
-      (filter #(= (-> @% :info (:path "") string/lower-case) path) (object/by-tag :editor)))))
+      (filter #(= (-> @% :info (get :path "") string/lower-case) path) (object/by-tag :editor)))))
 
 (defn containing-path [path]
   (let [path (string/lower-case path)]
