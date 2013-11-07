@@ -163,6 +163,14 @@
                                                                 (inline main val {:type type
                                                                                   :line (-> r :cur first dec)})))})))))
 
+(object/behavior* ::start-content
+                  :triggers #{:start-content+}
+                  :type :user
+                  :desc "Instarepl: Set start content"
+                  :params [{:label "content"}]
+                  :reaction (fn [this res content]
+                              content))
+
 (defui live-toggle [this]
        [:span {:class (bound this #(str "livetoggler " (when-not (:live %) "off")))} "live"]
        :click (fn [e]
@@ -174,9 +182,10 @@
                 :name "Instarepl"
                 :live true
                 :init (fn [this]
-                        (let [main (-> (pool/create {:mime "text/x-clojure" :content default-content :ns "user"})
+                        (let [main (-> (pool/create {:mime "text/x-clojure" :content "" :ns "user"})
                                        (object/remove-tags [:editor.clj])
                                        (object/add-tags [:editor.clj.instarepl :editor.transient]))]
+                          (editor/set-val main (or (object/raise-reduce main :start-content+) default-content))
                           (object/parent! this main)
                           (object/merge! this {:main main})
                           (editor/+class main :main)

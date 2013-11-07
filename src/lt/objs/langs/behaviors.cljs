@@ -139,13 +139,13 @@
                               (object/raise this :move)))
 
 (defn inline [this ed opts]
-  (object/create :lt.objs.eval/inline-result {:ed ed
-                                              :class "behavior-helper"
-                                              :opts opts
-                                              :result (object/->content this)
+  (object/create :lt.objs.eval/underline-result {:ed ed
+                                                 :class "behavior-helper"
+                                                 :opts opts
+                                                 :result (object/->content this)
                                                  :above (boolean (< (:prev-line opts) (:line opts)))
-                                              :loc opts
-                                              :line (editor/line-handle ed (:line opts))}))
+                                                 :loc opts
+                                                 :line (editor/line-handle ed (:line opts))}))
 
 
 (defui ->helper [beh]

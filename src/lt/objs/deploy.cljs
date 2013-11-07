@@ -10,6 +10,7 @@
             [lt.objs.window :as window]
             [lt.util.load :as load]
             [lt.util.js :refer [every]]
+            [lt.util.cljs :refer [str-contains?]]
             [clojure.string :as string]
             [fetch.core :as fetch])
   (:require-macros [fetch.macros :refer [letrem]]
@@ -23,6 +24,7 @@
 (def tar (load/node-module "tar"))
 (def cur-path (.pwd shell))
 (def home-path (files/lt-home ""))
+(def get-proxy (.-App.getProxyForURL (js/require "nw.gui")))
 
 (def version-regex #"^\d+\.\d+\.\d+(-.*)?$")
 
@@ -32,6 +34,13 @@
 (defn get-versions []
   (let [vstr (:content (files/open-sync (in-lt "core/version.json")))]
     (js->clj (.parse js/JSON vstr) :keywordize-keys true)))
+
+(defn proxy? []
+  (let [p (get-proxy (tar-path "0.5.0"))]
+    (when (str-contains? p "PROXY")
+      (-> p
+          (string/split " ")
+          (second)))))
 
 (def version-timeout (* 5 60 1000))
 (def version (get-versions))
@@ -85,9 +94,11 @@
 
 (defn fetch-and-deploy [ver]
   (download-zip ver (fn []
+                      (notifos/working "Extracting update...")
                       (untar (str home-path "/tmp.tar.gz") (str home-path "/tmp")
                              (fn []
                                (move-tmp)
+                               (notifos/done-working)
                                (popup/popup! {:header "Light Table has been updated!"
                                               :body (str "Light Table has been updated to " ver "! Just
                                                         restart to get the latest and greatest.")
@@ -160,6 +171,8 @@
                   :type :user
                   :desc "App: Automatically check for updates"
                   :reaction (fn [this]
+                              (when-let [proxy (proxy?)]
+                                (.defaults request (clj->js {:proxy proxy})))
                               (when (= (window/window-number) 0)
                                 (set! js/localStorage.fetchedVersion nil))
                               (check-version)

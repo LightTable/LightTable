@@ -479,6 +479,14 @@
                       (when-let [ed (pool/last-active)]
                         (object/raise ed :eval.one)))})
 
+(cmd/command {:command :eval.custom
+              :desc "Eval: Eval custom expression in editor"
+              :hidden true
+              :exec (fn [exp opts]
+                      (when-let [ed (pool/last-active)]
+                        (object/raise ed :eval.custom exp opts)))})
+
+
 (cmd/command {:command :eval.cancel-all!
               :desc "Eval: Cancel evaluation for the current client"
               :exec (fn []

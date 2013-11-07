@@ -15,7 +15,8 @@
                                     final (object/raise-reduce editor :save+ (ed/->val editor))]
                                 (file-man/save path final
                                                (fn []
-                                                 (object/merge! editor {:dirty false})
+                                                 (object/merge! editor {:dirty false
+                                                                        :editor.generation (ed/->generation editor)})
                                                  (object/raise editor :saved)
                                                  (object/raise editor :clean)
                                                  ;;TODO: saved
@@ -25,10 +26,15 @@
                   :throttle 100
                   :triggers #{:change}
                   :reaction (fn [obj]
-                              (when-not (:dirty @obj)
-                                (object/merge! obj {:dirty true})
-                                (object/raise obj :dirty)
-                                )))
+                              (let [dirty? (ed/dirty? obj (:editor.generation @obj 0))]
+                                (when (not= (:dirty @obj) dirty?)
+                                  (if dirty?
+                                    (do
+                                      (object/merge! obj {:dirty true})
+                                      (object/raise obj :dirty))
+                                    (do
+                                      (object/merge! obj {:dirty false})
+                                      (object/raise obj :clean)))))))
 
 (object/behavior* ::preserve-line-endings
                   :triggers #{:save+}
@@ -56,3 +62,11 @@
                                 (if (= (last content) line-ending)
                                   content
                                   (str content line-ending)))))
+
+(object/behavior* ::on-save
+                  :triggers #{:save}
+                  :type :user
+                  :desc "Editor: On save execute command"
+                  :params [{:label "command"}]
+                  :reaction (fn [this cmd & args]
+                              (apply cmd/exec! cmd args)))

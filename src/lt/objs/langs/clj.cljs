@@ -56,6 +56,19 @@
   (let [parsed (.parse parser str)]
     (binary-search parsed loc)))
 
+
+;;****************************************************
+;; highlighting
+;;****************************************************
+
+(object/behavior* ::highlight-comment-forms
+                  :triggers #{:object.instant}
+                  :desc "Clojure: Highlight comment forms as comments"
+                  :type :user
+                  :reaction (fn [this]
+                              (when-let [m (ed/inner-mode this)]
+                                (set! (.-commentForms m) true))))
+
 ;;****************************************************
 ;; Lang object
 ;;****************************************************
@@ -115,6 +128,30 @@
                                 (object/raise clj-lang :eval! {:origin editor
                                                                :info info}))))
 
+
+;;(macro-expand __SELECTION__)
+;; 2
+
+(defn fill-placeholders [editor exp]
+  (-> exp
+      (string/replace "__SELECTION__" (ed/selection editor))))
+
+(object/behavior* ::on-eval.custom
+                  :triggers #{:eval.custom}
+                  :reaction (fn [editor exp opts]
+                              (let [code (fill-placeholders editor exp)
+                                    pos (ed/->cursor editor)
+                                    info (:info @editor)
+                                    info  (assoc info
+                                            :code code
+                                            :ns (or (:ns opts) (:ns info))
+                                            :meta {:start (-> (ed/->cursor editor "start") :line)
+                                                   :end (-> (ed/->cursor editor "end") :line)
+                                                   :result-type (or (:result-type opts) :inline)})
+                                    info (assoc info :print-length (object/raise-reduce editor :clojure.print-length+ nil))]
+                                (object/raise clj-lang :eval! {:origin editor
+                                                               :info info}))))
+
 (object/behavior* ::on-code
                   :triggers #{:editor.eval.cljs.code}
                   :reaction (fn [this result]
@@ -151,6 +188,40 @@
                                                                  :create try-connect})
                                               command info :only origin))))
 
+(object/behavior* ::build!
+                  :triggers #{:build!}
+                  :reaction (fn [this event]
+                              (let [{:keys [info origin]} event
+                                    command (->dottedkw (-> info :mime mime->type) "compile")]
+                                (notifos/working "Starting build")
+                                (clients/send (eval/get-client! {:command command
+                                                                 :info info
+                                                                 :origin origin
+                                                                 :create try-connect})
+                                              command info :only origin))))
+
+(object/behavior* ::build-cljs-plugin
+                  :triggers #{:build}
+                  :desc "Plugin: build ClojureScript plugin"
+                  :reaction (fn [this opts]
+                              (let [to-compile (files/filter-walk #(= (files/ext %) "cljs") (files/join (:lt.objs.plugins/plugin-path @this) "src"))]
+                                (object/raise clj-lang :build! {:info {:files to-compile
+                                                                       :mime (-> @this :info :mime)
+                                                                       :path (files/join (:lt.objs.plugins/plugin-path @this) "plugin.edn")
+                                                                       :ignore ['cljs.core]
+                                                                       :merge? true}
+                                                                :origin this}))))
+
+(object/behavior* ::plugin-compile-results
+                  :triggers #{:cljs.compile.results}
+                  :desc "Plugin: output compile results"
+                  :reaction (fn [this res]
+                              (let [plugin-name (files/basename (:lt.objs.plugins/plugin-path @this))
+                                    final-path (files/join (:lt.objs.plugins/plugin-path @this) (str plugin-name "_compiled.js"))]
+                                (notifos/done-working (str "Compiled plugin to " final-path))
+                                (files/save final-path (:js res)))
+                              ))
+
 (object/behavior* ::on-result-set-ns
                   :triggers #{:editor.eval.cljs.code
                               :editor.eval.clj.result}
@@ -165,38 +236,86 @@
                   :reaction (fn [this]
                               (notifos/done-working)))
 
-(object/behavior* ::on-remote-result
+(object/behavior* ::cljs-result
                   :triggers #{:editor.eval.cljs.result}
                   :reaction (fn [obj res]
                               (notifos/done-working)
+                              (let [type (or (-> res :meta :result-type) :inline)
+                                    ev (->dottedkw :editor.eval.cljs.result type)]
+                                (object/raise obj ev res))))
+
+(object/behavior* ::cljs-result.replace
+                  :triggers #{:editor.eval.cljs.result.replace}
+                  :reaction (fn [obj res]
+                              (if-let [err (or (:stack res) (:ex res))]
+                                (notifos/set-msg! err {:class "error"})
+                                (ed/replace-selection obj  (unescape-unicode (or (:result res) ""))))))
+
+(object/behavior* ::cljs-result.statusbar
+                  :triggers #{:editor.eval.cljs.result.statusbar}
+                  :reaction (fn [obj res]
+                              (if-let [err (or (:stack res) (:ex res))]
+                                (notifos/set-msg! err {:class "error"})
+                                (notifos/set-msg! (unescape-unicode (or (:result res) "")) {:class "result"}))))
+
+(object/behavior* ::cljs-result.inline
+                  :triggers #{:editor.eval.cljs.result.inline}
+                  :reaction (fn [obj res]
                               (let [meta (:meta res)
-                                    result (try
-                                             (unescape-unicode (or (:result res) ""))
-                                             )]
-                                (object/raise obj :editor.result result {:line (dec (:end-line meta))
-                                                                         :start-line (dec (:line meta))
-                                                                         :ch (:end-column meta)}))))
+                                    loc {:line (dec (:end-line meta)) :ch (:end-column meta)
+                                         :start-line (dec (:line meta))}]
+                                (if-let [err (or (:stack res) (:ex res))]
+                                  (object/raise obj :editor.eval.cljs.exception res :passed)
+                                  (object/raise obj :editor.result (unescape-unicode (or (:result res) "")) loc)))))
+
 
 (object/behavior* ::clj-result
                   :triggers #{:editor.eval.clj.result}
                   :reaction (fn [obj res]
-                              (when (:out res)
-                                (println (:out res)))
+                              (notifos/done-working)
+                              (let [type (or (-> res :meta :result-type) :inline)
+                                    ev (->dottedkw :editor.eval.clj.result type)]
+                                (object/raise obj ev res))))
+
+(object/behavior* ::clj-result.replace
+                  :triggers #{:editor.eval.clj.result.replace}
+                  :reaction (fn [obj res]
                               (doseq [result (-> res :results)
                                       :let [meta (:meta result)
                                             loc {:line (dec (:end-line meta)) :ch (:end-column meta)
                                                  :start-line (dec (:line meta))}]]
                                 (if (:stack result)
-                                  (object/raise obj :editor.eval.clj.exception result)
+                                  (notifos/set-msg! (:result res) {:class "error"})
+                                  (ed/replace-selection obj (:result result))))))
+
+(object/behavior* ::clj-result.statusbar
+                  :triggers #{:editor.eval.clj.result.statusbar}
+                  :reaction (fn [obj res]
+                              (doseq [result (-> res :results)
+                                      :let [meta (:meta result)
+                                            loc {:line (dec (:end-line meta)) :ch (:end-column meta)
+                                                 :start-line (dec (:line meta))}]]
+                                (if (:stack result)
+                                  (notifos/set-msg! (:result res) {:class "error"})
+                                  (notifos/set-msg! (:result result) {:class "result"})))))
+
+(object/behavior* ::clj-result.inline
+                  :triggers #{:editor.eval.clj.result.inline}
+                  :reaction (fn [obj res]
+                              (doseq [result (-> res :results)
+                                      :let [meta (:meta result)
+                                            loc {:line (dec (:end-line meta)) :ch (:end-column meta)
+                                                 :start-line (dec (:line meta))}]]
+                                (if (:stack result)
+                                  (object/raise obj :editor.eval.clj.exception result :passed)
                                   (do
-                                    (notifos/done-working)
-                                    (object/raise obj :editor.result (:result result) loc))))
-                              ))
+                                    (object/raise obj :editor.result (:result result) loc))))))
 
 (object/behavior* ::clj-exception
                   :triggers #{:editor.eval.clj.exception}
-                  :reaction (fn [obj res]
-                              (notifos/done-working)
+                  :reaction (fn [obj res passed?]
+                              (when-not passed?
+                                (notifos/done-working))
                               (let [meta (:meta res)
                                     loc {:line (dec (:end-line meta)) :ch (:end-column meta 0)
                                          :start-line (dec (:line meta 1))}]
@@ -206,8 +325,9 @@
 
 (object/behavior* ::cljs-exception
                   :triggers #{:editor.eval.cljs.exception}
-                  :reaction (fn [obj res]
-                              (notifos/done-working)
+                  :reaction (fn [obj res passed?]
+                              (when-not passed?
+                                (notifos/done-working))
                               (let [meta (:meta res)
                                     loc {:line (dec (:end-line meta)) :ch (:end-column meta)
                                          :start-line (dec (:line meta))}
@@ -329,18 +449,45 @@
 ;; watches
 ;;****************************************************
 
-(defn cljs-watch [meta src]
-  (let [meta (assoc meta :ev :editor.eval.cljs.watch)]
-    (str "(js/lttools.watch " src " (clj->js " (pr-str meta) "))")))
+(object/behavior* ::cljs-watch-src
+                  :triggers #{:watch.src+}
+                  :reaction (fn [editor cur meta src]
+                              (let [meta (assoc meta :ev :editor.eval.cljs.watch)]
+                                (str "(js/lttools.watch " src " (clj->js " (pr-str meta) "))"))))
 
-(defn clj-watch [meta src]
-  (str "(lighttable.nrepl.eval/watch " src " " (pr-str meta) ")"))
+(object/behavior* ::clj-watch-src
+                  :triggers #{:watch.src+}
+                  :reaction (fn [editor cur meta src]
+                              (str "(lighttable.nrepl.eval/watch " src " " (pr-str meta) ")")))
+
+(object/behavior* ::cljs-watch-custom-src
+                  :triggers #{:watch.custom.src+}
+                  :reaction (fn [editor cur meta opts src]
+                              (let [watch (str "(js/lttools.raise " (:obj meta) " :editor.eval.cljs.watch {:meta " (pr-str (merge (dissoc opts :exp) meta)) " :result $1})")]
+                                (-> (:exp opts)
+                                    (string/replace "\n" " ")
+                                    (string/replace "__SELECTION__" src)
+                                    (string/replace #"__\|(.*)\|__" watch)))))
+
+(object/behavior* ::clj-watch-custom-src
+                  :triggers #{:watch.custom.src+}
+                  :reaction (fn [editor cur meta opts src]
+                              (let [wrapped (if (:verbatim opts)
+                                              "$1"
+                                              "(pr-str $1)")
+                                    watch (str "(lighttable.nrepl.core/safe-respond-to " (:obj meta) " :editor.eval.clj.watch {:meta " (pr-str (merge (dissoc opts :exp) meta)) " :result " wrapped "})")]
+                                (-> (:exp opts)
+                                    (string/replace "\n" " ")
+                                    (string/replace "__SELECTION__" src)
+                                    (string/replace #"__\|(.*)\|__" watch)))))
 
 (object/behavior* ::cljs-watch-result
                   :triggers #{:editor.eval.cljs.watch}
                   :reaction (fn [editor res]
                               (when-let [watch (get (:watches @editor) (-> res :meta :id))]
-                                (let [str-result (pr-str (:result res))
+                                (let [str-result (if-not (-> res :meta :verbatim)
+                                                   (pr-str (:result res))
+                                                   (:result res))
                                       str-result (if (= str-result "#<[object Object]>")
                                                    (console/util-inspect (:result res) false 1)
                                                    str-result)
@@ -512,7 +659,7 @@
 
 (defn run-jar [{:keys [path project-path name client]}]
   (let [obj (object/create ::connecting-notifier n (clients/->id client))
-        args ["-jar" (windows-escape jar-path)]]
+        args ["-Xmx1g" "-jar" (windows-escape jar-path)]]
     (notifos/working "Connecting..")
     (.write console/core-log (str "STARTING CLIENT: " (jar-command project-path name client)))
     (proc/exec {:command (or (:java-exe @clj-lang) "java")

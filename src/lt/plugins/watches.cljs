@@ -9,7 +9,7 @@
         type (or (:type opts) :inline)
         line (ed/line-handle ed (:line loc))
         res-obj (object/create :lt.objs.eval/inline-result {:ed this
-                                                            :class (name type)
+                                                            :class (or (:class opts) (name type))
                                                             :opts opts
                                                             :result res
                                                             :loc loc
@@ -29,15 +29,19 @@
                                            pos (.find watch)
                                            mark (when pos (ed/mark doc (.-from pos) (.-to pos) {:className "watched"}))]]
                                  (when mark
+                                   (set! (.-custom mark) (.-custom watch))
                                    (set! (.-ltwatchid mark) id)
                                    mark))))]
     ;;replace watched ranges with code
     (doseq [watch watches
             :let [pos (.find watch)
-                  text (ed/range doc (.-from pos) (.-to pos))]]
-      (ed/replace doc (.-from pos) (.-to pos) (src->watch {:obj (object/->id ed)
-                                                           :id (.-ltwatchid watch)}
-                                                          text)))
+                  text (ed/range doc (.-from pos) (.-to pos))
+                  meta {:obj (object/->id ed)
+                        :id (.-ltwatchid watch)}
+                  v (if-not (.-custom watch)
+                      (object/raise-reduce ed :watch.src+ text meta text)
+                      (object/raise-reduce ed :watch.custom.src+ text meta (.-custom watch) text))]]
+      (ed/replace doc (.-from pos) (.-to pos) v))
     (if range
       (let [pos (.find range)]
         (ed/range doc (.-from pos) (.-to pos)))
@@ -54,16 +58,17 @@
 
 (object/behavior* ::watch!
                   :triggers #{:watch!}
-                  :reaction (fn [this]
+                  :reaction (fn [this opts]
                               (when-let [sel (ed/selection-bounds this)]
                                 (let [id (-> (gensym "watch")
                                              (str))
-                                      mark (ed/mark this (:from sel) (:to sel) {:className "watched"
+                                      mark (ed/mark this (:from sel) (:to sel) {:className (or (:class opts) "watched")
                                                                                 :inclusiveLeft false
                                                                                 :inclusiveRight false})
-                                      res (inline this {:type :watch :id id} (:to sel))]
+                                      res (inline this (merge {:type :watch :id id} opts) (:to sel))]
                                   (.on mark "hide" (fn []
                                                      (object/raise res :clear!)))
+                                  (set! (.-custom mark) (when (:exp opts) opts))
                                   (set! (.-lttype mark) :watch)
                                   (set! (.-ltwatchid mark) id)
                                   (object/update! this [:watches] assoc id {:mark mark
@@ -92,6 +97,15 @@
                       (when-let [ed (pool/last-active)]
                         (object/raise ed :watch!))
                       )})
+
+(cmd/command {:command :editor.watch.custom-watch-selection
+              :desc "Editor: Custom watch selection"
+              :hidden true
+              :exec (fn [exp opts]
+                      (when-let [ed (pool/last-active)]
+                        (object/raise ed :watch! (assoc opts :exp exp)))
+                      )})
+
 
 (cmd/command {:command :editor.watch.unwatch
               :desc "Editor: Remove watch under cursor"

@@ -204,7 +204,7 @@ body { -webkit-user-select: none; }
 #right-bar .navigate .selected, #side .navigate li:hover { border-radius:2px}
 #right-bar .navigate input { border:none; margin-bottom:20px; border-radius:2px; outline:none; box-sizing:border-box; width:100%; padding:10px; font-size:11pt;}
 
-#right-bar .clients {overflow:auto; height:100%; }
+#right-bar .clients.active {overflow:auto; height:100%; }
 #right-bar .clients .list > h2.add { float:none; display:inline-block; box-sizing:border-box; text-align:left; padding:2px 5px; margin-bottom:15px; }
 #right-bar .clients .list > ul > li { -webkit-user-select:text; overflow:hidden; box-sizing:border-box; padding:10px 10px; margin-bottom:0px; border-radius:0px; }
 #right-bar .clients .list > ul > li:first-child { border-top-right-radius:2px; border-top-left-radius:2px; }
@@ -236,8 +236,8 @@ body { -webkit-user-select: none; }
 #right-bar .filter-list { box-sizing:border-box; position:relative; height:100%; }
 #right-bar .filter-list > ul {position:absolute; top:55px; left:0px; right:0px; overflow-y:auto; bottom:0px;}
 #right-bar .filter-list li { border-radius:2px; }
-#right-bar .content > * { display:none; }
-#right-bar .content > .active {display:block;}
+#right-bar .content > * { width:0; height:0; overflow:hidden; }
+#right-bar .content > .active { width:100%; height:100%; }
 
 #right-bar .docs-search { width: 100%; }
 #right-bar .docs-search input { width:100%; padding:10px; font-size:11pt; }
@@ -273,7 +273,7 @@ body { -webkit-user-select: none; }
 
 .vertical-grip { background: transparent; width:7px; height:100%; z-index:10000000; position:absolute; top:0; right:0; cursor:col-resize; }
 
-#find-bar {z-index:1000; position:fixed; right:0; height:30px; background:transparent;}
+#find-bar {z-index:1000; position:fixed; overflow:hidden; right:0; height:30px; background:transparent;}
 #find-bar input { display:inline-block; font-size:11pt; font-family:"Inconsolata", "Ubuntu Mono", "Consolas", monospace; border-radius:0;  width:50%; height:30px; box-sizing:border-box; padding:5px; padding-left:10px; outline:none; }
 #find-bar button { position:absolute; right:-3px; z-index: 100000; padding:6px 10px;}
 

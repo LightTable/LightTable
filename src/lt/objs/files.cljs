@@ -205,6 +205,9 @@
     (let [stat (.statSync fs path)]
       (.isFile stat))))
 
+(defn absolute? [path]
+  (boolean (re-seq #"^[\\\/]|([\w]+:[\\\/])" path)))
+
 (defn basename [path]
   (.basename fpath path))
 
@@ -306,3 +309,13 @@
                (butlast segs)
                segs)]
     (vec (map #(str % separator) segs))))
+
+(defn filter-walk [func path]
+  (loop [to-walk (dirs path)
+         found (filterv func (full-path-ls path))]
+    (if-not (seq to-walk)
+      found
+      (let [cur (first to-walk)
+            neue (filterv func (full-path-ls cur))]
+        (recur (concat (rest to-walk) (dirs cur)) (concat found neue))))))
+

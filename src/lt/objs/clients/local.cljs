@@ -23,7 +23,7 @@
                       [cb
                        :editor.eval.cljs.result
                        {:result (eval/cljs-result-format (.call js/eval js/window code))
-                        :meta (:meta res)}])
+                        :meta (merge (:meta data) (:meta res))}])
         (catch js/global.Error e
           (object/raise clients/clients :message [cb :editor.eval.cljs.exception {:ex e :meta (:meta res)}]))
         (catch js/Error e

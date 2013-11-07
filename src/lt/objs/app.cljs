@@ -88,11 +88,12 @@
 (object/behavior* ::store-position-on-close
                   :triggers #{:closed :refresh}
                   :reaction (fn [this]
-                              (set! js/localStorage.x (.-x win))
-                              (set! js/localStorage.y (.-y win))
-                              (set! js/localStorage.width (.-width win))
-                              (set! js/localStorage.height (.-height win))
-                              (set! js/localStorage.fullscreen (.-isFullscreen win))))
+                              (when-not (.-isFullscreen win)
+                                (set! js/localStorage.x (.-x win))
+                                (set! js/localStorage.y (.-y win))
+                                (set! js/localStorage.width (.-width win))
+                                (set! js/localStorage.height (.-height win))
+                                (set! js/localStorage.fullscreen (.-isFullscreen win)))))
 
 (object/behavior* ::restore-fullscreen
                   :triggers #{:show}
@@ -121,8 +122,9 @@
 (object/behavior* ::initial-focus
                   :triggers #{:show}
                   :reaction (fn [this]
-                              ;;(dom/focus (dom/$ :body))
-                              (.focus win)))
+                              ;(dom/focus (dom/$ :body))
+                              ;(.focus win)
+                              ))
 
 (object/behavior* ::run-on-init
                   :triggers #{:init}

@@ -55,7 +55,8 @@
                               (object/merge! this {:width (:max-width @this)
                                                    :open true})
                               (object/merge! tabs/multi {(:side @this) (+ (:max-width @this) )})
-                              (dom/add-class (object/->content (:active @this)) :active)))
+                              (dom/add-class (object/->content (:active @this)) :active)
+                              ))
 
 (object/behavior* ::close!
                   :triggers #{:close!}
@@ -82,7 +83,9 @@
                                   (object/merge! this {:active item})
                                   (object/raise this :open!)
                                   (when-not soft?
-                                    (object/raise (:active @this) :show))))))
+                                    (object/raise item :show)
+                                    )
+                                  ))))
 
 (defn active-content [active]
   (when active

@@ -4,7 +4,6 @@
                                       "/" ":ltexec vim.find"
                                       "n" ":ltexec find.next"
                                       "N" ":ltexec find.prev"
-                                      ",/" ":ltexec find.clear"
                                       "=" ":ltexec smart-indent-selection"})]
      :editor.keys.vim [:lt.plugins.vim/ex-command
                        :lt.plugins.vim/mode-change]

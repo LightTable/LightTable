@@ -14,6 +14,7 @@
 (def behaviors (atom {}))
 (def object-defs (atom {}))
 (def tags (atom {}))
+(def ^{:dynamic true} *behavior-meta* nil)
 
 (defn add [obj]
   (swap! object-defs assoc (::type obj) obj))
@@ -147,11 +148,15 @@
           :let [func (:reaction (->behavior r))
                 args (if (coll? r)
                        (concat (rest r) args)
-                       args)]
+                       args)
+                meta (if (coll? r)
+                       (meta r)
+                       {})]
           :when func]
     (try
     (with-time
-      (apply func obj args)
+      (binding [*behavior-meta* meta]
+        (apply func obj args))
       (when-not (= trigger :object.behavior.time)
         (raise obj :object.behavior.time r time)))
       (catch js/Error e
@@ -173,10 +178,14 @@
               (let [func (:reaction (->behavior cur))
                     args (if (coll? cur)
                            (concat (rest cur) args)
-                           args)]
+                           args)
+                    meta (if (coll? cur)
+                           (meta cur)
+                           {})]
                 (if-not func
                   res
-                  (apply func obj res args))))
+                  (binding [*behavior-meta* meta]
+                    (apply func obj res args)))))
             start
             reactions)))
 
@@ -334,9 +343,39 @@
                                    (func v))))
 
 (behavior* ::add-tag
+           :desc "App: Add tag to object"
+           :params [{:label "tag"}]
+           :type :user
            :triggers #{:object.instant}
-           :reaction (fn [this & ts]
-                       (add-tags this ts)))
+           :reaction (fn [this t]
+                       (add-tags this (if (coll? t)
+                                        t
+                                        [t]))))
+
+(behavior* ::remove-tag
+           :desc "App: Remove tag from object"
+           :params [{:label "tag"}]
+           :type :user
+           :triggers #{:object.instant ::tags-added}
+           :reaction (fn [this t]
+                       (when (has-tag? this t)
+                         (remove-tags this (if (coll? t)
+                                             t
+                                             [t])))))
+
+(behavior* ::shadow-tag
+           :desc "App: Shadow a tag on an object"
+           :params [{:label "tag to shadow"}
+                    {:label "tag to add"}]
+           :type :user
+           :triggers #{:object.instant ::tags-added ::tags-removed}
+           :reaction (fn [this to-shadow to-add]
+                       (let [has-shadow? (has-tag? this to-shadow)
+                             has-add? (has-tag? this to-add)]
+                         (cond
+                          (and has-shadow? (not has-add?)) (add-tags this [to-add])
+                          (and (not has-shadow?) has-add?) (remove-tags this [to-add])
+                          :else nil))))
 
 (behavior* ::report-time
            :triggers #{:object.behavior.time}

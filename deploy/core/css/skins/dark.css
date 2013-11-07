@@ -323,3 +323,6 @@ input { color: var(highlight-fg); background:var(highlight-bg); }
 #right-bar .clients .load-wrapper .img { width:20px; height:20px; background:url("/core/img/connectingloader.gif") }
 
 .load-wrapper .img { background:url("/core/img/loaderdark.gif"); }
+
+.timed { border-bottom:1px solid #fa5; }
+.timed-result { background: #741; color:#fb0; }

@@ -46,14 +46,16 @@
 (defn remain-open []
   (set! *no-close* true))
 
-(defui ->button [this {:keys [label action]}]
+(defui ->button [this {:keys [label action post-action]}]
   [:li.button label]
   :click (fn []
            (binding [*no-close* nil]
              (when (fn? action)
                (action))
              (when-not *no-close*
-               (object/raise this :close!)))))
+               (object/raise this :close!))
+             (when (fn? post-action)
+               (post-action)))))
 
 (defui popup-content [this opts]
   [:div [:div

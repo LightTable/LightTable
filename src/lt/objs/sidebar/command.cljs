@@ -181,10 +181,10 @@
                                 (dom/val input "")
                                 (object/raise this :change! ""))))
 
-(object/behavior* ::focus!
+(object/behavior* ::filter-list.focus!
                   :triggers #{:focus!}
                   :reaction (fn [this]
-                              (let [input (dom/$ :input (object/->content this))]
+                              (let [input (dom/$ :.search (object/->content this))]
                                 (dom/focus input)
                                 (.select input))))
 
@@ -197,7 +197,7 @@
 
 
 (defui input [this]
-  [:input.search {:type "text" :placeholder (bound this :placeholder)}]
+  [:input.search {:type "text" :placeholder (bound this :placeholder) :tabindex "0"}]
   :focus (fn [e]
            (object/raise this :active))
   :blur (fn [e]
@@ -279,7 +279,6 @@
                             lis]
                            ])))
 
-(object/tag-behaviors :filter-list [::move-selection ::clear! ::change! ::focus! ::update-lis ::select! ::set-on-select ::set-selection! ::filter-active ::filter-inactive])
 
 (defn filter-list [opts]
   (let [lst (object/create ::filter-list opts)]
@@ -422,11 +421,6 @@
                   :triggers #{:post-init}
                   :reaction (fn [app]
                               (object/raise sidebar-command :refresh!)))
-
-(object/tag-behaviors :app [::init-commands])
-(object/tag-behaviors :sidebar.command [::exec-command ::exec-active! ::focus! ::soft-focus! ::refresh! ::post-select-pop ::cancel!])
-(object/tag-behaviors :command.selector [::select-command ::select-hidden ::escape!])
-(object/tag-behaviors :command.options [::options-escape!])
 
 (def sidebar-command (object/create ::sidebar.command))
 (ctx/in! :commandbar sidebar-command)

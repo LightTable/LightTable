@@ -173,6 +173,11 @@
   (let [meta (js/JSON.stringify (clj->js meta))]
     (str "sys.modules['lttools'].__dict__['watch'](" src ", " meta ")")))
 
+(object/behavior* ::watch-src
+                  :triggers #{:watch.src+}
+                  :reaction (fn [editor cur meta src]
+                              (python-watch meta src)))
+
 (object/behavior* ::on-eval
                   :triggers #{:eval}
                   :reaction (fn [editor]

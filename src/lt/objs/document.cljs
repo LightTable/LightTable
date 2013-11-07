@@ -41,6 +41,41 @@
 (defn ->cm-doc [doc]
   (-> @doc :doc))
 
+(defn ->snapshot [doc]
+  (let [d (->cm-doc doc)
+        lines (transient [])]
+    (.eachLine d (fn [line]
+                   (conj! lines (.-text line))
+                   nil))
+    {:version (.changeGeneration d)
+     :lines (persistent! lines)
+     :doc doc}))
+
+
+(defn latest-snapshot? [snapshot]
+  (= (:version snapshot) (-> (:doc snapshot)
+                             (->cm-doc)
+                             (.changeGeneration))))
+
+(comment
+  (def v1 (->snapshot orig))
+  (latest-snapshot? v1)
+
+  (set-val orig "hey\nzomg2\n\n\nwoot4\ncool\nlah")
+  (def v4 (->snapshot orig))
+
+
+  (def hist (.getHistory (->cm-doc orig)))
+
+  (-> hist
+      (aget "done")
+      (aget 0)
+      ;(aget "changes")
+      ;(aget 0)
+      )
+  (aget hist "done"))
+
+
 (defn ->val [doc]
   (.getValue (->cm-doc doc)))
 

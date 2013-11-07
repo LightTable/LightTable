@@ -118,9 +118,6 @@
                          ]
                         )))
 
-(object/tag-behaviors :navigator [::focus! ::workspace-files])
-(object/tag-behaviors :navigate.selector [::open-on-select ::escape! ::pop-transient-on-select])
-
 (def sidebar-navigate (object/create ::sidebar.navigate))
 
 (sidebar/add-item sidebar/rightbar sidebar-navigate)
@@ -131,13 +128,14 @@
               :desc "Navigate: open navigate"
               :exec (fn []
                       (object/raise sidebar/rightbar :toggle sidebar-navigate {:transient? false})
-                      (object/raise sidebar-navigate :focus!))})
+                      )})
 
 (cmd/command {:command :navigate-workspace-transient
               :desc "Navigate: open navigate transient"
               :hidden true
               :exec (fn []
-                      (object/raise sidebar/rightbar :toggle sidebar-navigate {:transient? true}))})
+                      (object/raise sidebar/rightbar :toggle sidebar-navigate {:transient? true})
+                      )})
 
 (cmd/command {:command :escape-navigate
               :desc "Navigate: exit navigate"

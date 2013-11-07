@@ -49,10 +49,10 @@
 (defn current-ed []
   (editor/->cm-ed (pool/last-active)))
 
-(defn ->shown [shown?]
+(defn ->shown-width [shown?]
   (if shown?
-    "block"
-    "none"))
+    ""
+    "0"))
 
 (defn ->val [this]
   (dom/val (dom/$ :input.find (object/->content this))))
@@ -120,11 +120,14 @@
 (object/behavior* ::clear!
                   :triggers #{:clear!}
                   :reaction (fn [this]
+                              (.trace js/console)
                               (object/merge! this {:searching? false})
                               (when-let [ed (pool/last-active)]
                                 (js/CodeMirror.commands.clearSearch (editor/->cm-ed ed)))
-                              (dom/val (dom/$ :input (object/->content this))
-                                       "")))
+                              (let [input (dom/$ :input (object/->content this))]
+                                (when (= "" (dom/val input))
+                                  (dom/val input "")))))
+
 
 (object/behavior* ::replace!
                   :triggers #{:replace!}
@@ -157,7 +160,8 @@
                         [:div#find-bar {:style {:bottom (bound (subatom this :bottom) ->px)
                                                 :left (bound (subatom (ctx/->obj :tabs) :left) ->px)
                                                 :right (bound (subatom (ctx/->obj :tabs) :right) ->px)
-                                                :display (bound (subatom this :shown) ->shown)}}
+                                                :width (bound (subatom this :shown) ->shown-width)
+                                                :height (bound (subatom this :shown) ->shown-width)}}
                          (input this)
                          (replace-input this)
                          (replace-all-button this)]))

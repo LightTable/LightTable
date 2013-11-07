@@ -1,6 +1,7 @@
 (ns lt.objs.editor.pool
   (:require [lt.object :as object]
             [lt.objs.app :as app]
+            [lt.objs.keyboard :as kb]
             [lt.objs.files :as files]
             [lt.objs.file-manager :as fileman]
             [lt.objs.canvas :as canvas]
@@ -195,6 +196,7 @@
 (defn create [info]
   (let [ed (object/create :lt.objs.editor/editor info)]
     (object/add-tags ed (:tags info []))
+    (object/merge! ed {:editor.generation (editor/->generation ed)})
     (object/raise pool :create ed info)
     (object/raise ed :create)
     ed))
@@ -559,6 +561,15 @@
                       (when-let [ed (last-active)]
                         (editor/select-all ed)))})
 
+(cmd/command {:command :editor.select-line
+              :desc "Editor: Select line"
+              :exec (fn []
+                      (when-let [ed (last-active)]
+                        (let [line (-> (editor/->cursor ed) :line)
+                              len (editor/line-length ed line)]
+                          (editor/set-selection ed {:line line :ch 0} {:line line :ch len})
+                          (editor/set-extending ed false))))})
+
 (cmd/command {:command :editor.undo
               :desc "Editor: Undo"
               :hidden true
@@ -572,3 +583,13 @@
               :exec (fn []
                       (when-let [ed (last-active)]
                         (editor/redo ed)))})
+
+(cmd/command {:command :editor.codemirror.command
+              :desc "Editor: Execute a CodeMirror command"
+              :hidden true
+              :exec (fn [cmd & args]
+                      (when-let [ed (last-active)]
+                        (when-let [command (aget js/CodeMirror.commands cmd)]
+                          (when (= js/CodeMirror.Pass
+                                   (apply command (editor/->cm-ed ed) args))
+                            (kb/passthrough)))))})

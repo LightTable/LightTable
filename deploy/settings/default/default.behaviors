@@ -45,6 +45,13 @@
    :lt.plugins.doc/init-doc-search
    :lt.objs.intro/show-intro
    :lt.objs.menu/recreate-menu
+   :lt.objs.settings2/default-keymap-diffs
+   :lt.objs.settings2/user-keymap-diffs
+   :lt.objs.settings2/default-behavior-diffs
+   :lt.objs.settings2/user-behavior-diffs
+   :lt.objs.plugins/init-plugins
+   :lt.objs.plugins/plugin-behavior-diffs
+   :lt.objs.plugins/plugin-keymap-diffs
    (:lt.objs.keyboard/chord-timeout 1000)
    (:lt.objs.files/file.ignore-pattern "(^\\..*)|\\.class$|target/|svn|cvs|\\.git|\\.pyc|~|\\.swp|\\.jar|.DS_Store|\\.nrepl-port")
    (:lt.objs.style/set-skin "dark")
@@ -85,7 +92,7 @@
    :lt.objs.clients.devtools/reconnect
    :lt.objs.clients.devtools/disconnect
    :lt.objs.clients.devtools/print-messages},
- :clojure.lang #{:lt.objs.langs.clj/connect :lt.objs.langs.clj/eval!},
+ :clojure.lang #{:lt.objs.langs.clj/connect :lt.objs.langs.clj/eval! :lt.objs.langs.clj/build!},
  :codex
  #{:lt.objs.codex/close :lt.objs.codex/add! :lt.objs.codex/clear!},
  :command.options #{:lt.objs.sidebar.command/options-escape!},
@@ -126,6 +133,10 @@
    :lt.objs.opener/unwatch-closed
    :lt.objs.editor/hide-line-numbers
    :lt.objs.editor/no-wrap
+   :lt.objs.settings2/default-keymap-diffs
+   :lt.objs.settings2/user-keymap-diffs
+   :lt.objs.settings2/default-behavior-diffs
+   :lt.objs.settings2/user-behavior-diffs
    (:lt.objs.style/set-theme "default")
    (:lt.objs.editor/tab-settings false 2 2)
    },
@@ -161,10 +172,16 @@
    :lt.objs.langs.clj/eval-print-err :lt.objs.langs.clj/eval-location
    :lt.objs.langs.clj/on-eval.one :lt.objs.langs.clj/on-eval
    :lt.objs.langs.clj/clj-result
+   :lt.objs.langs.clj/clj-result.inline
+   :lt.objs.langs.clj/clj-result.statusbar
+   :lt.objs.langs.clj/clj-result.replace
    :lt.objs.langs.clj/clj-watch-result
+   :lt.objs.langs.clj/clj-watch-src
+   :lt.objs.langs.clj/clj-watch-custom-src
    :lt.plugins.rainbow-parens/rainbow-parens
    :lt.objs.langs.clj/clj-doc
    :lt.objs.langs.clj/print-clj-doc
+   :lt.objs.langs.clj/on-eval.custom
    [:lt.object/add-tag :watchable]
    [:lt.object/add-tag :docable]
    },
@@ -173,11 +190,17 @@
    :lt.objs.instarepl/on-eval-sonar :lt.objs.instarepl/dirty-parent
    :lt.objs.instarepl/no-op :lt.objs.instarepl/eval-on-change
    :lt.objs.instarepl/close-parent
+   :lt.objs.langs.clj/clj-result.inline
+   :lt.objs.langs.clj/clj-result.statusbar
+   :lt.objs.langs.clj/clj-result.replace
+   :lt.objs.langs.clj/clj-watch-src
+   :lt.objs.langs.clj/clj-watch-custom-src
    :lt.plugins.rainbow-parens/rainbow-parens
    :lt.objs.editor.find/find-in-editor
    :lt.objs.langs.clj/clj-watch-result
    :lt.objs.langs.clj/clj-doc
    :lt.objs.langs.clj/print-clj-doc
+   :lt.objs.langs.clj/on-eval.custom
    [:lt.object/add-tag :watchable]
    [:lt.object/add-tag :docable]
    },
@@ -185,12 +208,20 @@
  #{:lt.objs.langs.clj/on-result-set-ns :lt.objs.langs.clj/exec.cljs!
    :lt.objs.langs.clj/no-op :lt.objs.langs.clj/eval-location
    :lt.objs.langs.clj/on-code :lt.objs.langs.clj/on-eval.one
-   :lt.objs.langs.clj/on-remote-result :lt.objs.langs.clj/on-eval
+   :lt.objs.langs.clj/on-eval
+   :lt.objs.langs.clj/cljs-result
+   :lt.objs.langs.clj/cljs-result.inline
+   :lt.objs.langs.clj/cljs-result.statusbar
+   :lt.objs.langs.clj/cljs-result.replace
    :lt.objs.langs.clj/cljs-exception
    :lt.objs.langs.clj/cljs-watch-result
+   :lt.objs.langs.clj/cljs-watch-src
+   :lt.objs.langs.clj/cljs-watch-custom-src
    :lt.objs.langs.clj/cljs-doc
    :lt.objs.langs.clj/print-cljs-doc
    :lt.plugins.rainbow-parens/rainbow-parens
+   :lt.objs.langs.clj/on-eval.custom
+   :lt.objs.plugins/check-for-plugin-file
    [:lt.object/add-tag :docable]
    [:lt.object/add-tag :watchable]},
  :editor.css
@@ -213,8 +244,8 @@
  #{:lt.objs.langs.js/js-success :lt.objs.langs.js/js-result
    :lt.objs.langs.js/js-exception :lt.objs.langs.js/on-eval
    :lt.objs.langs.js/on-eval.one
+   :lt.objs.langs.js/watch-src
    :lt.objs.langs.js/js-watch
-   :lt.plugins.jshint/inline-hints
    [:lt.object/add-tag :watchable]},
  :editor.markdown [:lt.objs.editor/wrap]
  :editor.plaintext [:lt.objs.editor/wrap]
@@ -231,6 +262,7 @@
    :lt.objs.langs.python/python-printer
    :lt.objs.langs.python/python-watch
    :lt.objs.langs.python/python-image
+   :lt.objs.langs.python/watch-src
    [:lt.object/add-tag :watchable]
    (:lt.objs.editor/tab-settings false 4 4)},
  :editor.read-only #{:lt.objs.editor/read-only}
@@ -252,6 +284,7 @@
                                      {:name "CoffeeScript" :exts [:coffee] :mime "text/x-coffeescript" :tags [:editor.coffee]}
                                      {:name "Common Lisp" :exts [:cl] :mime "text/x-common-lisp" :tags [:editor.common-lisp]}
                                      {:name "Diff" :exts [:diff :patch] :mime "text/x-diff" :tags [:editor.diff]}
+                                     {:name "EDN" :exts [:edn] :mime "text/x-clojure" :tags [:editor.clj :editor.edn]}
                                      {:name "Erlang" :exts [:erl] :mime "text/x-erlang" :tags [:editor.erlang]}
                                      {:name "Go" :exts [:go] :mime "text/x-go" :tags [:editor.go]}
                                      {:name "Groovy" :exts [:groovy] :mime "text/x-groovy" :tags [:editor.groovy]}
@@ -288,11 +321,12 @@
                                      {:name "TypeScript" :exts [:ts] :mime "text/x-typescript" :tags [:editor.typescript]}
                                      {:name "VB" :exts [:vb] :mime "text/x-vb" :tags [:editor.visualbasic]}
                                      {:name "YAML" :exts [:yml :yaml] :mime "text/x-yaml" :tags [:editor.yaml]}
+                                     {:name "XML" :exts [:xml] :mime "application/xml" :tags [:editor.xml]}
                                      ])]
  :filter-list
  #{:lt.objs.sidebar.command/select!
    :lt.objs.sidebar.command/filter-inactive
-   :lt.objs.sidebar.command/focus! :lt.objs.sidebar.command/change!
+   :lt.objs.sidebar.command/filter-list.focus! :lt.objs.sidebar.command/change!
    :lt.objs.sidebar.command/clear! :lt.objs.sidebar.command/update-lis
    :lt.objs.sidebar.command/set-on-select
    :lt.objs.sidebar.command/move-selection
@@ -398,6 +432,9 @@
    :lt.objs.sidebar.command/options-escape!
    :lt.objs.sidebar.command/op-clear!
    :lt.objs.sidebar.command/op-focus!},
+ :plugin.file [:lt.objs.langs.clj/build-cljs-plugin
+               :lt.objs.langs.clj/plugin-compile-results
+               (:lt.objs.editor.file/on-save :build)]
  :python.lang
  #{:lt.objs.langs.python/eval! :lt.objs.langs.python/connect},
  :searcher

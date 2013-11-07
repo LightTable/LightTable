@@ -159,8 +159,6 @@
 
 (def me-obj (object/create ::window))
 
-(object/tag-behaviors :window [::store-position-on-close ::restore-fullscreen ::track-focus])
-
 (.on me "blur" (fn []
                  (object/raise me-obj :blur)))
 

@@ -112,7 +112,7 @@
                                                  (fn [{:keys [content type line-ending]}]
                                                    (let [type (files/path->type path)
                                                          ed (pool/create (merge {:content content :line-ending line-ending} (path->info path)))]
-                                                     (metrics/capture! :editor.open {:type (:name type)
+                                                     (metrics/capture! :editor.open {:type (or (:name type) (files/ext path))
                                                                                      :lines (editor/last-line ed)})
                                                      (object/add-tags ed [:editor.file-backed])
                                                      (object/raise obj :open ed)

@@ -91,6 +91,11 @@
                   (let [cur (pool/last-active)]
                     (object/raise cur :close)))})
 
+(command {:command :vim-nohlsearch
+          :desc "Vim: :nohlsearch"
+          :exec (fn []
+                  (cmd/exec! :find.clear))})
+
 (command {:command :vim.find
           :desc "Vim: find"
           :hidden true

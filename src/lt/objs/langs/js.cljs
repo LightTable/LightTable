@@ -83,6 +83,11 @@
         opts-str (.stringify js/JSON opts)]
     (str "lttools.watch(" src ", " opts-str ")" semi)))
 
+(object/behavior* ::watch-src
+                  :triggers #{:watch.src+}
+                  :reaction (fn [editor cur meta src]
+                             (src->watch meta src)))
+
 (defn clean-code [src]
   (string/replace src (js/RegExp. "\n*#!.*\n" "gm") "\n"))
 
@@ -204,5 +209,9 @@
                            (when-let [obj (object/by-id (.-obj meta))]
                              (object/raise obj (keyword (.-ev meta)) {:result exp :meta (js->clj meta :keywordize-keys true)}))
                            exp))
+
+(browser/add-util :raise (fn [id ev data]
+                           (when-let [obj (object/by-id id)]
+                             (object/raise obj ev data))))
 
 ;(println (inspect (->body cur)))

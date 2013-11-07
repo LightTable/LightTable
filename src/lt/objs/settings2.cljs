@@ -1,5 +1,6 @@
 (ns lt.objs.settings2
   (:require [lt.object :as object]
+            [lt.objs.app :as app]
             [lt.objs.command :as cmd]
             [lt.objs.keyboard :as kb]
             [lt.objs.tabs :as tabs]
@@ -55,24 +56,32 @@
 (defn parse-file [file final]
   (-> (files/open-sync file)
       :content
-      (safe-read file)
-      (behavior-diff final file)))
+      (safe-read file)))
 
 (defn default-dir []
   (if js/process.env.LTLOCAL
     (str js/process.env.LTLOCAL "settings/default/")
     (files/lt-home "settings/default/")))
 
+(defn behavior-diffs-in [path]
+  (->>
+   (filter #(= (files/ext %) "behaviors")
+           (files/full-path-ls path))
+   (mapv parse-file)))
+
 (defn ordered-files []
   (filter #(= (files/ext %) "behaviors")
           (concat (files/full-path-ls (str files/pwd "/settings/default/"))
-                  (files/full-path-ls (files/lt-home "settings/user/")))))
+                  (files/full-path-ls ))))
 
 (defn load-all []
   (let [final (reduce (fn [fin cur]
-                        (parse-file cur fin))
+                        (behavior-diff cur fin))
                       {}
-                      (ordered-files))
+                      (concat (object/raise-reduce app/app :behaviors.diffs.default+ [])
+                              (object/raise-reduce app/app :behaviors.diffs.plugin+ [])
+                              (object/raise-reduce app/app :behaviors.diffs.user+ [])
+                              ))
         ws-diff (:ws-behaviors @workspace/current-ws)
         final (if (and false ws-diff (not (empty? ws-diff)))
                 (behavior-diff (safe-read ws-diff "workspace.behaviors") final)
@@ -87,7 +96,9 @@
 
 (defn refresh-all [objs]
   (if-not (seq objs)
-    (notifos/done-working "")
+    (do
+      (object/raise app/app :behaviors.refreshed)
+      (notifos/done-working ""))
     (do
       (try
         (object/refresh! (first objs))
@@ -101,6 +112,18 @@
 ;;*********************************************************
 ;; Behaviors
 ;;*********************************************************
+
+(object/behavior* ::default-behavior-diffs
+                  :triggers #{:behaviors.diffs.default+}
+                  :reaction (fn [this diffs]
+                              (concat diffs (behavior-diffs-in (files/lt-home "settings/default/")))
+                              ))
+
+(object/behavior* ::user-behavior-diffs
+                  :triggers #{:behaviors.diffs.user+}
+                  :reaction (fn [this diffs]
+                              (concat diffs (behavior-diffs-in (files/lt-home "settings/user/")))
+                              ))
 
 (object/behavior* ::initial-behaviors
                   :triggers #{:pre-init}
@@ -170,6 +193,14 @@
                                         (first))
                                     :behaviors.reload))})
 
+(cmd/command {:command :keymaps.reload
+              :desc "App: Reload keymaps"
+              :exec (fn []
+                      (load-all-keys)
+                      (kb/refresh)
+                      (object/raise (first (object/by-tag :app)) :app.keys.load)
+                      (notifos/set-msg! "keys loaded"))})
+
 (cmd/command {:command :behaviors.modify-user
               :desc "Settings: User behaviors"
               :exec (fn []
@@ -204,9 +235,6 @@
                   :reaction (fn [this]
                               (tabs/rem! this)))
 
-;;This call to tag-behaviors is necessary as there are no behaviors loaded when the
-;;app is first run.
-(object/tag-behaviors :app [::initial-behaviors])
 
 (defn ->ordered-keystr [k]
   (let [char (if (= (last k) "-")
@@ -218,10 +246,10 @@
            "cmd-")
          (when (str-contains? k "meta")
            "meta-")
-         (when (str-contains? k "alt")
-           "alt-")
          (when (str-contains? k "altgr")
            "altgr-")
+         (when (str-contains? k "alt")
+           "alt-")
          (when (str-contains? k "shift")
            "shift-")
          char)))
@@ -254,8 +282,13 @@
 (defn parse-key-file [file final]
   (-> (files/open-sync file)
       :content
-      (reader/read-string)
-      (key-diff final)))
+      (reader/read-string)))
+
+(defn keymap-diffs-in [path]
+  (->>
+   (filter #(= (files/ext %) "keymap")
+           (files/full-path-ls path))
+   (map parse-key-file)))
 
 (defn ordered-key-files []
   (filter #(= (files/ext %) "keymap")
@@ -264,10 +297,24 @@
 
 (defn load-all-keys []
   (let [final (reduce (fn [fin cur]
-                        (parse-key-file cur fin))
+                        (key-diff cur fin))
                       {}
-                      (ordered-key-files))]
+                      (concat (object/raise-reduce app/app :keymap.diffs.default+ [])
+                              (object/raise-reduce app/app :keymap.diffs.plugin+ [])
+                              (object/raise-reduce app/app :keymap.diffs.user+ [])))]
     (reset! kb/keys final)))
+
+(object/behavior* ::default-keymap-diffs
+                  :triggers #{:keymap.diffs.default+}
+                  :reaction (fn [this diffs]
+                              (concat diffs (keymap-diffs-in (str files/pwd "/settings/default/")))
+                              ))
+
+(object/behavior* ::user-keymap-diffs
+                  :triggers #{:keymap.diffs.user+}
+                  :reaction (fn [this diffs]
+                              (concat diffs (keymap-diffs-in (str files/pwd "/settings/user/")))
+                              ))
 
 (object/behavior* ::load-keys
                   :triggers #{:pre-init}
@@ -276,7 +323,6 @@
                               (kb/refresh)
                               (object/raise (first (object/by-tag :app)) :app.keys.load)))
 
-(object/tag-behaviors :app [::load-keys])
 
 (object/behavior* ::on-behaviors-editor-save
                   :triggers #{:saved}
@@ -286,9 +332,10 @@
 (object/behavior* ::on-keymap-editor-save
                   :triggers #{:saved}
                   :reaction (fn [editor]
-                              (load-all-keys)
-                              (kb/refresh)
-                              (object/raise (first (object/by-tag :app)) :app.keys.load)
-                              (notifos/set-msg! "keys loaded")))
+                              (cmd/exec! :keymaps.reload)))
 
 
+
+;;This call to tag-behaviors is necessary as there are no behaviors loaded when the
+;;app is first run.
+(object/tag-behaviors :app [::initial-behaviors ::load-behaviors ::default-behavior-diffs ::user-behavior-diffs ::load-keys ::default-keymap-diffs ::user-keymap-diffs])

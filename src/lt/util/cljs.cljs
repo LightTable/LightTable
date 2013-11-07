@@ -12,6 +12,10 @@
   INext
   (-next [this] (-seq (-rest this))))
 
+(extend-type nil
+  ISeqable
+  (-seq [coll] nil))
+
 (extend-type cljs.core/RSeq
   INext
   (-next [this] (-seq (-rest this))))

@@ -187,7 +187,7 @@
                   :reaction (fn [this items]
                               (conj items {:label "Rename"
                                           :order 1
-                                          :click (fn [] (object/raise this :rename!))}
+                                          :click (fn [] (object/raise this :start-rename!))}
                                          {:label "Delete"
                                           :order 2
                                           :click (fn [] (object/raise this :delete!))})))
@@ -201,7 +201,7 @@
                                      :click (fn [] (object/raise this :new-file!))}
                                     {:label "Rename"
                                      :order 2
-                                     :click (fn [] (object/raise this :rename!))}
+                                     :click (fn [] (object/raise this :start-rename!))}
                                     {:type "separator"
                                      :order 3}
                                     {:label "New folder"
@@ -233,7 +233,7 @@
                   :triggers #{:delete!}
                   :reaction (fn [this]
                               (popup/popup! {:header "Delete this folder?"
-                                            :body (str "This will delete " (:path @this) ", which cannot be undone.")
+                                            :body (str "This will delete " (:path @this) " from disk and cannot be undone.")
                                             :buttons [{:label "Delete folder"
                                                        :action (fn [] (object/raise this :force-delete!))}
                                                       popup/cancel-button]})))
@@ -251,7 +251,7 @@
                                 (object/merge! this {:open? true})
                                 (files/save final-path "")
                                 (object/raise opener/opener :open! final-path)
-                                (object/raise folder :rename!))))
+                                (object/raise folder :start-rename!))))
 
 (object/behavior* ::new-folder!
                   :triggers #{:new-folder!}
@@ -262,7 +262,7 @@
                                 (object/update! this [:folders] conj folder)
                                 (object/merge! this {:open? true})
                                 (files/mkdir final-path)
-                                (object/raise folder :rename!))))
+                                (object/raise folder :start-rename!))))
 
 (object/behavior* ::rename-folder
                   :triggers #{:rename}
@@ -274,9 +274,9 @@
                                     (popup/popup! {:header "Folder already exists."
                                                    :body (str "The folder " neue " already exists, you'll have to pick a different name.")
                                                    :buttons [{:label "ok"
-                                                              :action (fn []
-                                                                        (object/raise this :rename.cancel)
-                                                                        (object/raise this :rename!))}]})
+                                                              :post-action (fn []
+                                                                             (object/raise this :rename.cancel)
+                                                                             (object/raise this :start-rename!))}]})
                                     (let [root? (object/has-tag? this :workspace.folder.root)]
                                       (object/merge! this {:path neue :realized? false})
                                       (files/move! path neue)
@@ -296,9 +296,9 @@
                                     (popup/popup! {:header "File already exists."
                                                    :body (str "The file" neue " already exists, you'll have to pick a different name.")
                                                    :buttons [{:label "ok"
-                                                              :action (fn []
-                                                                        (object/raise this :rename.cancel)
-                                                                        (object/raise this :rename!))}]})
+                                                              :post-action (fn []
+                                                                             (object/raise this :rename.cancel)
+                                                                             (object/raise this :start-rename!))}]})
                                     (do
                                       (if (or (object/has-tag? this :workspace.folder.root)
                                               (object/has-tag? this :workspace.file.root))
@@ -308,7 +308,7 @@
                                       (object/merge! this {:path neue})))))))
 
 (object/behavior* ::start-rename
-                  :triggers #{:rename!}
+                  :triggers #{:start-rename!}
                   :reaction (fn [this]
                               (object/merge! this {:renaming? true})
                               (let [input (dom/$ :input (object/->content this))

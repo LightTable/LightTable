@@ -180,9 +180,8 @@
   (.getOption (->cm-ed e) (name o)))
 
 (defn set-options [e m]
-  (doseq [[k v] m
-          :let [k (name k)]]
-    (.setOption (->cm-ed e) k v))
+  (doseq [[k v] m]
+    (.setOption (->cm-ed e) (name k) v))
   e)
 
 (defn set-mode [e m]
@@ -273,6 +272,9 @@
 
 (defn set-selection [e start end]
   (.setSelection (->cm-ed e) (clj->js start) (clj->js end)))
+
+(defn set-extending [e ext?]
+  (.setExtending (->cm-ed e) ext?))
 
 (defn replace-selection [e neue]
   (.replaceSelection (->cm-ed e) neue "end" "+input"))
@@ -396,6 +398,12 @@
 
 (defn uncomment [e from to opts]
   (.uncomment (->cm-ed e) (clj->js from) (clj->js to) (clj->js opts)))
+
+(defn ->generation [e]
+  (.changeGeneration (->cm-ed e)))
+
+(defn dirty? [e gen]
+  (not (.isClean (->cm-ed e) gen)))
 
 ;;*********************************************************
 ;; Object
