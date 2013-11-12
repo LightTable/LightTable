@@ -1,4 +1,5 @@
-{:+ {:app [(:lt.objs.style/set-skin "dark")
+{:+ {:app [:lt.objs.plugins/enable-beta
+           (:lt.objs.style/set-skin "dark")
            (:lt.plugins.vim/map-keys {"-" "$",
                                       "0" "^",
                                       ",/" ":ltexec find.clear"

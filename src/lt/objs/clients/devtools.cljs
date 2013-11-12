@@ -229,7 +229,8 @@
                                 (do
                                   (cb m)
                                   (swap! cbs dissoc (:id m)))
-                                (object/raise this (keyword (:method m)) m))))
+                                (when (:method m)
+                                  (object/raise this (keyword (:method m)) m)))))
 
 (object/behavior* ::script-parsed
                   :triggers #{:Debugger.scriptParsed}

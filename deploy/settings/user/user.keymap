@@ -12,18 +12,21 @@
                            :eval-editor-form
                            :paredit.select.clear]
               "alt-shift-w" [:editor.watch.unwatch]
-              "cmd-shift-/" [:toggle-comment-selection]}
+              "cmd-shift-/" [:toggle-comment-selection]
+              "tab" [:smart-indent-selection]}
      :editor.cljs {"alt-m" [(:editor.watch.custom-watch-selection "(let [start (.getTime (js/Date.))
                                                                          res (do __SELECTION__)]
                                                                      __|(str (- (.getTime (js/Date.)) start) \" ms\")|__
                                                                      res) " {:class "timed" :verbatim true})]}
-     :editor.clj {"alt-up" [(:eval.custom "(do __SELECTION__)" {:result-type :replace})]
+     :editor.clj {"alt-p" [(:eval.custom "(with-out-str (clojure.pprint/pprint '__SELECTION__))" {:result-type :replace :verbatim true})]
                   "alt-m" [(:eval.custom " (with-out-str (clojure.pprint/write (macroexpand-1 '__SELECTION__) :suppress-namespaces false :dispatch clojure.pprint/code-dispatch))" {:result-type :replace})]
                   "alt-e" [(:editor.watch.custom-watch-selection "(let [start (System/currentTimeMillis)
                                                                          res (do __SELECTION__)]
-                                                                     __|(str (- (System/currentTimeMillis) start) \" ms\")|__
+                                                                     __|(str (- (System/currentTimeMillis) start) \" ms\" __ID__)|__
                                                                      res) " {:class "timed" :verbatim true})]}
-     :editor.keys.normal {"cmd-d" [:editor.doc.toggle]}
+     :editor.keys.hinting.active {"enter" [:passthrough]}
+     :editor.keys.normal {"cmd-d" [:editor.doc.toggle]
+                          "tab" [:smart-indent-selection]}
      :editor.keys.vim.normal {"cmd-d" [:editor.doc.toggle]
                               "e" [:toggle-console]
 

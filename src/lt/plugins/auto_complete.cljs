@@ -293,6 +293,8 @@
                                 (object/merge! this {::timeout (wait 100 (fn []
                                                                            (when-not (and (:active @hinter)
                                                                                           (= (:ed @hinter) this))
+                                                                             (object/add-tags this [:editor.hinting :editor.keys.hinting.active])
+                                                                             (ctx/in! [:editor.keys.hinting.active] this)
                                                                              (object/raise this :hint {:select-single false}))
                                                                            ))}))))
 

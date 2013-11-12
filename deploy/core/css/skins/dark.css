@@ -313,6 +313,12 @@ input { color: var(highlight-fg); background:var(highlight-bg); }
 .behavior-helper-result .active { background: var(usage-fg); color:var(usage-bg); border-radius:2px; display:inline-block; }
 .behavior-helper-result .example { display:inline-block; width:auto; vertical-align:top; padding:0; margin:0; margin-left:5px; border:none; }
 
+.plugin-manager .version { margin-left:10px; color:var(hidden-fg);  }
+.plugin-manager h3 { color: var(hidden-fg); }
+.plugin-manager h3:before { content:"by "; }
+.plugin-manager li { border-bottom:1px solid var(border); }
+.plugin-manager .enabled { background:var(accent-background); color:var(accent-foreground); }
+
 /**********************************************************
 * Theme specific
 ***********************************************************/

@@ -199,6 +199,7 @@ body { -webkit-user-select: none; }
 #right-bar .navigate { height:100%; overflow:auto; box-sizing:border-box; }
 #right-bar .navigate em { font-weight:normal; }
 #right-bar .navigate li { border:none; padding:5px 5px; cursor:default; overflow:hidden; direction:rtl; width:100%; box-sizing:border-box; white-space:nowrap; }
+#right-bar .navigate li:empty { display:none; }
 #right-bar .navigate p { font-size:8pt; }
 #right-bar .navigate h2 { font-size:11pt; }
 #right-bar .navigate .selected, #side .navigate li:hover { border-radius:2px}
@@ -344,6 +345,12 @@ body { -webkit-user-select: none; }
 .inline-doc h1 { font-size:120%; margin:0; }
 .inline-doc h3 { margin:0; margin-top:8px;}
 .underline-result .inline-doc pre { padding:0 !important; margin:0; margin-top:8px; }
+
+.plugin-manager { padding:5px; }
+.plugin-manager h1 { font-size:14pt; margin-bottom:0; line-height:1.3em; }
+.plugin-manager p { margin-top:10px;}
+.plugin-manager li { margin-bottom:8px; padding-bottom:12px; position:relative; }
+.plugin-manager .enabled { float:right; position:absolute; right:0; top:1px; }
 
 
 .animated #multi {  -webkit-transition:bottom 0.1s ease-in-out, left 0.1s ease-in-out, right 0.10s ease-in-out; }

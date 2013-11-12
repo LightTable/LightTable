@@ -134,6 +134,7 @@
 
 (defn fill-placeholders [editor exp]
   (-> exp
+      (string/replace "__SELECTION*__" (pr-str (ed/selection editor)))
       (string/replace "__SELECTION__" (ed/selection editor))))
 
 (object/behavior* ::on-eval.custom
@@ -147,6 +148,7 @@
                                             :ns (or (:ns opts) (:ns info))
                                             :meta {:start (-> (ed/->cursor editor "start") :line)
                                                    :end (-> (ed/->cursor editor "end") :line)
+                                                   :verbatim (:verbatim opts)
                                                    :result-type (or (:result-type opts) :inline)})
                                     info (assoc info :print-length (object/raise-reduce editor :clojure.print-length+ nil))]
                                 (object/raise clj-lang :eval! {:origin editor
@@ -460,14 +462,19 @@
                   :reaction (fn [editor cur meta src]
                               (str "(lighttable.nrepl.eval/watch " src " " (pr-str meta) ")")))
 
+(defn fill-watch-placeholders [exp src meta watch]
+  (-> exp
+      (string/replace "\n" " ")
+      (string/replace "__SELECTION*__" (pr-str src))
+      (string/replace "__SELECTION__" src)
+      (string/replace "__ID__" (pr-str (:id meta)))
+      (string/replace #"__\|(.*)\|__" watch)))
+
 (object/behavior* ::cljs-watch-custom-src
                   :triggers #{:watch.custom.src+}
                   :reaction (fn [editor cur meta opts src]
                               (let [watch (str "(js/lttools.raise " (:obj meta) " :editor.eval.cljs.watch {:meta " (pr-str (merge (dissoc opts :exp) meta)) " :result $1})")]
-                                (-> (:exp opts)
-                                    (string/replace "\n" " ")
-                                    (string/replace "__SELECTION__" src)
-                                    (string/replace #"__\|(.*)\|__" watch)))))
+                                (fill-watch-placeholders (:exp opts) src meta watch))))
 
 (object/behavior* ::clj-watch-custom-src
                   :triggers #{:watch.custom.src+}
@@ -476,10 +483,7 @@
                                               "$1"
                                               "(pr-str $1)")
                                     watch (str "(lighttable.nrepl.core/safe-respond-to " (:obj meta) " :editor.eval.clj.watch {:meta " (pr-str (merge (dissoc opts :exp) meta)) " :result " wrapped "})")]
-                                (-> (:exp opts)
-                                    (string/replace "\n" " ")
-                                    (string/replace "__SELECTION__" src)
-                                    (string/replace #"__\|(.*)\|__" watch)))))
+                                (fill-watch-placeholders (:exp opts) src meta watch))))
 
 (object/behavior* ::cljs-watch-result
                   :triggers #{:editor.eval.cljs.watch}

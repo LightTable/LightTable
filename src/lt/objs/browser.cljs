@@ -216,9 +216,23 @@
                                      :click (fn [e]
                                               (cmd/exec! :browser.forward))}
                                     {:label "back"
-                                     :order 0
+                                     :order 1
                                      :click (fn [e]
-                                              (cmd/exec! :browser.back))})
+                                              (cmd/exec! :browser.back))}
+                                    {:type "separator"
+                                     :order 2}
+                                    {:label "copy"
+                                     :order 3
+                                     :click (fn [e]
+                                              (.document.execCommand (to-frame this) "copy"))}
+                                    {:label "paste"
+                                     :order 4
+                                     :click (fn [e]
+                                              (.document.execCommand (to-frame this) "paste")
+                                              )}
+                                    )
+
+
 
 
                        ))

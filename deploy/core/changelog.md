@@ -2,10 +2,24 @@
 
 ##0.5.19
 
-- UPDATED: CodeMirror vim mode
-- ADDED: __ID__ and __SELECTION\*__ for custom watches
-* ADDED: xml file type
+* FIX: merge :repl-options :init correctly if it's in your project.clj
+* FIX: nodejs require failed with certain module loading patterns
+* FIX: with the nodejs client you couldn't use a pathless file as a repl
+* FIX: tag specificity ordering bug
 * FIX: typing very fast after bringing up the findbar would sometimes cause it to overwrite input
+* FIX: correctly catch assertion errors #590
+* FIX: Linux start script doesn't handle symlinks well #885
+* FIX: Rest args in anonymous functions don't work #569, #256, #779, #881
+* ADDED: :verbatim option to eval.custom
+* ADDED: copy/paste using browser tab context menu
+* ADDED: xml file type
+* ADDED: :editor.keys.hinting.active tag to allow you to override hinting keybindings
+* ADDED: plugins can be loaded from the plugins/ dir
+* ADDED: __ID__ and __SELECTION\*__ for custom watches
+* UPDATED: CodeMirror vim mode
+* UPDATED: latest CodeMirror
+* UPDATED: CLJS 2030
+* UPDATED: lein-light-nrepl 0.0.8
 
 ##0.5.18
 

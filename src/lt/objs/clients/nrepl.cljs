@@ -134,10 +134,11 @@
                                 (when ((set (:status msg)) "interrupted")
                                   (notifos/done-working))
 
-                                (if (and op (str-contains? op "client."))
-                                  (object/raise this (keyword op) info)
-                                  (object/raise clients/clients :message [(:id msg) op info])
-                                  ))))
+                                (when op
+                                  (if (str-contains? op "client.")
+                                    (object/raise this (keyword op) info)
+                                    (object/raise clients/clients :message [(:id msg) op info])
+                                    )))))
 
 (object/behavior* ::try-connect!
                   :triggers #{:try-connect!}

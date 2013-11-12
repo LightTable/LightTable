@@ -88,7 +88,9 @@
 (object/behavior* ::dirty-parent
                   :triggers #{:dirty :clean}
                   :reaction (fn [this]
-                              (object/merge! (object/parent this) {:dirty (:dirty @this)})))
+                              (println "here: " (:lt.object/type @this))
+                              (when (object/parent this)
+                                (object/merge! (object/parent this) {:dirty (:dirty @this)}))))
 
 (object/behavior* ::close-parent
                   :triggers #{:destroy}

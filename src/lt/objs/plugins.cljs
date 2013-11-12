@@ -111,12 +111,44 @@
                                   (object/merge! this {::plugin-path (files/parent plugin-edn)})
                                   (object/add-tags this [:plugin.file])))))
 
+(object/object* ::plugin-manager
+                :tags #{:plugin-manager}
+                :name "Plugins"
+                :init (fn [this]
+                        [:div.plugin-manager
+                         [:ul.plugins
+                          (for [plugin (available-plugins)]
+                            [:li
+                             [:h1 (:name plugin) [:span.version "0.0.1"]]
+                             [:h3 (:author plugin)]
+                             [:p (:desc plugin)]
+                             ]
+                            )]]))
 
-(cmd/command {:command :build
-              :desc "Editor: build file or project"
-              :exec (fn []
-                      (when-let [ed (pool/last-active)]
-                        (object/raise ed :build)))})
+
+(comment
+  (def manager (object/create ::plugin-manager))
+
+  (::plugins app/app)
+
+  (lt.objs.tabs/add! manager)
+
+
+
+
+  )
+
+(object/behavior* ::enable-beta
+                  :triggers #{:object.instant}
+                  :reaction (fn [this]
+
+                              (cmd/command {:command :build
+                                            :desc "Editor: build file or project"
+                                            :exec (fn []
+                                                    (when-let [ed (pool/last-active)]
+                                                      (object/raise ed :build)))})
+
+                              ))
 
 ;;This call to tag-behaviors is necessary as there are no behaviors loaded when the
 ;;app is first run.
