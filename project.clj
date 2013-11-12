@@ -21,5 +21,4 @@
                  "/Users/chris/repos/clojurescript/src/clj"
                  "/Users/chris/repos/clojurescript/src/cljs"
                  ]
-  :jvm-opts ["-Xmx2g"]
   )

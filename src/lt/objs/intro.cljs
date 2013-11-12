@@ -7,6 +7,7 @@
             [lt.objs.command :as cmd]
             [lt.objs.app :as app]
             [lt.objs.tabs :as tabs]
+            [lt.util.dom :as dom]
             [crate.core :refer [raw]]
             [crate.binding :refer [bound]])
   (:require-macros [lt.macros :refer [defui]]))
@@ -51,6 +52,8 @@
                   :reaction (fn [this]
                               (when-not (cli/args)
                                 (let [intro (object/create ::intro)]
+                                  (.focus app/win)
+                                  (dom/focus (dom/$ :body))
                                   (tabs/add! intro)
                                   (tabs/active! intro)))))
 

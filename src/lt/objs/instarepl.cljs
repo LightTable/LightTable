@@ -88,9 +88,8 @@
 (object/behavior* ::dirty-parent
                   :triggers #{:dirty :clean}
                   :reaction (fn [this]
-                              (println "here: " (:lt.object/type @this))
-                              (when (object/parent this)
-                                (object/merge! (object/parent this) {:dirty (:dirty @this)}))))
+                              (when (:frame @this)
+                                (object/merge! (:frame @this) {:dirty (:dirty @this)}))))
 
 (object/behavior* ::close-parent
                   :triggers #{:destroy}
@@ -187,9 +186,14 @@
                         (let [main (-> (pool/create {:mime "text/x-clojure" :content "" :ns "user"})
                                        (object/remove-tags [:editor.clj])
                                        (object/add-tags [:editor.clj.instarepl :editor.transient]))]
-                          (editor/set-val main (or (object/raise-reduce main :start-content+) default-content))
                           (object/parent! this main)
-                          (object/merge! this {:main main})
+                          (object/merge! main {:frame this})
+                          (editor/set-val main (or (object/raise-reduce main :start-content+) default-content))
+                          (editor/clear-history main)
+                          (object/merge! main {:dirty false
+                                               :editor.generation (editor/->generation main)})
+                          (object/merge! this {:main main
+                                               :dirty false})
                           (editor/+class main :main)
                           (editor/move-cursor main {:line 10000 :ch 0})
                           [:div#instarepl
@@ -210,24 +214,25 @@
               :exec (fn []
                       (let [cur (pool/last-active)
                             info (:info @cur)]
-                        (if-not (= (:mime info) "text/x-clojure")
-                          (notifos/set-msg! "Instarepl only works for Clojure" {:class "error"})
-                          (let [content (editor/->val cur)
-                                dirty (:dirty @cur)
-                                inst (object/create ::instarepl)
-                                ed (:main @inst)]
-                            (object/merge! ed {:info info
-                                               :widgets {}
-                                               :dirty dirty})
-                            (object/merge! inst {:name (-> info :name)
+                        (when cur
+                          (if-not (= (:mime info) "text/x-clojure")
+                            (notifos/set-msg! "Instarepl only works for Clojure" {:class "error"})
+                            (let [content (editor/->val cur)
+                                  dirty (:dirty @cur)
+                                  inst (object/create ::instarepl)
+                                  ed (:main @inst)]
+                              (object/merge! ed {:info info
+                                                 :widgets {}
                                                  :dirty dirty})
-                            (object/remove-tags ed [:editor.transient])
-                            (object/add-tags ed [:editor.file-backed])
-                            (editor/set-val ed content)
-                            (object/raise cur :close.force)
-                            (tabs/add! inst)
-                            (tabs/active! inst)
-                            ))
+                              (object/merge! inst {:name (-> info :name)
+                                                   :dirty dirty})
+                              (object/remove-tags ed [:editor.transient])
+                              (object/add-tags ed [:editor.file-backed])
+                              (editor/set-val ed content)
+                              (object/raise cur :close.force)
+                              (tabs/add! inst)
+                              (tabs/active! inst)
+                              )))
                       ))})
 
 (cmd/command {:command :instarepl

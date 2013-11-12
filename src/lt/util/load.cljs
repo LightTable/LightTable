@@ -5,6 +5,9 @@
 
 (def pwd (.resolve fpath "."))
 
+(defn absolute? [path]
+  (boolean (re-seq #"^\s*[\\\/]|([\w]+:[\\\/])" path)))
+
 (defn node-module [path]
   (js/require (str pwd "/core/node_modules/" path)))
 
@@ -14,7 +17,7 @@
 (defn js
   ([file] (js file false))
   ([file sync]
-   (let [file (if-not (= (first file) (.-sep fpath))
+   (let [file (if-not (absolute? file)
                 (.join fpath pwd file)
                 file)]
    (if sync
@@ -29,7 +32,7 @@
    (let [link (js/document.createElement "link")]
      (set! (.-type link) "text/css")
      (set! (.-rel link) "stylesheet")
-     (set! (.-href link) (if (= (first file) (.-sep fpath))
+     (set! (.-href link) (if (absolute? file)
                            (str "file://" file)
                            file))
      (js/document.head.appendChild link)

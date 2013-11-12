@@ -122,10 +122,6 @@
   ([ed] (deref (.-ltproperties ed)))
   ([ed k] (get (->prop ed) k)))
 
-(defn clear-history [e]
-  (.clearHistory e)
-  e)
-
 (defn ->val [e]
   (. (->cm-ed e) (getValue)))
 
@@ -301,7 +297,7 @@
                  {:line (last-line e)}))
 
 (defn clear-history [e]
-  (.clearHistory e)
+  (.clearHistory (->cm-ed e))
   e)
 
 (defn get-history [e]
