@@ -1,7 +1,6 @@
 (ns lt.objs.sidebar.workspace
   (:require [lt.object :as object]
             [lt.objs.command :as cmd]
-            [lt.objs.settings :as settings]
             [lt.objs.context :as ctx]
             [lt.objs.files :as files]
             [lt.objs.workspace :as workspace]

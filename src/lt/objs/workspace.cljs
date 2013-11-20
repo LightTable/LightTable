@@ -1,7 +1,6 @@
 (ns lt.objs.workspace
   (:require [lt.object :as object]
             [lt.objs.files :as files]
-            [lt.objs.settings :as settings]
             [lt.objs.command :as cmd]
             [lt.objs.window :as window]
             [cljs.reader :as reader]
@@ -177,11 +176,6 @@
   (not (or (seq (:files @ws))
            (seq (:folders @ws)))))
 
-(object/behavior* ::store-on-save
-                  :triggers #{:save}
-                  :reaction (fn [this]
-                              (settings/store! :last-workspace (:file @this))))
-
 (object/behavior* ::serialize-workspace
                   :triggers #{:updated :serialize!}
                   :reaction (fn [this]
@@ -205,12 +199,6 @@
                   :reaction (fn [this]
                               (object/merge! this {:file (new-cached-file)})
                               (object/raise this :clear!)))
-
-(object/behavior* ::store-last-workspace
-                  :triggers #{:close}
-                  :reaction (fn [app]
-                              (when-not (ws-empty? current-ws)
-                                (settings/store! :last-workspace (:file @current-ws)))))
 
 (object/behavior* ::add-file!
                   :triggers #{:add.file!}

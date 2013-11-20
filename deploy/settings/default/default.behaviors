@@ -2,9 +2,10 @@
 :+
 {:app
  #{:lt.objs.clients.local/startup-with-local-client
-   :lt.objs.settings2/load-behaviors
-   :lt.objs.settings2/load-keys
-   :lt.objs.settings2/create-user-settings
+   :lt.objs.cache/init
+   :lt.objs.settings/load-behaviors
+   :lt.objs.settings/load-keys
+   :lt.objs.settings/create-user-settings
    :lt.objs.proc/set-path-OSX
    :lt.objs.workspace/reconstitute-last-workspace
    :lt.objs.sidebar.command/init-commands
@@ -45,10 +46,10 @@
    :lt.plugins.doc/init-doc-search
    :lt.objs.intro/show-intro
    :lt.objs.menu/recreate-menu
-   :lt.objs.settings2/default-keymap-diffs
-   :lt.objs.settings2/user-keymap-diffs
-   :lt.objs.settings2/default-behavior-diffs
-   :lt.objs.settings2/user-behavior-diffs
+   :lt.objs.settings/default-keymap-diffs
+   :lt.objs.settings/user-keymap-diffs
+   :lt.objs.settings/default-behavior-diffs
+   :lt.objs.settings/user-behavior-diffs
    :lt.objs.plugins/init-plugins
    :lt.objs.plugins/plugin-behavior-diffs
    :lt.objs.plugins/plugin-keymap-diffs
@@ -133,16 +134,16 @@
    :lt.objs.opener/unwatch-closed
    :lt.objs.editor/hide-line-numbers
    :lt.objs.editor/no-wrap
-   :lt.objs.settings2/default-keymap-diffs
-   :lt.objs.settings2/user-keymap-diffs
-   :lt.objs.settings2/default-behavior-diffs
-   :lt.objs.settings2/user-behavior-diffs
+   :lt.objs.settings/default-keymap-diffs
+   :lt.objs.settings/user-keymap-diffs
+   :lt.objs.settings/default-behavior-diffs
+   :lt.objs.settings/user-behavior-diffs
    (:lt.objs.style/set-theme "default")
    (:lt.objs.editor/tab-settings false 2 2)
    },
  :editor.active #{:lt.objs.statusbar/report-cursor-location},
- :editor.behaviors #{:lt.objs.settings2/on-behaviors-editor-save
-                     :lt.objs.settings2/eval-settings
+ :editor.behaviors #{:lt.objs.settings/on-behaviors-editor-save
+                     :lt.objs.settings/eval-settings
                      :lt.objs.langs.behaviors/behavior-hints
                      :lt.objs.langs.behaviors/show-info-on-move
                      :lt.objs.langs.behaviors/on-changed
@@ -153,10 +154,10 @@
                      }
  :editor.behaviors.helper #{:lt.objs.langs.behaviors/helper.show!
                             :lt.objs.langs.behaviors/helper.clear!}
- :editor.behaviors.workspace #{:lt.objs.settings2/workspace-save
+ :editor.behaviors.workspace #{:lt.objs.settings/workspace-save
                                :lt.objs.editor.file/dirty-on-change}
- :editor.keymap #{:lt.objs.settings2/on-keymap-editor-save
-                  :lt.objs.settings2/eval-settings
+ :editor.keymap #{:lt.objs.settings/on-keymap-editor-save
+                  :lt.objs.settings/eval-settings
                   :lt.objs.langs.keymap/keymap-hints
                   :lt.objs.langs.keymap/show-info-on-move
                   :lt.objs.langs.keymap/on-changed
@@ -534,12 +535,11 @@
    :lt.objs.workspace/remove-file! :lt.objs.editor.pool/watched.rename
    :lt.objs.workspace/add-file! :lt.objs.sidebar.workspace/on-ws-add
    :lt.objs.workspace/watch-on-set
-   :lt.objs.workspace/store-on-save
    :lt.objs.sidebar.workspace/on-ws-remove :lt.objs.workspace/set!
    :lt.objs.sidebar.workspace/watched.delete :lt.objs.workspace/new!
    :lt.objs.sidebar.workspace/watched.create
    :lt.objs.editor.pool/watched.update
-   :lt.objs.settings2/grab-workspace-behaviors
+   :lt.objs.settings/grab-workspace-behaviors
    :lt.objs.opener/watch-open-files
    :lt.objs.sidebar.workspace/watch-open-dirs-paths
    :lt.objs.workspace/remove-folder!},

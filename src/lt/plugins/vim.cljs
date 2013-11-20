@@ -4,8 +4,7 @@
             [lt.util.load :as load]
             [lt.objs.editor.pool :as pool]
             [lt.objs.sidebar.command :as cmd :refer [command]]
-            [lt.objs.editor :as editor]
-            [lt.objs.settings :as settings]))
+            [lt.objs.editor :as editor]))
 
 (def mode-tags {:all #{:editor.keys.vim.insert :editor.keys.normal
                        :editor.keys.vim.visual :editor.keys.vim.normal

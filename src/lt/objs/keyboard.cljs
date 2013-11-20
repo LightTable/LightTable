@@ -4,7 +4,6 @@
             [lt.object :as object]
             [lt.objs.app :as app]
             [lt.objs.command :as cmd]
-            [lt.objs.settings :as settings]
             [lt.objs.platform :as platform]
             [lt.objs.metrics :as metrics]
             [lt.objs.context :as ctx]

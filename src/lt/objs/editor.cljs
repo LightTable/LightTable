@@ -5,7 +5,6 @@
             [lt.object :as object]
             [lt.objs.files :as files]
             [lt.objs.command :as cmd]
-            [lt.objs.settings :as settings]
             [lt.objs.menu :as menu]
             [lt.util.events :as ev]
             [lt.util.dom :as dom]

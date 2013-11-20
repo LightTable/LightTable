@@ -3,7 +3,7 @@
             [lt.objs.command :as cmd]
             [lt.objs.app :as app]
             [lt.objs.files :as files]
-            [lt.objs.settings2 :as settings]
+            [lt.objs.settings :as settings]
             [lt.objs.editor.pool :as pool]
             [lt.objs.deploy :as deploy]
             [cljs.reader :as reader]

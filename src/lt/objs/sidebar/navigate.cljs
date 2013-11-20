@@ -2,7 +2,6 @@
   (:require [lt.object :as object]
             [lt.objs.workspace :as workspace]
             [lt.objs.context :as ctx]
-            [lt.objs.settings :as settings]
             [lt.objs.sidebar.command :as cmd]
             [lt.objs.files :as files]
             [lt.objs.notifos :as notifos]

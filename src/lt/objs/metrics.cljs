@@ -2,7 +2,7 @@
   (:refer-clojure :exclude [send flush])
   (:require [lt.object :as object]
             [lt.objs.app :as app]
-            [lt.objs.settings :as settings]
+            [lt.objs.cache :as cache]
             [fetch.remotes :as remotes]
             [lt.util.js :refer [now every]])
   (:require-macros [fetch.macros :refer [letrem remote]]))
@@ -26,7 +26,7 @@
     (swap! _metrics conj mtr)))
 
 (defn send [mtrs]
-  (remote (metrics! mtrs (settings/fetch :uid))))
+  (remote (metrics! mtrs (cache/fetch :uid))))
 
 (defn flush []
   (when active?
@@ -35,11 +35,11 @@
       (send cur))))
 
 (defn init []
-  (when (settings/fetch :no-metrics)
+  (when (cache/fetch :no-metrics)
     (set! active? false))
   (letrem [uid (session)]
-          (when-not (settings/fetch :uid)
-            (settings/store! :uid uid))
+          (when-not (cache/fetch :uid)
+            (cache/store! :uid uid))
           (capture! :session-created)
           (every metric-rate flush))
   (every 60000 (fn []

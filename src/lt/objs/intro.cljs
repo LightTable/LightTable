@@ -1,6 +1,5 @@
 (ns lt.objs.intro
   (:require [lt.object :as object]
-            [lt.objs.settings :as settings]
             [lt.objs.style :as style]
             [lt.objs.deploy :as deploy]
             [lt.objs.cli :as cli]

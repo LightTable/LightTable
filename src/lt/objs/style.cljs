@@ -1,6 +1,5 @@
 (ns lt.objs.style
   (:require [lt.object :as object]
-            [lt.objs.settings :as settings]
             [lt.objs.sidebar.command :as cmd]
             [lt.objs.app :as app]
             [lt.objs.editor :as editor]

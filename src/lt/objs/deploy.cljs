@@ -3,9 +3,9 @@
             [lt.objs.clients :as clients]
             [lt.objs.files :as files]
             [lt.objs.popup :as popup]
+            [lt.objs.cache :as cache]
             [lt.objs.notifos :as notifos]
             [lt.objs.platform :as platform]
-            [lt.objs.settings :as settings]
             [lt.objs.sidebar.command :as cmd]
             [lt.objs.window :as window]
             [lt.util.load :as load]
@@ -66,7 +66,7 @@
   (.resolve fs-path (exec-path) (files/join "../../../../../Resources" p)))
 
 (defn tar-path [v]
-  (if (settings/fetch :edge)
+  (if (cache/fetch :edge)
     (str "http://temp2.kodowa.com.s3.amazonaws.com/playground/releases/" v ".tar.gz")
     (str "https://d35ac8ww5dfjyg.cloudfront.net/playground/releases/" v ".tar.gz")))
 
@@ -105,7 +105,7 @@
                                               :buttons [{:label "ok"}]}))))))
 
 (defn version-url []
-  (if (settings/fetch :edge)
+  (if (cache/fetch :edge)
     "http://app.kodowa.com/latest-version/nw-edge"
     "http://app.kodowa.com/latest-version/nw"))
 

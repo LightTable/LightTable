@@ -4,8 +4,7 @@
             [lt.util.load :as load]
             [lt.objs.editor.pool :as pool]
             [lt.objs.sidebar.command :as cmd :refer [command]]
-            [lt.objs.editor :as editor]
-            [lt.objs.settings :as settings]))
+            [lt.objs.editor :as editor]))
 
 (defn make-emacs-editor [ed]
   (editor/set-options ed {:keyMap "emacs"})

@@ -2,7 +2,6 @@
   (:require [lt.object :as object]
             [lt.objs.editor :as ed]
             [lt.objs.document :as doc]
-            [lt.objs.settings :as settings]
             [lt.objs.notifos :as notifos]
             [lt.objs.command :as cmd]
             [clojure.string :as string]

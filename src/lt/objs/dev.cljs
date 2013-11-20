@@ -1,7 +1,7 @@
 (ns lt.objs.dev
   (:require [lt.object :as object]
             [lt.util.js :refer [wait ]]
-            [lt.objs.settings :as settings]
+            [lt.objs.cache :as cache]
             [lt.objs.notifos :as notifos]
             [lt.objs.command :as cmd]))
 
@@ -20,10 +20,10 @@
               :desc "Toggle edge"
               :hidden true
               :exec (fn []
-                      (if (settings/fetch :edge)
+                      (if (cache/fetch :edge)
                         (do
-                          (settings/store! :edge false)
+                          (cache/store! :edge false)
                           (notifos/set-msg! "Tracking normal"))
                         (do
-                          (settings/store! :edge true)
+                          (cache/store! :edge true)
                           (notifos/set-msg! "Tracking edge"))))})
