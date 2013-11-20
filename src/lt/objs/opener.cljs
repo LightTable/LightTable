@@ -3,6 +3,7 @@
             [lt.objs.metrics :as metrics]
             [lt.objs.editor :as editor]
             [lt.objs.editor.pool :as pool]
+            [lt.objs.document :as doc]
             [lt.objs.sidebar.command :as cmd]
             [lt.objs.editor.file :as fed]
             [lt.objs.workspace :as workspace]
@@ -11,7 +12,6 @@
             [lt.objs.app :as app]
             [lt.objs.notifos :as notifos]
             [lt.objs.files :as files]
-            [lt.objs.file-manager :as file-man]
             [lt.util.dom :as dom]
             [lt.util.cljs :refer [->dottedkw]])
   (:use [crate.binding :only [bound map-bound]])
@@ -108,16 +108,16 @@
                                   (notifos/set-msg! (str "No such file: " path)))
                                 (if-let [ed (first (pool/by-path path))]
                                   (tabs/active! ed)
-                                  (file-man/open path
-                                                 (fn [{:keys [content type line-ending]}]
-                                                   (let [type (files/path->type path)
-                                                         ed (pool/create (merge {:content content :line-ending line-ending} (path->info path)))]
-                                                     (metrics/capture! :editor.open {:type (or (:name type) (files/ext path))
-                                                                                     :lines (editor/last-line ed)})
-                                                     (object/add-tags ed [:editor.file-backed])
-                                                     (object/raise obj :open ed)
-                                                     (tabs/add! ed)
-                                                     (tabs/active! ed))))))))
+                                  (doc/open path
+                                            (fn [doc]
+                                              (let [type (files/path->type path)
+                                                    ed (pool/create (merge {:doc doc :line-ending (-> @doc :info :line-ending)} (path->info path)))]
+                                                (metrics/capture! :editor.open {:type (or (:name type) (files/ext path))
+                                                                                :lines (editor/last-line ed)})
+                                                (object/add-tags ed [:editor.file-backed])
+                                                (object/raise obj :open ed)
+                                                (tabs/add! ed)
+                                                (tabs/active! ed))))))))
 
 (object/behavior* ::track-open-files
                   :triggers #{:open}

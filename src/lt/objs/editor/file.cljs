@@ -1,19 +1,19 @@
 (ns lt.objs.editor.file
   (:require [lt.object :as object]
             [lt.objs.editor :as ed]
+            [lt.objs.document :as doc]
             [lt.objs.settings :as settings]
             [lt.objs.notifos :as notifos]
             [lt.objs.command :as cmd]
             [clojure.string :as string]
-            [lt.objs.files :as files]
-            [lt.objs.file-manager :as file-man]))
+            [lt.objs.files :as files]))
 
 (object/behavior* ::file-save
                   :triggers #{:save}
                   :reaction (fn [editor]
                               (let [{:keys [path]} (@editor :info)
                                     final (object/raise-reduce editor :save+ (ed/->val editor))]
-                                (file-man/save path final
+                                (doc/save path final
                                                (fn []
                                                  (object/merge! editor {:dirty false
                                                                         :editor.generation (ed/->generation editor)})
@@ -36,11 +36,13 @@
                                       (object/merge! obj {:dirty false})
                                       (object/raise obj :clean)))))))
 
+(string/replace "asdf\r\n" #"(\r\n|\n)" "\r\n")
+
 (object/behavior* ::preserve-line-endings
                   :triggers #{:save+}
                   :reaction (fn [editor content]
                               (if (= "\r\n" (or (-> @editor :info :line-ending) files/line-ending))
-                                (string/replace content "\n" "\r\n")
+                                (string/replace content "(\r\n|\n)" "\r\n")
                                 content)))
 
 
@@ -59,7 +61,7 @@
                   :triggers #{:save+}
                   :reaction (fn [editor content]
                               (let [line-ending (-> @editor :info :line-ending)]
-                                (if (= (last content) line-ending)
+                                (if (= (last content) "\n")
                                   content
                                   (str content line-ending)))))
 

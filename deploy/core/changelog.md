@@ -1,5 +1,9 @@
 #Changes
 
+##0.5.21
+
+* FIX: \r\r\n at the end of files on windows #912
+
 ##0.5.20
 
 * FIX: workaround for tools.reader dependency issues in Clojure projects

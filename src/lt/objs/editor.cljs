@@ -46,10 +46,8 @@
   (-> (js/CodeMirror. (fn []))
       (set-options opts)))
 
-(defn ->editor [$elem opts]
-  (let [ed (if $elem
-             (ed-with-elem $elem opts)
-             (ed-headless opts))]
+(defn ->editor [opts]
+  (let [ed (ed-headless opts)]
     (set! (.-ltid ed) (swap! ed-id inc))
     (set! (.-ltproperties ed) (atom {}))
     ed))
@@ -65,21 +63,21 @@
                     :lineNumbers false
                     :lineWrapping true})))
 
-(defn make [$elem context]
-  (let [e (->editor $elem {:mode (if (:mime context)
+(defn make [context]
+  (let [e (->editor {:mode (if (:mime context)
                                    (name (:mime context))
-                                   "text")
+                                   "plaintext")
                            :autoClearEmptyLines true
                            :dragDrop false
                            :onDragEvent (fn [] true)
-                           :lineNumbers false
-                           :lineWrapping false
                            :undoDepth 10000
                            :matchBrackets true})]
     (set-props e (dissoc context :content))
     (when-let [c (:content context)]
       (set-val e c)
       (clear-history e))
+    (when (:doc context)
+      (.swapDoc e (-> (:doc context) deref :doc)))
     e))
 
 (defn ->cm-ed [e]
@@ -410,8 +408,8 @@
 (object* ::editor
          :tags #{:editor :editor.inline-result :editor.keys.normal}
          :init (fn [obj info]
-                 (let [ed (make nil info)]
-                   (object/merge! obj {:ed ed :info (dissoc info :content)})
+                 (let [ed (make info)]
+                   (object/merge! obj {:ed ed :info (dissoc info :content :doc)})
                    (wrap-object-events ed obj)
                    (->elem ed)
                    )))

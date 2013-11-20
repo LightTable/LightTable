@@ -1,9 +1,9 @@
 (ns lt.objs.editor.pool
   (:require [lt.object :as object]
             [lt.objs.app :as app]
+            [lt.objs.document :as doc]
             [lt.objs.keyboard :as kb]
             [lt.objs.files :as files]
-            [lt.objs.file-manager :as fileman]
             [lt.objs.canvas :as canvas]
             [lt.objs.settings :as settings]
             [lt.objs.sidebar.command :as cmd]
@@ -115,7 +115,7 @@
 
 (defn reload [ed]
   (editor/set-val ed (:content (files/open-sync (-> @ed :info :path))))
-  (fileman/update-stats (-> @ed :info :path))
+  (doc/update-stats (-> @ed :info :path))
   (object/merge! ed {:dirty false}))
 
 (object/behavior* ::warn-on-active
@@ -130,7 +130,7 @@
                   :reaction (fn [ws f stat]
                               (when (files/file? f)
                                 (when-let [ed (first (by-path f))]
-                                  (when-not (fileman/check-mtime (fileman/->stats f) stat)
+                                  (when-not (doc/check-mtime (doc/->stats f) stat)
                                     (if (:dirty @ed)
                                       (active-warn ed {:header "This file has been modified."
                                                        :body "This file seems to have been modified outside of Light Table. Do you want to load the latest and lose your changs?"
@@ -171,7 +171,7 @@
                   :reaction (fn [this old neue]
                               (if (files/file? old)
                                 (when-let [ed (first (by-path old))]
-                                  (fileman/update-stats neue)
+                                  (doc/update-stats neue)
                                   (object/update! ed [:info] assoc :path neue :name (files/basename neue))
                                   (set-syntax-by-path ed neue)
                                   (when-let [ts (:lt.objs.tabs/tabset @ed)]
@@ -179,7 +179,7 @@
                                 (let [open (filter #(= 0 (.indexOf (-> @% :info :path) old)) (object/by-tag :editor))]
                                   (doseq [ed open
                                           :let [neue-path (string/replace (-> @ed :info :path) old neue)]]
-                                    (fileman/update-stats neue-path)
+                                    (doc/update-stats neue-path)
                                     (object/update! ed [:info] assoc :path neue-path :name (files/basename neue-path)))))))
 
 (defn last-active []

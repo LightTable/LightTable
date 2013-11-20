@@ -9,6 +9,8 @@
 ;; Document
 ;;***************************************************
 
+(def doc-keys [:line-ending :mime])
+
 (defn create* [info]
   (.Doc js/CodeMirror (:content info) (:mime info)))
 
@@ -24,8 +26,7 @@
                 :triggers #{}
                 :behaviors []
                 :init (fn [this info]
-                        (object/merge! this {:doc (or (:doc info) (create* info))
-                                       			 :info info})
+                        (object/merge! this (merge (dissoc info :content) {:doc (or (:doc info) (create* info))}))
                         nil))
 
 (defn create [info]
@@ -33,7 +34,7 @@
 
 (defn create-sub
   ([doc] (create-sub doc nil))
-  ([doc info] (create (assoc info :doc (linked* doc info)))))
+  ([doc info] (create (merge (select-keys @doc doc-keys) info {:doc (linked* (:doc doc) info)}))))
 
 ;(def orig (create {:content "hey\nzomg\nwoot\ncool\nlah" :mime "text/x-clojure"}))
 ;(def sub (create-sub orig {:from 1 :to 2}))
@@ -98,9 +99,13 @@
 (defn open [path cb]
   ;;TODO: check if the file is already open?
   (files/open path (fn [data]
-                     (object/update! manager [:files] assoc path (files/stats path))
-                     (when cb
-                       (cb data))))
+                     (let [d (create {:content (:content data)
+                                      :line-ending (:line-ending data)
+                                      :mtime (files/stats path)
+                                      :mime (:type data)})]
+                       (object/update! manager [:files] assoc path d)
+                       (when cb
+                         (cb d)))))
   )
 
 (defn check-mtime [prev updated]
@@ -122,16 +127,24 @@
                (button "Overwrite" cb)
                ))
 
+(defn path->doc [path]
+  (-> @manager :files (get path)))
+
+(defn ->stats [path]
+  (-> (path->doc path) deref :mtime))
+
+(defn update-stats [path]
+  (object/merge! (get-in @manager [:files path]) {:mtime (files/stats path)}))
+
 (defn save* [path content cb]
   (files/save path content (fn [data]
-                             (object/update! manager [:files] assoc path (files/stats path))
+                             (update-stats path)
                              (when cb
                              	(cb data)))))
 
 (defn save [path content cb]
   (let [updated (files/stats path)
-        prev (get-in @manager [:files path])
-        safe? (check-mtime prev updated)]
+        safe? (check-mtime (->stats path) updated)]
     (if-not safe?
       (overwrite-warn #(save* path content cb))
       (save* path content cb))))
