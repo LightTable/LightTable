@@ -2,15 +2,12 @@
   (:refer-clojure :exclude [send])
   (:require [cljs.reader :as reader]
             [lt.object :as object]
-            [lt.objs.window :as window]
             [lt.objs.clients :as clients]
             [lt.objs.console :as console]
-            [clojure.string :as string])
-  (:use [lt.util.js :only [wait ->clj]]))
+            [clojure.string :as string]
+            [lt.util.cljs :refer [js->clj]]))
 
 (def port 0)
-(def waiting (atom #{}))
-
 (def net (js/require "net"))
 
 (defn send-to [sock msg]
@@ -46,7 +43,7 @@
       (let [cur (subs buf 0 loc)
             next (subs buf (inc loc))
             data (try
-                   (->clj (.parse js/JSON cur))
+                   (js->clj (.parse js/JSON cur) :keywordize-keys true)
                    (catch js/Error e
                      (console/error e))
                    (catch js/global.Error e
@@ -64,23 +61,16 @@
                            (store-client! socket data)
                            (on-message data)))))
 
-(window/store! :tcp-msg on-result)
-
 (defn on-connect [socket]
   (set! (.-ltbuffer socket) "")
-  (.on socket "data" #((window/fetch :tcp-msg) socket %)))
+  (.on socket "data" #(on-result socket %)))
 
-(clients/register-type :tcp send-to)
-
-(when (window/fetch :server)
-  (set! port (.-port (.address (window/fetch :server)))))
-
-(when-not (window/fetch :server)
+(def server
   (try
     (let [s (.createServer net on-connect)]
-      (window/store! :server )
       (.listen s 0)
-      (.on s "listening" #(set! port (.-port (.address s)))))
+      (.on s "listening" #(set! port (.-port (.address s))))
+      s)
     ;;TODO: warn the user that they're not connected to anything
     (catch js/Error e
       )
@@ -92,15 +82,12 @@
                   :reaction (fn [this msg]
                               (send-to (:socket @this) (array (:cb msg) (:command msg) (-> msg :data clj->js)))))
 
-(object/tag-behaviors :tcp.client [::send!])
 
 (object/behavior* ::kill-on-closed
                   :triggers #{:closed}
                   :reaction (fn [app]
                               (try
-                                (.close (window/fetch :server))
+                                (.close server)
                                 (catch js/Error e)
                                 (catch js/global.Error e))))
-
-(object/tag-behaviors :window [::kill-on-closed])
 

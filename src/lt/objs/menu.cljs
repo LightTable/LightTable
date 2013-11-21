@@ -3,7 +3,7 @@
             [lt.objs.command :as cmd]
             [lt.objs.keyboard :as keyboard]
             [lt.objs.platform :as platform]
-            [lt.objs.window :as window]
+            [lt.objs.app :as app]
             [lt.util.dom :as dom]
             [clojure.string :as string]))
 
@@ -58,7 +58,7 @@
    (< zoom 0) (int (* v (/ -1 (+ -1 (* zoom 0.27)))))))
 
 (defn show-menu [m x y]
-  (let [[x y] (if-let [zoom (window/zoom-level)]
+  (let [[x y] (if-let [zoom (app/zoom-level)]
                 [(zoom-adjust zoom x) (zoom-adjust zoom y)]
                 [x y])]
     (.popup m x y)))
@@ -75,8 +75,8 @@
   (doseq [i items
           :when i]
     (.append menubar (menu-item i)))
-  (when-not (.-menu window/me)
-    (set! (.-menu window/me) menubar)))
+  (when-not (.-menu app/win)
+    (set! (.-menu app/win) menubar)))
 
 
 (defn command->menu-binding [cmd]
@@ -167,14 +167,14 @@
                   :triggers #{:focus :init}
                   :reaction (fn [this]
                               (when (or (platform/mac?)
-                                        (not (.-menu window/me)))
-                                (set! (.-menu window/me) menubar))))
+                                        (not (.-menu app/win)))
+                                (set! (.-menu app/win) menubar))))
 
 (object/behavior* ::remove-menu-close
                   :triggers #{:closed :blur}
                   :reaction (fn [this]
                               (when (platform/mac?)
-                                (set! (.-menu window/me) nil))))
+                                (set! (.-menu app/win) nil))))
 
 (object/behavior* ::menu!
                   :triggers #{:menu!}

@@ -7,7 +7,7 @@
             [lt.objs.notifos :as notifos]
             [lt.objs.platform :as platform]
             [lt.objs.sidebar.command :as cmd]
-            [lt.objs.window :as window]
+            [lt.objs.app :as app]
             [lt.util.load :as load]
             [lt.util.js :refer [every]]
             [lt.util.cljs :refer [str-contains?]]
@@ -173,7 +173,7 @@
                   :reaction (fn [this]
                               (when-let [proxy (proxy?)]
                                 (.defaults request (clj->js {:proxy proxy})))
-                              (when (= (window/window-number) 0)
+                              (when (= (app/window-number) 0)
                                 (set! js/localStorage.fetchedVersion nil))
                               (check-version)
                               (every version-timeout check-version)))

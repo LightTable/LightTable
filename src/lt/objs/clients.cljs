@@ -1,22 +1,11 @@
 (ns lt.objs.clients
   (:refer-clojure :exclude [send])
   (:require [lt.object :as object]
-            [lt.objs.window :as window]
             [lt.util.js :refer [wait]]
             [lt.objs.notifos :as notifos]
             [clojure.string :as string]))
 
-(when-not (window/fetch :clients)
-  (window/store! :clients (atom {})))
-
-(def cs (window/fetch :clients))
-(def types (atom {}))
-
-(defn register-type [type func]
-  (swap! types assoc type func))
-
-(defn type-func [client]
-  (@types (@client :type)))
+(def cs (atom {}))
 
 (defn by-id [n]
   (when n

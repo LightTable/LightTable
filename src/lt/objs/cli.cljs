@@ -1,7 +1,6 @@
 (ns lt.objs.cli
   (:require [lt.object :as object]
             [lt.objs.app :as app]
-            [lt.objs.window :as window]
             [lt.objs.files :as files]
             [lt.objs.workspace :as workspace]
             [lt.util.load :refer [node-module]]
@@ -37,9 +36,12 @@
             (object/raise workspace/current-ws :add.file! path))))
       (object/raise opener/opener :new! path))))
 
+(defn args-key [winid]
+  (str "window" winid "args"))
+
 (defn args []
-  (or (window/app-fetch (window/window-number) :args)
-      (and (= (window/window-number) 0) (first (app/args)))))
+  (or (app/fetch (args-key (app/window-number)))
+      (and (= (app/window-number) 0) (first (app/args)))))
 
 (defn is-lt-binary? [path]
   (#{"ltbin" "node-webkit" "LightTable.exe" "LightTable"} (string/trim (files/basename path))))
@@ -57,7 +59,7 @@
                   :triggers #{:post-init}
                   :reaction (fn [this]
                               (when (args)
-                                (let [args-str (or (window/app-extract! (window/window-number) :args)
+                                (let [args-str (or (app/extract! (args-key (app/window-number)))
                                                    (first (app/args)))
                                       args (parse-args (rebuild-argv args-str))
                                       paths (map #(files/resolve (:dir args) %) (filter valid-path? (:_ args)))
@@ -69,13 +71,13 @@
 (object/behavior* ::open!
                   :triggers #{:open!}
                   :reaction (fn [this path]
-                              (when (= (app/fetch :focusedWindow) (window/window-number))
+                              (when (= (app/fetch :focusedWindow) (app/window-number))
                                 (let [args (parse-args (rebuild-argv path))
                                       paths (map #(files/resolve (:dir args) %) (filter valid-path? (:_ args)))
                                       open-dir? (some files/dir? paths)]
                                   (if (or (:new args)
                                           (and open-dir? (not (:add args))))
                                     (let [winid (inc (app/fetch :window-id))]
-                                      (window/app-store! winid :args path)
+                                      (app/store! (args-key winid) path)
                                       (app/open-window))
                                     (open-paths paths (:add args)))))))

@@ -127,8 +127,9 @@
     (or (:hint-pattern @ed) (aget mode "hint-pattern") default-pattern)))
 
 (defn async-hints [this]
-  (w this {:string (editor/->val this)
-           :pattern (.-source (get-pattern this))}))
+  (when @this
+    (w this {:string (editor/->val this)
+             :pattern (.-source (get-pattern this))})))
 
 (defn text|completion [x]
   (:text x (:completion x)))

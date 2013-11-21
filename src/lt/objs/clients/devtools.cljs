@@ -4,7 +4,7 @@
             [lt.object :as object]
             [lt.objs.files :as files]
             [lt.objs.console :as console]
-            [lt.objs.window :as window]
+            [lt.objs.app :as app]
             [lt.objs.clients :as clients]
             [fetch.core :as fetch]
             [crate.core :as crate]
@@ -25,7 +25,7 @@
   (swap! id inc))
 
 (defn find-debugger-url [info]
-  (let [win (window/window-number)
+  (let [win (app/window-number)
         search (if (= win 0)
                  #(= (.indexOf (:url %) "id") -1)
                  #(> (.indexOf (:url %) (str "id=" win)) -1))]

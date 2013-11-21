@@ -3,18 +3,14 @@
   (:require [cljs.reader :as reader]
             [lt.object :as object]
             [lt.objs.files :as files]
-            [lt.objs.window :as window]
             [lt.objs.clients :as clients]
             [lt.util.load :as load]
             [lt.util.cljs :refer [js->clj]]
             [clojure.string :as string])
   (:use [lt.util.js :only [wait ->clj]]))
 
-(when-not (window/fetch :wsockets)
-  (window/store! :wsockets (atom {})))
-
 (def port 0)
-(def sockets (window/fetch :wsockets))
+(def sockets (atom {}))
 (def io (load/node-module "socket.io"))
 (def net (js/require "net"))
 
@@ -46,10 +42,8 @@
 (defn on-result [socket data]
   (object/raise clients/clients :message (js->clj data :keywordize-keys true)))
 
-(window/store! :ws-msg on-result)
-
 (defn on-connect [socket]
-  (.on socket "result" #((window/fetch :ws-msg) socket %))
+  (.on socket "result" #(on-result socket %))
   (.on socket "init" (partial store-client! socket)))
 
 (object/behavior* ::send!
@@ -57,36 +51,26 @@
                   :reaction (fn [this msg]
                               (send-to (:socket @this) (array (:cb msg) (:command msg) (-> msg :data clj->js)))))
 
-(object/tag-behaviors :ws.client [::send!])
-
-(when (window/fetch :ws-server)
-  (set! port (.-port (.server.address (window/fetch :ws-server)))))
-
-
-(when-not (window/fetch :ws-server)
+(def server
   (try
     (let [ ws (.listen io 0)]
-      (window/store! :ws-server ws)
       (.set ws "log level" 1)
       (.on (.-server ws) "listening" #(do
-                                 (set! port (.-port (.address (.-server ws))))
-                                 ))
+                                        (set! port (.-port (.address (.-server ws))))
+                                        ))
       (.add (aget ws "static") "/lighttable/ws.js" (clj->js {:file (files/lt-home "core/node_modules/lighttable/ws.js")}))
-      ;(js/eval "global.ws.static.add(\"/lighttable/ws.js\",{\"file\":\"deploy/js/ws.js\"});")
-      (.on (.-sockets ws) "connection" on-connect))
+      (.on (.-sockets ws) "connection" on-connect)
+      ws)
     ;;TODO: warn the user that they're not connected to anything
     (catch js/Error e
       )
     (catch js/global.Error e
-      )
-    ))
+      )))
 
 (object/behavior* ::kill-on-closed
                   :triggers #{:closed}
                   :reaction (fn [app]
                               (try
-                                (.close (.-ws.server js/global))
+                                (.close server)
                                 (catch js/Error e)
                                 (catch js/global.Error e))))
-
-(object/tag-behaviors :app [::kill-on-closed])

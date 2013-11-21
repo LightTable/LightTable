@@ -24,7 +24,6 @@
                                                                          res (do __SELECTION__)]
                                                                      __|(str (- (System/currentTimeMillis) start) \" ms\" __ID__)|__
                                                                      res) " {:class "timed" :verbatim true})]}
-     :editor.keys.hinting.active {"enter" [:passthrough]}
      :editor.keys.normal {"cmd-d" [:editor.doc.toggle]
                           "tab" [:smart-indent-selection]}
      :editor.keys.vim.normal {"cmd-d" [:editor.doc.toggle]

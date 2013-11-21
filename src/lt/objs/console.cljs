@@ -1,6 +1,6 @@
 (ns lt.objs.console
   (:require [lt.object :as object]
-            [lt.objs.window :as window]
+            [lt.objs.app :as app]
             [lt.objs.bottombar :as bottombar]
             [lt.objs.sidebar.command :as cmd]
             [lt.objs.statusbar :as statusbar]
@@ -14,7 +14,7 @@
 
 (def console-limit 50)
 (def util-inspect (.-inspect (js/require "util")))
-(def core-log (.. (js/require "fs") (createWriteStream (str "logs/window" (window/window-number) ".log"))))
+(def core-log (.. (js/require "fs") (createWriteStream (str "logs/window" (app/window-number) ".log"))))
 
 (.on js/process "uncaughtException" #(error %))
 

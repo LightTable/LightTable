@@ -2,13 +2,21 @@
   (:require [lt.object :as object]
             [lt.objs.command :as cmd]
             [lt.objs.context :as ctx]
-            [lt.objs.files :as files]
+            [clojure.string :as string]
             [lt.util.js :refer [now]]
             [lt.util.dom :refer [$] :as dom]))
 
 (def gui (js/require "nw.gui"))
 (def win (.Window.get gui))
 (def closing true)
+
+(defn window-number []
+  (let [n (last (string/split js/window.location.search "="))]
+    (if (empty? n)
+      0
+      (js/parseInt n))))
+
+(set! (.-ltid win) (window-number))
 
 (defn prevent-close []
   (set! closing false))
@@ -54,16 +62,26 @@
                                    (pr-str v)
                                    v)))
 
+(defn extract! [k]
+  (let [v (fetch k)]
+    (store! k nil)
+    v))
+
 (defn store-swap! [k f]
   (let [neue (f (fetch k))]
     (store! k neue)
     neue))
+
 
 (defn ensure-greater [x cap]
   (let [x (if (string? x)
             (js/parseInt x)
             x)]
     (max x cap)))
+
+(defn zoom-level []
+  (when (not= (.-zoomLevel win) 0)
+    (.-zoomLevel win)))
 
 ;;*********************************************************
 ;; Behaviors
@@ -143,21 +161,37 @@
                                       (apply cmd/exec! c)
                                       (cmd/exec! c)))))))
 
+
+
+
 ;;*********************************************************
 ;; Object
 ;;*********************************************************
 
 (object/object* ::app
-                :tags #{:app}
+                :tags #{:app :window}
                 :delays 0
                 :init (fn [this]
                         (ctx/in! :app this)))
 
 (def app (object/create ::app))
 
+(when (= 0 (window-number))
+  (store! :window-id 0))
+
 (.on win "close" (fn [] (object/raise app :close!)))
 
 (.on (.-App gui) "open" (fn [path] (object/raise app :open! path)))
+
+(.on win "blur" (fn []
+                 (object/raise app :blur)))
+
+(.on win "focus" (fn []
+                  (object/raise app :focus)))
+
+
+(set! (.-onbeforeunload js/window) (fn []
+                                    "This will navigate the main LT window and all work will be lost, are you sure you want to do this?"))
 
 ;;*********************************************************
 ;; Commands
@@ -172,3 +206,23 @@
               :desc "Window: Close window"
               :exec (fn []
                       (object/raise app :close!))})
+
+
+(cmd/command {:command :window.zoom-in
+              :desc "Window: Zoom in"
+              :exec (fn []
+                      (set! (.-zoomLevel win) (+ (.-zoomLevel win) 0.5))
+                      )})
+
+(cmd/command {:command :window.zoom-out
+              :desc "Window: Zoom out"
+              :exec (fn []
+                      (set! (.-zoomLevel win) (- (.-zoomLevel win) 0.5))
+                      )})
+
+(cmd/command {:command :window.zoom-reset
+              :desc "Window: Zoom reset"
+              :exec (fn []
+                      (set! (.-zoomLevel win) 0)
+                      )})
+

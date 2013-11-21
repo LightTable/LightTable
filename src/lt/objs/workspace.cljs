@@ -1,8 +1,8 @@
 (ns lt.objs.workspace
   (:require [lt.object :as object]
+            [lt.objs.app :as app]
             [lt.objs.files :as files]
             [lt.objs.command :as cmd]
-            [lt.objs.window :as window]
             [cljs.reader :as reader]
             [lt.util.load :as load]
             [lt.util.js :refer [now]]
@@ -188,7 +188,7 @@
 (object/behavior* ::reconstitute-last-workspace
                   :triggers #{:post-init}
                   :reaction (fn [app]
-                              (when (and (= (window/window-number) 0)
+                              (when (and (= (app/window-number) 0)
                                          (not (:initialized @current-ws)))
                                 (when-let [ws (first (all))]
                                   (open current-ws (-> ws :path (files/basename))))) ;;for backwards compat
