@@ -139,7 +139,7 @@
                               (object/raise this :move)))
 
 (defn inline [this ed opts]
-  (object/create :lt.objs.eval/underline-result {:ed ed
+  (object/create :lt.objs.eval/inline-result {:ed ed
                                                  :class "behavior-helper"
                                                  :opts opts
                                                  :result (object/->content this)

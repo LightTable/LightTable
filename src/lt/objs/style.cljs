@@ -2,6 +2,7 @@
   (:require [lt.object :as object]
             [lt.objs.sidebar.command :as cmd]
             [lt.objs.app :as app]
+            [lt.objs.plugins :as plugins]
             [lt.objs.editor :as editor]
             [lt.objs.editor.pool :as pool]
             [lt.objs.files :as files]
@@ -25,18 +26,14 @@
             (when (:font-size settings)
               (css-expr :font-size (str (:font-size settings) "pt")))))
 
-(defn ->skin [skin]
-  (let [path (deploy/in-lt (str "core/css/skins/" (or skin "dark") ".css"))
-        path (if (files/exists? path)
-               path
-               (deploy/in-lt (str "core/css/skins/dark.css")))]
-    (:content (files/open-sync path))))
-
 (defui skin-style [this]
   [:link {:rel "stylesheet"
           :type "text/css"
           :id "skin-style"
-          :href (bound (subatom this [:skin]) #(str "/core/css/skins/" (or % "dark") ".css"))}])
+          :href (bound (subatom this [:skin])
+                       #(-> (object/raise-reduce app/app :skins+ {})
+                            (get % "/core/css/skins/dark.css")
+                            (plugins/adjust-path)))}])
 
 (object/object* ::styles
                 :init (fn [this]
@@ -79,10 +76,21 @@
 ;; Skins
 ;;**********************************************************
 
+(object/behavior* ::provide-skin
+                  :desc "Style: Provide skin"
+                  :triggers #{:skins+}
+                  :type :user
+                  :params [{:label "name"} {:label "path"}]
+                  :reaction (fn [this skins name path]
+                              (assoc skins name path)
+                              ))
+
 (defn get-skins []
-  (for [f (files/ls-sync (deploy/in-lt "core/css/skins") {:files true})
-        :let [file (files/without-ext f)]]
-    {:text (pr-str file) :completion (pr-str file)}))
+  (sort-by :text
+           (for [[skin path] (object/raise-reduce app/app :skins+ {})]
+              {:text (pr-str skin) :completion (pr-str skin)})))
+
+(get-skins)
 
 (object/behavior* ::set-skin
                   :triggers #{:object.instant}
@@ -101,15 +109,17 @@
 (def prev-theme "")
 
 (defn get-themes []
-  (for [f (files/ls-sync (deploy/in-lt "core/css/themes") {:files true})
-        :let [file (files/without-ext f)]]
-    {:text (pr-str file) :completion (pr-str file)}))
+  (sort-by :text
+           (for [[theme path] (object/raise-reduce app/app :themes+ {})]
+              {:text (pr-str theme) :completion (pr-str theme)})))
 
 (defui stylesheet [name]
   [:link {:rel "stylesheet"
           :type "text/css"
           :id (str "theme-" name)
-          :href (str "/core/css/themes/" name ".css")}])
+          :href (-> (object/raise-reduce app/app :themes+ {})
+                    (get name "/core/css/themes/default.css")
+                    (plugins/adjust-path))}])
 
 (defn load-theme [name]
   (when-not (empty? prev-theme)
@@ -118,6 +128,16 @@
   (dom/add-class (dom/$ :#multi) (str "theme-" name))
   (when-not (dom/$ (str "#theme-" name))
     (dom/append (dom/$ :head) (stylesheet name))))
+
+(object/behavior* ::provide-theme
+                  :desc "Style: Provide editor theme"
+                  :triggers #{:themes+}
+                  :type :user
+                  :params [{:label "name"} {:label "path"}]
+                  :reaction (fn [this themes name path]
+                              (assoc themes name path)
+                              ))
+
 
 (object/behavior* ::set-theme
                   :triggers #{:object.instant :show}

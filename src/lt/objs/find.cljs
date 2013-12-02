@@ -120,7 +120,6 @@
 (object/behavior* ::clear!
                   :triggers #{:clear!}
                   :reaction (fn [this]
-                              (.trace js/console)
                               (object/merge! this {:searching? false})
                               (when-let [ed (pool/last-active)]
                                 (js/CodeMirror.commands.clearSearch (editor/->cm-ed ed)))

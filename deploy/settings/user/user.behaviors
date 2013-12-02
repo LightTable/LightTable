@@ -14,7 +14,7 @@
      :editor [:lt.plugins.vim/activate-vim
               :lt.objs.editor/no-wrap
               :lt.objs.editor/scroll-past-end
-              :lt.plugins.auto-complete/auto-show-on-input
+              ;:lt.plugins.auto-complete/auto-show-on-input
               (:lt.objs.style/set-theme "ibdknox")],
 
      :editor.aurora [:lt.plugins.rainbow-parens/rainbow-parens]
