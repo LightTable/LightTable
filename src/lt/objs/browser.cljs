@@ -366,8 +366,7 @@
 (object/behavior* ::html-eval
                   :triggers #{:editor.eval.html!}
                   :reaction (fn [this msg]
-                              (when-let [ed (clients/cb->obj (:cb msg))]
-                                (object/raise this :client.refresh!))))
+                              (object/raise this :client.refresh!)))
 
 (object/behavior* ::css-eval
                   :triggers #{:editor.eval.css!}
