@@ -1,6 +1,6 @@
 cljs/
 target/
-deploy/settings/user/
+deploy/settings/user/*
 deploy/settings/default.clj
 deploy/plugins/
 deploy/node-webkit*
