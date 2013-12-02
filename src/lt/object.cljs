@@ -85,11 +85,8 @@
   (add obj)
   obj)
 
-(defn set-content! [obj neue]
-  (let [old (->content obj)]
-    (merge! this {:content neue})
-    (when old
-      (replace-with old neue))))
+(defn instances-by-type [type]
+  (filter #(= type (::type (deref %))) (vals @instances)))
 
 (defn handle-redef [odef]
   (let [id (::type odef)]
@@ -191,13 +188,6 @@
 
 (declare create)
 
-(defn ->sub-objects [parent obj-map]
-  (into {}
-        (for [[k v] obj-map]
-          (if-not (= parent v)
-            [k (create v)]
-            (throw (js/Error. "Recursive sub-objects are not allowed"))))))
-
 (defn merge! [obj m]
   (when (and m (not (map? m)))
     (throw (js/Error. (str "Merge requires a map: " m))))
@@ -271,28 +261,12 @@
     def|name
     (@object-defs def|name)))
 
-(defn parent! [p child & [name]]
-  (update! p [:children] assoc (or name (::id @child)) child)
-  (merge! child {:parent (->id p)}))
-
-(defn parent [child]
-  (@instances (:parent @child)))
-
-(defn child [obj k]
-  ((:children @obj) k))
-
 (defn ->content [obj]
   (:content @obj))
-
-(defn by-type [type]
-  (instances-by-type type))
 
 (defn by-id [id]
   (when id
     (@instances id)))
-
-(defn instances-by-type [type]
-  (filter #(= type (::type (deref %))) (vals @instances)))
 
 (defn by-tag [tag]
   (filter #(when-let [ts (:tags (deref %))]
@@ -337,10 +311,6 @@
   (doseq [cur (by-tag tag)
           b behs]
     (rem-behavior! cur b)))
-
-(defn on-change [obj func]
-  (add-watch obj (gensym change) (fn [_ _ _ v]
-                                   (func v))))
 
 (behavior* ::add-tag
            :desc "App: Add tag to object"

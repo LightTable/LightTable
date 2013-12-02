@@ -508,16 +508,12 @@
            :triggers #{:focus}
            :reaction (fn [obj]
                        (object/add-tags obj [:editor.active])
-                       (when-let [parent (object/parent obj)]
-                         (object/raise parent :active))
                        (object/raise obj :active)))
 
 (behavior* ::inactive-on-blur
            :triggers #{:blur}
            :reaction (fn [obj]
                        (object/remove-tags obj [:editor.active])
-                       (when-let [parent (object/parent obj)]
-                         (object/raise parent :inactive))
                        (object/raise obj :inactive)))
 
 (behavior* ::refresh!

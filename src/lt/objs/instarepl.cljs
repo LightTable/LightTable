@@ -37,7 +37,7 @@
                                               :editor.eval.clj.sonar
                                               info
                                               :only
-                                              (object/parent obj)))))
+                                              (:frame @obj)))))
 
 (object/behavior* ::on-eval-one
                   :triggers #{:eval.one}
@@ -48,7 +48,7 @@
                   :triggers #{:change}
                   :debounce 300
                   :reaction (fn [this]
-                              (let [parent @(object/parent this)]
+                              (let [parent @(:frame @this)]
                                 (when (:live parent)
                                   (object/raise this :eval true)))))
 
@@ -94,13 +94,13 @@
 (object/behavior* ::close-parent
                   :triggers #{:destroy}
                   :reaction (fn [this]
-                              (object/destroy! (object/parent this))))
+                              (object/destroy! (:frame @this))))
 
 (object/behavior* ::set-parent-title
                   :triggers #{:save-as :path-changed}
                   :reaction (fn [this]
                               (object/remove-tags this [:editor.clj])
-                              (object/merge! (object/parent this) {:name (-> @this :info :name)})))
+                              (object/merge! (:frame @this) {:name (-> @this :info :name)})))
 
 (object/behavior* ::on-show-refresh-eds
                   :triggers #{:show}
@@ -186,7 +186,6 @@
                         (let [main (-> (pool/create {:mime "text/x-clojure" :content "" :ns "user"})
                                        (object/remove-tags [:editor.clj])
                                        (object/add-tags [:editor.clj.instarepl :editor.transient]))]
-                          (object/parent! this main)
                           (object/merge! main {:frame this})
                           (editor/set-val main (or (object/raise-reduce main :start-content+) default-content))
                           (editor/clear-history main)
@@ -245,5 +244,5 @@
               :desc "Instarepl: Toggle live mode"
               :exec (fn []
                       (when-let [ed (pool/last-active)]
-                        (when (object/parent ed)
-                          (object/raise (object/parent ed) :live.toggle!))))})
+                        (when (:frame @ed)
+                          (object/raise (:frame @ed) :live.toggle!))))})
