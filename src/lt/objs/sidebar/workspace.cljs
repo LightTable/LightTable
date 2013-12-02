@@ -430,13 +430,6 @@
                          (bound this sub-folders)]))
 
 (def tree (object/create ::workspace.root))
-(object/tag-behaviors :tree-item [::rename-blur ::rename-focus ::rename-blur ::start-rename ::rename-submit ::rename-cancel])
-(object/tag-behaviors :workspace [::on-ws-add ::on-ws-remove ::on-ws-set ::watched.delete ::watched.create])
-(object/tag-behaviors :workspace.file [::on-open-file ::subfile-menu ::on-menu ::delete-file ::rename-file])
-(object/tag-behaviors :workspace.folder [::destroy-sub-tree ::on-open-ls ::on-close ::refresh ::subfolder-menu ::on-menu ::delete-folder ::new-file! ::force-delete-folder ::rename-folder ::new-folder!])
-(object/tag-behaviors :workspace.file.root [::on-root-menu])
-(object/tag-behaviors :workspace.folder.root [::on-menu ::on-root-menu])
-(object/tag-behaviors :workspace.root [::add-ws-folder ::on-clear ::add-ws-file ::on-remove])
 
 (defui input [type event]
   [:input {:type "file" type true :style "display:none;"}]
@@ -553,8 +546,6 @@
                   :desc "Workspace: Show workspace on start"
                   :reaction (fn [this]
                               (cmd/exec! :workspace.show)))
-
-(object/tag-behaviors :sidebar.workspace [::sidebar-menu ::recent! ::tree! ::recent.select!])
 
 (def sidebar-workspace (object/create ::sidebar.workspace))
 

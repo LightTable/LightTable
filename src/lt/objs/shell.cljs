@@ -59,10 +59,6 @@
                               (let [data (.toString data)]
                                 (println data))))
 
-(object/tag-behaviors :shell.client [::send! ::proc.out])
-(object/tag-behaviors :shell.lang [::eval!])
-(object/tag-behaviors :editor.shell [::on-eval])
-
 (def shell-lang (object/create ::shell.lang))
 
 (defn open! []

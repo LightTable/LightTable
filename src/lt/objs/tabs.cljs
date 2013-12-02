@@ -580,9 +580,6 @@
                   :reaction (fn [app]
                               (js/initSortable js/window)))
 
-(object/tag-behaviors :app [::init-sortable])
-
-
 (object/behavior* ::init
                   :triggers #{:init}
                   :reaction (fn [this]

@@ -121,8 +121,6 @@
 
 (sidebar/add-item sidebar/rightbar sidebar-navigate)
 
-(object/tag-behaviors :workspace [::populate-on-ws-update ::watched.delete ::watched.create])
-
 (cmd/command {:command :navigate-workspace
               :desc "Navigate: open navigate"
               :exec (fn []

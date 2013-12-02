@@ -21,22 +21,18 @@
                               (remove-class ($ :body) :fullscreen)))
 
 (defn close []
-  (.close win)
-  )
+  (.close win))
 
 (defn minimize []
-  (.minimize win)
-  )
+  (.minimize win))
 
 (defn maximize []
-  (.maximize win)
-  )
+  (.maximize win))
 
 (defn fullscreen []
   (if-not fullscreen?
     (.enterFullscreen win)
-    (.leaveFullscreen win))
-  )
+    (.leaveFullscreen win)))
 
 (defui button [class action label]
        [:span {:class (str "button " (name class))

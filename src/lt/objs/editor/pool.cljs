@@ -41,8 +41,6 @@
 (object/object* ::pool
                 :tags #{:editor.pool})
 
-(object/tag-behaviors :editor.pool [::theme-changed ::line-numbers-changed ::options-changed])
-
 (defn unsaved? []
   (some #(:dirty (deref %)) (object/by-tag :editor)))
 

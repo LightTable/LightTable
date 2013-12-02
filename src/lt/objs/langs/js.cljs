@@ -190,8 +190,6 @@
 
 (def js-lang (object/create ::js-lang))
 
-(object/tag-behaviors :editor.javascript #{::on-eval ::on-eval.one ::js-success ::js-result ::js-exception ::js-watch})
-
 (cmd/command {:command :connect-to-browser
               :desc "Connect: Browser (Script-tag)"
               :exec (fn []
@@ -213,5 +211,3 @@
 (browser/add-util :raise (fn [id ev data]
                            (when-let [obj (object/by-id id)]
                              (object/raise obj ev data))))
-
-;(println (inspect (->body cur)))

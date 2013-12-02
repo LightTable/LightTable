@@ -58,8 +58,6 @@
 (def statusbar-cursor (object/create ::statusbar.cursor))
 (add-item statusbar-cursor)
 
-(object/tag-behaviors :editor.active [::report-cursor-location])
-
 ;;**********************************************************
 ;; loader
 ;;**********************************************************

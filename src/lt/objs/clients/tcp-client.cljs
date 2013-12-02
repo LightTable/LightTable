@@ -272,9 +272,6 @@
 (object/object* ::nodejs-lang
                 :tags #{:nodejs.lang})
 
-(object/tag-behaviors :nodejs.client [::init-debugger! ::refresh-scripts! ::changelive! ::start-debugger! ::send! ::connect-success ::connect-retry ::debugger-evaluate ::debugger-changelive ::debugger-scripts])
-(object/tag-behaviors :nodejs.lang [::connect!])
-
 (def nodejs-lang (object/create ::nodejs-lang))
 
 (scl/add-connector {:name "NodeJS"
@@ -282,29 +279,8 @@
                     :connect (fn []
                                (dialogs/file nodejs-lang :connect!))})
 
-(comment
-(send cur {:type :request :command :scripts :arguments {:ids [41] :includeSource true}} (fn [m] (println m)))
-
-(send cur {:type :request :command :scripts})
-(global-eval cur "")
-
-(init)
-
-(handle-message (clj->js [0 :editor.eval.js {:path "/users/chris/lighttable/plugins/nodejs/test.js"
-                                             :name "test.js"
-                                             :meta {:line 2}
-                                             :code "foo.blah();"}]))
-(def s (connect-to "localhost" 5858))
-
-(send s {:type :request :command :evaluate :arguments {:expression "4 + 5" :global true}})
-(send cur {:type :request :command :scripts})
-(send s {:type :request :command :changelive :arguments {:script_id 138 :new_source "var i = setInterval(function() { console.log(\"yozomg\"); } ,5000);"}})
-
-  )
 
 (object/behavior* ::kill-on-closed
                   :triggers #{:closed}
                   :reaction (fn [app]
                               ))
-
-(object/tag-behaviors :app [::kill-on-closed])

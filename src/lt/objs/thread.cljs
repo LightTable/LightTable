@@ -81,8 +81,6 @@
                           (object/merge! this {:worker worker})
                         nil)))
 
-;; TODO: move to default.behaviors
-(object/tag-behaviors :worker-thread [::kill! ::connect ::send! ::queue! ::try-send ::message])
 
 (defn send [msg]
   (object/raise worker :try-send! msg))

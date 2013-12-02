@@ -70,14 +70,6 @@
                                            :editor.eval.css}
                                :type "LT-UI"}))
 
-(object/behavior* ::startup-with-local-client
-                  :triggers #{:init}
-                  :reaction (fn [app]
-                              ;(init)
-                              ))
-
-(object/tag-behaviors :app [::startup-with-local-client])
-
 (scl/add-connector {:name "Light Table UI"
                     :desc "Connect to this instance of Light Table and evaluate in the local context."
                     :connect (fn []

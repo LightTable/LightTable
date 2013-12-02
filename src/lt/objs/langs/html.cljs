@@ -45,10 +45,4 @@
                 :behaviors [::eval!]
                 :triggers #{:eval!})
 
-(object/tag-behaviors :html.lang #{::eval!})
-
 (def html-lang (object/create ::html-lang))
-
-(object/tag-behaviors :editor.html #{::on-eval ::eval-on-save})
-(object/tag-behaviors :editor.htmlmixed #{::on-eval ::eval-on-save})
-(object/tag-behaviors :editor.htmlembedded #{::on-eval ::eval-on-save})

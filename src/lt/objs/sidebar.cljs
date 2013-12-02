@@ -119,8 +119,6 @@
                           [:div.content
                            ]]))
 
-(object/tag-behaviors :sidebar [::item-toggled ::width! ::open! ::close! ::no-anim-on-drag ::reanim-on-drop ::pop-transient])
-
 (def sidebar (object/create ::sidebar))
 (def rightbar (object/create ::right-bar))
 
