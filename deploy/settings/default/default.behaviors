@@ -469,6 +469,11 @@
                :lt.objs.langs.clj/plugin-compile-results
                (:lt.objs.editor.file/on-save :build)]
  :plugin-manager [:lt.objs.version/destroy-on-close]
+ :popup [:lt.objs.popup/refocus-on-close
+         :lt.objs.popup/close!
+         :lt.objs.popup/on-click-destroy
+         :lt.objs.popup/change-active-button
+         :lt.objs.popup/exec-active]
  :python.lang
  #{:lt.objs.langs.python/eval! :lt.objs.langs.python/connect},
  :searcher

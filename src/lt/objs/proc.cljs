@@ -7,8 +7,6 @@
             [lt.util.load :as load]
             [clojure.string :as string]))
 
-;;TODO: kill processes on shutdown
-
 (def shell (load/node-module "shelljs"))
 (def spawn (.-spawn (js/require "child_process")))
 (def cur-path (.pwd shell))
@@ -35,32 +33,6 @@
           :let [args (filter (complement empty?) (re-seq #"(?:(?:\\\s)|[^\s\"'])+|\"[^\"]*\"|'[^']*'" p))]]
       {:command (first args)
        :args (rest args)})))
-
-(defn spawn* [{:keys [command args]} cwd?]
-  (let [proc (spawn command
-                    (when (seq args) (clj->js args))
-                    (js-obj "cwd" cwd?
-                            "windowsVerbatimArguments" (when (= js/process.platform "win32") true)))]
-    (add! proc)
-    (.on proc "exit" (partial rem! proc))
-    proc))
-
-(defn pipe* [procs]
-  (let [ps (partition 2 1 procs)]
-    (doseq [[a b] ps]
-      (.stdout.on a "data" (fn [data]
-                             (.stdin.write b data))))))
-
-(defn pipe [procs obj com]
-  (when (> (count procs) 1)
-    (pipe* procs))
-  (doseq [p procs]
-    (.stderr.on p "data" #(if-not @obj
-                            (println "ERROR running: " com)
-                            (object/raise obj :proc.error %))))
-  (-> (last procs)
-      (.stdout.on "data" #(when @obj (object/raise obj :proc.out %)))
-      (.on "exit" #(when @obj (object/raise obj :proc.exit %)))))
 
 (defn merge-env [env]
   (if-not env
@@ -103,7 +75,6 @@
         procs (doall(for [c commands]
                       (simple-spawn* obj c cwd env)))]
     (object/merge! obj {:procs procs})
-    ;(pipe procs obj com)
     nil))
 
 (object/behavior* ::kill-procs-on-close

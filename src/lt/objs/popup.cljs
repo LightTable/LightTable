@@ -19,7 +19,11 @@
                   :reaction (fn [this]
                               (object/raise this :close)
                               (object/destroy! this)
-                              (ctx/out! :popup)))
+                              (if-let [others (-> (object/by-tag :popup)
+                                                  (seq))]
+                                (ctx/in! :popup (last others))
+                                (ctx/out! :popup)
+                                )))
 
 (object/behavior* ::refocus-on-close
                   :triggers #{:close}
@@ -76,9 +80,8 @@
                 (object/raise this :click)))
 
 (object/object* ::popup
-                :triggers []
+                :tags #{:popup}
                 :button 0
-                :behaviors [::refocus-on-close ::close! ::on-click-destroy ::change-active-button ::exec-active]
                 :init (fn [this content]
                         (popup this content)
                         ))
