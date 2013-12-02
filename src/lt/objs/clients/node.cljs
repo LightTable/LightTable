@@ -1,4 +1,4 @@
-(ns lt.objs.clients.tcp-client
+(ns lt.objs.clients.node
   (:refer-clojure :exclude [send])
   (:require [cljs.reader :as reader]
             [lt.object :as object]
