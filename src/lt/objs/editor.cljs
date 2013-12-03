@@ -54,7 +54,7 @@
 (defn init [ed context]
   (-> ed
       (clear-props)
-      (set-props (dissoc context :content))
+      (set-props (dissoc context :content :doc))
       (set-val (:content context))
       (set-options {:mode (name (:mime context))
                     :readOnly false
@@ -71,7 +71,7 @@
                            :onDragEvent (fn [] true)
                            :undoDepth 10000
                            :matchBrackets true})]
-    (set-props e (dissoc context :content))
+    (set-props e (dissoc context :content :doc))
     (when-let [c (:content context)]
       (set-val e c)
       (clear-history e))
@@ -408,7 +408,9 @@
          :tags #{:editor :editor.inline-result :editor.keys.normal}
          :init (fn [obj info]
                  (let [ed (make info)]
-                   (object/merge! obj {:ed ed :info (dissoc info :content :doc)})
+                   (object/merge! obj {:ed ed
+                                       :doc (:doc info)
+                                       :info (dissoc info :content :doc)})
                    (wrap-object-events ed obj)
                    (->elem ed)
                    )))
@@ -570,6 +572,7 @@
 (behavior* ::destroy-on-close
            :triggers #{:close.force}
            :reaction (fn [obj]
+                       (object/raise obj :closed)
                        (object/destroy! obj)))
 
 (behavior* ::highlight-current-line

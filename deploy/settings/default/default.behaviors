@@ -136,11 +136,14 @@
  :console #{:lt.objs.console/on-close
             :lt.objs.menu/menu!
             :lt.objs.console/menu+},
+ :document [:lt.objs.document/try-close-root-document :lt.objs.document/close-root-document]
+ :document.linked [:lt.objs.document/close-linked-document]
  :docs #{:lt.objs.docs/on-close-destroy},
  :docable [:lt.plugins.doc/editor.doc.show!
            :lt.plugins.doc/doc-menu+]
  :editor
- #{:lt.objs.editor/active-on-focus
+ #{:lt.objs.document/close-document-on-editor-close
+   :lt.objs.editor/active-on-focus
    :lt.objs.editor/on-tags-added
    :lt.objs.editor/on-tags-removed
    :lt.objs.editor/inactive-on-blur

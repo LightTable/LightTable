@@ -23,21 +23,54 @@
                                  :mode type}))))
 
 (object/object* ::document
-                :triggers #{}
-                :behaviors []
+                :sub-docs #{::this}
+                :tags #{:document}
                 :init (fn [this info]
                         (object/merge! this (merge (dissoc info :content) {:doc (or (:doc info) (create* info))}))
                         nil))
+
+
+(object/behavior* ::close-document-on-editor-close
+                  :for #{:editor}
+                  :triggers #{:closed}
+                  :reaction (fn [editor]
+                              (when-let [doc (:doc @editor)]
+                                (object/raise doc :close.force))))
+
+(object/behavior* ::close-linked-document
+                  :for #{:document}
+                  :triggers #{:close.force}
+                  :reaction (fn [this]
+                              (when-let [root (:root @this)]
+                                (object/update! root [:sub-docs] disj this)
+                                (object/destroy! this)
+                                (object/raise root :try-close))))
+
+(object/behavior* ::try-close-root-document
+                  :for #{:document}
+                  :triggers #{:try-close}
+                  :reaction (fn [this]
+                              (when (= #{::this} (:sub-docs @this))
+                                (object/raise this :close.force))))
+
+(object/behavior* ::close-root-document
+                  :for #{:document}
+                  :triggers #{:close.force}
+                  :reaction (fn [this]
+                              (if (= #{::this} (:sub-docs @this))
+                                (object/destroy! this)
+                                (object/update! this [:sub-docs] disj ::this))))
 
 (defn create [info]
   (object/create ::document info))
 
 (defn create-sub
   ([doc] (create-sub doc nil))
-  ([doc info] (create (merge (select-keys @doc doc-keys) info {:doc (linked* (:doc doc) info)}))))
-
-;(def orig (create {:content "hey\nzomg\nwoot\ncool\nlah" :mime "text/x-clojure"}))
-;(def sub (create-sub orig {:from 1 :to 2}))
+  ([doc info]
+   (let [neue (create (merge (select-keys @doc doc-keys) info {:doc (linked* (:doc doc) info)
+                                                               :root doc}))]
+     (object/add-tags neue [:document.linked])
+     (object/update! doc [:sub-docs] conj neue))))
 
 (defn ->cm-doc [doc]
   (-> @doc :doc))
