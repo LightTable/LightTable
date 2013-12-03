@@ -524,13 +524,15 @@
 (behavior* ::on-tags-added
            :triggers #{:lt.object/tags-added}
            :reaction (fn [this added]
-                       (doseq [a added]
+                       (doseq [a added
+                               :when a]
                          (ctx-obj/in! a this))))
 
 (behavior* ::on-tags-removed
            :triggers #{:lt.object/tags-removed}
            :reaction (fn [this removed]
-                       (doseq [r removed]
+                       (doseq [r removed
+                               :when r]
                          (ctx-obj/out! r this))))
 
 (behavior* ::context-on-active

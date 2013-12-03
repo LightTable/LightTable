@@ -281,7 +281,7 @@
   ((:tags @obj) tag))
 
 (defn add-tags [obj ts]
-  (update! obj [:tags] #(reduce conj % ts))
+  (update! obj [:tags] #(reduce conj % (filter identity ts)))
   (reset! obj (update-listeners obj))
   (raise obj ::tags-added ts)
   (raise* obj (trigger->behaviors :object.instant ts) nil)
@@ -319,9 +319,10 @@
            :type :user
            :triggers #{:object.instant}
            :reaction (fn [this t]
-                       (add-tags this (if (coll? t)
-                                        t
-                                        [t]))))
+                       (when t
+                         (add-tags this (if (coll? t)
+                                          t
+                                          [t])))))
 
 (behavior* ::remove-tag
            :desc "App: Remove tag from object"

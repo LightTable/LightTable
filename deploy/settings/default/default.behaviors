@@ -561,7 +561,12 @@
    :lt.objs.menu/set-menu
    :lt.objs.menu/remove-menu-close
    },
- :worker-thread [:lt.objs.thread/kill! :lt.objs.thread/send! :lt.objs.thread/queue! :lt.objs.thread/connect :lt.objs.thread/try-send :lt.objs.thread/message]
+ :worker-thread [:lt.objs.thread/kill!
+                 :lt.objs.thread/send!
+                 :lt.objs.thread/queue!
+                 :lt.objs.thread/connect
+                 :lt.objs.thread/try-send
+                 :lt.objs.thread/message]
  :workspace
  #{:lt.objs.sidebar.workspace/on-ws-set
    :lt.objs.sidebar.navigate/watched.delete :lt.objs.workspace/rename!

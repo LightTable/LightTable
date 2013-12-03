@@ -97,6 +97,10 @@
              :obj (object/->id obj)
              :params (map pr-str args)}))))
 
+;;NOTE: Because funcions are defined at load time, we need to pre-add the worker behaviors so that
+;;      the defined functions are sent correctly
+(object/tag-behaviors :worker-thread [::kill! ::connect ::send! ::queue! ::try-send ::message])
+
 (def worker (object/create ::worker-thread))
 
 (comment

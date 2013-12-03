@@ -6,7 +6,7 @@
                  [crate "0.2.4"]
                  [fetch "0.1.1" :exclusions [org.clojure/clojure]]
                  ;[core.async "0.1.0-SNAPSHOT"]
-                 [org.clojure/clojurescript "0.0-2030"
+                 [org.clojure/clojurescript "0.0-2080"
                   :exclusions [org.apache.ant/ant]]
                  ]
   :cljsbuild {:builds [{:source-paths ["src"]
