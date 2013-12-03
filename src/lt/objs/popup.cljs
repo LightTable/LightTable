@@ -73,11 +73,11 @@
            (dom/stop-propagation e)))
 
 (defui popup [this opts]
-       [:div.popup {:tabindex -1}
-        [:div
-         (popup-content this opts)]]
-       :click (fn []
-                (object/raise this :click)))
+  [:div.popup {:tabindex -1}
+   [:div
+    (popup-content this opts)]]
+  :click (fn []
+           (object/raise this :click)))
 
 (object/object* ::popup
                 :tags #{:popup}

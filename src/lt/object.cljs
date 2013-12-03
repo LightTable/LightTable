@@ -269,9 +269,10 @@
     (@instances id)))
 
 (defn by-tag [tag]
-  (filter #(when-let [ts (:tags (deref %))]
-             (ts tag))
-          (vals @instances)))
+  (sort-by (comp ::id deref)
+           (filter #(when-let [ts (:tags (deref %))]
+                      (ts tag))
+                   (vals @instances))))
 
 (defn in-tag? [tag behavior]
   (first (filter #{behavior} (@tags tag))))
