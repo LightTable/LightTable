@@ -26,9 +26,18 @@
     (-> (reader/read-string (:content content))
         (assoc :dir dir))))
 
+(defn plugin-json [dir]
+  (when-let [content (files/open-sync (files/join dir "plugin.json"))]
+    (-> (js/JSON.parse (:content content))
+        (js->clj :keywordize-keys true)
+        (assoc :dir dir))))
+
+(defn plugin-info [dir]
+  (or (plugin-json dir) (plugin-edn dir)))
+
 (defn available-plugins []
   (let [ds (files/dirs (files/join deploy/home-path "plugins"))]
-    (filterv identity (map plugin-edn ds))))
+    (filterv identity (map plugin-info ds))))
 
 (defn plugin-behaviors [plug]
   (let [{:keys [behaviors dir]} plug
@@ -106,7 +115,7 @@
                   :desc "Plugin: Determine if this is a plugin file"
                   :reaction (fn [this]
                               (let [path (-> @this :info :path)
-                                    plugin-edn (files/walk-up-find path "plugin.edn")]
+                                    plugin-edn (or (files/walk-up-find path "plugin.json") (files/walk-up-find path "plugin.edn"))]
                                 (when plugin-edn
                                   (object/merge! this {::plugin-path (files/parent plugin-edn)})
                                   (object/add-tags this [:plugin.file])))))

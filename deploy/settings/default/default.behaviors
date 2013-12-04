@@ -329,7 +329,8 @@
                                      {:name "Haxe" :exts [:haxe] :mime "text/x-haxe" :tags [:editor.haxe]}
                                      {:name "HTML" :exts [:html :htm] :mime "htmlmixed" :tags [:editor.html]}
                                      {:name "INI" :exts [:ini] :mime "text/x-ini" :tags [:editor.ini]}
-                                     {:name "Javascript" :exts [:js :json] :mime "text/javascript" :tags [:editor.javascript]}
+                                     {:name "Javascript" :exts [:js] :mime "text/javascript" :tags [:editor.javascript]}
+                                     {:name "JSON" :exts [:json] :mime "application/json" :tags [:editor.javascript :editor.json]}
                                      {:name "Java" :exts [:java] :mime "text/x-java" :tags [:editor.java]}
                                      {:name "Julia" :exts [:jl] :mime "text/x-julia" :tags [:editor.julia]}
                                      {:name "LaTeX" :exts [:latex :tex] :mime "text/x-stex" :tags [:editor.latex]}

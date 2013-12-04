@@ -139,7 +139,7 @@
                                       :line-ending (:line-ending data)
                                       :mtime (files/stats path)
                                       :mime (:type data)})]
-                       (register-doc doc path)
+                       (register-doc d path)
                        (when cb
                          (cb d)))))
   )
@@ -194,3 +194,4 @@
                         ))
 
 (def manager (object/create ::doc-manager))
+
