@@ -185,7 +185,6 @@
                      :lt.objs.langs.behaviors/parsed
                      :lt.objs.langs.behaviors/behavior-hint-pattern
                      :lt.plugins.auto-complete/auto-show-on-input
-                     :lt.plugins.rainbow-parens/rainbow-parens
                      }
  :editor.behaviors.helper #{:lt.objs.langs.behaviors/helper.show!
                             :lt.objs.langs.behaviors/helper.clear!}
@@ -199,7 +198,6 @@
                   :lt.objs.langs.keymap/parsed
                   :lt.objs.langs.keymap/keymap-hint-pattern
                   :lt.plugins.auto-complete/auto-show-on-input
-                  :lt.plugins.rainbow-parens/rainbow-parens
                   }
  :editor.keymap.helper #{:lt.objs.langs.keymap/helper.show!}
  :editor.clj
@@ -214,7 +212,6 @@
    :lt.objs.langs.clj/clj-watch-result
    :lt.objs.langs.clj/clj-watch-src
    :lt.objs.langs.clj/clj-watch-custom-src
-   :lt.plugins.rainbow-parens/rainbow-parens
    :lt.objs.langs.clj/clj-doc
    :lt.objs.langs.clj/print-clj-doc
    :lt.objs.langs.clj/on-eval.custom
@@ -231,7 +228,6 @@
    :lt.objs.langs.clj/clj-result.replace
    :lt.objs.langs.clj/clj-watch-src
    :lt.objs.langs.clj/clj-watch-custom-src
-   :lt.plugins.rainbow-parens/rainbow-parens
    :lt.objs.editor.find/find-in-editor
    :lt.objs.langs.clj/clj-watch-result
    :lt.objs.langs.clj/clj-doc
@@ -255,7 +251,6 @@
    :lt.objs.langs.clj/cljs-watch-custom-src
    :lt.objs.langs.clj/cljs-doc
    :lt.objs.langs.clj/print-cljs-doc
-   :lt.plugins.rainbow-parens/rainbow-parens
    :lt.objs.langs.clj/on-eval.custom
    :lt.objs.plugins/check-for-plugin-file
    [:lt.object/add-tag :docable]

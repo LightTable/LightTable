@@ -1,6 +1,7 @@
 (ns lt.objs.plugins
   (:require [lt.object :as object]
             [lt.objs.command :as cmd]
+            [lt.objs.console :as console]
             [lt.objs.app :as app]
             [lt.objs.files :as files]
             [lt.objs.settings :as settings]
@@ -21,16 +22,26 @@
     path
     (files/join (or (::dir object/*behavior-meta*) (files/lt-home)) path)))
 
+(defn validate [plugin]
+  (let [valid? (every? plugin [:name :author :behaviors :desc])]
+    (if-not valid?
+      (do
+        (console/error (str "Invalid plugin.json file: " (:dir plugin) "/plugin.json \nPlugins must include values for name, author, behaviors, and desc."))
+        nil)
+      plugin)))
+
 (defn plugin-edn [dir]
   (when-let [content (files/open-sync (files/join dir "plugin.edn"))]
     (-> (reader/read-string (:content content))
-        (assoc :dir dir))))
+        (assoc :dir dir)
+        (validate))))
 
 (defn plugin-json [dir]
   (when-let [content (files/open-sync (files/join dir "plugin.json"))]
     (-> (js/JSON.parse (:content content))
         (js->clj :keywordize-keys true)
-        (assoc :dir dir))))
+        (assoc :dir dir)
+        (validate))))
 
 (defn plugin-info [dir]
   (or (plugin-json dir) (plugin-edn dir)))

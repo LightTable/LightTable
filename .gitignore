@@ -3,6 +3,7 @@ target/
 deploy/settings/user/*
 deploy/settings/default.clj
 deploy/plugins/
+deploy/plugins
 deploy/node-webkit*
 deploy/core/cache
 deploy/logs
