@@ -72,10 +72,19 @@
                   :triggers #{:save-as!}
                   :reaction (fn [this path]
                               (let [type (files/path->type path)
-                                    prev-tags (-> @this :info :tags)]
+                                    prev-tags (-> @this :info :tags)
+                                    mode (files/path->mode path)
+                                    neue-doc (doc/create {:doc (editor/get-doc this)
+                                                          :line-ending files/line-ending
+                                                          :mtime (files/stats path)
+                                                          :mime mode})]
+                                (when (:doc @this)
+                                  (object/raise (:doc @this) :close.force))
+                                (doc/register-doc neue-doc path)
                                 (object/update! this [:info] merge (path->info path))
-                                (object/merge! this {:dirty true})
-                                (editor/set-mode this (files/path->mode path))
+                                (object/merge! this {:dirty true
+                                                     :doc neue-doc})
+                                (editor/set-mode this mode)
                                 (object/remove-tags this (conj prev-tags :editor.transient))
                                 (object/add-tags this (conj (:tags type) :editor.file-backed))
                                 (object/raise this :save-as)

@@ -129,6 +129,9 @@
 
 (declare manager)
 
+(defn register-doc [doc path]
+  (object/update! manager [:files] assoc path doc))
+
 (defn open [path cb]
   ;;TODO: check if the file is already open?
   (files/open path (fn [data]
@@ -136,7 +139,7 @@
                                       :line-ending (:line-ending data)
                                       :mtime (files/stats path)
                                       :mime (:type data)})]
-                       (object/update! manager [:files] assoc path d)
+                       (register-doc doc path)
                        (when cb
                          (cb d)))))
   )
