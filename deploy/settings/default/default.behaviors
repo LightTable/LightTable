@@ -217,7 +217,11 @@
    :lt.objs.langs.clj/on-eval.custom
    [:lt.object/add-tag :watchable]
    [:lt.object/add-tag :docable]
+   (:lt.object/add-tag :editor.clj.hints)
    },
+ :editor.clj.hints [:lt.objs.langs.clj/trigger-update-clj-hints
+                    :lt.objs.langs.clj/handle-update-clj-hints
+                    :lt.objs.langs.clj/use-clj-hints],
  :editor.clj.instarepl
  #{:lt.objs.instarepl/on-eval-one :lt.objs.instarepl/set-parent-title
    :lt.objs.instarepl/on-eval-sonar :lt.objs.instarepl/dirty-parent
@@ -235,6 +239,7 @@
    :lt.objs.langs.clj/on-eval.custom
    [:lt.object/add-tag :watchable]
    [:lt.object/add-tag :docable]
+   (:lt.object/add-tag :editor.clj.hints)
    },
  :editor.cljs
  #{:lt.objs.langs.clj/on-result-set-ns :lt.objs.langs.clj/exec.cljs!
@@ -431,6 +436,10 @@
    :lt.objs.clients.tcp-client/changelive!
    :lt.objs.clients.tcp-client/connect-retry},
  :nodejs.lang #{:lt.objs.clients.tcp-client/connect!},
+
+
+ :nrepl.clj.hints [:lt.objs.langs.clj/install-dependencies
+                   (:lt.objs.langs.clj/depend-on [clojure-complete "0.2.3"])]
  :nrepl.client [:lt.objs.clients.nrepl/nrepl-message
                 :lt.objs.clients.nrepl/nrepl-connect
                 :lt.objs.clients.nrepl/nrepl-send!
@@ -440,7 +449,8 @@
                 :lt.objs.clients.nrepl/close
                 :lt.objs.langs.clj/eval-print-err
                 :lt.objs.langs.clj/eval-print
-                :lt.objs.clients.nrepl/init-session]
+                :lt.objs.clients.nrepl/init-session
+                (:lt.object/add-tag :nrepl.clj.hints)]
  :nrepl.client.remote [:lt.objs.clients.nrepl/nrepl-message
                        :lt.objs.clients.nrepl/nrepl-connect
                        :lt.objs.clients.nrepl/nrepl-send!
@@ -450,7 +460,8 @@
                        :lt.objs.clients.nrepl/close
                        :lt.objs.langs.clj/eval-print-err
                        :lt.objs.langs.clj/eval-print
-                       :lt.objs.clients.nrepl/init-remote-session]
+                       :lt.objs.clients.nrepl/init-remote-session
+                       (:lt.object/add-tag :nrepl.clj.hints)]
  :object #{:lt.objs.clients/on-destroy-remove-cb},
  :opener
  #{:lt.objs.opener/open-from-info :lt.objs.opener/open-transient-editor
