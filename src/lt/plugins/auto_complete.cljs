@@ -331,6 +331,6 @@
                   :triggers #{:init}
                   :reaction (fn [this]
                               (load/js "core/node_modules/codemirror/show-hint.js" :sync)
-                              (js/CodeMirror.extendMode "clojure" (clj->js {:hint-pattern #"[\w\-\>\:\*\$\?\<\!\+\.]"}))
+                              (js/CodeMirror.extendMode "clojure" (clj->js {:hint-pattern #"[\w\-\>\:\*\$\?\<\!\+\.\/foo]"}))
                               (js/CodeMirror.extendMode "css" (clj->js {:hint-pattern #"[\w\.\-\#]"}))
                               ))

@@ -393,6 +393,26 @@
                   :reaction (fn [this path]
                               (object/merge! clj-lang {:java-exe path})))
 
+(object/behavior* ::install-dependencies
+                  :triggers #{:connect}
+                  :reaction (fn [this]
+                              (let [deps (object/raise-reduce this :depend-on+ [])
+                                    code `(do (require 'cemerick.pomegranate)
+                                            (cemerick.pomegranate/add-dependencies
+                                             :coordinates '[~@deps]
+                                             :repositories (merge cemerick.pomegranate.aether/maven-central
+                                                                  {"clojars" "http://clojars.org/repo"})))]
+                                (object/raise this :send! {:cb (object/->id this)
+                                                           :command :editor.eval.clj
+                                                           :data {:code code
+                                                                  :ns "user"
+                                                                  :meta {:result-type :pomegranate}}}))))
+
+(object/behavior* ::depend-on
+                  :triggers #{:depend-on+}
+                  :reaction (fn [this other-deps & this-deps]
+                              (concat other-deps this-deps)))
+
 ;;****************************************************
 ;; Connectors
 ;;****************************************************
@@ -584,6 +604,53 @@
                               (conj cur {:label "cljs" :trigger :docs.cljs.search :file-types #{"ClojureScript"}})
                               ))
 
+;;****************************************************
+;; autocomplete
+;;****************************************************
+
+;; TODO move this to lein-light
+(defn get-clj-hints-code [ns]
+  `(let [ns# '~ns]
+     (concat complete.core/special-forms
+             (complete.core/ns-vars ns#)
+             (complete.core/ns-classes ns#)
+             (complete.core/ns-java-methods ns#)
+             (complete.core/namespaces ns#)
+             (for [[alias# required-ns#] (ns-aliases ns#)
+                   var# (complete.core/ns-public-vars required-ns#)]
+               (str alias# "/" var#))
+             (for [required-ns# (all-ns)
+                   var# (complete.core/ns-public-vars required-ns#)]
+               (str required-ns# "/" var#)))))
+
+(object/behavior* ::trigger-update-clj-hints
+                  :triggers #{:editor.eval.clj.result}
+                  :reaction (fn [editor res]
+                              (when (not= :hints (-> res :meta :result-type))
+                                (let [command :editor.eval.clj
+                                      ns (-> @editor :info :ns)
+                                      code (get-clj-hints-code ns)
+                                      info (assoc (@editor :info)
+                                             :code (pr-str code)
+                                             :meta {:verbatim true
+                                                    :result-type :hints})]
+                                  (clients/send (eval/get-client! {:command command
+                                                                   :info info
+                                                                   :origin editor
+                                                                   :create try-connect})
+                                                command info :only editor)))))
+
+(object/behavior* ::handle-update-clj-hints
+                  :triggers #{:editor.eval.clj.result.hints}
+                  :reaction (fn [editor res]
+                              (object/merge! editor
+                                             {::hints (for [string (-> res :results (nth 0) :result)]
+                                                        {:completion string})})))
+
+(object/behavior* ::use-clj-hints
+                  :triggers #{:hints+}
+                  :reaction (fn [editor hints]
+                              (concat (::hints @editor) hints)))
 
 ;;****************************************************
 ;; Proc
