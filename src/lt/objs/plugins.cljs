@@ -61,9 +61,10 @@
 
 (defn plugin-behaviors [plug]
   (let [{:keys [behaviors dir]} plug
-        behs (-> (files/open-sync (files/join dir behaviors))
+        file (files/join dir behaviors)
+        behs (-> (files/open-sync file)
                  (:content)
-                 (settings/safe-read))]
+                 (settings/safe-read file))]
     (when behs
       (walk/prewalk (fn [x]
                       (when (list? x)

@@ -335,5 +335,3 @@
                               (js/CodeMirror.extendMode "text/x-clojurescript" (clj->js {:hint-pattern #"[\w\-\>\:\*\$\?\<\!\+\.\/foo]"}))
                               (js/CodeMirror.extendMode "css" (clj->js {:hint-pattern #"[\w\.\-\#]"}))
                               ))
-
-(js/CodeMirror.getInnerMode "clojure")
