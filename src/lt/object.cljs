@@ -46,7 +46,7 @@
   (sort-by #(do [(count (string/split (str %) ".")) (str %)]) (if dir < >) xs))
 
 (defn tags->behaviors [ts]
-  (let [duped (apply concat (map @tags (specificity-sort ts :down)))
+  (let [duped (apply concat (map @tags (specificity-sort ts)))
         de-duped (reduce
                    (fn [res cur]
                      (if (aget (:seen res) (->behavior-name cur))
