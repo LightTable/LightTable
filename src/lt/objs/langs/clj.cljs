@@ -673,7 +673,6 @@
                               :editor.eval.clj.result
                               :editor.eval.cljs.result}
                   :reaction (fn [editor res]
-                              (prn (:client @editor))
                               (when (not= :hints (-> res :meta :result-type)) ;; dont recurse endlessly
                                 (when-let [client (-> @editor :client :default)] ;; dont eval unless we're already connected
                                   (when @client
