@@ -611,43 +611,97 @@
 ;; TODO move this to lein-light
 (defn get-clj-hints-code [ns]
   `(let [ns# '~ns]
-     (concat complete.core/special-forms
+     (concat ;; special forms
+             complete.core/special-forms
+             ;; local vars
              (complete.core/ns-vars ns#)
+             ;; local classes
              (complete.core/ns-classes ns#)
+             ;; local java methods
              (complete.core/ns-java-methods ns#)
-             (complete.core/namespaces ns#)
+             ;; aliased namespaces
+             (for [[alias# required-ns#] (ns-aliases ns#)]
+               (str alias#))
+             ;; aliased vars
              (for [[alias# required-ns#] (ns-aliases ns#)
                    var# (complete.core/ns-public-vars required-ns#)]
                (str alias# "/" var#))
+             ;; global namespaces
+             (for [required-ns# (all-ns)]
+               (str required-ns#))
+             ;; global vars
              (for [required-ns# (all-ns)
                    var# (complete.core/ns-public-vars required-ns#)]
-               (str required-ns# "/" var#)))))
+               (str required-ns# "/" var#))
+             ;; global classes
+             ;; TODO static methods
+             ;; TODO cant do these until quicklist is faster
+             ;; (deref complete.core/top-level-classes 0 nil)
+             ;; (deref complete.core/nested-classes 0 nil)
+      )))
 
-(object/behavior* ::trigger-update-clj-hints
-                  :triggers #{:editor.eval.clj.result}
+(defn get-cljs-hints-code [ns]
+  `(let [ns# '~ns
+         nss# (-> @lighttable.nrepl.cljs/compiler-env :cljs.analyzer/namespaces)]
+     (concat ;; TODO filter private defs
+      ;; special forms
+      complete.core/special-forms
+      ;; local vars
+      (for [def# (-> nss# (get ns#) :defs keys)]
+        (str def#))
+      (for [def# (-> nss# (get ns#) :uses keys)]
+        (str def#))
+      ;; aliased namespaces
+      (for [[alias# aliased-ns#] (-> nss# (get ns#) :requires)
+            :when (not= alias# aliased-ns#)]
+        (str alias#))
+      ;; aliased vars
+      (for [[alias# aliased-ns#] (-> nss# (get ns#) :requires)
+            :when (not= alias# aliased-ns#)
+            def# (-> nss# (get aliased-ns#) :defs keys)]
+        (str alias# "/" def#))
+      ;; global namespaces
+      (for [global-ns# (-> nss# keys)]
+        (str global-ns#))
+      ;; global vars
+      (for [[global-ns# val#] nss#
+            def# (-> val# :defs keys)]
+        (str global-ns# "/" def#)))))
+
+(object/behavior* ::trigger-update-hints
+                  :triggers #{:focus
+                              :editor.eval.clj.result
+                              :editor.eval.cljs.result}
                   :reaction (fn [editor res]
-                              (when (not= :hints (-> res :meta :result-type))
-                                (let [command :editor.eval.clj
-                                      ns (-> @editor :info :ns)
-                                      code (get-clj-hints-code ns)
-                                      info (assoc (@editor :info)
-                                             :code (pr-str code)
-                                             :meta {:verbatim true
-                                                    :result-type :hints})]
-                                  (clients/send (eval/get-client! {:command command
-                                                                   :info info
-                                                                   :origin editor
-                                                                   :create try-connect})
-                                                command info :only editor)))))
+                              (prn (:client @editor))
+                              (when (not= :hints (-> res :meta :result-type)) ;; dont recurse endlessly
+                                (when-let [client (-> @editor :client :default)] ;; dont eval unless we're already connected
+                                  (when @client
+                                    (let [default-info (:info @editor)
+                                          type (-> info :mime mime->type)
+                                          ns (:ns info)
+                                          code (case type
+                                                 "clj" (get-clj-hints-code ns)
+                                                 "cljs" (get-cljs-hints-code ns))
+                                          info (assoc info
+                                                 :code (pr-str code)
+                                                 :meta {:verbatim true
+                                                        :result-type :hints})
+                                          command :editor.eval.clj]
+                                      (clients/send (eval/get-client! {:command command
+                                                                       :info info
+                                                                       :origin editor
+                                                                       :create try-connect})
+                                                    command info :only editor)))))))
 
-(object/behavior* ::handle-update-clj-hints
+(object/behavior* ::handle-update-hints
                   :triggers #{:editor.eval.clj.result.hints}
                   :reaction (fn [editor res]
                               (object/merge! editor
                                              {::hints (for [string (-> res :results (nth 0) :result)]
                                                         {:completion string})})))
 
-(object/behavior* ::use-clj-hints
+(object/behavior* ::use-hints
                   :triggers #{:hints+}
                   :reaction (fn [editor hints]
                               (concat (::hints @editor) hints)))
