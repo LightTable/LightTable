@@ -346,11 +346,16 @@ body { -webkit-user-select: none; }
 .inline-doc h3 { margin:0; margin-top:8px;}
 .underline-result .inline-doc pre { padding:0 !important; margin:0; margin-top:8px; }
 
-.plugin-manager { padding:5px; }
+.plugin-manager { padding:5px; overflow:hidden; box-sizing:border-box; display:flex; flex-direction:column; }
 .plugin-manager h1 { font-size:14pt; margin-bottom:0; line-height:1.3em; }
 .plugin-manager p { margin-top:10px;}
 .plugin-manager li { margin-bottom:8px; padding-bottom:12px; position:relative; }
-.plugin-manager .enabled { float:right; position:absolute; right:0; top:1px; }
+.plugin-manager .tabs { min-height:30px; }
+.plugin-manager .enabled { float:right; position:absolute; right:0; top:1px; overflow:auto; }
+.plugin-manager .plugins { flex:1; display:block; overflow:auto; }
+.plugin-manager .server-plugins { flex:1; display:none; overflow:auto; }
+.plugin-manager.server .server-plugins { display:block; }
+.plugin-manager.server .plugins { display:none; }
 
 
 .animated #multi {  -webkit-transition:bottom 0.1s ease-in-out, left 0.1s ease-in-out, right 0.10s ease-in-out; }

@@ -246,7 +246,8 @@
 
 (defn refresh! [obj]
   (reset! obj (update-listeners obj))
-  (raise* obj (trigger->behaviors :object.instant (:tags @obj)) nil))
+  (raise* obj (trigger->behaviors :object.instant (:tags @obj)) nil)
+  (raise obj :object.refresh))
 
 (defn add-behavior! [obj behavior]
   (update! obj [:behaviors] conj behavior)

@@ -71,8 +71,10 @@
     (str "https://d35ac8ww5dfjyg.cloudfront.net/playground/releases/" v ".tar.gz")))
 
 (defn download-file [from to cb]
-  (let [out (.createWriteStream fs to)]
-    (.pipe (request from cb) out)))
+  (let [options (js-obj "url" from
+                        "headers" (js-obj "User-Agent" "Light Table"))
+        out (.createWriteStream fs to)]
+    (.pipe (request options cb) out)))
 
 (defn download-zip [ver cb]
   (let [n (notifos/working (str "Downloading version " ver " .."))]

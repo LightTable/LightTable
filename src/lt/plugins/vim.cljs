@@ -3,7 +3,8 @@
             [lt.objs.context :as ctx]
             [lt.util.load :as load]
             [lt.objs.editor.pool :as pool]
-            [lt.objs.sidebar.command :as cmd :refer [command]]
+            [lt.objs.sidebar.command :as scmd]
+            [lt.objs.command :as cmd :refer [command]]
             [lt.objs.editor :as editor]))
 
 (def mode-tags {:all #{:editor.keys.vim.insert :editor.keys.normal
@@ -74,7 +75,7 @@
           :desc "Vim: ex"
           :hidden true
           :exec (fn []
-                  (cmd/show-filled "vim :" {:transient? true
+                  (scmd/show-filled "vim :" {:transient? true
                                             :force? true}))})
 
 (command {:command :vim-save-quit

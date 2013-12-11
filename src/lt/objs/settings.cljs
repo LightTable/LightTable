@@ -18,14 +18,15 @@
   (:require-macros [lt.macros :refer [defui]]))
 
 (defn safe-read [s file]
-  (try
-    (reader/read-string s)
-    (catch js/global.Error e
-      (console/error (str "Invalid settings file: " file "\n" e))
-      nil)
-    (catch js/Error e
-      (console/error (str "Invalid settings file: " file "\n" e))
-      nil)))
+  (when s
+    (try
+      (reader/read-string s)
+      (catch js/global.Error e
+        (console/error (str "Invalid settings file: " file "\n" e))
+        nil)
+      (catch js/Error e
+        (console/error (str "Invalid settings file: " file "\n" e))
+        nil))))
 
 (defn +behaviors [cur m]
   (reduce (fn [res [k v]]

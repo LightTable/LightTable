@@ -53,6 +53,7 @@
    :lt.objs.plugins/init-plugins
    :lt.objs.plugins/plugin-behavior-diffs
    :lt.objs.plugins/plugin-keymap-diffs
+   :lt.objs.plugins/behaviors.refreshed-load-keys
    (:lt.objs.keyboard/chord-timeout 1000)
    (:lt.objs.files/file.ignore-pattern "(^\\..*)|\\.class$|target/|svn|cvs|\\.git|\\.pyc|~|\\.swp|\\.jar|.DS_Store|\\.nrepl-port")
    (:lt.objs.style/provide-skin "dark" "/core/css/skins/dark.css")
@@ -215,6 +216,7 @@
    :lt.objs.langs.clj/clj-doc
    :lt.objs.langs.clj/print-clj-doc
    :lt.objs.langs.clj/on-eval.custom
+   :lt.objs.plugins/auto-complete
    [:lt.object/add-tag :watchable]
    [:lt.object/add-tag :docable]
    (:lt.object/add-tag :editor.clj.hints)
@@ -481,7 +483,10 @@
  :plugin.file [:lt.objs.langs.clj/build-cljs-plugin
                :lt.objs.langs.clj/plugin-compile-results
                (:lt.objs.editor.file/on-save :build)]
- :plugin-manager [:lt.objs.version/destroy-on-close]
+ :plugin-manager [:lt.objs.plugins/on-close
+                  :lt.objs.plugins/render-server-plugins
+                  :lt.objs.plugins/submit-plugin
+                  :lt.objs.plugins/update-server-plugins]
  :popup [:lt.objs.popup/refocus-on-close
          :lt.objs.popup/close!
          :lt.objs.popup/on-click-destroy

@@ -7,7 +7,12 @@
             [lt.objs.settings :as settings]
             [lt.objs.editor.pool :as pool]
             [lt.objs.deploy :as deploy]
+            [lt.objs.notifos :as notifos]
+            [lt.objs.tabs :as tabs]
             [cljs.reader :as reader]
+            [fetch.core :as fetch]
+            [crate.core :as crate]
+            [crate.binding :refer [bound]]
             [lt.util.load :as load]
             [lt.util.dom :as dom]
             [clojure.string :as string]
@@ -48,7 +53,11 @@
 
 (defn available-plugins []
   (let [ds (files/dirs (files/join deploy/home-path "plugins"))]
-    (filterv identity (map plugin-info ds))))
+    (into {}
+          (->> ds
+               (map plugin-info)
+               (filterv identity)
+               (map (juxt :name identity))))))
 
 (defn plugin-behaviors [plug]
   (let [{:keys [behaviors dir]} plug
@@ -70,7 +79,7 @@
                   :triggers #{:pre-init}
                   :reaction (fn [app]
                               ;;load enabled plugins
-                              (object/merge! app {::plugins (available-plugins)})
+                              (object/merge! app/app {::plugins (available-plugins)})
                               (cmd/exec! :behaviors.reload)))
 
 (object/behavior* ::behaviors.refreshed-load-keys
@@ -81,7 +90,7 @@
 (object/behavior* ::plugin-behavior-diffs
                   :triggers #{:behaviors.diffs.plugin+}
                   :reaction (fn [this diffs]
-                              (concat diffs (mapv plugin-behaviors (::plugins @this)))))
+                              (concat diffs (mapv plugin-behaviors (vals (::plugins @this))))))
 
 (object/behavior* ::plugin-keymap-diffs
                   :triggers #{:keymap.diffs.plugin+}
@@ -131,13 +140,92 @@
                                   (object/merge! this {::plugin-path (files/parent plugin-edn)})
                                   (object/add-tags this [:plugin.file])))))
 
+(def plugin-url "http://localhost:8082")
+
+(object/behavior* ::update-server-plugins
+                :triggers #{:fetch-plugins}
+                :desc "Plugin Manager: fetch plugins"
+                :reaction (fn [this]
+
+                            (fetch/xhr [:get plugin-url] {}
+                                       (fn [data]
+                                         (when data
+                                           (object/raise this :plugin-results (reader/read-string data)))
+                                         ))))
+
+(defui server-plugin-ui [plugin]
+  (let [info (:info plugin)]
+    [:li
+     (when (-> @app/app ::plugins (get (:name info)))
+       [:span.installed])
+     [:span.source [:a {:href (:url plugin)} "source"]]
+     [:h1 (:name info) [:span.version (-> plugin :versions first :version)]]
+     [:h3 (:author info)]
+     [:p (:desc info)]])
+  :click (fn []
+           (let [name (-> plugin :info :name)]
+             (if-not (-> @app/app ::plugins (get name))
+               (do
+                 (object/update! app/app [::plugins] assoc name {})
+                 (this-as me
+                          (fetch-and-install (-> plugin :versions first :tar) name
+                                             (fn []
+                                               (dom/append me (crate/html [:span.installed]))
+                                               ))))
+               (notifos/set-msg! (str name " is already installed"))))))
+
+(object/behavior* ::render-server-plugins
+                :triggers #{:plugin-results}
+                :desc "Plugin Manager: render plugin results"
+                :reaction (fn [this plugins]
+                            (let [ul (dom/$ :.server-plugins (object/->content this))]
+                              (dom/empty ul)
+                              (dom/append ul (dom/fragment (map server-plugin-ui plugins))))))
+
+(object/behavior* ::submit-plugin
+                  :triggers #{:submit-plugin!}
+                  :desc "Plugin Manager: submit a new plugin"
+                  :reaction (fn [this url]
+                              (fetch/xhr [:post (str plugin-url "/add" )] {:url url}
+                                       (fn [data]
+                                         (println data)
+                                         ))))
+
+(object/behavior* ::on-close
+                  :triggers #{:close}
+                  :reaction (fn [this]
+                              (tabs/rem! this)))
+
+(defui tab [this tab-name label]
+  [:button {:class (bound this #(when (= tab-name (:tab %))
+                                  "active"))}
+   label]
+  :click (fn []
+           (object/merge! this {:tab tab-name})))
+
+(defui search-input [this]
+  [:input {:placeholder "search plugins"}])
+
+(defui tabs-and-search [this]
+  [:div.tabs
+   (tab this :server "Available")
+   (tab this :installed "Installed")
+   (search-input this)]
+  )
+
 (object/object* ::plugin-manager
                 :tags #{:plugin-manager}
                 :name "Plugins"
+                :tab :server
                 :init (fn [this]
-                        [:div.plugin-manager
+                        [:div {:class (bound this #(str "plugin-manager"
+                                                        (if (= (:tab %) :server)
+                                                          " server")))}
+                         (tabs-and-search this)
+                         [:ul.server-plugins
+                          ]
                          [:ul.plugins
-                          (for [plugin (available-plugins)]
+                          (for [plugin (vals (available-plugins))]
                             [:li
                              [:h1 (:name plugin) [:span.version "0.0.1"]]
                              [:h3 (:author plugin)]
@@ -145,16 +233,37 @@
                              ]
                             )]]))
 
+(defn fetch-and-install [url name cb]
+  (let [tmp-gz (str plugins-dir "/" name "tmp.tar.gz")
+        tmp-dir (str plugins-dir "/" name "-tmp")]
+    (notifos/working (str "Downloading plugin: " name))
+    (deploy/download-file url tmp-gz (fn []
+                                       (notifos/done-working)
+                                       (notifos/working "Extracting plugin...")
+                                       (deploy/untar tmp-gz tmp-dir
+                                                     (fn []
+                                                       (let [munged-dir (first (files/full-path-ls tmp-dir))]
+                                                         (files/move! munged-dir (str plugins-dir "/" name "/"))
+                                                         (files/delete! tmp-dir)
+                                                         (files/delete! tmp-gz)
+                                                         (notifos/done-working (str "Plugin fetched: " name))
+                                                         (object/raise manager :plugin.fetched)
+                                                         (when cb
+                                                           (cb))
+                                                         )))))))
+
+(def manager (object/create ::plugin-manager))
 
 (comment
-  (def manager (object/create ::plugin-manager))
 
-  (::plugins app/app)
+  (::plugins @app/app)
+
+  (object/raise manager :fetch-plugins)
+  (object/merge! app/app {::plugins (available-plugins)})
+
+  (object/merge! manager {:tab :server})
 
   (lt.objs.tabs/add! manager)
-
-
-
 
   )
 
