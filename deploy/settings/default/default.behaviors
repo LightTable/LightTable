@@ -220,7 +220,8 @@
    (:lt.object/add-tag :editor.clj.hints)
    },
  :editor.clj.hints [:lt.objs.langs.clj/trigger-update-hints
-                    :lt.objs.langs.clj/handle-update-hints
+                    :lt.objs.langs.clj/start-update-hints
+                    :lt.objs.langs.clj/finish-update-hints
                     :lt.objs.langs.clj/use-hints],
  :editor.clj.instarepl
  #{:lt.objs.instarepl/on-eval-one :lt.objs.instarepl/set-parent-title

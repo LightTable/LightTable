@@ -674,26 +674,31 @@
                               :editor.eval.cljs.result}
                   :reaction (fn [editor res]
                               (when (not= :hints (-> res :meta :result-type)) ;; dont recurse endlessly
-                                (when-let [client (-> @editor :client :default)] ;; dont eval unless we're already connected
-                                  (when @client
-                                    (let [default-info (:info @editor)
-                                          type (-> info :mime mime->type)
-                                          ns (:ns info)
-                                          code (case type
-                                                 "clj" (get-clj-hints-code ns)
-                                                 "cljs" (get-cljs-hints-code ns))
-                                          info (assoc info
-                                                 :code (pr-str code)
-                                                 :meta {:verbatim true
-                                                        :result-type :hints})
-                                          command :editor.eval.clj]
-                                      (clients/send (eval/get-client! {:command command
-                                                                       :info info
-                                                                       :origin editor
-                                                                       :create try-connect})
-                                                    command info :only editor)))))))
+                                (when-let [default-client (-> @editor :client :default)] ;; dont eval unless we're already connected
+                                  (when @default-client
+                                    (object/raise editor :editor.clj.hints.update))))))
 
-(object/behavior* ::handle-update-hints
+(object/behavior* ::start-update-hints
+                  :triggers #{:editor.clj.hints.update}
+                  :reaction (fn [editor res]
+                              (let [info (:info @editor)
+                                    type (-> info :mime mime->type)
+                                    ns (:ns info)
+                                    code (case type
+                                           "clj" (get-clj-hints-code ns)
+                                           "cljs" (get-cljs-hints-code ns))
+                                    info (assoc info
+                                           :code (pr-str code)
+                                           :meta {:verbatim true
+                                                  :result-type :hints})
+                                    command :editor.eval.clj]
+                                (clients/send (eval/get-client! {:command command
+                                                                 :info info
+                                                                 :origin editor
+                                                                 :create try-connect})
+                                              command info :only editor))))
+
+(object/behavior* ::finish-update-hints
                   :triggers #{:editor.eval.clj.result.hints}
                   :reaction (fn [editor res]
                               (object/merge! editor
