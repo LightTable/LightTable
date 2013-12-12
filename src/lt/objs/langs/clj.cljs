@@ -22,7 +22,8 @@
             [lt.util.js :as util]
             [lt.util.load :as load]
             [lt.util.cljs :refer [->dottedkw str-contains?]]
-            [clojure.string :as string])
+            [clojure.string :as string]
+            [lt.objs.command :as cmd])
   (:require-macros [lt.macros :refer [defui]]))
 
 (def shell (load/node-module "shelljs"))
@@ -537,6 +538,7 @@
                               (let [token (find-symbol-at-cursor editor)
                                     command :editor.clj.doc
                                     info (assoc (@editor :info)
+                                           :result-type :doc
                                            :loc (:loc token)
                                            :sym (:string token)
                                            :print-length (object/raise-reduce editor :clojure.print-length+ nil)
@@ -552,9 +554,10 @@
 (object/behavior* ::print-clj-doc
                   :triggers #{:editor.clj.doc}
                   :reaction (fn [editor result]
-                              (if-not result
-                                (notifos/set-msg! "No docs found.")
-                                (object/raise editor :editor.doc.show! result))))
+                              (when (= :doc (:result-type result))
+                                (if-not result
+                                  (notifos/set-msg! "No docs found.")
+                                  (object/raise editor :editor.doc.show! result)))))
 
 (defn symbol-token? [s]
   (re-seq #"[\w\$_\-\.\*\+\/\?\><!]" s))
@@ -574,6 +577,7 @@
                               (let [token (find-symbol-at-cursor editor)
                                     command :editor.cljs.doc
                                     info (assoc (@editor :info)
+                                           :result-type :doc
                                            :loc (:loc token)
                                            :sym (:string token)
                                            :print-length (object/raise-reduce editor :clojure.print-length+ nil)
@@ -588,9 +592,10 @@
 (object/behavior* ::print-cljs-doc
                   :triggers #{:editor.cljs.doc}
                   :reaction (fn [editor result]
-                              (if-not result
-                                (notifos/set-msg! "No docs found.")
-                                (object/raise editor :editor.doc.show! result))))
+                              (when (= :doc (:result-type result))
+                                (if-not result
+                                  (notifos/set-msg! "No docs found.")
+                                  (object/raise editor :editor.doc.show! result)))))
 
 (object/behavior* ::clj-doc-search
                   :triggers #{:types+}
@@ -640,6 +645,7 @@
              ;; (deref complete.core/nested-classes 0 nil)
       )))
 
+;; TODO move this to lein-light
 (defn get-cljs-hints-code [ns]
   `(let [ns# '~ns
          nss# (-> @lighttable.nrepl.cljs/compiler-env :cljs.analyzer/namespaces)]
@@ -709,6 +715,54 @@
                   :triggers #{:hints+}
                   :reaction (fn [editor hints]
                               (concat (::hints @editor) hints)))
+
+;;****************************************************
+;; Jump to definition
+;;****************************************************
+
+(lt.objs.command/command
+ {:command :editor.jump-to-definition-at-cursor
+  :desc "Editor: Jump to definition at cursor"
+  :exec (fn []
+          (when-let [ed (lt.objs.editor.pool/last-active)]
+            (object/raise ed :jump-to-definition-at-cursor!)))})
+
+(object/behavior* ::jump-to-definition-at-cursor
+                  :triggers #{:jump-to-definition-at-cursor!}
+                  :reaction (fn [editor]
+                              (let [token (find-symbol-at-cursor editor)]
+                                (when token
+                                  (object/raise editor :jump-to-definition! (:loc token) (:string token))))))
+
+(object/behavior* ::start-jump-to-definition
+                  :triggers #{:jump-to-definition!}
+                  :reaction (fn [editor loc string]
+                              (let [info (:info @editor)
+                                    command (->dottedkw :editor (-> info :mime mime->type) :doc)
+                                    info (assoc info
+                                           :result-type :jump
+                                           :loc loc
+                                           :sym string
+                                           :code (watches/watched-range editor nil nil clj-watch)
+                                           :print-length (object/raise-reduce editor :clojure.print-length+ nil))]
+                                (clients/send (eval/get-client! {:command command
+                                                                 :info info
+                                                                 :origin editor
+                                                                 :create try-connect})
+                                              command info :only editor))))
+
+(object/behavior* ::finish-jump-to-definition
+                  :triggers #{:editor.clj.doc
+                              :editor.cljs.doc}
+                  :reaction (fn [editor {:keys [file line] :as res}]
+                              (when (= :jump (:result-type res))
+                                (if-not (and res file line)
+                                  (notifos/set-msg! "Definition not found")
+                                  (if-not (files/exists? file)
+                                    (notifos/set-msg! (str "Could not find file: " file))
+                                    (do (cmd/exec! :open-path file)
+                                      (cmd/exec! :goto-line line)
+                                      (cmd/exec! :editor.select-line line)))))))
 
 ;;****************************************************
 ;; Proc

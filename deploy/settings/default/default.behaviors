@@ -176,6 +176,7 @@
    :lt.objs.settings/user-behavior-diffs
    (:lt.objs.style/set-theme "default")
    (:lt.objs.editor/tab-settings false 2 2)
+   (:lt.object/add-tag :editor.jump-to-definition)
    },
  :editor.active #{:lt.objs.statusbar/report-cursor-location},
  :editor.behaviors #{:lt.objs.settings/on-behaviors-editor-save
@@ -201,6 +202,9 @@
                   :lt.plugins.auto-complete/auto-show-on-input
                   }
  :editor.keymap.helper #{:lt.objs.langs.keymap/helper.show!}
+ :editor.jump-to-definition [:lt.objs.langs.clj/jump-to-definition-at-cursor
+                             :lt.objs.langs.clj/start-jump-to-definition
+                             :lt.objs.langs.clj/finish-jump-to-definition]
  :editor.clj
  #{:lt.objs.langs.clj/eval-print :lt.objs.langs.clj/on-result-set-ns
    :lt.objs.langs.clj/no-op :lt.objs.langs.clj/clj-exception
