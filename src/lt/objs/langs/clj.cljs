@@ -317,7 +317,7 @@
                   :triggers #{:editor.eval.clj.exception}
                   :reaction (fn [obj res passed?]
                               (when-not passed?
-                                (notifos/done-working))
+                                (notifos/done-working ""))
                               (let [meta (:meta res)
                                     loc {:line (dec (:end-line meta)) :ch (:end-column meta 0)
                                          :start-line (dec (:line meta 1))}]
@@ -329,7 +329,7 @@
                   :triggers #{:editor.eval.cljs.exception}
                   :reaction (fn [obj res passed?]
                               (when-not passed?
-                                (notifos/done-working))
+                                (notifos/done-working ""))
                               (let [meta (:meta res)
                                     loc {:line (dec (:end-line meta)) :ch (:end-column meta)
                                          :start-line (dec (:line meta))}
