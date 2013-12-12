@@ -565,7 +565,7 @@
         token-right (ed/->token editor (update-in loc [:ch] inc))]
     (or (when (symbol-token? (:string token-right))
           (assoc token-right :loc loc))
-        (when (symbol-token? (:string token-right))
+        (when (symbol-token? (:string token-left))
           (assoc token-left :loc loc)))))
 
 (object/behavior* ::cljs-doc
