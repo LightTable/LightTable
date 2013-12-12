@@ -540,7 +540,7 @@
                                            :loc (:loc token)
                                            :sym (:string token)
                                            :print-length (object/raise-reduce editor :clojure.print-length+ nil)
-                                           :code (watches/watched-range editor nil nil cljs-watch))]
+                                           :code (watches/watched-range editor nil nil clj-watch))]
                                 (when token
                               (clients/send (eval/get-client! {:command command
                                                                :info info
