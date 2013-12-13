@@ -720,31 +720,21 @@
 ;; Jump to definition
 ;;****************************************************
 
-(lt.objs.command/command
- {:command :editor.jump-to-definition-at-cursor
-  :desc "Editor: Jump to definition at cursor"
-  :exec (fn []
-          (when-let [ed (lt.objs.editor.pool/last-active)]
-            (object/raise ed :jump-to-definition-at-cursor!)))})
-
 (object/behavior* ::jump-to-definition-at-cursor
-                  :triggers #{:jump-to-definition-at-cursor!}
+                  :triggers #{:editor.jump-to-definition-at-cursor!}
                   :reaction (fn [editor]
                               (let [token (find-symbol-at-cursor editor)]
                                 (when token
-                                  (object/raise editor :jump-to-definition! (:loc token) (:string token))))))
+                                  (object/raise editor :editor.jump-to-definition! (:string token))))))
 
 (object/behavior* ::start-jump-to-definition
-                  :triggers #{:jump-to-definition!}
-                  :reaction (fn [editor loc string]
+                  :triggers #{:editor.jump-to-definition!}
+                  :reaction (fn [editor string]
                               (let [info (:info @editor)
                                     command (->dottedkw :editor (-> info :mime mime->type) :doc)
                                     info (assoc info
                                            :result-type :jump
-                                           :loc loc
-                                           :sym string
-                                           :code (watches/watched-range editor nil nil clj-watch)
-                                           :print-length (object/raise-reduce editor :clojure.print-length+ nil))]
+                                           :sym string)]
                                 (clients/send (eval/get-client! {:command command
                                                                  :info info
                                                                  :origin editor
@@ -756,13 +746,9 @@
                               :editor.cljs.doc}
                   :reaction (fn [editor {:keys [file line] :as res}]
                               (when (= :jump (:result-type res))
-                                (if-not (and res file line)
-                                  (notifos/set-msg! "Definition not found")
-                                  (if-not (files/exists? file)
-                                    (notifos/set-msg! (str "Could not find file: " file))
-                                    (do (cmd/exec! :open-path file)
-                                      (cmd/exec! :goto-line line)
-                                      (cmd/exec! :editor.select-line line)))))))
+                                (if (and res file line)
+                                  (object/raise lt.objs.jump-stack/jump-stack :jump-stack.push! editor file line)
+                                  (notifos/set-msg! "Definition not found" {:class "error"})))))
 
 ;;****************************************************
 ;; Proc

@@ -9,7 +9,9 @@
               "pmeta-shift-enter" [:eval-editor]
               "pmeta-s" [:save]
               "pmeta-shift-s" [:save-as]
-              "pmeta-l" [:goto-line]}
+              "pmeta-l" [:goto-line]
+              "ctrl-." [:editor.jump-to-definition-at-cursor]
+              "ctrl-," [:editor.unjump]}
      :editor.keys.normal {"\"" [(:editor.repeat-pair "\"")]
                           "(" [(:editor.open-pair "(")]
                           ")" [(:editor.close-pair ")")]
