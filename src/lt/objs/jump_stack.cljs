@@ -23,7 +23,7 @@
                              old-line (:line (editor/->cursor (lt.objs.editor.pool/last-active)))] ;; TODO for some reason this is off by one...
                          (if-not (files/exists? file)
                            (notifos/set-msg! (str "Could not find file: " file) {:class "error"})
-                           (do (jump-to-file file line)
+                           (do (jump-to file line)
                              (object/update! jump-stack [:stack] conj [old-file old-line]))))))
 
 (behavior* ::jump-stack.pop
