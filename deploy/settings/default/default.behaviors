@@ -450,7 +450,9 @@
 
 
  :nrepl.hints [:lt.objs.langs.clj/install-dependencies
-                   (:lt.objs.langs.clj/depend-on [clojure-complete "0.2.3"])]
+               (:lt.objs.langs.clj/depend-on {:libs [[clojure-complete "0.2.3"]]
+                                              :paths ["/home/jamie/light-table-core/src"]
+                                              :nss ['lt.objs.langs.clj.auto-complete]})]
  :nrepl.client [:lt.objs.clients.nrepl/nrepl-message
                 :lt.objs.clients.nrepl/nrepl-connect
                 :lt.objs.clients.nrepl/nrepl-send!
