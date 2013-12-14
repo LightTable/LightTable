@@ -16,7 +16,7 @@
                                    :output-to "deploy/core/node_modules/lighttable/bootstrap.js"
                                    :output-dir "cljs/"
                                    :pretty-print true}}]}
-  :plugins [[lein-cljsbuild "1.0.0-alpha2"]]
+  :plugins [[lein-cljsbuild "1.0.1"]]
   :source-paths ["src/"
                  "/Users/chris/repos/clojurescript/src/clj"
                  "/Users/chris/repos/clojurescript/src/cljs"
