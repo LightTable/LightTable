@@ -6,11 +6,6 @@
             [lt.objs.notifos :as notifos])
   (:use [lt.object :only [object* behavior*]]))
 
-(def jump-stack (object/create (object/object* ::jump-stack
-                                               :tags [:jump-stack]
-                                               :behaviors [::jump-stack.push ::jump-stack.pop]
-                                               :stack [])))
-
 (defn jump-to [file line]
   (cmd/exec! :open-path file)
   (cmd/exec! :goto-line line)
@@ -37,6 +32,12 @@
                                (notifos/set-msg! (str "Could not find file: " file) {:class "error"})
                                (do (jump-to file line)
                                  (object/update! jump-stack [:stack] pop))))))))
+
+
+(def jump-stack (object/create (object/object* ::jump-stack
+                                               :tags [:jump-stack]
+                                               :behaviors [::jump-stack.push ::jump-stack.pop]
+                                               :stack [])))
 
 (cmd/command
  {:command :editor.jump-to-definition-at-cursor

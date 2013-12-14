@@ -556,7 +556,7 @@
                   :reaction (fn [editor result]
                               (when (= :doc (:result-type result))
                                 (if-not result
-                                  (notifos/set-msg! "No docs found.")
+                                  (notifos/set-msg! "No docs found." {:class "error"})
                                   (object/raise editor :editor.doc.show! result)))))
 
 (defn symbol-token? [s]
@@ -594,7 +594,7 @@
                   :reaction (fn [editor result]
                               (when (= :doc (:result-type result))
                                 (if-not result
-                                  (notifos/set-msg! "No docs found.")
+                                  (notifos/set-msg! "No docs found." {:class "error"})
                                   (object/raise editor :editor.doc.show! result)))))
 
 (object/behavior* ::clj-doc-search
@@ -770,7 +770,7 @@
                                     ;(object/destroy! this)
                                     )
                                   (when-not (:connected @this)
-                                    (notifos/set-msg! "Retrieving deps.. "))))
+                                    (notifos/set-msg! "Retrieving deps.. " {}))))
                               ))
 
 (object/behavior* ::on-error
