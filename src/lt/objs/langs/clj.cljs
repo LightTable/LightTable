@@ -237,12 +237,12 @@
                   :triggers #{:editor.eval.cljs.no-op
                               :editor.eval.clj.no-op}
                   :reaction (fn [this]
-                              (notifos/done-working "")))
+                              (notifos/done-working)))
 
 (object/behavior* ::cljs-result
                   :triggers #{:editor.eval.cljs.result}
                   :reaction (fn [obj res]
-                              (notifos/done-working "")
+                              (notifos/done-working)
                               (let [type (or (-> res :meta :result-type) :inline)
                                     ev (->dottedkw :editor.eval.cljs.result type)]
                                 (object/raise obj ev res))))
@@ -275,7 +275,7 @@
 (object/behavior* ::clj-result
                   :triggers #{:editor.eval.clj.result}
                   :reaction (fn [obj res]
-                              (notifos/done-working "")
+                              (notifos/done-working)
                               (let [type (or (-> res :meta :result-type) :inline)
                                     ev (->dottedkw :editor.eval.clj.result type)]
                                 (object/raise obj ev res))))
@@ -367,7 +367,7 @@
 (object/behavior* ::handle-cancellation
                   :triggers #{:editor.eval.clj.cancel}
                   :reaction (fn [this]
-                              (notifos/done-working "")
+                              (notifos/done-working)
                               (notifos/set-msg! "Canceled clj eval." {:class "error"})))
 
 (object/behavior* ::print-length
@@ -762,7 +762,7 @@
                                 (object/update! this [:buffer] str out)
                                 (if (> (.indexOf out "nREPL server started") -1)
                                   (do
-                                    (notifos/done-working "")
+                                    (notifos/done-working)
                                     (object/merge! this {:connected true})
                                     (let [client (clients/by-id (:cid @this))]
                                       (object/merge! client {:port (-> (re-seq #"port ([\d]+)" out) first second)})
@@ -789,8 +789,8 @@
                   :reaction (fn [this data]
                               ;(object/update! this [:buffer] str data)
                               (when-not (:connected @this)
-                                (notifos/done-working "")
-                                (notifos/done-working "")
+                                (notifos/done-working)
+                                (notifos/done-working)
                                 (popup/popup! {:header "We couldn't connect."
                                                :body [:span "Looks like there was an issue trying to connect
                                                       to the project. Here's what we got:" [:pre (:buffer @this)]]
