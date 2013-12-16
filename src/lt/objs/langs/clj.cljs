@@ -397,7 +397,7 @@
                   :triggers #{:connect}
                   :reaction (fn [this]
                               (let [deps (object/raise-reduce this :depend-on+ {})
-                                    code `(lighttable.nrepl.core/depend-on '~deps)]
+                                    code (pr-str `(lighttable.nrepl.core/depend-on '~deps))]
                                 (object/raise this :send! {:cb (object/->id this)
                                                            :command :editor.eval.clj
                                                            :data {:code code
@@ -406,7 +406,7 @@
 
 (object/behavior* ::depend-on
                   :triggers #{:depend-on+}
-                  :reaction (fn [this other-deps & this-deps]
+                  :reaction (fn [this other-deps this-deps]
                               (merge-with concat other-deps this-deps)))
 
 ;;****************************************************
