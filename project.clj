@@ -2,11 +2,10 @@
   :description "FIXME: write this!"
   :url "http://exampl.com/FIXME"
   :dependencies [[org.clojure/clojure "1.5.1"]
-                 ;:exclusions [org.clojure/clojurescript]
                  [crate "0.2.4"]
                  [fetch "0.1.1" :exclusions [org.clojure/clojure]]
                  ;[core.async "0.1.0-SNAPSHOT"]
-                 [org.clojure/clojurescript "0.0-2120"
+                 [ibdknox/clojurescript "0.0-2121"
                   :exclusions [org.apache.ant/ant]]
                  ]
   :cljsbuild {:builds [{:source-paths ["src"]
@@ -17,8 +16,5 @@
                                    :output-dir "cljs/"
                                    :pretty-print true}}]}
   :plugins [[lein-cljsbuild "1.0.1"]]
-  :source-paths ["src/"
-                 "/Users/chris/repos/clojurescript/src/clj"
-                 "/Users/chris/repos/clojurescript/src/cljs"
-                 ]
+  :source-paths ["src/"]
   )
