@@ -619,8 +619,8 @@
                                     type (-> info :mime mime->type)
                                     ns (:ns info)
                                     code (case type
-                                           "clj" `(lt.objs.langs.clj.auto-complete/clj-hints '~ns)
-                                           "cljs" `(lt.objs.langs.clj.auto-complete/cljs-hints '~ns))
+                                           "clj" `(lighttable.nrepl.auto-complete/clj-hints '~ns)
+                                           "cljs" `(lighttable.nrepl.auto-complete/cljs-hints '~ns))
                                     info (assoc info
                                            :code (pr-str code)
                                            :meta {:verbatim true
