@@ -112,8 +112,7 @@
  :client.local #{:lt.objs.clients.local/send!},
  :client.placeholder #{:lt.objs.clients/remove-placeholder-on-swapped},
  :clients
- #{:lt.objs.langs.clj/handle-cancellation
-   :lt.objs.clients/raise-on-object
+ #{:lt.objs.clients/raise-on-object
    :lt.objs.langs.python/ipython-error
    :lt.objs.langs.python/pyzmq-error},
  :clients.devtools
@@ -126,7 +125,6 @@
    :lt.objs.clients.devtools/reconnect
    :lt.objs.clients.devtools/disconnect
    :lt.objs.clients.devtools/print-messages},
- :clojure.lang #{:lt.objs.langs.clj/connect :lt.objs.langs.clj/eval! :lt.objs.langs.clj/build!},
  :codex
  #{:lt.objs.codex/close :lt.objs.codex/add! :lt.objs.codex/clear!},
  :command.options #{:lt.objs.sidebar.command/options-escape!},
@@ -201,76 +199,6 @@
                   :lt.plugins.auto-complete/auto-show-on-input
                   }
  :editor.keymap.helper #{:lt.objs.langs.keymap/helper.show!}
- :editor.clj.jump-to-definition [:lt.objs.langs.clj/jump-to-definition-at-cursor
-                                 :lt.objs.langs.clj/start-jump-to-definition
-                                 :lt.objs.langs.clj/finish-jump-to-definition]
- :editor.clj
- #{:lt.objs.langs.clj/eval-print :lt.objs.langs.clj/on-result-set-ns
-   :lt.objs.langs.clj/no-op :lt.objs.langs.clj/clj-exception
-   :lt.objs.langs.clj/eval-print-err :lt.objs.langs.clj/eval-location
-   :lt.objs.langs.clj/on-eval.one :lt.objs.langs.clj/on-eval
-   :lt.objs.langs.clj/clj-result
-   :lt.objs.langs.clj/clj-result.inline
-   :lt.objs.langs.clj/clj-result.statusbar
-   :lt.objs.langs.clj/clj-result.replace
-   :lt.objs.langs.clj/clj-watch-result
-   :lt.objs.langs.clj/clj-watch-src
-   :lt.objs.langs.clj/clj-watch-custom-src
-   :lt.objs.langs.clj/clj-doc
-   :lt.objs.langs.clj/print-clj-doc
-   :lt.objs.langs.clj/on-eval.custom
-   :lt.objs.plugins/auto-complete
-   [:lt.object/add-tag :watchable]
-   [:lt.object/add-tag :docable]
-   (:lt.object/add-tag :editor.clj.hints)
-   (:lt.object/add-tag :editor.clj.jump-to-definition)
-   },
- :editor.clj.hints [:lt.objs.langs.clj/trigger-update-hints
-                    :lt.objs.langs.clj/start-update-hints
-                    :lt.objs.langs.clj/finish-update-hints
-                    :lt.objs.langs.clj/use-hints],
- :editor.clj.instarepl
- #{:lt.objs.instarepl/on-eval-one :lt.objs.instarepl/set-parent-title
-   :lt.objs.instarepl/on-eval-sonar :lt.objs.instarepl/dirty-parent
-   :lt.objs.instarepl/no-op :lt.objs.instarepl/eval-on-change
-   :lt.objs.instarepl/close-parent
-   :lt.objs.langs.clj/clj-result.inline
-   :lt.objs.langs.clj/clj-result.statusbar
-   :lt.objs.langs.clj/clj-result.replace
-   :lt.objs.langs.clj/clj-watch-src
-   :lt.objs.langs.clj/clj-watch-custom-src
-   :lt.objs.editor.find/find-in-editor
-   :lt.objs.langs.clj/clj-watch-result
-   :lt.objs.langs.clj/clj-doc
-   :lt.objs.langs.clj/print-clj-doc
-   :lt.objs.langs.clj/on-eval.custom
-   [:lt.object/add-tag :watchable]
-   [:lt.object/add-tag :docable]
-   (:lt.object/add-tag :editor.clj.hints)
-   (:lt.object/add-tag :editor.clj.jump-to-definition)
-   },
- :editor.cljs
- #{:lt.objs.langs.clj/on-result-set-ns :lt.objs.langs.clj/exec.cljs!
-   :lt.objs.langs.clj/no-op :lt.objs.langs.clj/eval-location
-   :lt.objs.langs.clj/on-code :lt.objs.langs.clj/on-eval.one
-   :lt.objs.langs.clj/on-eval
-   :lt.objs.langs.clj/clj-result ;; for hints
-   :lt.objs.langs.clj/cljs-result
-   :lt.objs.langs.clj/cljs-result.inline
-   :lt.objs.langs.clj/cljs-result.statusbar
-   :lt.objs.langs.clj/cljs-result.replace
-   :lt.objs.langs.clj/cljs-exception
-   :lt.objs.langs.clj/cljs-watch-result
-   :lt.objs.langs.clj/cljs-watch-src
-   :lt.objs.langs.clj/cljs-watch-custom-src
-   :lt.objs.langs.clj/cljs-doc
-   :lt.objs.langs.clj/print-cljs-doc
-   :lt.objs.langs.clj/on-eval.custom
-   :lt.objs.plugins/check-for-plugin-file
-   [:lt.object/add-tag :docable]
-   [:lt.object/add-tag :watchable]
-   (:lt.object/add-tag :editor.clj.hints)
-   (:lt.object/add-tag :editor.clj.jump-to-definition)},
  :editor.css
  #{:lt.objs.langs.css/on-eval :lt.objs.langs.css/eval-on-save},
  :editor.file-backed
@@ -407,29 +335,10 @@
    :lt.objs.eval/move-mark :lt.objs.eval/changed
    :lt.objs.eval/update!
    :lt.objs.eval/destroy-on-cleared},
- :inline.result-group
- #{:lt.objs.instarepl/clear-mark :lt.objs.instarepl/changed
-   :lt.objs.instarepl/soft-clear :lt.objs.instarepl/expand-on-click
-   :lt.objs.instarepl/move-mark
-   :lt.objs.instarepl/shrink-on-double-click},
  :inline.underline-result
  #{:lt.objs.eval/result-menu! :lt.objs.eval/ex-clear :lt.objs.eval/destroy-on-clear},
  :inline.watch #{:lt.plugins.watches/clear!}
  :inspector.object #{:lt.objs.clients.devtools/clear-inspector-object},
- :instarepl #{
-              :lt.objs.instarepl/sonar-result
-              :lt.objs.instarepl/clj-exception
-              :lt.objs.instarepl/on-show-refresh-eds
-              :lt.objs.instarepl/destroy-on-close
-              :lt.objs.instarepl/reroute-watches
-              :lt.objs.instarepl/live-toggle
-              :lt.objs.instarepl/on-focus-focus-ed
-              :lt.objs.instarepl/no-op
-              :lt.objs.instarepl/cleanup-on-destroy
-              :lt.objs.langs.clj/eval-print-err
-              :lt.objs.langs.clj/eval-print
-
-              }
  :navigate.selector
  #{:lt.objs.sidebar.navigate/escape!
    :lt.objs.sidebar.navigate/pop-transient-on-select
@@ -447,36 +356,6 @@
    :lt.objs.clients.tcp-client/changelive!
    :lt.objs.clients.tcp-client/connect-retry},
  :nodejs.lang #{:lt.objs.clients.tcp-client/connect!},
-
-
- :nrepl.hints [:lt.objs.langs.clj/install-dependencies
-               (:lt.objs.langs.clj/depend-on {:libs [[clojure-complete "0.2.3"]]
-                                              :paths ["/home/jamie/light-table-core/src"]
-                                              :nss [lt.objs.langs.clj.auto-complete]})]
- :nrepl.client [:lt.objs.clients.nrepl/nrepl-message
-                :lt.objs.clients.nrepl/nrepl-connect
-                :lt.objs.clients.nrepl/nrepl-send!
-                :lt.objs.clients.nrepl/client.settings
-                :lt.objs.clients.nrepl/connect!
-                :lt.objs.clients.nrepl/try-connect!
-                :lt.objs.clients.nrepl/close
-                :lt.objs.langs.clj/eval-print-err
-                :lt.objs.langs.clj/eval-print
-                :lt.objs.clients.nrepl/init-session
-                (:lt.object/add-tag :nrepl.hints)
-                :lt.objs.langs.clj/clj-result :lt.objs.langs.clj/clj-exception]
- :nrepl.client.remote [:lt.objs.clients.nrepl/nrepl-message
-                       :lt.objs.clients.nrepl/nrepl-connect
-                       :lt.objs.clients.nrepl/nrepl-send!
-                       :lt.objs.clients.nrepl/client.settings.remote
-                       :lt.objs.clients.nrepl/connect!
-                       :lt.objs.clients.nrepl/try-connect!
-                       :lt.objs.clients.nrepl/close
-                       :lt.objs.langs.clj/eval-print-err
-                       :lt.objs.langs.clj/eval-print
-                       :lt.objs.clients.nrepl/init-remote-session
-                       (:lt.object/add-tag :nrepl.hints)
-                       :lt.objs.langs.clj/clj-result :lt.objs.langs.clj/clj-exception]
  :object #{:lt.objs.clients/on-destroy-remove-cb},
  :opener
  #{:lt.objs.opener/open-from-info :lt.objs.opener/open-transient-editor
@@ -490,9 +369,7 @@
    :lt.objs.sidebar.command/options-escape!
    :lt.objs.sidebar.command/op-clear!
    :lt.objs.sidebar.command/op-focus!},
- :plugin.file [:lt.objs.langs.clj/build-cljs-plugin
-               :lt.objs.langs.clj/plugin-compile-results
-               (:lt.objs.editor.file/on-save :build)]
+ :plugin.file [(:lt.objs.editor.file/on-save :build)]
  :plugin-manager [:lt.objs.plugins/on-close
                   :lt.objs.plugins/render-server-plugins
                   :lt.objs.plugins/submit-plugin
@@ -539,8 +416,6 @@
    :lt.objs.sidebar.command/exec-command},
  :sidebar.docs.search [:lt.plugins.doc/sidebar.doc.search.exec
                        :lt.plugins.doc/doc.search.results
-                       :lt.objs.langs.clj/clj-doc-search
-                       :lt.objs.langs.clj/cljs-doc-search
                        :lt.plugins.doc/focus!
                        :lt.plugins.doc/set-item
                        :lt.plugins.doc/clear!
