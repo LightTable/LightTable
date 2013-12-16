@@ -402,7 +402,8 @@
                                                            :command :editor.eval.clj
                                                            :data {:code code
                                                                   :ns "user"
-                                                                  :meta {:result-type :pomegranate}}}))))
+                                                                  :meta {:result-type :dependencies}}}))))
+
 (object/behavior* ::depend-on
                   :triggers #{:depend-on+}
                   :reaction (fn [this other-deps & this-deps]
