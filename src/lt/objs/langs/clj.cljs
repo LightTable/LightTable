@@ -29,8 +29,7 @@
 (def shell (load/node-module "shelljs"))
 (def cur-path (.pwd shell))
 (def home-path deploy/home-path)
-(def jar-dir (files/join home-path "plugins" "clojure"))
-(def jar-path (files/join jar-dir "lein-light-standalone.jar"))
+(def jar-path (files/join home-path "plugins/clojure/runner/target/lein-light-standalone.jar"))
 
 ;;****************************************************
 ;; Parser
