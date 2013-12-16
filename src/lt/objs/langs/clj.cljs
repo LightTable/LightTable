@@ -393,21 +393,15 @@
                   :reaction (fn [this path]
                               (object/merge! clj-lang {:java-exe path})))
 
-(object/behavior* ::install-dependencies
+(object/behavior* ::require-jar
                   :triggers #{:connect}
-                  :reaction (fn [this]
-                              (let [deps (object/raise-reduce this :depend-on+ {})
-                                    code (pr-str `(lighttable.nrepl.core/depend-on '~deps))]
+                  :reaction (fn [this path]
+                              (let [code (pr-str `(pomegranate/add-classpath ~path))]
                                 (object/raise this :send! {:cb (object/->id this)
                                                            :command :editor.eval.clj
                                                            :data {:code code
                                                                   :ns "user"
                                                                   :meta {:result-type :dependencies}}}))))
-
-(object/behavior* ::depend-on
-                  :triggers #{:depend-on+}
-                  :reaction (fn [this other-deps this-deps]
-                              (merge-with concat other-deps this-deps)))
 
 ;;****************************************************
 ;; Connectors
