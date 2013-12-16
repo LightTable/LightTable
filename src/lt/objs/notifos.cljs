@@ -13,15 +13,18 @@
     (set-msg! msg))
   (statusbar/loader-inc))
 
-(defn done-working [msg]
-  (when msg
-    (set-msg! msg))
-  (statusbar/loader-dec))
+(defn done-working
+  ([]
+   (statusbar/loader-dec))
+  ([msg]
+   (set-msg! msg)
+   (statusbar/loader-dec)))
 
 (defn msg* [m opts]
   (object/merge! statusbar/statusbar-loader (merge {:message m :class ""} opts)))
 
 (defn set-msg! [msg opts]
+  (println "Notifos:" msg)
   (msg* msg opts)
   (js/clearTimeout cur-timeout)
   (set! cur-timeout (wait standard-timeout #(msg* ""))))

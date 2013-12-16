@@ -29,8 +29,7 @@
 (def shell (load/node-module "shelljs"))
 (def cur-path (.pwd shell))
 (def home-path deploy/home-path)
-(def jar-dir (files/join home-path "plugins" "clojure"))
-(def jar-path (files/join jar-dir "lein-light-standalone.jar"))
+(def jar-path (files/join home-path "plugins/clojure/runner/target/lein-light-standalone.jar"))
 
 ;;****************************************************
 ;; Parser
@@ -397,22 +396,18 @@
 (object/behavior* ::install-dependencies
                   :triggers #{:connect}
                   :reaction (fn [this]
-                              (let [deps (object/raise-reduce this :depend-on+ [])
-                                    code `(do (require 'cemerick.pomegranate)
-                                            (cemerick.pomegranate/add-dependencies
-                                             :coordinates '[~@deps]
-                                             :repositories (merge cemerick.pomegranate.aether/maven-central
-                                                                  {"clojars" "http://clojars.org/repo"})))]
+                              (let [deps (object/raise-reduce this :depend-on+ {})
+                                    code (pr-str `(lighttable.nrepl.core/depend-on '~deps))]
                                 (object/raise this :send! {:cb (object/->id this)
                                                            :command :editor.eval.clj
                                                            :data {:code code
                                                                   :ns "user"
-                                                                  :meta {:result-type :pomegranate}}}))))
+                                                                  :meta {:result-type :dependencies}}}))))
 
 (object/behavior* ::depend-on
                   :triggers #{:depend-on+}
-                  :reaction (fn [this other-deps & this-deps]
-                              (concat other-deps this-deps)))
+                  :reaction (fn [this other-deps this-deps]
+                              (merge-with concat other-deps this-deps)))
 
 ;;****************************************************
 ;; Connectors
@@ -613,67 +608,6 @@
 ;; autocomplete
 ;;****************************************************
 
-;; TODO move this to lein-light
-(defn get-clj-hints-code [ns]
-  `(let [ns# '~ns]
-     (concat ;; special forms
-             complete.core/special-forms
-             ;; local vars
-             (complete.core/ns-vars ns#)
-             ;; local classes
-             (complete.core/ns-classes ns#)
-             ;; local java methods
-             (complete.core/ns-java-methods ns#)
-             ;; aliased namespaces
-             (for [[alias# required-ns#] (ns-aliases ns#)]
-               (str alias#))
-             ;; aliased vars
-             (for [[alias# required-ns#] (ns-aliases ns#)
-                   var# (complete.core/ns-public-vars required-ns#)]
-               (str alias# "/" var#))
-             ;; global namespaces
-             (for [required-ns# (all-ns)]
-               (str required-ns#))
-             ;; global vars
-             (for [required-ns# (all-ns)
-                   var# (complete.core/ns-public-vars required-ns#)]
-               (str required-ns# "/" var#))
-             ;; global classes
-             ;; TODO static methods
-             ;; TODO cant do these until quicklist is faster
-             ;; (deref complete.core/top-level-classes 0 nil)
-             ;; (deref complete.core/nested-classes 0 nil)
-      )))
-
-;; TODO move this to lein-light
-(defn get-cljs-hints-code [ns]
-  `(let [ns# '~ns
-         nss# (-> @lighttable.nrepl.cljs/compiler-env :cljs.analyzer/namespaces)]
-     (concat ;; TODO filter private defs
-      ;; special forms
-      complete.core/special-forms
-      ;; local vars
-      (for [def# (-> nss# (get ns#) :defs keys)]
-        (str def#))
-      (for [def# (-> nss# (get ns#) :uses keys)]
-        (str def#))
-      ;; aliased namespaces
-      (for [[alias# aliased-ns#] (-> nss# (get ns#) :requires)
-            :when (not= alias# aliased-ns#)]
-        (str alias#))
-      ;; aliased vars
-      (for [[alias# aliased-ns#] (-> nss# (get ns#) :requires)
-            :when (not= alias# aliased-ns#)
-            def# (-> nss# (get aliased-ns#) :defs keys)]
-        (str alias# "/" def#))
-      ;; global namespaces
-      (for [global-ns# (-> nss# keys)]
-        (str global-ns#))
-      ;; global vars
-      (for [[global-ns# val#] nss#
-            def# (-> val# :defs keys)]
-        (str global-ns# "/" def#)))))
-
 (object/behavior* ::trigger-update-hints
                   :triggers #{:focus
                               :editor.eval.clj.result
@@ -691,8 +625,8 @@
                                     type (-> info :mime mime->type)
                                     ns (:ns info)
                                     code (case type
-                                           "clj" (get-clj-hints-code ns)
-                                           "cljs" (get-cljs-hints-code ns))
+                                           "clj" `(lt.objs.langs.clj.auto-complete/clj-hints '~ns)
+                                           "cljs" `(lt.objs.langs.clj.auto-complete/cljs-hints '~ns))
                                     info (assoc info
                                            :code (pr-str code)
                                            :meta {:verbatim true
@@ -747,7 +681,7 @@
                   :reaction (fn [editor {:keys [file line] :as res}]
                               (when (= :jump (:result-type res))
                                 (if (and res file line)
-                                  (object/raise lt.objs.jump-stack/jump-stack :jump-stack.push! editor file line)
+                                  (object/raise lt.objs.jump-stack/jump-stack :jump-stack.push! editor file {:line (dec line) :ch 0})
                                   (notifos/set-msg! "Definition not found" {:class "error"})))))
 
 ;;****************************************************

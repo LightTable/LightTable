@@ -450,7 +450,9 @@
 
 
  :nrepl.hints [:lt.objs.langs.clj/install-dependencies
-                   (:lt.objs.langs.clj/depend-on [clojure-complete "0.2.3"])]
+               (:lt.objs.langs.clj/depend-on {:libs [[clojure-complete "0.2.3"]]
+                                              :paths ["/home/jamie/light-table-core/src"]
+                                              :nss [lt.objs.langs.clj.auto-complete]})]
  :nrepl.client [:lt.objs.clients.nrepl/nrepl-message
                 :lt.objs.clients.nrepl/nrepl-connect
                 :lt.objs.clients.nrepl/nrepl-send!
@@ -461,7 +463,8 @@
                 :lt.objs.langs.clj/eval-print-err
                 :lt.objs.langs.clj/eval-print
                 :lt.objs.clients.nrepl/init-session
-                (:lt.object/add-tag :nrepl.hints)]
+                (:lt.object/add-tag :nrepl.hints)
+                :lt.objs.langs.clj/clj-result :lt.objs.langs.clj/clj-exception]
  :nrepl.client.remote [:lt.objs.clients.nrepl/nrepl-message
                        :lt.objs.clients.nrepl/nrepl-connect
                        :lt.objs.clients.nrepl/nrepl-send!
@@ -472,7 +475,8 @@
                        :lt.objs.langs.clj/eval-print-err
                        :lt.objs.langs.clj/eval-print
                        :lt.objs.clients.nrepl/init-remote-session
-                       (:lt.object/add-tag :nrepl.hints)]
+                       (:lt.object/add-tag :nrepl.hints)
+                       :lt.objs.langs.clj/clj-result :lt.objs.langs.clj/clj-exception]
  :object #{:lt.objs.clients/on-destroy-remove-cb},
  :opener
  #{:lt.objs.opener/open-from-info :lt.objs.opener/open-transient-editor
