@@ -681,7 +681,7 @@
                   :reaction (fn [editor {:keys [file line] :as res}]
                               (when (= :jump (:result-type res))
                                 (if (and res file line)
-                                  (object/raise lt.objs.jump-stack/jump-stack :jump-stack.push! editor file line)
+                                  (object/raise lt.objs.jump-stack/jump-stack :jump-stack.push! editor file {:line (dec line) :ch 0})
                                   (notifos/set-msg! "Definition not found" {:class "error"})))))
 
 ;;****************************************************
