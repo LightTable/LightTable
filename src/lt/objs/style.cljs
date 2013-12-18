@@ -86,9 +86,9 @@
                               ))
 
 (defn get-skins []
-  (sort-by :text
+  (sort-by #(.-text %)
            (for [[skin path] (object/raise-reduce app/app :skins+ {})]
-              {:text (pr-str skin) :completion (pr-str skin)})))
+              #js {:text (pr-str skin) :completion (pr-str skin)})))
 
 (get-skins)
 
@@ -109,9 +109,9 @@
 (def prev-theme "")
 
 (defn get-themes []
-  (sort-by :text
+  (sort-by #(.-text %)
            (for [[theme path] (object/raise-reduce app/app :themes+ {})]
-              {:text (pr-str theme) :completion (pr-str theme)})))
+              #js {:text (pr-str theme) :completion (pr-str theme)})))
 
 (defui stylesheet [name]
   [:link {:rel "stylesheet"

@@ -65,24 +65,26 @@
       (index-of res params)))))
 
 (defn wrapped-replacement [replace cur]
-  (replace (+ "(" (:completion cur) " )"))
+  (replace (+ "(" (.-completion cur) " )"))
   (cmd/exec! :editor.char-left))
 
 (defn ->wrapped-behavior [beh cur]
-  (if (:params beh)
-    (assoc cur :select wrapped-replacement :completion (str (:name beh)))
-    (assoc cur :completion (str (:name beh)))))
+  (aset cur "completion" (str (:name beh)))
+  (when (:params beh)
+    (aset cur "select" wrapped-replacement))
+  cur)
+
 
 (defn user-behavior-completions []
   (map #(if-not (:desc %)
-          (->wrapped-behavior % {:text (str (:name %))})
-          (->wrapped-behavior % {:text (:desc %)}))
+          (->wrapped-behavior % #js {:text (str (:name %))})
+          (->wrapped-behavior % #js {:text (:desc %)}))
        (filter #(= (:type %) :user) (vals @object/behaviors))))
 
-(def completions {:root [{:completion ":+"}
-                         {:completion ":-"}]
+(def completions {:root [#js {:completion ":+"}
+                         #js {:completion ":-"}]
                   :tag (fn []
-                         (map #(do {:completion (str %) :text (str %)}) (keys @object/tags)))
+                         (map #(do #js {:completion (str %) :text (str %)}) (keys @object/tags)))
                   :behavior user-behavior-completions
                   :behavior-param (fn [beh idx]
                                     (cond

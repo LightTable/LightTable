@@ -61,10 +61,10 @@
     (when res
       (index-of res params)))))
 
-(def completions {:root [{:completion ":+"}
-                         {:completion ":-"}]
+(def completions {:root [#js {:completion ":+"}
+                         #js {:completion ":-"}]
                   :tag (fn []
-                         (map #(do {:completion (str %) :text (str %)}) (keys @object/tags)))
+                         (map #(do #js {:completion (str %) :text (str %)}) (keys @object/tags)))
                   :key cmd/completions})
 
 (object/behavior* ::keymap-hints

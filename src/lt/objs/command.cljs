@@ -16,8 +16,8 @@
 
 (defn completions []
   (map #(if-not (:desc %)
-          {:completion (str (:command %)) :text (str (:command %))}
-          {:completion (str (:command %)) :text (:desc %)})
+          #js {:completion (str (:command %)) :text (str (:command %))}
+          #js {:completion (str (:command %)) :text (:desc %)})
        (vals (:commands @manager))))
 
 (defn exec!
