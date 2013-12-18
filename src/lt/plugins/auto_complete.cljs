@@ -131,16 +131,21 @@
     (w this {:string (editor/->val this)
              :pattern (.-source (get-pattern this))})))
 
+(defn completion [x]
+  (:completion x (.-completion x)))
+
+
+
 (defn text|completion [x]
-  (:text x (:completion x)))
+  (:text x (completion x)))
 
 (defn text+completion [x]
-  (str (:text x) (:completion x)))
+  (str (:text x) (completion x)))
 
 (def hinter (-> (scmd/filter-list {:items (fn []
                                         (when-let [cur (pool/last-active)]
                                           (if (:starting-token @hinter)
-                                            (remove #(= (-> @hinter :starting-token :string) (:completion %))
+                                            (remove #(= (-> @hinter :starting-token :string) (completion %))
                                                     (object/raise-reduce cur :hints+ []))
                                             (object/raise-reduce cur :hints+ []))))
                                :key text|completion})
@@ -183,7 +188,7 @@
                                 (object/merge! this {:active false})
                                 (if (:select c)
                                   ((:select c) (partial editor/replace (:ed @this) start end) c)
-                                  (editor/replace (:ed @this) start end (:completion c)))
+                                  (editor/replace (:ed @this) start end (completion c)))
                                 (object/raise this :escape!))))
 
 (object/behavior* ::select-unknown
