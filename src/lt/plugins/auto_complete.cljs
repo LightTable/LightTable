@@ -50,7 +50,7 @@
           (next* s)
           (advance s)))
       (skip-space s))
-    (map #(do #js {:completion %}) (js/Object.keys res))))
+    (into-array (map #(do #js {:completion %}) (js/Object.keys res)))))
 
 (defn get-token [ed pos]
   (let [line (editor/line ed (:line pos))
@@ -117,8 +117,8 @@
                                                     (next* s)
                                                     (advance s)))
                                                 (skip-space s))
-                                              (map #(do #js {:completion %}) (js/Object.keys res))))]
-                       (raise obj-id :hint-tokens (js->clj (string->tokens (:string m) (:pattern m))))))))
+                                              (into-array (map #(do #js {:completion %}) (js/Object.keys res)))))]
+                       (js/_send obj-id :hint-tokens (string->tokens (:string m) (:pattern m)))))))
 
 (def default-pattern #"[\w_$]")
 
@@ -213,7 +213,7 @@
 (object/behavior* ::async-hint-tokens
                   :triggers #{:hint-tokens}
                   :reaction (fn [this tokens]
-                              (object/merge! this {::hints (clj->js tokens)})))
+                              (object/merge! this {::hints tokens})))
 
 (object/behavior* ::intra-buffer-string-hints
                   :triggers #{:change}
