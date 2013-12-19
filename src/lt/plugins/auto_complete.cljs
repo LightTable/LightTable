@@ -118,7 +118,7 @@
                                                     (advance s)))
                                                 (skip-space s))
                                               (map #(do #js {:completion %}) (js/Object.keys res))))]
-                       (raise obj-id :hint-tokens (string->tokens (:string m) (:pattern m)))))))
+                       (raise obj-id :hint-tokens (js->clj (string->tokens (:string m) (:pattern m))))))))
 
 (def default-pattern #"[\w_$]")
 
@@ -213,7 +213,7 @@
 (object/behavior* ::async-hint-tokens
                   :triggers #{:hint-tokens}
                   :reaction (fn [this tokens]
-                              (object/merge! this {::hints tokens})))
+                              (object/merge! this {::hints (clj->js tokens)})))
 
 (object/behavior* ::intra-buffer-string-hints
                   :triggers #{:change}
