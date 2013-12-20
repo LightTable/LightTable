@@ -11,9 +11,9 @@
   :cljsbuild {:builds [{:source-paths ["src"]
                         :compiler {:optimizations :simple
                                    :externs ["externs/jquery.js" "externs/throttle.js" "externs/codemirror.js"]
-                                   ;:source-map "deploy/core/node_modules/lighttable/bootstrap.js.map"
+                                   :source-map "deploy/core/node_modules/lighttable/bootstrap.js.map"
                                    :output-to "deploy/core/node_modules/lighttable/bootstrap.js"
-                                   :output-dir "cljs/"
+                                   :output-dir "deploy/core/node_modules/lighttable/cljs/"
                                    :pretty-print true}}]}
   :plugins [[lein-cljsbuild "1.0.1"]]
   :source-paths ["src/"]
