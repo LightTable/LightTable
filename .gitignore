@@ -8,3 +8,4 @@ deploy/node-webkit*
 deploy/core/cache
 deploy/logs
 .DS_Store
+deploy/core/node_modules/lighttable/bootstrap.js*
