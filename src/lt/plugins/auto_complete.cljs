@@ -146,11 +146,10 @@
                                :key text|completion})
                 (object/add-tags [:hinter])))
 
-
 (object/behavior* ::textual-hints
                   :triggers #{:hints+}
                   :reaction (fn [this hints]
-                              (concat hints (::hints @this))))
+                              (concat (::hints @this) hints)))
 
 (object/behavior* ::escape!
                   :triggers #{:escape!}
