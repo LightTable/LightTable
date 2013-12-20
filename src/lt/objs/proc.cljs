@@ -5,7 +5,8 @@
             [lt.objs.platform :as platform]
             [lt.objs.app :as app]
             [lt.util.load :as load]
-            [clojure.string :as string]))
+            [clojure.string :as string])
+  (:require-macros [lt.macros :refer [behavior]]))
 
 (def shell (load/node-module "shelljs"))
 (def spawn (.-spawn (js/require "child_process")))
@@ -77,7 +78,7 @@
     (object/merge! obj {:procs procs})
     nil))
 
-(object/behavior* ::kill-procs-on-close
+(behavior ::kill-procs-on-close
                   :triggers #{:closed}
                   :reaction (fn [this]
                               (kill-all)))
@@ -88,7 +89,7 @@
 ;; Testing
 ;;*******************************************************
 
-(object/behavior* ::print-all
+(behavior ::print-all
                   :triggers #{:proc.error :proc.out :proc.exit}
                   :reaction (fn [this data]
                               (println "PROC: " data)))
@@ -126,7 +127,7 @@
                         (reduce str))]
       (str "PATH=" path-str ":$PATH && "))))
 
-(object/behavior* ::set-path-OSX
+(behavior ::set-path-OSX
                   :triggers #{:init}
                   :reaction (fn [app]
                               (when (and (platform/mac?)
@@ -136,7 +137,7 @@
                                          (when-not (empty? out)
                                            (set! js/process.env.PATH out)))))))
 
-(object/behavior* ::global-path
+(behavior ::global-path
                   :triggers #{:object.instant}
                   :desc "App: set global PATH for processes"
                   :type :user
@@ -145,7 +146,7 @@
                   :reaction (fn [app path]
                               (set! js/process.env.PATH path)))
 
-(object/behavior* ::global-env
+(behavior ::global-env
                   :triggers #{:object.instant}
                   :desc "App: add to the global ENV for processes"
                   :params [{:label "env map"}]

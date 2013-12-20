@@ -7,7 +7,7 @@
             [clojure.string :as string]
             [lt.util.js :refer [wait]]
             [lt.util.cljs :refer [js->clj]])
-  (:require-macros [lt.macros :refer [background defui]]))
+  (:require-macros [lt.macros :refer [behavior background defui]]))
 
 (def parser (background (fn [obj-id contents]
                           (let [StringStream (-> (js/require (str js/ltpath "/core/node_modules/codemirror/stringstream.js"))
@@ -101,7 +101,7 @@
                                      :else nil)
                                     )})
 
-(object/behavior* ::behavior-hints
+(behavior ::behavior-hints
                   :triggers #{:hints+}
                   :reaction (fn [this hints]
                               (let [comps (completions (pos->state this))]
@@ -112,7 +112,7 @@
                                       (comps (pos->behavior this (- idx 2)) (dec idx)))
                                     comps)))))
 
-(object/behavior* ::show-info-on-move
+(behavior ::show-info-on-move
                   :triggers #{:move}
                   :debounce 200
                   :reaction (fn [this]
@@ -123,18 +123,18 @@
                                   (object/raise helper :clear!)
                                   ))))
 
-(object/behavior* ::behavior-hint-pattern
+(behavior ::behavior-hint-pattern
                   :triggers #{:object.instant}
                   :reaction (fn [this]
                               (object/merge! this {:hint-pattern #"[\w\-\>\:\*\$\?\<\!\+\.\"\/]"})))
 
-(object/behavior* ::on-changed
+(behavior ::on-changed
                   :triggers #{:change :create}
                   :debounce 100
                   :reaction (fn [this]
                               (parser this (editor/->val this))))
 
-(object/behavior* ::parsed
+(behavior ::parsed
                   :triggers #{:parsed}
                   :reaction (fn [this results]
                               (object/merge! this (js->clj results :keywordize-keys true))
@@ -173,7 +173,7 @@
 (object/object* ::helper
                 :tags #{:editor.behaviors.helper})
 
-(object/behavior* ::helper.clear!
+(behavior ::helper.clear!
                   :desc "Behaviors.helper: clear"
                   :triggers #{:clear!}
                   :reaction (fn [this]
@@ -185,7 +185,7 @@
                                                        :line nil
                                                        :ed nil})))
 
-(object/behavior* ::helper.show!
+(behavior ::helper.show!
                   :desc "Behaviors.helper: show"
                   :triggers #{:show!}
                   :reaction (fn [this ed beh param-idx]

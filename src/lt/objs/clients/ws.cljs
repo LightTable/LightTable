@@ -7,7 +7,8 @@
             [lt.util.load :as load]
             [lt.util.cljs :refer [js->clj]]
             [clojure.string :as string])
-  (:use [lt.util.js :only [wait ->clj]]))
+  (:use [lt.util.js :only [wait ->clj]])
+  (:require-macros [lt.macros :refer [behavior]]))
 
 (def port 0)
 (def sockets (atom {}))
@@ -46,7 +47,7 @@
   (.on socket "result" #(on-result socket %))
   (.on socket "init" (partial store-client! socket)))
 
-(object/behavior* ::send!
+(behavior ::send!
                   :triggers #{:send!}
                   :reaction (fn [this msg]
                               (send-to (:socket @this) (array (:cb msg) (:command msg) (-> msg :data clj->js)))))
@@ -67,7 +68,7 @@
     (catch js/global.Error e
       )))
 
-(object/behavior* ::kill-on-closed
+(behavior ::kill-on-closed
                   :triggers #{:closed}
                   :reaction (fn [app]
                               (try

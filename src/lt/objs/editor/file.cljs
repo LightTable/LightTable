@@ -5,9 +5,10 @@
             [lt.objs.notifos :as notifos]
             [lt.objs.command :as cmd]
             [clojure.string :as string]
-            [lt.objs.files :as files]))
+            [lt.objs.files :as files])
+  (:require-macros [lt.macros :refer [behavior]]))
 
-(object/behavior* ::file-save
+(behavior ::file-save
                   :triggers #{:save}
                   :reaction (fn [editor]
                               (let [{:keys [path]} (@editor :info)
@@ -21,7 +22,7 @@
                                                  ;;TODO: saved
                                                  )))))
 
-(object/behavior* ::dirty-on-change
+(behavior ::dirty-on-change
                   :throttle 100
                   :triggers #{:change}
                   :reaction (fn [obj]
@@ -37,7 +38,7 @@
 
 (string/replace "asdf\r\n" #"(\r\n|\n)" "\r\n")
 
-(object/behavior* ::preserve-line-endings
+(behavior ::preserve-line-endings
                   :triggers #{:save+}
                   :reaction (fn [editor content]
                               (if (= "\r\n" (or (-> @editor :info :line-ending) files/line-ending))
@@ -45,7 +46,7 @@
                                 content)))
 
 
-(object/behavior* ::remove-trailing-whitespace
+(behavior ::remove-trailing-whitespace
                   :triggers #{:save+}
                   :type :user
                   :desc "Save: Remove trailing whitespace"
@@ -53,7 +54,7 @@
                   :reaction (fn [editor content]
                               (.replace content (js/RegExp. "[ \\t]+$" "gm") "")))
 
-(object/behavior* ::last-char-newline
+(behavior ::last-char-newline
                   :desc "Save: Ensure the file ends with a new-line"
                   :type :user
                   :exclusive true
@@ -64,7 +65,7 @@
                                   content
                                   (str content line-ending)))))
 
-(object/behavior* ::on-save
+(behavior ::on-save
                   :triggers #{:save}
                   :type :user
                   :desc "Editor: On save execute command"

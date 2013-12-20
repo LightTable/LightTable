@@ -13,7 +13,7 @@
             [lt.util.cljs :as cljs-util]
             [crate.core :as crate]
             [crate.binding :refer [bound subatom]])
-  (:require-macros [lt.macros :refer [defui background]]))
+  (:require-macros [lt.macros :refer [behavior defui background]]))
 
 
 (defn file-filters [f]
@@ -41,21 +41,21 @@
                                  (js/_send obj-id :workspace-files final)
                                  ))))
 
-(object/behavior* ::workspace-files
+(behavior ::workspace-files
                   :triggers #{:workspace-files}
                   :reaction (fn [this files]
                               (object/merge! this {:files (cljs-util/js->clj files :keywordize-keys true)})
                               (object/raise (:filter-list @this) :refresh!)
                               ))
 
-(object/behavior* ::populate-on-ws-update
+(behavior ::populate-on-ws-update
                   :triggers #{:updated :refresh}
                   :debounce 150
                   :reaction (fn [ws]
                               (populate-bg sidebar-navigate {:pattern (.-source files/ignore-pattern)
                                                              :ws (workspace/serialize @ws)})))
 
-(object/behavior* ::watched.create
+(behavior ::watched.create
                   :triggers #{:watched.create}
                   :reaction (fn [ws path]
                               (when-not (file-filters (files/basename path))
@@ -64,36 +64,36 @@
                                   (object/update! sidebar-navigate [:files] conj {:full path :rel (subs path rel-length)})
                                   (object/raise (:filter-list @sidebar-navigate) :refresh!)))))
 
-(object/behavior* ::watched.delete
+(behavior ::watched.delete
                   :triggers #{:watched.delete}
                   :reaction (fn [ws path]
                               ;;TODO: this is terribly inefficient
                               (object/update! sidebar-navigate [:files] #(remove (fn [x] (= 0 (.indexOf (:full x) path))) %))
                               (object/raise (:filter-list @sidebar-navigate) :refresh!)))
 
-(object/behavior* ::focus!
+(behavior ::focus!
                   :triggers #{:focus!}
                   :reaction (fn [this]
                               (object/raise (:filter-list @this) :focus!)
                               ))
 
-(object/behavior* ::focus-on-show
+(behavior ::focus-on-show
                   :triggers #{:show}
                   :reaction (fn [this]
                               (object/raise this :focus!)))
 
-(object/behavior* ::open-on-select
+(behavior ::open-on-select
                   :triggers #{:select}
                   :reaction (fn [this cur]
                               (object/raise opener/opener :open! (:full cur))))
 
-(object/behavior* ::escape!
+(behavior ::escape!
                   :triggers #{:escape!}
                   :reaction (fn [this]
                               (cmd/exec! :escape-navigate)
                               (cmd/exec! :focus-last-editor)))
 
-(object/behavior* ::pop-transient-on-select
+(behavior ::pop-transient-on-select
                   :triggers #{:selected}
                   :reaction (fn [this]
                               (object/raise sidebar/rightbar :close!)))

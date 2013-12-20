@@ -7,20 +7,20 @@
             [lt.objs.files :as files]
             [lt.objs.tabs :as tabs]
             [lt.objs.deploy :as deploy])
-  (:require-macros [lt.macros :refer [defui]]))
+  (:require-macros [lt.macros :refer [behavior defui]]))
 
 (defui check-button []
        [:div.button "Check for updates"]
        :click (fn []
                 (deploy/check-version true)))
 
-(object/behavior* ::on-show-refresh-eds
+(behavior ::on-show-refresh-eds
                   :triggers #{:show}
                   :reaction (fn [this]
                               (object/raise (:ed @this) :show)
                               ))
 
-(object/behavior* ::destroy-on-close
+(behavior ::destroy-on-close
                   :triggers #{:close}
                   :reaction (fn [this]
                               (object/destroy! this)))

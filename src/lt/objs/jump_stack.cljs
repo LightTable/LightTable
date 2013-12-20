@@ -5,7 +5,8 @@
             [lt.objs.files :as files]
             [lt.objs.command :as cmd]
             [lt.objs.notifos :as notifos])
-  (:use [lt.object :only [object* behavior*]]))
+  (:use [lt.object :only [object* behavior*]])
+  (:require-macros [lt.macros :refer [behavior]]))
 
 (defn jump-to [file pos]
   (cmd/exec! :open-path file)
@@ -13,7 +14,7 @@
     (editor/move-cursor cur pos)
     (editor/center-cursor cur)))
 
-(behavior* ::jump-stack.push
+(behavior ::jump-stack.push
            :triggers #{:jump-stack.push!}
            :reaction (fn [jump-stack editor file pos]
                        (let [old-file (:path (:info @editor))
@@ -23,7 +24,7 @@
                            (do (jump-to file pos)
                              (object/update! jump-stack [:stack] conj [old-file old-pos]))))))
 
-(behavior* ::jump-stack.pop
+(behavior ::jump-stack.pop
            :triggers #{:jump-stack.pop!}
            :reaction (fn [jump-stack file pos]
                        (let [stack (:stack @jump-stack)]

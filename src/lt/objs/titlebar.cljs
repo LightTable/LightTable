@@ -6,7 +6,7 @@
             [lt.objs.canvas :as canvas]
             [lt.util.dom :refer [$ append add-class remove-class]]
             )
-  (:require-macros [lt.macros :refer [defui]]))
+  (:require-macros [lt.macros :refer [behavior defui]]))
 
 (def gui (js/require "nw.gui"))
 (def win (.Window.get gui))

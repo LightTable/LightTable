@@ -11,7 +11,8 @@
             [lt.util.load :as load])
   (:use [lt.util.dom :only [remove-class add-class]]
         [lt.object :only [object* behavior*]]
-        [lt.util.cljs :only [js->clj]]))
+        [lt.util.cljs :only [js->clj]])
+  (:require-macros [lt.macros :refer [behavior]]))
 
 (def gui (js/require "nw.gui"))
 (def clipboard (.Clipboard.get gui))
@@ -423,12 +424,12 @@
 ;;*********************************************************
 
 
-(behavior* ::read-only
+(behavior ::read-only
            :triggers #{:init}
            :reaction (fn [obj]
                        (set-options (:ed @obj) {:readOnly "nocursor"})))
 
-(behavior* ::wrap
+(behavior ::wrap
            :triggers #{:object.instant :lt.object/tags-removed}
            :desc "Editor: Wrap lines"
            :exclusive [::no-wrap]
@@ -436,7 +437,7 @@
            :reaction (fn [obj]
                        (set-options obj {:lineWrapping true})))
 
-(behavior* ::no-wrap
+(behavior ::no-wrap
            :triggers #{:object.instant :lt.object/tags-removed}
            :desc "Editor: Unwrap lines"
            :exclusive [::wrap]
@@ -444,7 +445,7 @@
            :reaction (fn [obj]
                        (set-options obj {:lineWrapping false})))
 
-(behavior* ::line-numbers
+(behavior ::line-numbers
            :triggers #{:object.instant :lt.object/tags-removed}
            :desc "Editor: Show line numbers"
            :exclusive [::hide-line-numbers]
@@ -452,7 +453,7 @@
            :reaction (fn [this]
                        (set-options this {:lineNumbers true})))
 
-(behavior* ::hide-line-numbers
+(behavior ::hide-line-numbers
            :triggers #{:object.instant :lt.object/tags-removed}
            :desc "Editor: Hide line numbers"
            :exclusive [::line-numbers]
@@ -460,7 +461,7 @@
            :reaction (fn [this]
                        (set-options this {:lineNumbers false})))
 
-(behavior* ::scroll-past-end
+(behavior ::scroll-past-end
            :triggers #{:object.instant :lt.object/tags-removed}
            :desc "Editor: Allow scrolling past the end of the file"
            :exclusive true
@@ -468,7 +469,7 @@
            :reaction (fn [this]
                        (set-options this {:scrollPastEnd true})))
 
-(behavior* ::tab-settings
+(behavior ::tab-settings
            :triggers #{:object.instant}
            :desc "Editor: indent settings (tab size, etc)"
            :params [{:label "Use tabs?"
@@ -484,7 +485,7 @@
                                          :indentWithTabs use-tabs?
                                          :indentUnit indent-unit})))
 
-(object/behavior* ::read-only
+(behavior ::read-only
                   :triggers #{:object.instant}
                   :desc "Editor: make editor read-only"
                   :exclusive [::not-read-only]
@@ -492,14 +493,14 @@
                               (object/update! this [:info :name] str " (read-only)")
                               (set-options this {:readOnly true})))
 
-(object/behavior* ::not-read-only
+(behavior ::not-read-only
                   :triggers #{:object.instant}
                   :desc "Editor: make editor writable"
                   :exclusive [::read-only]
                   :reaction (fn [this]
                               (set-options this {:readOnly false})))
 
-(object/behavior* ::blink-rate
+(behavior ::blink-rate
                   :triggers #{:object.instant}
                   :desc "Editor: set cursor blink rate"
                   :exclusive true
@@ -509,45 +510,45 @@
                                 (set-options this {:cursorBlinkRate rate})
                                 (set-options this {:cursorBlinkRate 0}))))
 
-(behavior* ::active-on-focus
+(behavior ::active-on-focus
            :triggers #{:focus}
            :reaction (fn [obj]
                        (object/add-tags obj [:editor.active])
                        (object/raise obj :active)))
 
-(behavior* ::inactive-on-blur
+(behavior ::inactive-on-blur
            :triggers #{:blur}
            :reaction (fn [obj]
                        (object/remove-tags obj [:editor.active])
                        (object/raise obj :inactive)))
 
-(behavior* ::refresh!
+(behavior ::refresh!
            :triggers #{:refresh!}
            :reaction (fn [this]
                        (refresh this)))
 
-(behavior* ::on-tags-added
+(behavior ::on-tags-added
            :triggers #{:lt.object/tags-added}
            :reaction (fn [this added]
                        (doseq [a added
                                :when a]
                          (ctx-obj/in! a this))))
 
-(behavior* ::on-tags-removed
+(behavior ::on-tags-removed
            :triggers #{:lt.object/tags-removed}
            :reaction (fn [this removed]
                        (doseq [r removed
                                :when r]
                          (ctx-obj/out! r this))))
 
-(behavior* ::context-on-active
+(behavior ::context-on-active
            :triggers #{:active}
            :reaction (fn [obj]
                        ;;TODO: this is probably inefficient due to inactive
                        (ctx-obj/in! (:tags @obj) obj)
                          ))
 
-(behavior* ::context-on-inactive
+(behavior ::context-on-inactive
            :triggers #{:inactive}
            :reaction (fn [obj]
                        (let [tags (:tags @obj)
@@ -560,25 +561,25 @@
                            (ctx-obj/in! (:tags @cur-editor) cur-editor)
                            ))))
 
-(behavior* ::refresh-on-show
+(behavior ::refresh-on-show
            :triggers #{:show}
            :reaction (fn [obj]
                        (refresh (:ed @obj))
                        (object/raise obj :focus!)
                        ))
 
-(behavior* ::focus
+(behavior ::focus
            :triggers #{:focus!}
            :reaction (fn [obj]
                        (focus (:ed @obj))))
 
-(behavior* ::destroy-on-close
+(behavior ::destroy-on-close
            :triggers #{:close.force}
            :reaction (fn [obj]
                        (object/raise obj :closed)
                        (object/destroy! obj)))
 
-(behavior* ::highlight-current-line
+(behavior ::highlight-current-line
            :triggers #{:object.instant}
            :type :user
            :desc "Editor: Highlight the current line"
@@ -586,7 +587,7 @@
            :reaction (fn [this]
                        (set-options this {:styleActiveLine true})))
 
-(behavior* ::menu!
+(behavior ::menu!
            :triggers #{:menu!}
            :reaction (fn [this e]
                        (let [items (sort-by :order (object/raise-reduce this :menu+ []))]
@@ -596,7 +597,7 @@
                        (dom/stop-propagation e)
                        ))
 
-(behavior* ::copy-paste-menu+
+(behavior ::copy-paste-menu+
            :triggers #{:menu+}
            :reaction (fn [this items]
                        (conj items
@@ -622,7 +623,7 @@
                               :click (fn []
                                        (select-all this))})))
 
-(object/behavior* ::init-codemirror
+(behavior ::init-codemirror
                   :triggers #{:init}
                   :reaction (fn [this]
                               (load/js "core/node_modules/codemirror/matchbracket.js" :sync)

@@ -18,7 +18,7 @@
             [clojure.string :as string]
             [crate.core :as crate]
             [crate.binding :refer [bound subatom]])
-  (:require-macros [lt.macros :refer [defui]]))
+  (:require-macros [lt.macros :refer [behavior defui]]))
 
 (def utils (js-obj))
 (set! js/lttools utils)
@@ -124,13 +124,13 @@
 ;; Behaviors
 ;;*********************************************************
 
-(object/behavior* ::destroy-on-close
+(behavior ::destroy-on-close
                   :triggers #{:close}
                   :reaction (fn [this]
                               (object/raise this :inactive)
                               (object/destroy! this)))
 
-(object/behavior* ::rem-client
+(behavior ::rem-client
                   :triggers #{:destroy}
                   :reaction (fn [this]
                               (when (= (ctx/->obj :global.browser) this)
@@ -139,7 +139,7 @@
                                 (ctx/in! :global.browser b))
                               (clients/rem! (:client @this))))
 
-(object/behavior* ::navigate!
+(behavior ::navigate!
                   :triggers #{:navigate!}
                   :reaction (fn [this n]
                               (let [bar (dom/$ :input (object/->content this))
@@ -148,7 +148,7 @@
                                 (notifos/working)
                                 (object/merge! this {:url url :urlvalue url :loading-counter (inc (:loading-counter @this 0))}))))
 
-(object/behavior* ::store-history
+(behavior ::store-history
                   :triggers #{:navigate}
                   :reaction (fn [this loc]
                                 (when (and
@@ -164,17 +164,17 @@
                                   )
                                 (object/update! this [:history-pos] inc))))
 
-(object/behavior* ::url-focus!
+(behavior ::url-focus!
                   :triggers #{:url.focus!}
                   :reaction (fn [this]
                               (dom/focus (dom/$ :input (object/->content this)))))
 
-(object/behavior* ::focus!
+(behavior ::focus!
                   :triggers #{:focus!}
                   :reaction (fn [this]
                               (dom/focus (dom/$ :iframe (object/->content this)))))
 
-(object/behavior* ::back!
+(behavior ::back!
                   :triggers #{:back!}
                   :reaction (fn [this]
                               (let [frame (to-frame this)]
@@ -183,7 +183,7 @@
                                   (object/raise this :navigate! (-> (:history @this)
                                                                     (get (:history-pos @this))))))))
 
-(object/behavior* ::forward!
+(behavior ::forward!
                   :triggers #{:forward!}
                   :reaction (fn [this]
                               (let [frame (to-frame this)]
@@ -192,13 +192,13 @@
                                   (object/raise this :navigate! (-> (:history @this)
                                                                     (get (:history-pos @this))))))))
 
-(object/behavior* ::refresh!
+(behavior ::refresh!
                   :triggers #{:refresh!}
                   :reaction (fn [this]
                               (let [frame (to-frame this)]
                                 (.location.reload frame))))
 
-(object/behavior* ::menu!
+(behavior ::menu!
                   :triggers #{:menu!}
                   :reaction (fn [this e]
                        (let [items (sort-by :order (object/raise-reduce this :menu+ []))]
@@ -207,7 +207,7 @@
                        (dom/prevent e)
                        (dom/stop-propagation e)))
 
-(object/behavior* ::menu+
+(behavior ::menu+
                   :triggers #{:menu+}
                   :reaction (fn [this menu]
                               (conj menu
@@ -237,7 +237,7 @@
 
                        ))
 
-(object/behavior* ::window-load-click-handler
+(behavior ::window-load-click-handler
                   :triggers #{:window.loaded}
                   :reaction (fn [this window loc]
                               (.document.addEventListener window "blur"
@@ -258,7 +258,7 @@
                                                               (cmd/exec! :add-browser-tab (.-target.href e))))
                                                           )))
 
-(object/behavior* ::window-load-key-handler
+(behavior ::window-load-key-handler
                   :triggers #{:window.loaded}
                   :reaction (fn [this window loc]
                               (let [script (.document.createElement window "script")]
@@ -272,12 +272,12 @@
                                           (dom/stop-propagation e))))
                                 )))
 
-(object/behavior* ::window-load-lttools
+(behavior ::window-load-lttools
                   :triggers #{:window.loaded}
                   :reaction (fn [this window loc]
                               (set! (.-lttools window) utils)))
 
-(object/behavior* ::init!
+(behavior ::init!
                   :triggers #{:init}
                   :reaction (fn [this]
                               (let [frame (dom/$ :iframe (object/->content this))
@@ -291,7 +291,7 @@
                                                            (dom/val bar loc)
                                                            (object/raise this :navigate loc)))))))
 
-(object/behavior* ::set-client-name
+(behavior ::set-client-name
                   :triggers #{:navigate}
                   :reaction (fn [this loc]
                               (let [title (.-document.title (to-frame this))
@@ -304,44 +304,44 @@
                                   (notifos/done-working))
                                 (object/merge! (:client @this) {:name loc}))))
 
-(object/behavior* ::set-active
+(behavior ::set-active
                   :triggers #{:active :show}
                   :reaction (fn [this]
                               (ctx/in! :global.browser this)))
 
-(object/behavior* ::active-context
+(behavior ::active-context
                   :triggers #{:active :show}
                   :reaction (fn [this]
                               (ctx/in! :browser this)))
 
-(object/behavior* ::focus-on-show
+(behavior ::focus-on-show
                   :triggers #{:show}
                   :reaction (fn [this]
                               (object/raise this :focus!)))
 
-(object/behavior* ::inactive-context
+(behavior ::inactive-context
                   :triggers #{:inactive}
                   :reaction (fn [this]
                               (ctx/out! :browser)))
 
-(object/behavior* ::handle-send!
+(behavior ::handle-send!
                   :triggers #{:send!}
                   :reaction (fn [this msg]
                               (object/raise this (keyword (str (:command msg) "!")) msg)
                               ))
 
-(object/behavior* ::handle-refresh!
+(behavior ::handle-refresh!
                   :triggers #{:client.refresh!}
                   :reaction (fn [this]
                               (object/raise (:frame @this) :refresh!)))
 
-(object/behavior* ::handle-close!
+(behavior ::handle-close!
                   :triggers #{:client.close!}
                   :reaction (fn [this]
                               (object/raise (:frame @this) :close)
                               (clients/rem! this)))
 
-(object/behavior* ::change-live
+(behavior ::change-live
                   :triggers #{:editor.eval.js.change-live!}
                   :reaction (fn [this msg]
                               (when-let [ed (clients/cb->obj (:cb msg))]
@@ -352,7 +352,7 @@
                                                          )
                                                        identity))))
 
-(object/behavior* ::js-eval-file
+(behavior ::js-eval-file
                   :triggers #{:editor.eval.js.file!}
                   :reaction (fn [this msg cb]
                               (when-let [ed (clients/cb->obj (:cb msg))]
@@ -363,12 +363,12 @@
                                                                                    ;;TODO: check for exception, otherwise, assume success
                                                                                    (object/raise ed :editor.eval.js.file.success)))))))
 
-(object/behavior* ::html-eval
+(behavior ::html-eval
                   :triggers #{:editor.eval.html!}
                   :reaction (fn [this msg]
                               (object/raise this :client.refresh!)))
 
-(object/behavior* ::css-eval
+(behavior ::css-eval
                   :triggers #{:editor.eval.css!}
                   :reaction (fn [this msg]
                               (let [info (:data msg)
@@ -386,7 +386,7 @@
                                       (dom/remove node))
                                     (dom/append (.-document.head frame) neue))))))
 
-(object/behavior* ::cljs-exec
+(behavior ::cljs-exec
                   :triggers #{:editor.eval.cljs.exec!}
                   :reaction (fn [this msg]
                               (let [frame-id (:frame-id @this)
@@ -420,7 +420,7 @@
       (not (devtools/find-script devtools/local (-> msg :data :path)))))
 
 
-(object/behavior* ::js-eval
+(behavior ::js-eval
                   :triggers #{:editor.eval.js!}
                   :reaction (fn [this msg]
                               (if (must-eval-file? msg)

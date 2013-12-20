@@ -16,7 +16,7 @@
             [lt.util.cljs :refer [->dottedkw]])
   (:use [crate.binding :only [bound map-bound]])
   (:use-macros [crate.def-macros :only [defpartial]]
-               [lt.macros :only [defui]]))
+               [lt.macros :only [behavior defui]]))
 
 ;;**********************************************************
 ;; transient docs
@@ -43,7 +43,7 @@
     (let [type (files/path->type path)]
       {:name (files/basename path) :type-name (:name type) :path path :mime (:mime type) :tags (:tags type)})))
 
-(object/behavior* ::open-transient-editor
+(behavior ::open-transient-editor
                   :triggers #{:new!}
                   :reaction (fn [this path dirty?]
                               (let [last (pool/last-active)
@@ -56,19 +56,19 @@
                                 (tabs/add! ed)
                                 (tabs/active! ed))))
 
-(object/behavior* ::transient-save
+(behavior ::transient-save
                   :triggers #{:save :save-as-rename!}
                   :reaction (fn [this]
                               (let [s (save-input this)]
                                 (set! active-dialog s)
                                 (dom/trigger s :click))))
 
-(object/behavior* ::save-as-rename!
+(behavior ::save-as-rename!
                   :triggers #{:save-as-rename!}
                   :reaction (fn [this]
                               (dom/trigger (save-input this) :click)))
 
-(object/behavior* ::save-as
+(behavior ::save-as
                   :triggers #{:save-as!}
                   :reaction (fn [this path]
                               (let [type (files/path->type path)
@@ -90,7 +90,7 @@
                                 (object/raise this :save-as)
                                 (object/raise this :save))))
 
-(object/behavior* ::check-read-only
+(behavior ::check-read-only
                   :desc "Opener: check if file is read only"
                   :triggers #{:open}
                   :reaction (fn [this ed]
@@ -99,7 +99,7 @@
                                   (when-not (files/writable? path)
                                     (object/add-tags ed [:editor.read-only]))))))
 
-(object/behavior* ::open-from-info
+(behavior ::open-from-info
                   :triggers #{:open-info!}
                   :reaction (fn [obj info]
                               (let [ed (pool/create info)]
@@ -108,7 +108,7 @@
                                 (tabs/active! ed))))
 
 
-(object/behavior* ::open-standard-editor
+(behavior ::open-standard-editor
                   :triggers #{:open!}
                   :reaction (fn [obj path]
                               (if-not (files/file? path)
@@ -128,36 +128,36 @@
                                                 (tabs/add! ed)
                                                 (tabs/active! ed))))))))
 
-(object/behavior* ::track-open-files
+(behavior ::track-open-files
                   :triggers #{:open}
                   :reaction (fn [this ed]
                               (when-let [path (-> @ed :info :path)]
                                 (object/update! this [:open-files] conj path))))
 
-(object/behavior* ::untrack-closed
+(behavior ::untrack-closed
                   :triggers #{:destroy}
                   :reaction (fn [this]
                               (when-let [path (-> @this :info :path)]
                                 (object/update! opener [:open-files] disj (-> @this :info :path)))))
 
-(object/behavior* ::unwatch-closed
+(behavior ::unwatch-closed
                   :triggers #{:close.force}
                   :reaction (fn [ed]
                               (when-let [path (-> @ed :info :path)]
                                 (workspace/unwatch! (-> @ed :info :path)))))
 
-(object/behavior* ::watch-on-open
+(behavior ::watch-on-open
                   :triggers #{:open}
                   :reaction (fn [this ed]
                               (when-let [path (-> @ed :info :path)]
                                 (workspace/watch! (-> @ed :info :path)))))
 
-(object/behavior* ::watch-open-files
+(behavior ::watch-open-files
                   :triggers #{:watch-paths+}
                   :reaction (fn [this cur]
                               (concat cur (:open-files @opener))))
 
-(object/behavior* ::save-on-focus-lost
+(behavior ::save-on-focus-lost
                   :triggers #{:blur}
                   :desc "Editor: Save on focus lost"
                   :type :user
@@ -167,14 +167,14 @@
                                 (cmd/exec! :save))
                               ))
 
-(object/behavior* ::save-all-on-focus-lost
+(behavior ::save-all-on-focus-lost
                   :triggers #{:blur}
                   :desc "Editor: Save all on focus lost"
                   :type :user
                   :reaction (fn [this]
                               (cmd/exec! :save-all)))
 
-(object/behavior* ::save-failed
+(behavior ::save-failed
                   :triggers #{:files.save.error}
                   :reaction (fn [this path e]
                               (popup/popup! {:header (str "Failed to save: " (files/basename path))

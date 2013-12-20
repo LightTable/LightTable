@@ -6,7 +6,7 @@
             [lt.util.cljs :refer [->dottedkw]]
             [lt.util.style :refer [->px]]
             [crate.binding :refer [map-bound bound subatom]])
-  (:require-macros [lt.macros :refer [defui]]))
+  (:require-macros [lt.macros :refer [behavior defui]]))
 
 (def default-height 130)
 
@@ -62,17 +62,17 @@
 ;; Behaviors
 ;;*********************************************************
 
-(object/behavior* ::no-anim-on-drag
+(behavior ::no-anim-on-drag
                   :triggers #{:start-drag}
                   :reaction (fn [this]
                               (anim/off)))
 
-(object/behavior* ::reanim-on-drop
+(behavior ::reanim-on-drop
                   :triggers #{:end-drag}
                   :reaction (fn [this]
                               (anim/on)))
 
-(object/behavior* ::height!
+(behavior ::height!
                   :triggers #{:height!}
                   :throttle 5
                   :reaction (fn [this e]
@@ -84,7 +84,7 @@
                                                      :max-height height})))
                               ))
 
-(object/behavior* ::item-toggled
+(behavior ::item-toggled
                   :triggers #{:toggle}
                   :reaction (fn [this item force?]
                               (if (or (not= item (:active @this))

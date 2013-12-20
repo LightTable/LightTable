@@ -13,7 +13,7 @@
                 :init (fn [this]
                         ))
 
-(object/behavior* ::on-eval
+(behavior ::on-eval
                   :triggers #{:eval
                               :eval.one}
                   :reaction (fn [editor]
@@ -28,7 +28,7 @@
                                 (object/raise shell-lang :eval! {:info info
                                                                  :origin editor}))))
 
-(object/behavior* ::eval!
+(behavior ::eval!
                   :triggers #{:eval!}
                   :reaction (fn [this event]
                               (let [{:keys [info origin]} event]
@@ -45,7 +45,7 @@
     (proc/kill-all (-> @this :procs)))
   (clients/rem! this))
 
-(object/behavior* ::send!
+(behavior ::send!
                   :triggers #{:send!}
                   :reaction (fn [this msg]
                               (condp = (-> msg second keyword)
@@ -53,7 +53,7 @@
                                 :shell.eval (-> @this :procs first (.stdin.write (str (.-code (last msg)) " \n")))
                                 (println "unknown command: " (second msg)))))
 
-(object/behavior* ::proc.out
+(behavior ::proc.out
                   :triggers #{:proc.out}
                   :reaction (fn [this data]
                               (let [data (.toString data)]

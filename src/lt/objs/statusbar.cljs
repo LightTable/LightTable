@@ -6,7 +6,7 @@
             [lt.objs.editor :as ed]
             [lt.util.dom :as dom]
             [crate.binding :refer [bound map-bound]])
-  (:require-macros [lt.macros :refer [defui]]))
+  (:require-macros [lt.macros :refer [behavior defui]]))
 
 (defui statusbar-item [content class]
   [:li {:class class} content])
@@ -37,7 +37,7 @@
 (defn ->cursor-str [{:keys [pos]}]
   [:span.pos (str "" (inc (:line pos)) " / " (inc (:ch pos)))])
 
-(object/behavior* ::update-cursor-location
+(behavior ::update-cursor-location
                   :triggers #{:update!}
                   :reaction (fn [this pos]
                               (object/merge! this {:pos pos})))
@@ -50,7 +50,7 @@
                         (statusbar-item (bound this ->cursor-str) "")
                         ))
 
-(object/behavior* ::report-cursor-location
+(behavior ::report-cursor-location
                   :triggers #{:move :active}
                   :reaction (fn [this]
                               (object/raise statusbar-cursor :update! (ed/->cursor this))))

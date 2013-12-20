@@ -10,7 +10,7 @@
             [lt.util.cljs :refer [str-contains?]]
             [clojure.set :as set]
             [lt.objs.command :as cmd])
-  (:require-macros [lt.macros :refer [defui]]))
+  (:require-macros [lt.macros :refer [behavior defui]]))
 
 (defn doc-on-line? [editor line]
   (let [line (editor/line-handle editor line)]
@@ -20,7 +20,7 @@
   (object/update! editor [:widgets] dissoc [(:line @cur) :underline])
   (object/raise cur :clear!))
 
-(object/behavior* ::clear
+(behavior ::clear
                   :triggers #{:clear}
                   :reaction (fn [this]
                               (object/update! (:ed @this) [:widgets] dissoc [(:line @this) :underline])))
@@ -39,7 +39,7 @@
     (object/update! this [:widgets] assoc [line :underline] res-obj)
     res-obj))
 
-(object/behavior* ::doc-menu+
+(behavior ::doc-menu+
            :triggers #{:menu+}
            :reaction (fn [this items]
                        (conj items
@@ -75,7 +75,7 @@
               (not= (:doc doc) "nil"))
      [:pre (:doc doc)])])
 
-(object/behavior* ::editor.doc.show!
+(behavior ::editor.doc.show!
                   :triggers #{:editor.doc.show!}
                   :reaction (fn [editor doc]
                               (when (not= (:name doc) "")
@@ -145,7 +145,7 @@
     {:normal normal
      :exact exact}))
 
-(object/behavior* ::set-item
+(behavior ::set-item
                   :triggers #{:set-item!}
                   :reaction (fn [this i]
                               (object/merge! this {:cur i})
@@ -153,19 +153,19 @@
                               (dom/replace-with (dom/$ :.types (object/->content this)) (type-list this))
                               (object/raise this :focus!)))
 
-(object/behavior* ::clear!
+(behavior ::clear!
                   :triggers #{:clear!}
                   :reaction (fn [this]
                               (dom/empty (dom/$ :.results (object/->content this)))
                               (object/merge! this {:results #{}})))
 
-(object/behavior* ::no-client
+(behavior ::no-client
                   :triggers #{:no-client}
                   :reaction (fn [this]
                               (when-not (dom/$ :.no-client (object/->content this))
                                 (dom/before (dom/$ :.results (object/->content this)) (no-client-ui this)))))
 
-(object/behavior* ::cur-from-last-editor
+(behavior ::cur-from-last-editor
                   :triggers #{:show}
                   :reaction (fn [this]
                               (when-let [ed (pool/last-active)]
@@ -176,7 +176,7 @@
                                       (object/raise this :set-item! neue)
                                       ))))))
 
-(object/behavior* ::sidebar.doc.search.exec
+(behavior ::sidebar.doc.search.exec
                   :triggers #{:sidebar.doc.search.exec}
                   :reaction (fn [this]
                               (let [v (->val this)
@@ -187,7 +187,7 @@
                                     (trigger v)
                                     (try-trigger this (:cur @this) v))))))
 
-(object/behavior* ::doc.search.results
+(behavior ::doc.search.results
                   :triggers #{:doc.search.results}
                   :reaction (fn [this results]
                               (let [v (->val this)
@@ -198,7 +198,7 @@
                                 (dom/prepend old exact)
                                 (dom/append old normal))))
 
-(object/behavior* ::focus!
+(behavior ::focus!
                   :triggers #{:focus!}
                   :reaction (fn [this]
                               (dom/focus (dom/$ :input (object/->content this)))))
@@ -239,7 +239,7 @@
                         (object/raise sidebar/rightbar :close! doc-search))
                       )})
 
-(object/behavior* ::init-doc-search
+(behavior ::init-doc-search
                   :triggers #{:init}
                   :reaction (fn [this]
                               (set! doc-search (object/create ::sidebar.doc.search))

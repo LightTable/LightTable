@@ -3,21 +3,21 @@
             [lt.objs.canvas :as canvas]
             [lt.objs.popup :as popup]
             [lt.objs.eval :as eval])
-  (:require-macros [lt.macros :refer [defui]]))
+  (:require-macros [lt.macros :refer [behavior defui]]))
 
-(object/behavior* ::on-selected-cb
+(behavior ::on-selected-cb
                   :triggers #{:selected}
                   :reaction (fn [obj client]
                               (let [cb (@obj :cb)]
                                 (cb client))))
 
-(object/behavior* ::on-selected-destroy
+(behavior ::on-selected-destroy
                   :triggers #{:selected}
                   :reaction (fn [this client]
                               (object/raise this :close!)
                               ))
 
-(object/behavior* ::on-close!
+(behavior ::on-close!
                   :triggers #{:close!}
                   :reaction (fn [this]
                               (object/raise (:popup @this) :close!)
@@ -45,7 +45,7 @@
                         nil
                         ))
 
-(object/behavior* ::select-client
+(behavior ::select-client
                   :triggers #{:select-client}
                   :reaction (fn [obj potentials cb]
                               (object/create ::client-selector potentials cb)))

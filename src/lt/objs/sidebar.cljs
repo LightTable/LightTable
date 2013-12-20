@@ -7,7 +7,7 @@
             [lt.util.dom :as dom]
             [lt.util.cljs :refer [->dottedkw]]
             [crate.binding :refer [map-bound bound subatom]])
-  (:require-macros [lt.macros :refer [defui]]))
+  (:require-macros [lt.macros :refer [behavior defui]]))
 
 (def default-width 200)
 
@@ -21,17 +21,17 @@
           (object/raise this :width! e)
              ))
 
-(object/behavior* ::no-anim-on-drag
+(behavior ::no-anim-on-drag
                   :triggers #{:start-drag}
                   :reaction (fn [this]
                               (anim/off)))
 
-(object/behavior* ::reanim-on-drop
+(behavior ::reanim-on-drop
                   :triggers #{:end-drag}
                   :reaction (fn [this]
                               (anim/on)))
 
-(object/behavior* ::width!
+(behavior ::width!
                   :triggers #{:width!}
                   :throttle 5
                   :reaction (fn [this e]
@@ -44,12 +44,12 @@
                                                        :max-width width})
                                   ))))
 
-(object/behavior* ::pop-transient
+(behavior ::pop-transient
                   :triggers #{:pop!}
                   :reaction (fn [this]
                               (object/raise this :close!)))
 
-(object/behavior* ::open!
+(behavior ::open!
                   :triggers #{:open!}
                   :reaction (fn [this]
                               (object/merge! this {:width (:max-width @this)
@@ -58,7 +58,7 @@
                               (dom/add-class (object/->content (:active @this)) :active)
                               ))
 
-(object/behavior* ::close!
+(behavior ::close!
                   :triggers #{:close!}
                   :reaction (fn [this]
                               (when (:active @this)
@@ -70,7 +70,7 @@
                               (cmd/exec! :tabs.focus-active)))
 
 
-(object/behavior* ::item-toggled
+(behavior ::item-toggled
                   :triggers #{:toggle}
                   :reaction (fn [this item {:keys [force? transient? soft?]}]
                               (if (and (not force?)

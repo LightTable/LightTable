@@ -2,7 +2,7 @@
   (:require [lt.object :as object]
             [lt.objs.files :as files]
             [lt.objs.popup :as popup])
-  (:require-macros [lt.macros :refer [defui]]))
+  (:require-macros [lt.macros :refer [behavior defui]]))
 
 
 ;;***************************************************
@@ -30,14 +30,14 @@
                         nil))
 
 
-(object/behavior* ::close-document-on-editor-close
+(behavior ::close-document-on-editor-close
                   :for #{:editor}
                   :triggers #{:closed}
                   :reaction (fn [editor]
                               (when-let [doc (:doc @editor)]
                                 (object/raise doc :close.force))))
 
-(object/behavior* ::close-linked-document
+(behavior ::close-linked-document
                   :for #{:document}
                   :triggers #{:close.force}
                   :reaction (fn [this]
@@ -46,14 +46,14 @@
                                 (object/destroy! this)
                                 (object/raise root :try-close))))
 
-(object/behavior* ::try-close-root-document
+(behavior ::try-close-root-document
                   :for #{:document}
                   :triggers #{:try-close}
                   :reaction (fn [this]
                               (when (= #{::this} (:sub-docs @this))
                                 (object/raise this :close.force))))
 
-(object/behavior* ::close-root-document
+(behavior ::close-root-document
                   :for #{:document}
                   :triggers #{:close.force}
                   :reaction (fn [this]

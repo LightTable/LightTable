@@ -1,7 +1,8 @@
 (ns lt.objs.cache
   (:require [lt.object :as object]
             [lt.objs.files :as files]
-            [cljs.reader :as reader]))
+            [cljs.reader :as reader])
+  (:require-macros [lt.macros :refer [behavior]]))
 
 (def settings-path (str (files/lt-home "settings/default.clj")))
 (def settings (atom {}))
@@ -33,7 +34,7 @@
   (on-disk (fn [setts]
              (swap! settings merge setts))))
 
-(object/behavior* ::init
+(behavior ::init
                   :triggers #{:init}
                   :reaction (fn [this]
                               (init)))

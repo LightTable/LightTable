@@ -3,7 +3,8 @@
             [lt.objs.command :as cmd]
             [lt.objs.editor :as editor]
             [lt.objs.context :as ctx]
-            [lt.objs.keyboard :refer [passthrough]]))
+            [lt.objs.keyboard :refer [passthrough]])
+  (:require-macros [lt.macros :refer [behavior]]))
 
 (def pairs {\( \)
             \{ \}
@@ -26,7 +27,7 @@
   (let [loc (editor/->cursor ed)]
     (editor/move-cursor ed (adjust-loc loc dir))))
 
-(object/behavior* ::open-pair
+(behavior ::open-pair
                   :triggers #{:open-pair!}
                   :reaction (fn [this ch]
                               (if (re-seq word-char (get-char this 1))
@@ -35,7 +36,7 @@
                                   (editor/insert-at-cursor this (str ch (pairs ch)))
                                   (move-cursor this -1)))))
 
-(object/behavior* ::close-pair
+(behavior ::close-pair
                   :triggers #{:close-pair!}
                   :reaction (fn [this ch]
                              	(if (= ch (get-char this 1))
@@ -43,7 +44,7 @@
                                 (passthrough))
                               ))
 
-(object/behavior* ::repeat-pair
+(behavior ::repeat-pair
                   :triggers #{:repeat-pair!}
                   :reaction (fn [this ch]
                               (cond
@@ -54,7 +55,7 @@
                                        (editor/insert-at-cursor this (str ch ch))
                                        (move-cursor this -1)))))
 
-(object/behavior* ::try-remove-pair
+(behavior ::try-remove-pair
                   :triggers #{:backspace!}
                   :reaction (fn [this]
                               (let [ch (get-char this -1)]

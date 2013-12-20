@@ -5,12 +5,12 @@
             [lt.objs.command :as cmd]
             [lt.objs.clients :as clients]
             [lt.util.dom :refer [$ append]])
-  (:require-macros [lt.macros :refer [defui]]))
+  (:require-macros [lt.macros :refer [behavior defui]]))
 
 (defn start-browser [path]
   (cmd/exec! :add-browser-tab (str "file://" path)))
 
-(object/behavior* ::on-eval
+(behavior ::on-eval
                   :triggers #{:eval
                               :eval.one}
                   :reaction (fn [editor]
@@ -20,7 +20,7 @@
                                                  :info (:info @editor)})
                               (object/raise editor :save)))
 
-(object/behavior* ::eval-on-save
+(behavior ::eval-on-save
                   :triggers #{:save}
                   :reaction (fn [editor]
                               (when (and (-> @editor :client :default)
@@ -29,7 +29,7 @@
                                                                 :info (assoc (@editor :info)
                                                                         :code (ed/->val (:ed @editor)))}))))
 
-(object/behavior* ::eval!
+(behavior ::eval!
                   :triggers #{:eval!}
                   :reaction (fn [this event]
                               (let [{:keys [info origin]} event]

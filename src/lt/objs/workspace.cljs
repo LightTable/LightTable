@@ -6,7 +6,8 @@
             [cljs.reader :as reader]
             [lt.util.load :as load]
             [lt.util.js :refer [now]]
-            [lt.util.cljs :refer [->dottedkw js->clj]]))
+            [lt.util.cljs :refer [->dottedkw js->clj]])
+  (:require-macros [lt.macros :refer [behavior]]))
 
 ;;*********************************************************
 ;; Watching
@@ -176,7 +177,7 @@
   (not (or (seq (:files @ws))
            (seq (:folders @ws)))))
 
-(object/behavior* ::serialize-workspace
+(behavior ::serialize-workspace
                   :triggers #{:updated :serialize!}
                   :reaction (fn [this]
                               (when-not (@this :file)
@@ -185,7 +186,7 @@
                                          (not (ws-empty? this)))
                                 (save this (:file @this)))))
 
-(object/behavior* ::reconstitute-last-workspace
+(behavior ::reconstitute-last-workspace
                   :triggers #{:post-init}
                   :reaction (fn [app]
                               (when (and (= (app/window-number) 0)
@@ -194,41 +195,41 @@
                                   (open current-ws (-> ws :path (files/basename))))) ;;for backwards compat
                               (object/merge! current-ws {:initialized? true})))
 
-(object/behavior* ::new!
+(behavior ::new!
                   :triggers #{:new!}
                   :reaction (fn [this]
                               (object/merge! this {:file (new-cached-file)})
                               (object/raise this :clear!)))
 
-(object/behavior* ::add-file!
+(behavior ::add-file!
                   :triggers #{:add.file!}
                   :reaction (fn [this f]
                               (add! this :files f)
                               (object/raise this :add f)
                               (object/raise this :updated)))
 
-(object/behavior* ::add-folder!
+(behavior ::add-folder!
                   :triggers #{:add.folder!}
                   :reaction (fn [this f]
                               (add! this :folders f)
                               (object/raise this :add f)
                               (object/raise this :updated)))
 
-(object/behavior* ::remove-file!
+(behavior ::remove-file!
                   :triggers #{:remove.file!}
                   :reaction (fn [this f]
                               (remove! this :files f)
                               (object/raise this :remove f)
                               (object/raise this :updated)))
 
-(object/behavior* ::remove-folder!
+(behavior ::remove-folder!
                   :triggers #{:remove.folder!}
                   :reaction (fn [this f]
                               (remove! this :folders f)
                               (object/raise this :remove f)
                               (object/raise this :updated)))
 
-(object/behavior* ::rename!
+(behavior ::rename!
                   :triggers #{:rename!}
                   :reaction (fn [this f neue]
                               (let [key (if (files/file? f)
@@ -239,7 +240,7 @@
                                 (object/raise this :rename f neue)
                                 (object/raise this :updated))))
 
-(object/behavior* ::clear!
+(behavior ::clear!
                   :triggers #{:clear!}
                   :reaction (fn [this]
                               (let [old @this]
@@ -249,7 +250,7 @@
                                 (object/raise this :set old)
                                 (object/raise this :updated))))
 
-(object/behavior* ::set!
+(behavior ::set!
                   :triggers #{:set!}
                   :reaction (fn [this fs]
                               (let [old @this]
@@ -257,12 +258,12 @@
                                 (object/raise this :set old)
                                 (object/raise this :updated))))
 
-(object/behavior* ::watch-on-set
+(behavior ::watch-on-set
                   :triggers #{:set}
                   :reaction (fn [this]
                               (watch-workspace this)))
 
-(object/behavior* ::stop-watch-on-close
+(behavior ::stop-watch-on-close
                   :triggers #{:close :refresh}
                   :reaction (fn [app]
                               (stop-watching current-ws)))

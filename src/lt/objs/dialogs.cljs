@@ -1,7 +1,7 @@
 (ns lt.objs.dialogs
   (:require [lt.object :as object]
             [lt.util.dom :as dom])
-  (:require-macros [lt.macros :refer [defui]]))
+  (:require-macros [lt.macros :refer [behavior defui]]))
 
 (def active-input nil)
 

@@ -11,7 +11,7 @@
             [clojure.string :as string]
             [lt.util.js :refer [wait]]
             [lt.util.dom :as dom])
-  (:require-macros [lt.macros :refer [defui background]]))
+  (:require-macros [lt.macros :refer [behavior defui background]]))
 
 (defn stream [str]
   (js/CodeMirror.StringStream. str))
@@ -146,12 +146,12 @@
                                :key text|completion})
                 (object/add-tags [:hinter])))
 
-(object/behavior* ::textual-hints
+(behavior ::textual-hints
                   :triggers #{:hints+}
                   :reaction (fn [this hints]
                               (concat (::hints @this) hints)))
 
-(object/behavior* ::escape!
+(behavior ::escape!
                   :triggers #{:escape!}
                   :reaction (fn [this force?]
                               (let [elem (object/->content this)]
@@ -171,7 +171,7 @@
                                 (when (dom/parent elem)
                                   (dom/remove elem)))))
 
-(object/behavior* ::select
+(behavior ::select
                   :triggers #{:select}
                   :reaction (fn [this c]
                               (let [token (:token @this)
@@ -185,13 +185,13 @@
                                   (editor/replace (:ed @this) start end (.-completion c)))
                                 (object/raise this :escape!))))
 
-(object/behavior* ::select-unknown
+(behavior ::select-unknown
                   :triggers #{:select-unknown}
                   :reaction (fn [this v]
                               (object/raise this :escape!)
                               (keyboard/passthrough)))
 
-(object/behavior* ::line-change
+(behavior ::line-change
                   :triggers #{:line-change}
                   :reaction (fn [this l c]
                               (when (:active @hinter)
@@ -209,12 +209,12 @@
 (defn on-line-change [line ch]
   (object/raise hinter :line-change line ch))
 
-(object/behavior* ::async-hint-tokens
+(behavior ::async-hint-tokens
                   :triggers #{:hint-tokens}
                   :reaction (fn [this tokens]
                               (object/merge! this {::hints tokens})))
 
-(object/behavior* ::intra-buffer-string-hints
+(behavior ::intra-buffer-string-hints
                   :triggers #{:change}
                   :debounce 400
                   :reaction (fn [this ch]
@@ -248,7 +248,7 @@
                (dom/append (dom/$ :body) elem)
                (js/CodeMirror.positionHint (editor/->cm-ed this) elem (:start token)))))))
 
-(object/behavior* ::show-hint
+(behavior ::show-hint
                   :triggers #{:hint}
                   :reaction (fn [this opts]
                               (let [cur (string/trim (editor/get-char this -1))
@@ -261,12 +261,12 @@
                                  (:active @hinter) (do (object/raise hinter :escape!) (start-hinting this))
                                  :else (start-hinting this opts)))))
 
-(object/behavior* ::remove-on-scroll-inactive
+(behavior ::remove-on-scroll-inactive
                   :triggers #{:scroll :inactive}
                   :reaction (fn [this]
                               (object/raise hinter :escape!)))
 
-(object/behavior* ::remove-on-move-line
+(behavior ::remove-on-move-line
                   :triggers #{:move}
                   :reaction (fn [this c]
                               ;;HACK: line change events are sent *after* cursor move
@@ -282,7 +282,7 @@
                                                          (not= (:line starting) (:line cursor))))
                                             (object/raise hinter :escape!)))))))
 
-(object/behavior* ::auto-show-on-input
+(behavior ::auto-show-on-input
                   :triggers #{:input}
                   :type :user
                   :desc "Auto-complete: Show on change"
@@ -326,7 +326,7 @@
 ;; Mode extensions
 ;;*********************************************************
 
-(object/behavior* ::init
+(behavior ::init
                   :triggers #{:init}
                   :reaction (fn [this]
                               (load/js "core/node_modules/codemirror/show-hint.js" :sync)

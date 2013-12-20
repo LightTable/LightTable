@@ -1,5 +1,6 @@
 (ns lt.objs.context
-  (:require [lt.object :as object]))
+  (:require [lt.object :as object])
+  (:require-macros [lt.macros :refer [behavior]]))
 
 (def contexts (atom #{}))
 (def groups (atom {}))
@@ -56,13 +57,13 @@
 (defn ->obj [ctx]
   (@ctx->obj ctx))
 
-(object/behavior* ::log-on-in
+(behavior ::log-on-in
                   :triggers #{:in!}
                   :reaction (fn [obj ctxs]
                               (log :context-in ctxs))
                   )
 
-(object/behavior* ::log-on-out
+(behavior ::log-on-out
                   :triggers #{:out!}
                   :reaction (fn [obj ctxs]
                               (log :context-out ctxs))

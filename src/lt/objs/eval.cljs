@@ -15,7 +15,7 @@
             [lt.objs.console :as console]
             [lt.util.dom :as dom]
             [clojure.string :as string])
-  (:require-macros [lt.macros :refer [defui]]))
+  (:require-macros [lt.macros :refer [behavior defui]]))
 
 (defui button [label & [cb]]
        [:div.button.right label]
@@ -80,13 +80,13 @@
    (= (pr-str n) "#<[object Object]>") (console/inspect n)
    :else (pr-str n)))
 
-(object/behavior* ::on-selected-cb
+(behavior ::on-selected-cb
                   :triggers #{:selected}
                   :reaction (fn [obj client]
                               (let [cb (@obj :cb)]
                                 (cb client))))
 
-(object/behavior* ::on-selected-destroy
+(behavior ::on-selected-destroy
                   :triggers #{:selected}
                   :reaction (fn [obj client]
                               (object/raise obj :destroy)
@@ -94,13 +94,13 @@
 
 (def eval-queue (atom []))
 
-(object/behavior* ::queue-on-no-client
+(behavior ::queue-on-no-client
                   :triggers #{:no-client}
                   :reaction (fn [this queue-item]
                               (swap! eval-queue conj queue-item)
                               ))
 
-(object/behavior* ::alert-on-no-client
+(behavior ::alert-on-no-client
                   :triggers #{:no-client}
                   :reaction (fn [this]
                               (popup/popup! {:header "No client available."
@@ -110,7 +110,7 @@
                                                                   (cmd/exec! :show-add-connection))}]})
                               ))
 
-(object/behavior* ::queue!
+(behavior ::queue!
                   :triggers #{:queue!}
                   :reaction (fn [this queue-item]
                               (swap! eval-queue conj queue-item)
@@ -127,7 +127,7 @@
                 true)))
           queue)))
 
-(object/behavior* ::on-connect-check-queue
+(behavior ::on-connect-check-queue
                   :triggers #{:connect}
                   :reaction (fn [this]
                               (swap! eval-queue drain)
@@ -187,7 +187,7 @@
   :dblclick (fn []
               (object/raise this :double-click)))
 
-(object/behavior* ::result-menu!
+(behavior ::result-menu!
                   :triggers #{:menu!}
                   :reaction (fn [this ev]
                               (-> (menu/menu [{:label "Remove result"
@@ -196,26 +196,26 @@
                               (dom/prevent ev)
                               (dom/stop-propagation ev)))
 
-(object/behavior* ::expand-on-click
+(behavior ::expand-on-click
                   :triggers #{:click :expand!}
                   :reaction (fn [this]
                               (object/merge! this {:open true})
                               (object/raise this :changed)
                               ))
 
-(object/behavior* ::shrink-on-double-click
+(behavior ::shrink-on-double-click
                   :triggers #{:double-click :shrink!}
                   :reaction (fn [this]
                               (object/merge! this {:open false})
                               (object/raise this :changed)
                               (ed/focus (:ed @this))))
 
-(object/behavior* ::destroy-on-cleared
+(behavior ::destroy-on-cleared
                   :triggers #{:cleared}
                   :reaction (fn [this]
                               (object/destroy! this)))
 
-(object/behavior* ::clear-mark
+(behavior ::clear-mark
                   :triggers #{:clear!}
                   :reaction (fn [this]
                               (when (deref (:ed @this))
@@ -225,13 +225,13 @@
                                 (object/raise this :clear)
                                 (object/raise this :cleared))))
 
-(object/behavior* ::changed
+(behavior ::changed
                   :triggers #{:changed}
                   :reaction (fn [this]
                               (.changed (:mark @this))
                               ))
 
-(object/behavior* ::update!
+(behavior ::update!
                   :triggers #{:update!}
                   :reaction (fn [this res]
                               (let [content (object/->content this)
@@ -244,7 +244,7 @@
                                 (dom/scroll-top full scroll))))
 
 (def new-line-change ["" ""])
-(object/behavior* ::move-mark
+(behavior ::move-mark
                   :triggers #{:move!}
                   :reaction (fn [this ch]
                               (when ch
@@ -293,7 +293,7 @@
 
 
 
-(object/behavior* ::inline-results
+(behavior ::inline-results
                   :triggers #{:editor.result}
                   :reaction (fn [this res loc opts]
                               (let [ed (:ed @this)
@@ -348,7 +348,7 @@
                                                                          :above (-> info :above)})))
                           content)))
 
-(object/behavior* ::underline-results
+(behavior ::underline-results
                   :triggers #{:editor.result.underline}
                   :reaction (fn [this res loc opts]
                               (let [ed (:ed @this)
@@ -393,14 +393,14 @@
     :dblclick (fn []
                 (object/raise this :double-click)))
 
-(object/behavior* ::ex-shrink-on-double-click
+(behavior ::ex-shrink-on-double-click
                   :triggers #{:double-click :shrink!}
                   :reaction (fn [this]
                               (ed/focus (:ed @this))
                               (object/raise this :clear!)))
 
 
-(object/behavior* ::ex-clear
+(behavior ::ex-clear
                   :triggers #{:clear!}
                   :reaction (fn [this]
                               (when (ed/->cm-ed (:ed @this))
@@ -408,7 +408,7 @@
                               (object/raise this :clear)
                               (object/raise this :cleared)))
 
-(object/behavior* ::ex-menu!
+(behavior ::ex-menu!
                   :triggers #{:menu!}
                   :reaction (fn [this ev]
                               (-> (menu/menu [{:label "Remove exception"
@@ -429,7 +429,7 @@
                                                                         {:coverGutter false})))
                           content)))
 
-(object/behavior* ::inline-exceptions
+(behavior ::inline-exceptions
                   :triggers #{:editor.exception}
                   :reaction (fn [this ex loc]
                               (when (and ex loc (>= (:line loc) 0))
@@ -452,7 +452,7 @@
                                       (object/raise widget :clear!)))
                                   (object/update! this [:widgets] assoc [line :inline] ex-obj)))))
 
-(object/behavior* ::eval-on-change
+(behavior ::eval-on-change
                   :triggers #{:change}
                   :desc "Editor: Eval when the editor changes"
                   :type :user

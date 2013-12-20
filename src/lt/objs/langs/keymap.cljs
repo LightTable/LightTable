@@ -6,7 +6,7 @@
             [lt.objs.editor :as editor]
             [clojure.string :as string]
             [lt.util.cljs :refer [js->clj]])
-  (:require-macros [lt.macros :refer [background defui]]))
+  (:require-macros [lt.macros :refer [behavior background defui]]))
 
 (def parser (background (fn [obj-id contents]
                           (let [StringStream (-> (js/require (str js/ltpath "/core/node_modules/codemirror/stringstream.js"))
@@ -67,7 +67,7 @@
                          (map #(do #js {:completion (str %) :text (str %)}) (keys @object/tags)))
                   :key cmd/completions})
 
-(object/behavior* ::keymap-hints
+(behavior ::keymap-hints
                   :triggers #{:hints+}
                   :exclusive [:lt.plugins.auto-complete/textual-hints]
                   :reaction (fn [this hints]
@@ -78,7 +78,7 @@
                                     (comps)
                                     comps)))))
 
-(object/behavior* ::show-info-on-move
+(behavior ::show-info-on-move
                   :triggers #{:move}
                   :debounce 200
                   :reaction (fn [this]
@@ -87,18 +87,18 @@
                                   (object/raise helper :show! this beh (param-index idx (-> beh :args)))
                                   ))))
 
-(object/behavior* ::keymap-hint-pattern
+(behavior ::keymap-hint-pattern
                   :triggers #{:object.instant}
                   :reaction (fn [this]
                               (object/merge! this {:hint-pattern #"[\w\-\>\:\*\$\?\<\!\+\.\"\/]"})))
 
-(object/behavior* ::on-changed
+(behavior ::on-changed
                   :triggers #{:change :create}
                   :debounce 50
                   :reaction (fn [this]
                               (parser this (editor/->val this))))
 
-(object/behavior* ::parsed
+(behavior ::parsed
                   :triggers #{:parsed}
                   :reaction (fn [this results]
                               (object/merge! this (js->clj results :keywordize-keys true))
@@ -136,7 +136,7 @@
                 :tags #{:editor.keymap.helper})
 
 
-(object/behavior* ::helper.show!
+(behavior ::helper.show!
                   :desc "Keymap.helper: show"
                   :triggers #{:show!}
                   :reaction (fn [this ed keym param-idx]

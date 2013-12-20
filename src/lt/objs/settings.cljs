@@ -15,7 +15,7 @@
             [lt.util.dom :as dom]
             [lt.util.cljs :refer [str-contains?]]
             [cljs.reader :as reader])
-  (:require-macros [lt.macros :refer [defui]]))
+  (:require-macros [lt.macros :refer [behavior defui]]))
 
 (defn safe-read [s file]
   (when s
@@ -114,38 +114,38 @@
 ;; Behaviors
 ;;*********************************************************
 
-(object/behavior* ::default-behavior-diffs
+(behavior ::default-behavior-diffs
                   :triggers #{:behaviors.diffs.default+}
                   :reaction (fn [this diffs]
                               (concat diffs (behavior-diffs-in (files/lt-home "settings/default/")))
                               ))
 
-(object/behavior* ::user-behavior-diffs
+(behavior ::user-behavior-diffs
                   :triggers #{:behaviors.diffs.user+}
                   :reaction (fn [this diffs]
                               (concat diffs (behavior-diffs-in (files/lt-home "settings/user/")))
                               ))
 
-(object/behavior* ::initial-behaviors
+(behavior ::initial-behaviors
                   :triggers #{:pre-init}
                   :reaction (fn [this]
                               (load-all)
                               (doseq [inst (vals @object/instances)]
                                 (object/refresh! inst))))
 
-(object/behavior* ::load-behaviors
+(behavior ::load-behaviors
                   :triggers #{:behaviors.reload}
                   :reaction (fn [this]
                               (load-all)
                               (notifos/working "loading behaviors...")
                               (refresh-all (vals @object/instances))))
 
-(object/behavior* ::eval-settings
+(behavior ::eval-settings
                   :triggers #{:eval :eval.one}
                   :reaction (fn [ed]
                               (object/raise ed :save)))
 
-(object/behavior* ::grab-workspace-behaviors
+(behavior ::grab-workspace-behaviors
                   :triggers #{:set}
                   :reaction (fn [workspace old]
                               (let [old (:ws-behaviors old)
@@ -161,7 +161,7 @@
                                   (apply-diff neue)
                                   (refresh-diffed neue)))))
 
-(object/behavior* ::workspace-save
+(behavior ::workspace-save
                   :triggers #{:save}
                   :reaction (fn [editor]
                               (let [{:keys [path]} (@editor :info)
@@ -175,7 +175,7 @@
 (def user-behaviors-path (files/lt-home "/settings/user/user.behaviors"))
 (def user-keymap-path (files/lt-home "/settings/user/user.keymap"))
 
-(object/behavior* ::create-user-settings
+(behavior ::create-user-settings
                   :triggers #{:init}
                   :reaction (fn [app]
                               (when-not (files/exists? user-behaviors-path)
@@ -231,7 +231,7 @@
               :exec (fn []
                       (cmd/exec! :open-path (files/lt-home "/settings/default/default.keymap")))})
 
-(object/behavior* ::on-close-remove
+(behavior ::on-close-remove
                   :triggers #{:close}
                   :reaction (fn [this]
                               (tabs/rem! this)))
@@ -305,19 +305,19 @@
                               (object/raise-reduce app/app :keymap.diffs.user+ [])))]
     (reset! kb/keys final)))
 
-(object/behavior* ::default-keymap-diffs
+(behavior ::default-keymap-diffs
                   :triggers #{:keymap.diffs.default+}
                   :reaction (fn [this diffs]
                               (concat diffs (keymap-diffs-in (str files/pwd "/settings/default/")))
                               ))
 
-(object/behavior* ::user-keymap-diffs
+(behavior ::user-keymap-diffs
                   :triggers #{:keymap.diffs.user+}
                   :reaction (fn [this diffs]
                               (concat diffs (keymap-diffs-in (str files/pwd "/settings/user/")))
                               ))
 
-(object/behavior* ::load-keys
+(behavior ::load-keys
                   :triggers #{:pre-init}
                   :reaction (fn [this]
                               (load-all-keys)
@@ -325,12 +325,12 @@
                               (object/raise (first (object/by-tag :app)) :app.keys.load)))
 
 
-(object/behavior* ::on-behaviors-editor-save
+(behavior ::on-behaviors-editor-save
                   :triggers #{:saved}
                   :reaction (fn [editor]
                               (cmd/exec! :behaviors.reload)))
 
-(object/behavior* ::on-keymap-editor-save
+(behavior ::on-keymap-editor-save
                   :triggers #{:saved}
                   :reaction (fn [editor]
                               (cmd/exec! :keymaps.reload)))

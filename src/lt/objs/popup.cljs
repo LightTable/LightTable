@@ -5,16 +5,16 @@
             [lt.objs.canvas :as canvas]
             [lt.objs.keyboard :as keyboard]
             [lt.util.dom :as dom])
-  (:require-macros [lt.macros :refer [defui]]))
+  (:require-macros [lt.macros :refer [behavior defui]]))
 
 (def *no-close* nil)
 
-(object/behavior* ::on-click-destroy
+(behavior ::on-click-destroy
                   :triggers #{:click}
                   :reaction (fn [this]
                               (object/raise this :close!)))
 
-(object/behavior* ::close!
+(behavior ::close!
                   :triggers #{:close!}
                   :reaction (fn [this]
                               (object/raise this :close)
@@ -25,12 +25,12 @@
                                 (ctx/out! :popup)
                                 )))
 
-(object/behavior* ::refocus-on-close
+(behavior ::refocus-on-close
                   :triggers #{:close}
                   :reaction (fn [this]
                               (cmd/exec! :tabs.focus-active)))
 
-(object/behavior* ::change-active-button
+(behavior ::change-active-button
                   :triggers #{:move-active}
                   :reaction (fn [this dir]
                               (let [buttons (dom/$$ ".button" (object/->content this))
@@ -41,7 +41,7 @@
                                 )
                               ))
 
-(object/behavior* ::exec-active
+(behavior ::exec-active
                   :triggers #{:exec-active}
                   :reaction (fn [this]
                               (let [buttons (dom/$$ ".button" (object/->content this))]

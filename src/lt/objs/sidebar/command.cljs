@@ -11,7 +11,7 @@
             [clojure.string :as string]
             [crate.core :as crate]
             [crate.binding :refer [subatom bound map-bound computed]])
-  (:require-macros [lt.macros :refer [defui]]))
+  (:require-macros [lt.macros :refer [behavior defui]]))
 
 (load/js "core/node_modules/lighttable/util/fuzzy.js" :sync)
 
@@ -19,21 +19,21 @@
 ;; options input
 ;;**********************************************************
 
-(object/behavior* ::op-select!
+(behavior ::op-select!
                   :triggers #{:select!}
                   :reaction (fn [this idx]
                               (let [input (object/->content this)]
                                 (object/raise this :select (dom/val input))
                                 (object/raise this :selected))))
 
-(object/behavior* ::op-clear!
+(behavior ::op-clear!
                   :triggers #{:clear!}
                   :reaction (fn [this]
                               (let [input (object/->content this)]
                                 (dom/val input "")
                                 (object/raise this :change! ""))))
 
-(object/behavior* ::op-focus!
+(behavior ::op-focus!
                   :triggers #{:focus!}
                   :reaction (fn [this]
                               (let [input (object/->content this)]
@@ -108,7 +108,7 @@
                                                             (- (+ (.-offsetTop elem) (.-offsetHeight elem) 15) (.-clientHeight list)))
      :else nil)))
 
-(object/behavior* ::move-selection
+(behavior ::move-selection
                   :triggers #{:move-selection}
                   :reaction (fn [this dir]
                               (object/update! this [:selected] + dir)
@@ -116,14 +116,14 @@
                               (ensure-visible this)
                               ))
 
-(object/behavior* ::set-selection!
+(behavior ::set-selection!
                   :triggers #{:set-selection!}
                   :reaction (fn [this idx]
                               (object/merge! this {:selected idx})
                               (object/raise this :refresh!)
                               ))
 
-(object/behavior* ::change!
+(behavior ::change!
                   :triggers #{:change!}
                   :reaction (fn [this v]
                               (let [v (object/raise-reduce this :change+ v)]
@@ -132,25 +132,25 @@
                                                        :search v})
                                   (object/raise this :refresh!)))))
 
-(object/behavior* ::escape!
+(behavior ::escape!
                   :triggers #{:escape!}
                   :reaction (fn [this]
                               (object/raise this :inactive)
                               (exec! :close-sidebar)))
 
-(object/behavior* ::options-escape!
+(behavior ::options-escape!
                   :triggers #{:escape!}
                   :reaction (fn [this]
                               (object/raise sidebar-command :cancel!)
                               (exec! :close-sidebar)))
 
-(object/behavior* ::set-on-select
+(behavior ::set-on-select
                   :triggers #{:select}
                   :reaction (fn [this thing]
                               (when (:set-on-select @this)
                                 (set-val this ((:key @this) thing)))))
 
-(object/behavior* ::select!
+(behavior ::select!
                   :triggers #{:select!}
                   :reaction (fn [this idx]
                               (let [cur (indexed-results @this)
@@ -164,31 +164,31 @@
                                   (object/raise this :select-unknown (input-val this)))
                                 )))
 
-(object/behavior* ::filter-active
+(behavior ::filter-active
                   :triggers #{:active}
                   :reaction (fn [this]
                               (ctx/in! :filter-list.input this)))
 
-(object/behavior* ::filter-inactive
+(behavior ::filter-inactive
                   :triggers #{:inactive}
                   :reaction (fn [this]
                               (ctx/out! :filter-list.input)))
 
-(object/behavior* ::clear!
+(behavior ::clear!
                   :triggers #{:clear!}
                   :reaction (fn [this]
                               (let [input (dom/$ :input (object/->content this))]
                                 (dom/val input "")
                                 (object/raise this :change! ""))))
 
-(object/behavior* ::filter-list.focus!
+(behavior ::filter-list.focus!
                   :triggers #{:focus!}
                   :reaction (fn [this]
                               (let [input (dom/$ :.search (object/->content this))]
                                 (dom/focus input)
                                 (.select input))))
 
-(object/behavior* ::update-lis
+(behavior ::update-lis
                   :triggers #{:refresh!}
                   :reaction (fn [this]
                               (object/merge! this {:cur (indexed-results @this)})
@@ -289,7 +289,7 @@
 ;; Commands
 ;;**********************************************************
 
-(object/behavior* ::select-command
+(behavior ::select-command
                   :triggers #{:select}
                   :reaction (fn [this sel]
                               (when-let [cmd (by-id sel)]
@@ -304,19 +304,19 @@
                                 )
                               ))
 
-(object/behavior* ::select-hidden
+(behavior ::select-hidden
                   :triggers #{:select-unknown}
                   :reaction (fn [this v]
                               (when-let [cmd (by-id (keyword v))]
                                 (object/raise this :select cmd))))
 
-(object/behavior* ::post-select-pop
+(behavior ::post-select-pop
                   :triggers #{:selected-exec}
                   :reaction (fn [this]
                               (when (= this (:active @sidebar/rightbar))
                                 (object/raise sidebar/rightbar :close!))))
 
-(object/behavior* ::exec-command
+(behavior ::exec-command
                   :triggers #{:exec!}
                   :reaction (fn [this sel & args]
                               (let [cmd (by-id sel)]
@@ -326,7 +326,7 @@
                                  :else (do (exec! :show-commandbar-transient)
                                          (object/raise (:selector @this) :select cmd))))))
 
-(object/behavior* ::exec-active!
+(behavior ::exec-active!
                   :triggers #{:exec-active!}
                   :reaction (fn [this args]
                               (let [cmd (:active @this)]
@@ -334,12 +334,12 @@
                                 (object/raise this :selected-exec cmd)
                                 (object/merge! this {:active nil}))))
 
-(object/behavior* ::focus-on-show
+(behavior ::focus-on-show
                   :triggers #{:show}
                   :reaction (fn [this]
                               (object/raise this :focus!)))
 
-(object/behavior* ::focus!
+(behavior ::focus!
                   :triggers #{:focus!}
                   :reaction (fn [this]
                               (if-not (:active @this)
@@ -348,18 +348,18 @@
                                   (.select input))
                                 (object/raise (-> @this :active :options) :focus!))))
 
-(object/behavior* ::soft-focus!
+(behavior ::soft-focus!
                   :triggers #{:soft-focus!}
                   :reaction (fn [this]
                               (let [input (dom/$ :.search (object/->content this))]
                                 (dom/focus input))))
 
-(object/behavior* ::refresh!
+(behavior ::refresh!
                   :triggers #{:refresh!}
                   :reaction (fn [this]
                               (object/raise (:selector @this) :refresh!)))
 
-(object/behavior* ::cancel!
+(behavior ::cancel!
                   :triggers #{:cancel!}
                   :reaction (fn [this]
                               (object/merge! this {:active nil})
@@ -417,7 +417,7 @@
                            ]
                           )))
 
-(object/behavior* ::init-commands
+(behavior ::init-commands
                   :triggers #{:post-init}
                   :reaction (fn [app]
                               (object/raise sidebar-command :refresh!)))

@@ -10,7 +10,7 @@
             [lt.util.js :refer [wait]]
             [lt.util.dom :refer [$ append empty] :as dom])
   (:require-macros [crate.def-macros :refer [defpartial]]
-                   [lt.macros :refer [defui]]))
+                   [lt.macros :refer [behavior defui]]))
 
 (def console-limit 50)
 (def util-inspect (.-inspect (js/require "util")))
@@ -23,7 +23,7 @@
   :contextmenu (fn [e]
                  (object/raise this :menu! e)))
 
-(object/behavior* ::on-close
+(behavior ::on-close
                   :triggers #{:close}
                   :reaction (fn [this]
                               (object/merge! this {:current-ui :bottom})
@@ -117,7 +117,7 @@
 
 (def console (object/create ::console))
 
-(object/behavior* ::menu+
+(behavior ::menu+
                   :triggers #{:menu+}
                   :reaction (fn [this]
                               (conj items
@@ -137,7 +137,7 @@
                                                 (cmd/exec! :toggle-console)
                                                 (cmd/exec! :console-tab))}))))
 
-(object/behavior* ::statusbar-console-toggle
+(behavior ::statusbar-console-toggle
                   :triggers #{:toggle}
                   :reaction (fn [this]
                               (object/raise bottombar/bottombar :toggle console)

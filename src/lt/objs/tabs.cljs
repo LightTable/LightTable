@@ -12,7 +12,7 @@
             [lt.util.js :refer [now]]
             [crate.core :as crate]
             [crate.binding :refer [bound map-bound subatom]])
-  (:require-macros [lt.macros :refer [defui]]))
+  (:require-macros [lt.macros :refer [behavior defui]]))
 
 (load/js "core/node_modules/lighttable/ui/dragdrop.js" :sync)
 
@@ -33,13 +33,13 @@
           (set! (.-scrollLeft gp) (+ (- right pwidth) 50)))
         ))))
 
-(object/behavior* ::on-destroy-remove
+(behavior ::on-destroy-remove
                   :triggers #{:destroy}
                   :reaction (fn [this]
                               (rem! this)
                               ))
 
-(object/behavior* ::active-tab-num
+(behavior ::active-tab-num
                   :triggers #{:tab}
                   :reaction (fn [this num]
                               (let [objs (@this :objs)]
@@ -48,7 +48,7 @@
                                   (active! (get objs (dec (count objs))))))
                               ))
 
-(object/behavior* ::prev-tab
+(behavior ::prev-tab
                   :triggers #{:tab.prev}
                   :throttle 100
                   :reaction (fn [this]
@@ -59,7 +59,7 @@
                                   (active! (get objs (dec (count objs))))))
                               ))
 
-(object/behavior* ::next-tab
+(behavior ::next-tab
                   :triggers #{:tab.next}
                   :throttle 100
                   :reaction (fn [this]
@@ -70,7 +70,7 @@
                                   (active! (get objs 0))))
                               ))
 
-(object/behavior* ::tab-close
+(behavior ::tab-close
                   :triggers #{:tab.close}
                   :reaction (fn [this]
                               (try
@@ -158,14 +158,14 @@
     (dom/on item "sortupdate" (fn [e] (update-tab-order multi (.-opts e))))
     item))
 
-(behavior* ::on-destroy-objs
+(behavior ::on-destroy-objs
            :triggers #{:destroy}
            :reaction (fn [this]
                        (doseq [e (:objs @this)]
                          (object/destroy! e))
                        ))
 
-(behavior* ::repaint-tab-updated
+(behavior ::repaint-tab-updated
            :triggers #{:tab.updated}
            :reaction (fn [this]
                        (object/update! this [:count] inc)))
@@ -231,29 +231,29 @@
     (doseq [ts tss]
       (object/merge! ts {:width width}))))
 
-(object/behavior* ::no-anim-on-drag
+(behavior ::no-anim-on-drag
                   :triggers #{:start-drag}
                   :reaction (fn [this]
                               (anim/off)))
 
-(object/behavior* ::reanim-on-drop
+(behavior ::reanim-on-drop
                   :triggers #{:end-drag}
                   :reaction (fn [this]
                               (anim/on)))
 
-(object/behavior* ::set-dragging
+(behavior ::set-dragging
                   :triggers #{:start-drag}
                   :reaction (fn [this]
                               (dom/add-class (dom/$ :body) :dragging)
                               ))
 
-(object/behavior* ::unset-dragging
+(behavior ::unset-dragging
                   :triggers #{:end-drag}
                   :reaction (fn [this]
                               (dom/remove-class (dom/$ :body) :dragging)
                               ))
 
-(object/behavior* ::set-width-final!
+(behavior ::set-width-final!
                   :triggers #{:end-drag}
                   :reaction (fn [this e]
                               (when-let [ts (next-tabset this)]
@@ -293,7 +293,7 @@
                                                   0
                                                   "")}))
 
-(object/behavior* ::width!
+(behavior ::width!
                   :triggers #{:width!}
                   :reaction (fn [this e]
                               (let [width (dom/width (object/->content multi))
@@ -326,12 +326,12 @@
                               (set! start (now))
                               ))
 
-(object/behavior* ::on-active-active-tabset
+(behavior ::on-active-active-tabset
                   :triggers #{:active}
                   :reaction (fn [this]
                               (ctx/in! :tabset (::tabset @this))))
 
-(object/behavior* ::tabset-active
+(behavior ::tabset-active
                   :triggers #{:active}
                   :reaction (fn [this]
                               (when-not (= (ctx/->obj :tabset) this)
@@ -339,7 +339,7 @@
                                 (when-let [active (:active-obj @this)]
                                   (object/raise active :focus!)))))
 
-(object/behavior* ::tabset-menu
+(behavior ::tabset-menu
                   :triggers #{:menu!}
                   :reaction (fn [this ev]
                               (-> (menu/menu [{:label "New tabset"
@@ -374,19 +374,19 @@
   (for [k tabs]
     (object/->content k)))
 
-(object/behavior* ::left!
+(behavior ::left!
                   :triggers #{:left!}
                   :reaction (fn [this v]
                               (object/update! this [:left] + v)
                               (object/raise this :resize)))
 
-(object/behavior* ::right!
+(behavior ::right!
                   :triggers #{:right!}
                   :reaction (fn [this v]
                               (object/update! this [:right] + v)
                               (object/raise this :resize)))
 
-(object/behavior* ::bottom!
+(behavior ::bottom!
                   :triggers #{:bottom!}
                   :reaction (fn [this v]
                               (object/update! this [:bottom] + v)
@@ -575,12 +575,12 @@
                       (when-let [active (:active-obj @(ctx/->obj :tabset))]
                         (object/raise active :focus!)))})
 
-(object/behavior* ::init-sortable
+(behavior ::init-sortable
                   :triggers #{:init}
                   :reaction (fn [app]
                               (js/initSortable js/window)))
 
-(object/behavior* ::init
+(behavior ::init
                   :triggers #{:init}
                   :reaction (fn [this]
                               (add-tabset tabset)

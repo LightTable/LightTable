@@ -8,7 +8,8 @@
             [lt.objs.metrics :as metrics]
             [lt.objs.context :as ctx]
             [lt.util.js :refer [every wait]]
-            [lt.util.events :as utev]))
+            [lt.util.events :as utev])
+  (:require-macros [lt.macros :refer [behavior]]))
 
 (def capturing? true)
 (def keys (atom {}))
@@ -144,7 +145,7 @@
           (.preventDefault ev)
           (.stopPropagation ev))))
 
-(object/behavior* ::chord-timeout
+(behavior ::chord-timeout
                   :triggers #{:object.instant}
                   :desc "App: Set the timeout for chorded shortcuts"
                   :type :user

@@ -1,7 +1,8 @@
 (ns lt.objs.docs
   (:require [lt.object :as object]
             [lt.objs.command :as cmd]
-            [lt.objs.tabs :as tabs]))
+            [lt.objs.tabs :as tabs])
+  (:require-macros [lt.macros :refer [behavior]]))
 
 ;;*********************************************************
 ;; Object
@@ -19,7 +20,7 @@
 ;; Behaviors
 ;;*********************************************************
 
-(object/behavior* ::on-close-destroy
+(behavior ::on-close-destroy
                   :triggers #{:close}
                   :reaction (fn [this]
                               (when-let [ts (:lt.objs.tabs/tabset @this)]

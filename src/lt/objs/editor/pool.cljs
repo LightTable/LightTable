@@ -12,26 +12,26 @@
             [lt.util.cljs :refer [->dottedkw]]
             [clojure.string :as string]
             [lt.util.dom :as dom])
-  (:require-macros [lt.macros :refer [defui]]))
+  (:require-macros [lt.macros :refer [behavior defui]]))
 
 (defn get-all []
   (object/by-tag :editor))
 
-(object/behavior* ::theme-changed
+(behavior ::theme-changed
                   :triggers #{:theme-change}
                   :reaction (fn [this theme]
                               (doseq [ed (get-all)
                                       :let [e (:ed @ed)]]
                                 (editor/set-options e {:theme theme}))))
 
-(object/behavior* ::line-numbers-changed
+(behavior ::line-numbers-changed
                   :triggers #{:line-numbers-change}
                   :reaction (fn [this numbers?]
                               (doseq [ed (get-all)
                                       :let [e (:ed @ed)]]
                                 (editor/set-options e {:lineNumbers numbers?}))))
 
-(object/behavior* ::options-changed
+(behavior ::options-changed
                   :triggers #{:options-changed}
                   :reaction (fn [this opts]
                               (doseq [ed (get-all)
@@ -68,33 +68,33 @@
 
 (def pool (object/create ::pool))
 
-(object/behavior* ::track-active
+(behavior ::track-active
                   :triggers #{:active}
                   :reaction (fn [this]
                               (object/merge! pool {:last this})))
 
-(object/behavior* ::stop-close-dirty
+(behavior ::stop-close-dirty
                   :triggers #{:close}
                   :reaction (fn [this]
                               (when (unsaved?)
                                 (app/prevent-close)
                                 (unsaved-prompt (partial app/close true)))))
 
-(object/behavior* ::stop-reload-dirty
+(behavior ::stop-reload-dirty
                   :triggers #{:reload}
                   :reaction (fn [this]
                               (when (unsaved?)
                                 (app/prevent-close)
                                 (unsaved-prompt app/refresh))))
 
-(object/behavior* ::ed-close
+(behavior ::ed-close
                   :triggers #{:close}
                   :reaction (fn [this]
                               (if (:dirty @this)
                                 (unsaved-prompt #(object/raise this :close.force))
                                 (object/raise this :close.force))))
 
-(object/behavior* ::focus-last-on-focus
+(behavior ::focus-last-on-focus
                   :triggers #{:focus!}
                   :reaction (fn [this]
                               (focus-last)))
@@ -115,14 +115,14 @@
   (doc/update-stats (-> @ed :info :path))
   (object/merge! ed {:dirty false}))
 
-(object/behavior* ::warn-on-active
+(behavior ::warn-on-active
                   :triggers #{:active}
                   :reaction (fn [this]
                               (when (:active-warn @this)
                                 (popup/popup! (:active-warn @this))
                                 (object/merge! this {:active-warn nil}))))
 
-(object/behavior* ::watched.update
+(behavior ::watched.update
                   :triggers #{:watched.update}
                   :reaction (fn [ws f stat]
                               (when (files/file? f)
@@ -146,7 +146,7 @@
                                         (object/raise ed :save))}
                              {:label "ok"}]}))
 
-(object/behavior* ::watched.delete
+(behavior ::watched.delete
                   :triggers #{:watched.delete}
                   :reaction (fn [ws del]
                               (if (files/file? del)
@@ -163,7 +163,7 @@
                                     (warn-delete ed)
                                     (make-transient-dirty ed))))))
 
-(object/behavior* ::watched.rename
+(behavior ::watched.rename
                   :triggers #{:watched.rename :rename}
                   :reaction (fn [this old neue]
                               (if (files/file? old)
@@ -221,12 +221,12 @@
 (defn set-syntax-by-path [ed path]
   (set-syntax ed (files/path->type path)))
 
-(object/behavior* ::set-syntax
+(behavior ::set-syntax
                   :triggers #{:select}
                   :reaction (fn [this v]
                               (cmd/exec-active! v)))
 
-(object/behavior* ::init-syntax-selector
+(behavior ::init-syntax-selector
                   :triggers #{:init}
                   :reaction (fn [app]
                               (object/raise syntax-selector :refresh!)))

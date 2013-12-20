@@ -7,7 +7,7 @@
             [lt.util.cljs :as cljs]
             [lt.util.dom :refer [replace-with] :as dom]
             [lt.util.js :refer [throttle debounce]])
-  (:require-macros [lt.macros :refer [with-time]]))
+  (:require-macros [lt.macros :refer [behavior with-time]]))
 
 (def obj-id (atom 0))
 (def instances (atom (sorted-map)))
@@ -314,7 +314,7 @@
           b behs]
     (rem-behavior! cur b)))
 
-(behavior* ::add-tag
+(behavior ::add-tag
            :desc "App: Add tag to object"
            :params [{:label "tag"}]
            :type :user
@@ -325,7 +325,7 @@
                                           t
                                           [t])))))
 
-(behavior* ::remove-tag
+(behavior ::remove-tag
            :desc "App: Remove tag from object"
            :params [{:label "tag"}]
            :type :user
@@ -336,7 +336,7 @@
                                              t
                                              [t])))))
 
-(behavior* ::shadow-tag
+(behavior ::shadow-tag
            :desc "App: Shadow a tag on an object"
            :params [{:label "tag to shadow"}
                     {:label "tag to add"}]
@@ -350,7 +350,7 @@
                           (and (not has-shadow?) has-add?) (remove-tags this [to-add])
                           :else nil))))
 
-(behavior* ::report-time
+(behavior ::report-time
            :triggers #{:object.behavior.time}
            :reaction (fn [this beh time]
                        (when js/lt.objs.console

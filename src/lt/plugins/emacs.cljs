@@ -4,7 +4,8 @@
             [lt.util.load :as load]
             [lt.objs.editor.pool :as pool]
             [lt.objs.sidebar.command :as cmd :refer [command]]
-            [lt.objs.editor :as editor]))
+            [lt.objs.editor :as editor])
+  (:require-macros [lt.macros :refer [behavior]]))
 
 (defn make-emacs-editor [ed]
   (editor/set-options ed {:keyMap "emacs"})
@@ -24,7 +25,7 @@
                           (.execCommand (editor/->cm-ed (pool/last-active)) cmd)
                           (cmd (editor/->cm-ed (pool/last-active))))))})
 
-(object/behavior* ::activate-emacs
+(behavior ::activate-emacs
                   :triggers #{:object.instant}
                   :desc "Emacs: Activate Emacs mode"
                   :type :user

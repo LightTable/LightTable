@@ -13,7 +13,7 @@
             [lt.util.cljs :refer [js->clj]]
             [crate.binding :refer [bound subatom]]
             [clojure.string :as string])
-  (:require-macros [lt.macros :refer [defui]]))
+  (:require-macros [lt.macros :refer [behavior defui]]))
 
 (declare local)
 
@@ -202,7 +202,7 @@
 ;; Behaviors
 ;;*********************************************************
 
-(object/behavior* ::connect!
+(behavior ::connect!
                   :triggers #{:connect!}
                   :reaction (fn [this url]
                               (object/merge! this {:socket (socket this url)})
@@ -210,19 +210,19 @@
                               (send local {:id (next-id) :method "Debugger.enable"})
                               (send local {:id (next-id) :method "Network.setCacheDisabled" :params {:cacheDisabled true}})))
 
-(object/behavior* ::clear-queue-on-connect
+(behavior ::clear-queue-on-connect
                   :triggers #{:connect}
                   :reaction (fn [this]
                               (doseq [msg (:queue @this)]
                                 (apply send msg))))
 
-(object/behavior* ::print-messages
+(behavior ::print-messages
                   :triggers #{:message}
                   :reaction (fn [this m]
                              ;;(console/log (pr-str m))
                               ))
 
-(object/behavior* ::handle-message
+(behavior ::handle-message
                   :triggers #{:message}
                   :reaction (fn [this m]
                               (if-let [cb (@cbs (:id m))]
@@ -232,31 +232,31 @@
                                 (when (:method m)
                                   (object/raise this (keyword (:method m)) m)))))
 
-(object/behavior* ::script-parsed
+(behavior ::script-parsed
                   :triggers #{:Debugger.scriptParsed}
                   :reaction (fn [this s]
                               (let [url (-> s :params :url)]
                                 (object/update! this [:scripts] assoc-in [(files/basename url) url] (:params s))
                               )))
 
-(object/behavior* ::console-log
+(behavior ::console-log
                   :triggers #{:Console.messageAdded}
                   :reaction (fn [this m]
                               (let [msg (-> m :params :message)]
                                 (handle-log-msg msg))))
 
-(object/behavior* ::clear-console
+(behavior ::clear-console
                   :triggers #{:clear!}
                   :reaction (fn [this]
                               (send this {:id (next-id) :method "Console.clearMessages"})))
 
-(object/behavior* ::disconnect
+(behavior ::disconnect
                   :triggers #{:disconnect}
                   :reaction (fn [this]
                               (when (:socket @this)
                                 (close this))))
 
-(object/behavior* ::reconnect
+(behavior ::reconnect
                   :triggers #{:reconnect!}
                   :reaction (fn [this]
                               (object/raise this :disconnect)
@@ -268,7 +268,7 @@
                                              (object/raise this :connect! url)
                                              (wait 1000 #(object/raise this :reconnect!)))))))
 
-(object/behavior* ::connect-on-init
+(behavior ::connect-on-init
                   :triggers #{:init}
                   :reaction (fn [app]
                               (object/raise local :reconnect!)))
@@ -337,14 +337,14 @@
                     (not (dom/parents (object/->content obj) :body)))]
     (object/destroy! obj)))
 
-(object/behavior* ::clean-inspectors-timer
+(behavior ::clean-inspectors-timer
                   :triggers #{:init}
                   :reaction (fn [this]
                               ;;Every minute clear extraneous inspectors
                               (every 60000 clear-unused-inspectors)
                               ))
 
-(object/behavior* ::clear-inspector-object
+(behavior ::clear-inspector-object
                   :triggers #{:destroy}
                   :reaction (fn [this]
                               (when-let [id (or (-> @this :info :value :objectId)

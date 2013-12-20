@@ -3,7 +3,7 @@
   (:require [lt.object :as object]
             [lt.objs.context :as ctx]
             [lt.util.dom :refer [$ parent toggle-class append remove prevent stop-propagation css] :as dom])
-  (:require-macros [lt.macros :refer [defui]]))
+  (:require-macros [lt.macros :refer [behavior defui]]))
 
 (defui canvas-elem [obj]
   [:div#canvas])
@@ -27,7 +27,7 @@
 ;; Behaviors
 ;;*********************************************************
 
-(object/behavior* ::append-canvas
+(behavior ::append-canvas
                   :triggers #{:show}
                   :reaction (fn [app]
                               (dom/css ($ :#loader) {:opacity 0})

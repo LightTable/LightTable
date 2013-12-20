@@ -2,7 +2,8 @@
   (:require [lt.object :as object]
             [lt.objs.command :as cmd]
             [lt.objs.editor :as ed]
-            [lt.objs.editor.pool :as pool]))
+            [lt.objs.editor.pool :as pool])
+  (:require-macros [lt.macros :refer [behavior]]))
 
 (defn inline [this opts loc]
   (let [ed (:ed @this)
@@ -47,7 +48,7 @@
         (ed/range doc (.-from pos) (.-to pos)))
       (ed/->val doc))))
 
-(object/behavior* ::clear!
+(behavior ::clear!
                   :triggers #{:clear}
                   :reaction (fn [inline-watch]
                               (let [ed (-> @inline-watch :ed)
@@ -56,7 +57,7 @@
                                 (object/update! ed [:watches] dissoc id)
                                 (object/raise ed :unwatch))))
 
-(object/behavior* ::watch!
+(behavior ::watch!
                   :triggers #{:watch!}
                   :reaction (fn [this opts]
                               (when-let [sel (ed/selection-bounds this)]
@@ -75,7 +76,7 @@
                                                                             :inline-result res})
                                   (object/raise this :watch)))))
 
-(object/behavior* ::unwatch!
+(behavior ::unwatch!
                   :triggers #{:unwatch!}
                   :reaction (fn [this]
                               (when-let [cur (ed/->cursor this)]
@@ -83,7 +84,7 @@
                                         :when (= (.-lttype mark) :watch)]
                                   (object/raise (-> @this :watches (get (.-ltwatchid mark)) :inline-result) :clear!)))))
 
-(object/behavior* ::eval-on-watch-or-unwatch
+(behavior ::eval-on-watch-or-unwatch
                   :triggers #{:unwatch :watch}
                   :reaction (fn [this]
                               (when (ed/selection? this)

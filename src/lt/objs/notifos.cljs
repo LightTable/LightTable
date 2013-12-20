@@ -4,7 +4,7 @@
             [lt.objs.command :as cmd]
             [lt.util.js :refer [wait]]
             [crate.binding :refer [map-bound bound deref?]])
-  (:require-macros [lt.macros :refer [defui]]))
+  (:require-macros [lt.macros :refer [behavior defui]]))
 
 (def standard-timeout 10000)
 

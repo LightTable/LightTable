@@ -1,6 +1,7 @@
 (ns lt.objs.animations
   (:require [lt.object :as object]
-            [lt.util.dom :as dom]))
+            [lt.util.dom :as dom])
+  (:require-macros [lt.macros :refer [behavior]]))
 
 (def $body (dom/$ :body))
 (def force-off false)
@@ -21,12 +22,12 @@
 ;; Behaviors
 ;;*********************************************************
 
-(object/behavior* ::animate-on-init
+(behavior ::animate-on-init
                   :triggers #{:init}
                   :reaction (fn [app]
                               (on)))
 
-(object/behavior* ::toggle-animations
+(behavior ::toggle-animations
                   :desc "App: Enable or disable UI animations"
                   :triggers #{:object.instant}
                   :type :user

@@ -5,7 +5,8 @@
             [lt.objs.cache :as cache]
             [fetch.remotes :as remotes]
             [lt.util.js :refer [now every]])
-  (:require-macros [fetch.macros :refer [letrem remote]]))
+  (:require-macros [fetch.macros :refer [letrem remote]]
+                   [lt.macros :refer [behavior]]))
 
 (def server-url "http://app.kodowa.com")
 (set! remotes/remote-uri (str server-url "/_fetch"))
@@ -47,7 +48,7 @@
                    (set! used? false)
                    (capture! :metrics.minute)))))
 
-(object/behavior* ::init-metrics
+(behavior ::init-metrics
                   :triggers #{:init}
                   :reaction (fn []
                               (init)

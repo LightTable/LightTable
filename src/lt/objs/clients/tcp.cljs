@@ -5,7 +5,8 @@
             [lt.objs.clients :as clients]
             [lt.objs.console :as console]
             [clojure.string :as string]
-            [lt.util.cljs :refer [js->clj]]))
+            [lt.util.cljs :refer [js->clj]])
+  (:require-macros [lt.macros :refer [behavior]]))
 
 (def port 0)
 (def net (js/require "net"))
@@ -77,13 +78,13 @@
     (catch js/global.Error e
       )))
 
-(object/behavior* ::send!
+(behavior ::send!
                   :triggers #{:send!}
                   :reaction (fn [this msg]
                               (send-to (:socket @this) (array (:cb msg) (:command msg) (-> msg :data clj->js)))))
 
 
-(object/behavior* ::kill-on-closed
+(behavior ::kill-on-closed
                   :triggers #{:closed}
                   :reaction (fn [app]
                               (try

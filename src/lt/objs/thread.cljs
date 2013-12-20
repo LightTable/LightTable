@@ -4,28 +4,28 @@
             [lt.objs.platform :as platform]
             [lt.objs.console :as console]
             [cljs.reader :as reader])
-  (:require-macros [lt.macros :refer [thread]]))
+  (:require-macros [lt.macros :refer [behavior thread]]))
 
 (def cp (js/require "child_process"))
 
-(object/behavior* ::try-send
+(behavior ::try-send
                   :triggers #{:try-send!}
                   :reaction (fn [this msg]
                               (if-not (:connected @this)
                                 (object/raise this :queue! msg)
                                 (object/raise this :send! msg))))
 
-(object/behavior* ::queue!
+(behavior ::queue!
                   :triggers #{:queue!}
                   :reaction (fn [this msg]
                               (object/update! this [:queue] conj msg)))
 
-(object/behavior* ::send!
+(behavior ::send!
                   :triggers #{:send!}
                   :reaction (fn [this msg]
                               (.send (:worker @this) (clj->js msg))))
 
-(object/behavior* ::connect
+(behavior ::connect
                   :triggers #{:connect}
                   :reaction (fn [this]
                               (doseq [q (:queue @this)]
@@ -33,7 +33,7 @@
                               (object/merge! this {:connected true
                                                    :queue []})))
 
-(object/behavior* ::message
+(behavior ::message
                   :triggers #{:message}
                   :reaction (fn [this m]
                               (when-let [obj (object/by-id (.-obj m))]
@@ -45,12 +45,12 @@
                                                 (reader/read-string (.-res m))
                                                 (.-res m))))))
 
-(object/behavior* ::kill!
+(behavior ::kill!
                   :triggers #{:kill!}
                   :reaction (fn [this]
                               (.kill (:worker @this))))
 
-(object/behavior* ::shutdown-worker-on-close
+(behavior ::shutdown-worker-on-close
                   :triggers #{:closed}
                   :reaction (fn [app]
                               (object/raise worker :kill!)))

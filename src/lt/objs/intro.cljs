@@ -9,9 +9,9 @@
             [lt.util.dom :as dom]
             [crate.core :refer [raw]]
             [crate.binding :refer [bound]])
-  (:require-macros [lt.macros :refer [defui]]))
+  (:require-macros [lt.macros :refer [behavior defui]]))
 
-(object/behavior* ::on-close-destroy
+(behavior ::on-close-destroy
                   :triggers #{:close}
                   :reaction (fn [this]
                               (object/raise this :destroy)))
@@ -43,7 +43,7 @@
                           Some of the highlights include deeper Javascript support, inline browsers, and Python eval! If you're new, you might want to take a look at " (docs) "to get started."]
                          ]))
 
-(object/behavior* ::show-intro
+(behavior ::show-intro
                   :triggers #{:post-init}
                   :type :user
                   :exclusive [::show-new-file]
@@ -56,7 +56,7 @@
                                   (tabs/add! intro)
                                   (tabs/active! intro)))))
 
-(object/behavior* ::show-new-file
+(behavior ::show-new-file
                   :triggers #{:post-init}
                   :type :user
                   :exclusive [::show-intro]

@@ -5,7 +5,8 @@
             [lt.objs.editor.pool :as pool]
             [lt.objs.sidebar.command :as scmd]
             [lt.objs.command :as cmd :refer [command]]
-            [lt.objs.editor :as editor]))
+            [lt.objs.editor :as editor])
+  (:require-macros [lt.macros :refer [behavior]]))
 
 (def mode-tags {:all #{:editor.keys.vim.insert :editor.keys.normal
                        :editor.keys.vim.visual :editor.keys.vim.normal
@@ -32,20 +33,20 @@
   (editor/off ed "vim-mode-change" (mode-change-listener ed))
   (object/raise ed :mode-change "normal-editor"))
 
-(object/behavior* ::mode-change
+(behavior ::mode-change
                   :triggers #{:mode-change}
                   :reaction (fn [this mode]
                               (object/remove-tags this (:all mode-tags))
                               (object/add-tags this (mode-tags (keyword mode)))))
 
-(object/behavior* ::find-bar-inactive
+(behavior ::find-bar-inactive
                   :triggers #{:inactive}
                   :reaction (fn [this]
                               (when (ctx/in? :find-bar.vim)
                                 (cmd/exec! :hide-find)
                                 (ctx/out! :find-bar.vim))))
 
-(object/behavior* ::map-keys
+(behavior ::map-keys
                   :triggers #{:object.instant}
                   :desc "Vim: Map vim keys"
                   :params [{:label "keys"
@@ -56,7 +57,7 @@
                               (doseq [[k v] ks]
                                 (js/CodeMirror.Vim.map k v))))
 
-(object/behavior* ::activate-vim
+(behavior ::activate-vim
                   :triggers #{:object.instant}
                   :desc "Vim: Activate vim mode"
                   :type :user
@@ -112,7 +113,7 @@
 
 (load/js "core/node_modules/codemirror/vim.js" :sync)
 
-(object/behavior* ::init
+(behavior ::init
                   :triggers #{:init}
                   :reaction (fn [this]
                               (ex-command {:name "ltexec"

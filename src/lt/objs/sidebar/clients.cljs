@@ -10,7 +10,7 @@
             [lt.objs.editor.pool :as pool]
             [lt.util.dom :as dom]
             [crate.binding :refer [bound map-bound subatom]])
-  (:require-macros [lt.macros :refer [defui]]))
+  (:require-macros [lt.macros :refer [behavior defui]]))
 
 (defui close-button [i]
   [:span.button "disconnect"]
@@ -101,12 +101,12 @@
           (ctx/out! :sidebar.clients this))
   )
 
-(object/behavior* ::track-active-client
+(behavior ::track-active-client
                   :triggers #{:active :set-client}
                   :reaction (fn [ed]
                               (object/merge! clients {:active (:client @ed)})))
 
-(object/behavior* ::unset-client
+(behavior ::unset-client
                   :triggers #{:unset!}
                   :reaction (fn [this cur]
                               (let [ed (pool/last-active)
@@ -116,23 +116,23 @@
                                   (object/update! ed [:client] dissoc (first found?)))
                                 (pool/focus-last))))
 
-(object/behavior* ::selecting!
+(behavior ::selecting!
                   :triggers #{:selecting!}
                   :reaction (fn [this]
                               (object/merge! this {:selecting? true})
                               ))
 
-(object/behavior* ::done-selecting
+(behavior ::done-selecting
                   :triggers #{:selected :cancel}
                   :reaction (fn [this]
                               (object/merge! this {:selecting? false})))
 
-(object/behavior* ::hide-on-select
+(behavior ::hide-on-select
                   :triggers #{:selected}
                   :reaction (fn [this]
                               (object/raise sidebar/rightbar :close!)))
 
-(object/behavior* ::focus!
+(behavior ::focus!
                   :triggers #{:focus!}
                   :reaction (fn [this]
                               (dom/focus (object/->content this))))

@@ -14,7 +14,7 @@
             [clojure.string :as string]
             [fetch.core :as fetch])
   (:require-macros [fetch.macros :refer [letrem]]
-                   [lt.macros :refer [defui]]))
+                   [lt.macros :refer [behavior defui]]))
 
 (def shell (load/node-module "shelljs"))
 (def fs (js/require "fs"))
@@ -163,12 +163,12 @@
 ;; Behaviors
 ;;*********************************************************
 
-(object/behavior* ::check-deploy
+(behavior ::check-deploy
                   :triggers #{:deploy}
                   :reaction (fn [this]
                               (check-all)))
 
-(object/behavior* ::check-version
+(behavior ::check-version
                   :triggers #{:init}
                   :type :user
                   :desc "App: Automatically check for updates"

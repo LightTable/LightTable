@@ -9,7 +9,7 @@
             [lt.objs.deploy :as deploy]
             [lt.util.dom :as dom]
             [crate.binding :refer [bound subatom]])
-  (:require-macros [lt.macros :refer [defui]]))
+  (:require-macros [lt.macros :refer [behavior defui]]))
 
 (defn css-expr [k v]
   (str (name k) ":" v " !important; "))
@@ -45,13 +45,13 @@
 
 (def styles (object/create ::styles))
 
-(object/behavior* ::style-on-init
+(behavior ::style-on-init
                   :triggers #{:init}
                   :reaction (fn [app]
                               (dom/append (dom/$ :head) (:content @styles))
                               ))
 
-(object/behavior* ::font-settings
+(behavior ::font-settings
                   :desc "Editor: Font settings"
                   :params [{:label "Font family"
                             :type :string}
@@ -76,7 +76,7 @@
 ;; Skins
 ;;**********************************************************
 
-(object/behavior* ::provide-skin
+(behavior ::provide-skin
                   :desc "Style: Provide skin"
                   :triggers #{:skins+}
                   :type :user
@@ -92,7 +92,7 @@
 
 (get-skins)
 
-(object/behavior* ::set-skin
+(behavior ::set-skin
                   :triggers #{:object.instant}
                   :desc "Style: Set Light Table skin"
                   :params [{:label "skin"
@@ -129,7 +129,7 @@
   (when-not (dom/$ (str "#theme-" name))
     (dom/append (dom/$ :head) (stylesheet name))))
 
-(object/behavior* ::provide-theme
+(behavior ::provide-theme
                   :desc "Style: Provide editor theme"
                   :triggers #{:themes+}
                   :type :user
@@ -139,7 +139,7 @@
                               ))
 
 
-(object/behavior* ::set-theme
+(behavior ::set-theme
                   :triggers #{:object.instant :show}
                   :desc "Style: Set the editor theme"
                   :params [{:label "theme"

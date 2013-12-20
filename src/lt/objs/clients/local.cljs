@@ -9,7 +9,8 @@
             [clojure.string :as string]
             [crate.core :as crate]
             [lt.util.dom :refer [$ append remove]])
-  (:use [lt.util.js :only [wait ->clj]]))
+  (:use [lt.util.js :only [wait ->clj]])
+  (:require-macros [lt.macros :refer [behavior]]))
 
 (def client-name "LightTable-UI")
 
@@ -56,7 +57,7 @@
 
 (defmethod on-message :default [])
 
-(object/behavior* ::send!
+(behavior ::send!
                   :triggers #{:send!}
                   :reaction (fn [this data]
                                 (on-message (keyword (:command data)) (:data data) (:cb data))

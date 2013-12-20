@@ -3,7 +3,8 @@
   (:require [lt.object :as object]
             [lt.util.js :refer [wait]]
             [lt.objs.notifos :as notifos]
-            [clojure.string :as string]))
+            [clojure.string :as string])
+  (:require-macros [lt.macros :refer [behavior]]))
 
 (def cs (atom {}))
 
@@ -158,23 +159,23 @@
 
 (def clients (object/create ::clients))
 
-(object/behavior* ::close-clients-on-closed
+(behavior ::close-clients-on-closed
                   :triggers #{:closing}
                   :reaction (fn [app]
                               (doseq [[_ c] @cs]
                                 (close! c))))
 
-(object/behavior* ::on-destroy-remove-cb
+(behavior ::on-destroy-remove-cb
                   :triggers #{:destroy}
                   :reaction (fn [this]
                               (rem-cb this)))
 
-(object/behavior* ::raise-on-object
+(behavior ::raise-on-object
                   :triggers #{:clients.raise-on-object}
                   :reaction (fn [this [id command data]]
                               (object/raise (object/by-id id) (keyword command) data)))
 
-(object/behavior* ::handle-message
+(behavior ::handle-message
                   :triggers #{:message}
                   :reaction (fn [obj [cb-id command data :as msg]]
                               (cond
@@ -182,7 +183,7 @@
                                (object/by-id cb-id) (object/raise (object/by-id cb-id) (keyword command) data)
                                :else (object/raise clients (keyword command) data))))
 
-(object/behavior* ::notify-connect
+(behavior ::notify-connect
                   :triggers #{:connect}
                   :reaction (fn [obj client]
                               (notifos/set-msg! (str "Connected to " (:name @client)))))
@@ -213,19 +214,19 @@
                 :queue []
                 :tags #{:client})
 
-(object/behavior* ::try-send
+(behavior ::try-send
                   :triggers #{:try-send!}
                   :reaction (fn [this msg]
                               (if (:connected @this)
                                 (object/raise this :send! msg)
                                 (object/raise this :queue! msg))))
 
-(object/behavior* ::queue!
+(behavior ::queue!
                   :triggers #{:queue!}
                   :reaction (fn [this msg]
                               (object/update! this [:queue] conj msg)))
 
-(object/behavior* ::on-connect-drain
+(behavior ::on-connect-drain
                   :triggers #{:connect}
                   :reaction (fn [this]
                               (object/merge! this {:connected true})
@@ -235,7 +236,7 @@
                                 (doall (range 10000)))
                               (object/merge! this {:queue []})))
 
-(object/behavior* ::remove-placeholder-on-swapped
+(behavior ::remove-placeholder-on-swapped
                   :triggers #{:swapped}
                   :reaction (fn [this]
                               (object/destroy! this)))

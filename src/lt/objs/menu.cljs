@@ -5,7 +5,8 @@
             [lt.objs.platform :as platform]
             [lt.objs.app :as app]
             [lt.util.dom :as dom]
-            [clojure.string :as string]))
+            [clojure.string :as string])
+  (:require-macros [lt.macros :refer [behavior]]))
 
 (def gui (js/require "nw.gui"))
 
@@ -156,27 +157,27 @@
 
 (main-menu)
 
-(object/behavior* ::recreate-menu
+(behavior ::recreate-menu
                   :debounce 20
                   :triggers #{:app.keys.load :init}
                   :reaction (fn [app]
                               (when (platform/mac?)
                                 (main-menu))))
 
-(object/behavior* ::set-menu
+(behavior ::set-menu
                   :triggers #{:focus :init}
                   :reaction (fn [this]
                               (when (or (platform/mac?)
                                         (not (.-menu app/win)))
                                 (set! (.-menu app/win) menubar))))
 
-(object/behavior* ::remove-menu-close
+(behavior ::remove-menu-close
                   :triggers #{:closed :blur}
                   :reaction (fn [this]
                               (when (platform/mac?)
                                 (set! (.-menu app/win) nil))))
 
-(object/behavior* ::menu!
+(behavior ::menu!
                   :triggers #{:menu!}
                   :reaction (fn [this e]
                               (let [items (sort-by :order (filter identity (object/raise-reduce this :menu+ [])))]

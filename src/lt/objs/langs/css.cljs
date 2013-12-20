@@ -5,9 +5,9 @@
             [lt.objs.files :as files]
             [lt.objs.clients :as clients]
             [lt.util.dom :refer [$ append]])
-  (:require-macros [lt.macros :refer [defui]]))
+  (:require-macros [lt.macros :refer [behavior defui]]))
 
-(object/behavior* ::on-eval
+(behavior ::on-eval
                   :triggers #{:eval
                               :eval.one}
                   :reaction (fn [editor]
@@ -15,14 +15,14 @@
                                                              :info (assoc (@editor :info)
                                                                      :code (ed/->val (:ed @editor)))})))
 
-(object/behavior* ::eval-on-save
+(behavior ::eval-on-save
                   :triggers #{:save}
                   :reaction (fn [editor]
                               (when (and (-> @editor :client :default)
                                          (not (clients/placeholder? (-> @editor :client :default))))
                                 (object/raise editor :eval))))
 
-(object/behavior* ::eval!
+(behavior ::eval!
                   :triggers #{:eval!}
                   :reaction (fn [this event]
                               (let [{:keys [info origin]} event]

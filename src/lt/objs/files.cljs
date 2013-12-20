@@ -3,7 +3,8 @@
   (:require [lt.object :as object]
             [lt.util.load :as load]
             [clojure.string :as string]
-            [lt.util.js :refer [now]]))
+            [lt.util.js :refer [now]])
+  (:require-macros [lt.macros :refer [behavior]]))
 
 (def fs (js/require "fs"))
 (def fpath (js/require "path"))
@@ -18,7 +19,7 @@
     {:types (into (:types cur {}) full)
      :exts (into (:exts cur {}) ext)}))
 
-(object/behavior* ::file-types
+(behavior ::file-types
                   :triggers #{:object.instant}
                   :type :user
                   :desc "Files: Associate file types"
@@ -27,7 +28,7 @@
                   :reaction (fn [this types]
                               (object/merge! files-obj (typelist->index @files-obj types))))
 
-(object/behavior* ::file.ignore-pattern
+(behavior ::file.ignore-pattern
                   :triggers #{:object.instant}
                   :type :user
                   :exclusive true

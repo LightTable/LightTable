@@ -1,7 +1,8 @@
 (ns lt.plugins.visible-whitespace
   (:require [lt.object :as object]
             [lt.objs.editor :as editor]
-            [lt.objs.command :as cmd]))
+            [lt.objs.command :as cmd])
+  (:require-macros [lt.macros :refer [behavior]]))
 
 (def spaces-regex #"\s")
 (def vs (js-obj " " "visible-space"
@@ -13,13 +14,13 @@
                                   (when (.match cur spaces-regex)
                                     (+ (.-pos stream) "space " (aget vs cur)))))}))
 
-(object/behavior* ::show-whitespace
+(behavior ::show-whitespace
                   :triggers #{:object.instant}
                   :reaction (fn [this]
                               (.addOverlay (editor/->cm-ed this) overlay)
                               ))
 
-(object/behavior* ::hide-whitespace
+(behavior ::hide-whitespace
                   :triggers #{:object.instant}
                   :reaction (fn [this]
                               (.removeOverlay (editor/->cm-ed this) overlay)

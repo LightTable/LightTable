@@ -17,7 +17,7 @@
             [lt.util.dom :as dom]
             [clojure.string :as string]
             [clojure.walk :as walk])
-  (:require-macros [lt.macros :refer [defui]]))
+  (:require-macros [lt.macros :refer [behavior defui]]))
 
 
 (def plugins-dir (files/lt-home "plugins"))
@@ -76,29 +76,29 @@
 (defn local-module [plugin-name module-name]
   (files/join plugins-dir plugin-name "node_modules" module-name))
 
-(object/behavior* ::init-plugins
+(behavior ::init-plugins
                   :triggers #{:pre-init}
                   :reaction (fn [app]
                               ;;load enabled plugins
                               (object/merge! app/app {::plugins (available-plugins)})
                               (cmd/exec! :behaviors.reload)))
 
-(object/behavior* ::behaviors.refreshed-load-keys
+(behavior ::behaviors.refreshed-load-keys
                   :triggers #{:behaviors.refreshed}
                   :reaction (fn []
                               (cmd/exec! :keymaps.reload)))
 
-(object/behavior* ::plugin-behavior-diffs
+(behavior ::plugin-behavior-diffs
                   :triggers #{:behaviors.diffs.plugin+}
                   :reaction (fn [this diffs]
                               (concat diffs (mapv plugin-behaviors (vals (::plugins @this))))))
 
-(object/behavior* ::plugin-keymap-diffs
+(behavior ::plugin-keymap-diffs
                   :triggers #{:keymap.diffs.plugin+}
                   :reaction (fn [this diffs]
                               (concat diffs (mapv settings/parse-key-file (::keymaps @this)))))
 
-(object/behavior* ::load-js
+(behavior ::load-js
                   :triggers #{:object.instant}
                   :desc "App: Load a javascript file"
                   :params [{:label "path"}]
@@ -109,7 +109,7 @@
                                   (object/update! this [::loaded-files] #(conj (or % #{}) path))
                                   (load/js path true)))))
 
-(object/behavior* ::load-css
+(behavior ::load-css
                   :triggers #{:object.instant}
                   :desc "App: Load a css file"
                   :params [{:label "path"}]
@@ -120,7 +120,7 @@
                                   (object/update! this [::loaded-files] #(conj (or % #{}) path))
                                   (load/css path)))))
 
-(object/behavior* ::load-keymap
+(behavior ::load-keymap
                   :triggers #{:object.instant}
                   :desc "App: Load a keymap file"
                   :params [{:label "path"}]
@@ -131,7 +131,7 @@
                                   (object/update! this [::keymaps] conj path)
                                   (object/merge! this {::keymaps #{path}})))))
 
-(object/behavior* ::check-for-plugin-file
+(behavior ::check-for-plugin-file
                   :triggers #{:create}
                   :desc "Plugin: Determine if this is a plugin file"
                   :reaction (fn [this]
@@ -143,7 +143,7 @@
 
 (def plugin-url "http://localhost:8082")
 
-(object/behavior* ::update-server-plugins
+(behavior ::update-server-plugins
                 :triggers #{:fetch-plugins}
                 :desc "Plugin Manager: fetch plugins"
                 :reaction (fn [this]
@@ -175,7 +175,7 @@
                                                ))))
                (notifos/set-msg! (str name " is already installed"))))))
 
-(object/behavior* ::render-server-plugins
+(behavior ::render-server-plugins
                 :triggers #{:plugin-results}
                 :desc "Plugin Manager: render plugin results"
                 :reaction (fn [this plugins]
@@ -183,7 +183,7 @@
                               (dom/empty ul)
                               (dom/append ul (dom/fragment (map server-plugin-ui plugins))))))
 
-(object/behavior* ::submit-plugin
+(behavior ::submit-plugin
                   :triggers #{:submit-plugin!}
                   :desc "Plugin Manager: submit a new plugin"
                   :reaction (fn [this url]
@@ -192,7 +192,7 @@
                                          (println data)
                                          ))))
 
-(object/behavior* ::on-close
+(behavior ::on-close
                   :triggers #{:close}
                   :reaction (fn [this]
                               (tabs/rem! this)))
@@ -268,7 +268,7 @@
 
   )
 
-(object/behavior* ::enable-beta
+(behavior ::enable-beta
                   :triggers #{:object.instant}
                   :reaction (fn [this]
 

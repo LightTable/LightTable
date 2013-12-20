@@ -15,7 +15,8 @@
             [lt.objs.clients.tcp :as tcp]
             [lt.util.load :as load]
             [clojure.string :as string])
-  (:use [lt.util.js :only [wait ->clj]]))
+  (:use [lt.util.js :only [wait ->clj]])
+  (:require-macros [lt.macros :refer [behavior]]))
 
 ;;****************************************************
 ;; Proc
@@ -29,7 +30,7 @@
           (str id)
           #(cb %2)))
 
-(object/behavior* ::on-out
+(behavior ::on-out
                   :triggers #{:proc.out}
                   :reaction (fn [this data]
                               (let [out (.toString data)]
@@ -37,7 +38,7 @@
                                    (list [:em.file (or (-> @this :info :client deref :name) "node")] [:em.line "[stdout]"] ": " [:pre (string/trim out)])
                                    ))))
 
-(object/behavior* ::on-error
+(behavior ::on-error
                   :triggers #{:proc.error}
                   :reaction (fn [this data]
                               (let [out (.toString data)]
@@ -47,7 +48,7 @@
                                    "error"
                                   )))))
 
-(object/behavior* ::on-exit
+(behavior ::on-exit
                   :triggers #{:proc.exit}
                   :reaction (fn [this data]
                               (when-not (:disconnecting @this)
@@ -196,7 +197,7 @@
 (defn handle-message [client msg]
   (global-eval client (str "global.lttools.handle(" (.stringify js/JSON (array (:cb msg) (:command msg) (-> msg :data clj->js))) ")")))
 
-(object/behavior* ::send!
+(behavior ::send!
                   :triggers #{:send!}
                   :reaction (fn [this msg]
                               (when (= "client.close" (:command msg))
@@ -207,7 +208,7 @@
                                 )
                               ))
 
-(object/behavior* ::refresh-scripts!
+(behavior ::refresh-scripts!
                   :triggers #{:refresh-scripts!}
                   :reaction (fn [this cb]
                               (send this {:command :scripts} (fn [m]
@@ -215,7 +216,7 @@
                                                                (when cb
                                                                  (cb))))))
 
-(object/behavior* ::changelive!
+(behavior ::changelive!
                   :triggers #{:changelive!}
                   :reaction (fn [this info]
                               (if-let [id (-> @this :scripts (get (:path info)))]
@@ -225,45 +226,45 @@
                                                                        (when (-> @this :scripts (get (:path info)))
                                                                          (object/raise this :changelive! info)))))))
 
-(object/behavior* ::debugger-changelive
+(behavior ::debugger-changelive
                   :triggers #{:debugger-changelive}
                   :reaction (fn [this msg]
                               ))
 
-(object/behavior* ::debugger-scripts
+(behavior ::debugger-scripts
                   :triggers #{:debugger-scripts}
                   :reaction (fn [this msg]
                               (object/merge! this {:scripts (into {} (map (juxt :name :id) (:body msg)))})
                               ))
 
-(object/behavior* ::debugger-evaluate
+(behavior ::debugger-evaluate
                   :triggers #{:debugger-evaluate}
                   :reaction (fn [this msg]
                               ))
 
-(object/behavior* ::init-debugger!
+(behavior ::init-debugger!
                   :triggers #{:init-debugger!}
                   :reaction (fn [this]
                               (init this)
                               ))
 
-(object/behavior* ::connect-success
+(behavior ::connect-success
                   :triggers #{::connect}
                   :reaction (fn [this]
                               (notifos/done-working)
                               (object/raise this :init-debugger!)))
 
-(object/behavior* ::connect-retry
+(behavior ::connect-retry
                   :triggers #{::connect-fail}
                   :reaction (fn [this]
                               (wait 20 #(object/raise this :started))))
 
-(object/behavior* ::start-debugger!
+(behavior ::start-debugger!
                   :triggers #{:connect}
                   :reaction (fn [this]
                                (object/merge! this {:debugger-socket (connect-to "localhost" (:port @this) this)})))
 
-(object/behavior* ::connect!
+(behavior ::connect!
                   :triggers #{:connect!}
                   :reaction (fn [this path]
                               (try-connect {:info {:path path}})
@@ -280,7 +281,7 @@
                                (dialogs/file nodejs-lang :connect!))})
 
 
-(object/behavior* ::kill-on-closed
+(behavior ::kill-on-closed
                   :triggers #{:closed}
                   :reaction (fn [app]
                               ))

@@ -1,7 +1,8 @@
 (ns lt.objs.platform
   (:require [lt.object :as object]
             [lt.objs.app :as app]
-            [lt.util.dom :as dom]))
+            [lt.util.dom :as dom])
+  (:require-macros [lt.macros :refer [behavior]]))
 
 (defn normalize [plat]
   (condp = plat
@@ -23,7 +24,7 @@
 (defn linux? []
   (= platform :linux))
 
-(object/behavior* ::add-platform-class
+(behavior ::add-platform-class
                   :triggers #{:init}
                   :reaction (fn [this]
                               (dom/add-class (dom/$ :body) (name platform))

@@ -6,7 +6,8 @@
             [lt.util.load :refer [node-module]]
             [lt.util.cljs :refer [js->clj]]
             [clojure.string :as string]
-            [lt.objs.opener :as opener]))
+            [lt.objs.opener :as opener])
+  (:require-macros [lt.macros :refer [behavior]]))
 
 (defn rebuild-argv [argstr]
   (-> (subs argstr (.indexOf argstr "<d><d>dir"))
@@ -55,7 +56,7 @@
 ;; Behaviors
 ;;*********************************************************
 
-(object/behavior* ::open-on-args
+(behavior ::open-on-args
                   :triggers #{:post-init}
                   :reaction (fn [this]
                               (when (args)
@@ -68,7 +69,7 @@
                                     (object/merge! workspace/current-ws {:initialized? true}))
                                   (open-paths paths (:add args))))))
 
-(object/behavior* ::open!
+(behavior ::open!
                   :triggers #{:open!}
                   :reaction (fn [this path]
                               (when (= (app/fetch :focusedWindow) (app/window-number))

@@ -17,7 +17,7 @@
             [lt.objs.notifos :as notifos]
             [lt.util.load :as load]
             [lt.util.cljs :refer [js->clj]])
-  (:require-macros [lt.macros :refer [defui]]))
+  (:require-macros [lt.macros :refer [behavior defui]]))
 
 ;;****************************************************
 ;; Proc
@@ -25,7 +25,7 @@
 
 (def shell (load/node-module "shelljs"))
 
-(object/behavior* ::on-out
+(behavior ::on-out
                   :triggers #{:proc.out}
                   :reaction (fn [this data]
                               (let [out (.toString data)]
@@ -37,7 +37,7 @@
                                     ;(object/destroy! this)
                                     )))))
 
-(object/behavior* ::on-error
+(behavior ::on-error
                   :triggers #{:proc.error}
                   :reaction (fn [this data]
                               (let [out (.toString data)]
@@ -46,7 +46,7 @@
                                   ))
                               ))
 
-(object/behavior* ::on-exit
+(behavior ::on-exit
                   :triggers #{:proc.exit}
                   :reaction (fn [this data]
                               ;(object/update! this [:buffer] str data)
@@ -173,19 +173,19 @@
   (let [meta (js/JSON.stringify (clj->js meta))]
     (str "sys.modules['lttools'].__dict__['watch'](" src ", " meta ")")))
 
-(object/behavior* ::watch-src
+(behavior ::watch-src
                   :triggers #{:watch.src+}
                   :reaction (fn [editor cur meta src]
                               (python-watch meta src)))
 
-(object/behavior* ::on-eval
+(behavior ::on-eval
                   :triggers #{:eval}
                   :reaction (fn [editor]
                               (object/raise python :eval! {:origin editor
                                                              :info (assoc (@editor :info)
                                                                      :code (watches/watched-range editor nil nil python-watch))})))
 
-(object/behavior* ::on-eval.one
+(behavior ::on-eval.one
                   :triggers #{:eval.one}
                   :reaction (fn [editor]
                               (let [code (watches/watched-range editor nil nil python-watch)
@@ -200,28 +200,28 @@
                                 (object/raise python :eval! {:origin editor
                                                              :info info}))))
 
-(object/behavior* ::python-watch
+(behavior ::python-watch
                   :triggers #{:editor.eval.python.watch}
                   :reaction (fn [editor res]
                               (when-let [watch (get (:watches @editor) (-> res :meta :id))]
                                 (let [str-result (:result res)]
                                   (object/raise (:inline-result watch) :update! str-result)))))
 
-(object/behavior* ::python-result
+(behavior ::python-result
                   :triggers #{:editor.eval.python.result}
                   :reaction (fn [editor res]
                               (notifos/done-working)
                               (object/raise editor :editor.result (:result res) {:line (:end (:meta res))
                                                                                  :start-line (-> res :meta :start)})))
 
-(object/behavior* ::python-success
+(behavior ::python-success
                   :triggers #{:editor.eval.python.success}
                   :reaction (fn [editor res]
                               (notifos/done-working)
                               (object/raise editor :editor.result "✓" {:line (-> res :meta :end)
                                                                        :start-line (-> res :meta :start)})))
 
-(object/behavior* ::python-exception
+(behavior ::python-exception
                   :triggers #{:editor.eval.python.exception}
                   :reaction (fn [editor ex]
                               (notifos/done-working)
@@ -235,7 +235,7 @@
 (defui canvas []
   [:canvas])
 
-(object/behavior* ::python-image
+(behavior ::python-image
                   :triggers #{:editor.eval.python.image}
                   :reaction (fn [editor img]
                               ;(console/log (pr-str img))
@@ -243,14 +243,14 @@
                                                                                                   :start-line (-> img :meta :start)})
                               ))
 
-(object/behavior* ::python-printer
+(behavior ::python-printer
                   :triggers #{:editor.eval.python.print}
                   :reaction (fn [editor p]
                               (console/loc-log {:file (files/basename (:file p))
                                                 :line "stdout"
                                                 :content (:msg p)})))
 
-(object/behavior* ::eval!
+(behavior ::eval!
                   :triggers #{:eval!}
                   :reaction (fn [this event]
                               (let [{:keys [info origin]} event
@@ -267,7 +267,7 @@
 
 (def pyzmq-warned false)
 
-(object/behavior* ::pyzmq-error
+(behavior ::pyzmq-error
                   :triggers #{:python.client.error.pyzmq}
                   :reaction (fn [this]
                               (when-not pyzmq-warned
@@ -279,7 +279,7 @@
                                                                     (platform/open "http://ipython.org/ipython-doc/stable/install/install.html"))}
                                                          {:label "ok"}]}))))
 
-(object/behavior* ::ipython-error
+(behavior ::ipython-error
                   :triggers #{:python.client.error.ipython-version}
                   :reaction (fn [this]
                               (when-not pyzmq-warned
@@ -291,7 +291,7 @@
                                                                     (platform/open "http://ipython.org/ipython-doc/stable/install/install.html"))}
                                                          {:label "ok"}]}))))
 
-(object/behavior* ::connect
+(behavior ::connect
                   :triggers #{:connect}
                   :reaction (fn [this path]
                               (try-connect {:info {:path path}})))
@@ -307,7 +307,7 @@
                     :connect (fn []
                                (dialogs/dir python :connect))})
 
-(object/behavior* ::python-exe
+(behavior ::python-exe
                   :triggers #{:object.instant}
                   :desc "Python: Set the path to the python executable for clients"
                   :type :user
@@ -317,7 +317,7 @@
                   :reaction (fn [this exe]
                               (object/merge! python {:python-exe exe})))
 
-(object/behavior* ::ipython-exe
+(behavior ::ipython-exe
                   :triggers #{:object.instant}
                   :desc "Python: Set the path to ipython for clients"
                   :type :user

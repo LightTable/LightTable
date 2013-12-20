@@ -14,7 +14,7 @@
             [clojure.string :as string]
             [lt.util.dom :refer [$ append]]
             [lt.util.cljs :refer [js->clj]])
-  (:require-macros [lt.macros :refer [defui]]))
+  (:require-macros [lt.macros :refer [behavior defui]]))
 
 (def util-inspect (.-inspect (js/require "util")))
 (def acorn (.-parse (load/node-module "acorn")))
@@ -83,7 +83,7 @@
         opts-str (.stringify js/JSON opts)]
     (str "lttools.watch(" src ", " opts-str ")" semi)))
 
-(object/behavior* ::watch-src
+(behavior ::watch-src
                   :triggers #{:watch.src+}
                   :reaction (fn [editor cur meta src]
                              (src->watch meta src)))
@@ -91,7 +91,7 @@
 (defn clean-code [src]
   (string/replace src (js/RegExp. "\n*#!.*\n" "gm") "\n"))
 
-(object/behavior* ::on-eval
+(behavior ::on-eval
                   :triggers #{:eval}
                   :reaction (fn [editor]
                               (object/raise js-lang :eval! {:origin editor
@@ -99,7 +99,7 @@
                                                                      :code (-> (watches/watched-range editor nil nil src->watch)
                                                                                (clean-code)))})))
 
-(object/behavior* ::on-eval.one
+(behavior ::on-eval.one
                   :triggers #{:eval.one}
                   :reaction (fn [editor]
                               (try
@@ -127,7 +127,7 @@
                                   (object/raise editor :editor.eval.js.exception {:ex e :meta {:end {:line (dec (.-loc.line e))}}})))
                              ))
 
-(object/behavior* ::js-result
+(behavior ::js-result
                   :triggers #{:editor.eval.js.result}
                   :reaction (fn [editor res]
                               (notifos/done-working)
@@ -142,7 +142,7 @@
                                     (object/raise editor :editor.result str-result loc {:prefix " = "}))
                                   (object/raise editor :editor.result "✓" loc {:prefix " "})))))
 
-(object/behavior* ::js-watch
+(behavior ::js-watch
                   :triggers #{:editor.eval.js.watch}
                   :reaction (fn [editor res]
                               (when-let [watch (get (:watches @editor) (-> res :meta :id))]
@@ -153,7 +153,7 @@
                                   )
                                 )))
 
-(object/behavior* ::js-exception
+(behavior ::js-exception
                   :triggers #{:editor.eval.js.exception}
                   :reaction (fn [editor ex]
                               (notifos/done-working)
@@ -165,13 +165,13 @@
                                 (object/raise editor :editor.exception stack loc))
                               ))
 
-(object/behavior* ::js-success
+(behavior ::js-success
                   :triggers #{:editor.eval.js.file.success}
                   :reaction (fn [editor]
                               (notifos/done-working)
                               (notifos/set-msg! (str "Eval success: " (-> @editor :info :name)))))
 
-(object/behavior* ::eval!
+(behavior ::eval!
                   :triggers #{:eval!}
                   :reaction (fn [this event]
                               (let [{:keys [info origin]} event]

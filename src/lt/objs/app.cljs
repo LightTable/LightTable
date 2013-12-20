@@ -4,7 +4,8 @@
             [lt.objs.context :as ctx]
             [clojure.string :as string]
             [lt.util.js :refer [now]]
-            [lt.util.dom :refer [$] :as dom]))
+            [lt.util.dom :refer [$] :as dom])
+  (:require-macros [lt.macros :refer [behavior]]))
 
 (def gui (js/require "nw.gui"))
 (def win (.Window.get gui))
@@ -87,7 +88,7 @@
 ;; Behaviors
 ;;*********************************************************
 
-(object/behavior* ::refresh
+(behavior ::refresh
                   :triggers #{:refresh}
                   :reaction (fn [obj]
                               (set! closing true)
@@ -95,7 +96,7 @@
                               (when closing
                                 (refresh))))
 
-(object/behavior* ::close!
+(behavior ::close!
                   :triggers #{:close!}
                   :reaction (fn [this]
                               (set! closing true)
@@ -103,7 +104,7 @@
                               (when closing
                                 (close true))))
 
-(object/behavior* ::store-position-on-close
+(behavior ::store-position-on-close
                   :triggers #{:closed :refresh}
                   :reaction (fn [this]
                               (when-not (.-isFullscreen win)
@@ -113,20 +114,20 @@
                                 (set! js/localStorage.height (.-height win))
                                 (set! js/localStorage.fullscreen (.-isFullscreen win)))))
 
-(object/behavior* ::restore-fullscreen
+(behavior ::restore-fullscreen
                   :triggers #{:show}
                   :reaction (fn [this]
                                 (when (= js/localStorage.fullscreen "true")
                                   (.enterFullscreen win))))
 
-(object/behavior* ::restore-position-on-init
+(behavior ::restore-position-on-init
                   :triggers #{:show}
                   :reaction (fn [this]
                               (when-not (empty? (.-width js/localStorage))
                                 (.resizeTo win (ensure-greater js/localStorage.width 400) (ensure-greater js/localStorage.height 400))
                                 (.moveTo win (ensure-greater js/localStorage.x 0) (ensure-greater js/localStorage.y 0)))))
 
-(object/behavior* ::on-show-bind-navigate
+(behavior ::on-show-bind-navigate
                   :triggers #{:show}
                   :reaction (fn [this]
                               (dom/on ($ :#canvas) :click (fn [e]
@@ -137,14 +138,14 @@
                                                                 (.Shell.openExternal gui href)
                                                                 (.focus win)))))))
 
-(object/behavior* ::initial-focus
+(behavior ::initial-focus
                   :triggers #{:show}
                   :reaction (fn [this]
                               ;(dom/focus (dom/$ :body))
                               ;(.focus win)
                               ))
 
-(object/behavior* ::run-on-init
+(behavior ::run-on-init
                   :triggers #{:init}
                   :desc "App: Run commands on start"
                   :params [{:label "commands"

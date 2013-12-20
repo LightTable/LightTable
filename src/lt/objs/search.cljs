@@ -15,7 +15,7 @@
             [lt.util.js :refer [wait now]]
             [lt.util.load :as load]
             [clojure.string :as string])
-  (:require-macros [lt.macros :refer [defui extract foreach background]]))
+  (:require-macros [lt.macros :refer [behavior defui extract foreach background]]))
 
 (def search! (background (fn [obj-id opts]
                           (let [replacer (js/require (str js/ltpath "/core/node_modules/replace"))
@@ -101,18 +101,18 @@
      :replace (dom/val replace)
      :loc (dom/val loc)}))
 
-(object/behavior* ::on-close
+(behavior ::on-close
                   :triggers #{:close}
                   :reaction (fn [this]
                               (tabs/rem! this)))
 
-(object/behavior* ::clear!
+(behavior ::clear!
                   :triggers #{:clear!}
                   :reaction (fn [this]
                               (object/merge! this {:timeout nil :results (array) :result-count 0 ::time nil ::filesSearched nil :position [0 -1]})
                               (dom/empty (->res this))))
 
-(object/behavior* ::search!
+(behavior ::search!
                   :triggers #{:search!}
                   :reaction (fn [this]
                               (object/raise this :clear!)
@@ -124,7 +124,7 @@
                                                   :exclude (.-source files/ignore-pattern)
                                                   :paths (string->loc (:loc info))))))))
 
-(object/behavior* ::replace!
+(behavior ::replace!
                   :triggers #{:replace!}
                   :reaction (fn [this]
                               (object/raise this :clear!)
@@ -137,7 +137,7 @@
                                                   :exclude (.-source files/ignore-pattern)
                                                   :paths (string->loc (:loc info))))))))
 
-(object/behavior* ::done-searching
+(behavior ::done-searching
                   :triggers #{:done-searching}
                   :reaction (fn [this info]
                               (object/merge! this {::time (/ (:time info) 1000)
@@ -148,7 +148,7 @@
                                   (dom/empty (->res this)))
                                 (notifos/done-working (str "Found " (:result-count @this) " results searching " (:total info) " files in " (/ (:time info) 1000) "s." )))))
 
-(object/behavior* ::next!
+(behavior ::next!
                   :triggers #{:next!}
                   :reaction (fn [this]
                               (when (> (.-length (:results @this)) 0)
@@ -167,7 +167,7 @@
                                                             (aget result)
                                                             (.-line)))))))
 
-(object/behavior* ::prev!
+(behavior ::prev!
                   :triggers #{:prev!}
                   :reaction (fn [this]
                               (when (> (.-length (:results @this)) 0)
@@ -189,7 +189,7 @@
                                   (cmd/exec! :goto-line (-> (.-results neue)
                                                             (aget result)
                                                             (.-line)))))))
-(object/behavior* ::on-result
+(behavior ::on-result
                   :triggers #{:result}
                   :reaction (fn [this result]
                               (let [total (count (.-results result))
@@ -202,7 +202,7 @@
                                 (.push (:results @this) result)
                                 (object/update! this [:result-count] + total))))
 
-(object/behavior* ::focus
+(behavior ::focus
                   :triggers #{:focus! :show}
                   :reaction (fn [this]
                               (.focus (dom/$ :.search (object/->content this)))))
