@@ -19,7 +19,7 @@
 (def menu-instance (create-menu))
 
 (defn submenu [items]
-  (let [menu (create-menu)]
+  (let [menu (create-menu nil)]
     (doseq [i items
             :when i]
       (.append menu (menu-item i)))
