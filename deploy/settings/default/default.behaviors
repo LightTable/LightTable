@@ -389,6 +389,7 @@
    :lt.objs.search/done-searching
    :lt.objs.search/next!
    :lt.objs.search/prev!
+   :lt.objs.search/replace!
    :lt.objs.search/on-result
    :lt.objs.search/focus
    :lt.objs.search/on-close},

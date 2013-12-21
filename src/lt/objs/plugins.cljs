@@ -266,19 +266,15 @@
 
   (lt.objs.tabs/add! manager)
 
+
   )
 
-(behavior ::enable-beta
-                  :triggers #{:object.instant}
-                  :reaction (fn [this]
+(cmd/command {:command :build
+              :desc "Editor: build file or project"
+              :exec (fn []
+                      (when-let [ed (pool/last-active)]
+                        (object/raise ed :build)))})
 
-                              (cmd/command {:command :build
-                                            :desc "Editor: build file or project"
-                                            :exec (fn []
-                                                    (when-let [ed (pool/last-active)]
-                                                      (object/raise ed :build)))})
-
-                              ))
 
 ;;This call to tag-behaviors is necessary as there are no behaviors loaded when the
 ;;app is first run.

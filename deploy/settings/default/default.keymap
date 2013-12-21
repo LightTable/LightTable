@@ -52,7 +52,7 @@
      :sidebar.doc.search.input {"enter" [:docs.search.exec]
                                 "esc" [:docs.search.hide]}
      :searcher.search {"enter" [:searcher.search]}
-     :searcher.replace {"pmeta-enter" [:searcher.replace]}
+     :searcher.replace {"pmeta-enter" [:searcher.replace-all]}
      :searcher.location {"enter" [:searcher.search]}
      :find-bar {"shift-enter" [:find.prev],
                 "esc" [:find.clear :find.hide],
