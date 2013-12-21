@@ -24,7 +24,6 @@
   (object/merge! statusbar/statusbar-loader (merge {:message m :class ""} opts)))
 
 (defn set-msg! [msg opts]
-  (println "Notifos:" msg)
   (msg* msg opts)
   (js/clearTimeout cur-timeout)
   (set! cur-timeout (wait standard-timeout #(msg* ""))))
