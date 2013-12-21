@@ -49,303 +49,314 @@
     (object/update! p [:folders] (fn [cur] (vec (remove #{child} cur))))))
 
 (behavior ::add-ws-folder
-                  :triggers #{:workspace.add.folder!}
-                  :reaction (fn [this path]
-                              (object/raise workspace/current-ws :add.folder! path)
-                              ))
+          :triggers #{:workspace.add.folder!}
+          :reaction (fn [this path]
+                      (object/raise workspace/current-ws :add.folder! path)
+                      ))
 
 (behavior ::add-ws-file
-                  :triggers #{:workspace.add.file!}
-                  :reaction (fn [this path]
-                              (object/raise workspace/current-ws :add.file! path)
-                              (object/raise (first (object/by-tag :opener)) :open! path)
-                              ))
+          :triggers #{:workspace.add.file!}
+          :reaction (fn [this path]
+                      (object/raise workspace/current-ws :add.file! path)
+                      (object/raise (first (object/by-tag :opener)) :open! path)
+                      ))
 
 (behavior ::on-open-ls
-                  :triggers #{:open!}
-                  :reaction (fn [this]
-                              (object/merge! this {:open? true})
-                              (when-not (:realized? @this)
-                                (object/merge! this {:realized? true})
-                                (object/merge! this (files-and-folders (:path @this))))))
+          :triggers #{:open!}
+          :reaction (fn [this]
+                      (object/merge! this {:open? true})
+                      (when-not (:realized? @this)
+                        (object/merge! this {:realized? true})
+                        (object/merge! this (files-and-folders (:path @this))))))
 
 (behavior ::refresh
-                  :triggers #{:refresh!}
-                  :reaction (fn [this]
-                              (doseq [f (concat (:files @this) (:folders @this))]
-                                (object/destroy! f))
-                              (object/raise workspace/current-ws :refresh (:path @this))
-                              (object/merge! this (files-and-folders (:path @this)))
-                              ))
+          :triggers #{:refresh!}
+          :reaction (fn [this]
+                      (doseq [f (concat (:files @this) (:folders @this))]
+                        (object/destroy! f))
+                      (object/raise workspace/current-ws :refresh (:path @this))
+                      (object/merge! this (files-and-folders (:path @this)))
+                      ))
 
 (behavior ::on-close
-                  :triggers #{:close!}
-                  :reaction (fn [this]
-                              (object/merge! this {:open? false})))
+          :triggers #{:close!}
+          :reaction (fn [this]
+                      (object/merge! this {:open? false})))
 
 (behavior ::on-open-file
-                  :triggers #{:open!}
-                  :reaction (fn [this]
-                              (object/raise opener/opener :open! (:path @this))))
+          :triggers #{:open!}
+          :reaction (fn [this]
+                      (object/raise opener/opener :open! (:path @this))))
 
 (behavior ::on-remove
-                  :triggers #{:remove!}
-                  :reaction (fn [this item]
-                              (if (object/has-tag? item :workspace.folder)
-                                (object/raise workspace/current-ws :remove.folder! (:path @item))
-                                (object/raise workspace/current-ws :remove.file! (:path @item)))))
+          :triggers #{:remove!}
+          :reaction (fn [this item]
+                      (if (object/has-tag? item :workspace.folder)
+                        (object/raise workspace/current-ws :remove.folder! (:path @item))
+                        (object/raise workspace/current-ws :remove.file! (:path @item)))))
 
 (behavior ::on-clear
-                  :triggers #{:clear!}
-                  :reaction (fn [this]
-                              (object/raise workspace/current-ws :clear!)))
+          :triggers #{:clear!}
+          :reaction (fn [this]
+                      (object/raise workspace/current-ws :clear!)))
 
 (behavior ::on-ws-add
-                  :triggers #{:add}
-                  :reaction (fn [ws f]
-                              (if (files/file? f)
-                                (object/update! tree [:files] conj (root-file f))
-                                (object/update! tree [:folders] conj (root-folder f)))))
+          :triggers #{:add}
+          :reaction (fn [ws f]
+                      (if (files/file? f)
+                        (object/update! tree [:files] conj (root-file f))
+                        (object/update! tree [:folders] conj (root-folder f)))))
 
 (behavior ::on-ws-remove
-                  :triggers #{:remove}
-                  :reaction (fn [ws f]
-                              (let [item (find-by-path f)]
-                                (if (files/file? f)
-                                  (object/update! tree [:files] (fn [cur] (vec (remove #{item} cur))))
-                                  (object/update! tree [:folders] (fn [cur] (vec (remove #{item} cur)))))
-                                (object/destroy! item))))
+          :triggers #{:remove}
+          :reaction (fn [ws f]
+                      (let [item (find-by-path f)]
+                        (if (files/file? f)
+                          (object/update! tree [:files] (fn [cur] (vec (remove #{item} cur))))
+                          (object/update! tree [:folders] (fn [cur] (vec (remove #{item} cur)))))
+                        (object/destroy! item))))
 
 (behavior ::on-ws-set
-                  :triggers #{:set}
-                  :reaction (fn [ws]
-                              (let [{:keys [folders files]} @ws]
-                                (object/merge! tree {:files (mapv root-file files)
-                                                     :folders (mapv root-folder folders)
-                                                     :open-dirs #{}}))))
+          :triggers #{:set}
+          :reaction (fn [ws]
+                      (let [{:keys [folders files]} @ws]
+                        (object/merge! tree {:files (mapv root-file files)
+                                             :folders (mapv root-folder folders)
+                                             :open-dirs #{}}))))
 
 (behavior ::track-and-watch-open-dirs
-                  :triggers #{:open!}
-                  :reaction (fn [this]
-                              (workspace/watch! (:path @this))
-                              (object/update! tree [:open-dirs] conj (:path @this))))
+          :triggers #{:open!}
+          :reaction (fn [this]
+                      (workspace/watch! (:path @this))
+                      (object/update! tree [:open-dirs] conj (:path @this))))
 
 (behavior ::untrack-closed-dirs
-                  :triggers #{:close!}
-                  :reaction (fn [this]
-                              (object/update! tree [:open-dirs] disj (:path @this))))
+          :triggers #{:close!}
+          :reaction (fn [this]
+                      (object/update! tree [:open-dirs] disj (:path @this))))
 
 (behavior ::watch-open-dirs-paths
-                  :triggers #{:watch-paths+}
-                  :reaction (fn [this cur]
-                              (concat cur (:open-dirs @tree))))
+          :triggers #{:watch-paths+}
+          :reaction (fn [this cur]
+                      (concat cur (:open-dirs @tree))))
 
 (defn find-by-path [path]
   (first (filter #(= (:path @%) path) (object/by-tag :tree-item))))
 
 (behavior ::watched.delete
-                  :triggers #{:watched.delete}
-                  :reaction (fn [ws path]
-                              (when-let [child (find-by-path path)]
-                                (when-let [p (find-by-path (files/parent path))]
-                                  (remove-child p child))
-                                (object/destroy! child))))
+          :triggers #{:watched.delete}
+          :reaction (fn [ws path]
+                      (when-let [child (find-by-path path)]
+                        (when-let [p (find-by-path (files/parent path))]
+                          (remove-child p child))
+                        (object/destroy! child))))
 
 (behavior ::watched.create
-                  :triggers #{:watched.create}
-                  :reaction (fn [ws path]
-                              (when-not (and (find-by-path path)
-                                             (not (re-seq files/ignore-pattern (files/basename path))))
-                                (when-let [parent (find-by-path (files/parent path))]
-                                  (when (:realized? @parent)
-                                    (if (files/dir? path)
-                                      (object/update! parent [:folders] conj (object/create ::workspace.folder path))
-                                      (object/update! parent [:files] conj (object/create ::workspace.file path)))
-                                    )))))
+          :triggers #{:watched.create}
+          :reaction (fn [ws path]
+                      (when-not (and (find-by-path path)
+                                     (not (re-seq files/ignore-pattern (files/basename path))))
+                        (when-let [parent (find-by-path (files/parent path))]
+                          (when (:realized? @parent)
+                            (if (files/dir? path)
+                              (object/update! parent [:folders] conj (object/create ::workspace.folder path))
+                              (object/update! parent [:files] conj (object/create ::workspace.file path)))
+                            )))))
 
 (behavior ::on-menu
-                  :triggers #{:menu!}
-                  :reaction (fn [this e]
-                              (let [items (sort-by :order (object/raise-reduce this :menu-items []))]
-                                (-> (menu items)
-                                    (show-menu (.-clientX e) (.-clientY e))))))
+          :triggers #{:menu!}
+          :reaction (fn [this e]
+                      (let [items (sort-by :order (object/raise-reduce this :menu-items []))]
+                        (-> (menu items)
+                            (show-menu (.-clientX e) (.-clientY e))))))
 
 (behavior ::on-root-menu
-                  :triggers #{:menu-items}
-                  :reaction (fn [this items]
-                              (conj items
-                                    {:type "separator"
-                                     :order 9}
-                                    {:label "Remove from workspace"
-                                            :order 10
-                                            :click (fn [] (object/raise tree :remove! this))})
-                              ))
+          :triggers #{:menu-items}
+          :reaction (fn [this items]
+                      (conj items
+                            {:type "separator"
+                             :order 9}
+                            {:label "Remove from workspace"
+                             :order 10
+                             :click (fn [] (object/raise tree :remove! this))})
+                      ))
 
 (behavior ::subfile-menu
-                  :triggers #{:menu-items}
-                  :reaction (fn [this items]
-                              (conj items {:label "Rename"
-                                          :order 1
-                                          :click (fn [] (object/raise this :start-rename!))}
-                                         {:label "Delete"
-                                          :order 2
-                                          :click (fn [] (object/raise this :delete!))})))
+          :triggers #{:menu-items}
+          :reaction (fn [this items]
+                      (conj items {:label "Rename"
+                                   :order 1
+                                   :click (fn [] (object/raise this :start-rename!))}
+                            {:label "Delete"
+                             :order 2
+                             :click (fn [] (object/raise this :delete!))})))
 
 (behavior ::subfolder-menu
-                  :triggers #{:menu-items}
-                  :reaction (fn [this items]
-                              (conj items
-                                    {:label "New file"
-                                     :order 0
-                                     :click (fn [] (object/raise this :new-file!))}
-                                    {:label "Rename"
-                                     :order 2
-                                     :click (fn [] (object/raise this :start-rename!))}
-                                    {:type "separator"
-                                     :order 3}
-                                    {:label "New folder"
-                                     :order 4
-                                     :click (fn [] (object/raise this :new-folder!))}
-                                    {:label "Delete folder"
-                                     :order 5
-                                     :click (fn [] (object/raise this :delete!))}
-                                    {:label "Refresh folder"
-                                     :order 6
-                                     :click (fn [] (object/raise this :refresh!))}
-                                    )))
+          :triggers #{:menu-items}
+          :reaction (fn [this items]
+                      (conj items
+                            {:label "New file"
+                             :order 0
+                             :click (fn [] (object/raise this :new-file!))}
+                            {:label "Rename"
+                             :order 2
+                             :click (fn [] (object/raise this :start-rename!))}
+                            {:type "separator"
+                             :order 3}
+                            {:label "New folder"
+                             :order 4
+                             :click (fn [] (object/raise this :new-folder!))}
+                            {:label "Delete folder"
+                             :order 5
+                             :click (fn [] (object/raise this :delete!))}
+                            {:label "Refresh folder"
+                             :order 6
+                             :click (fn [] (object/raise this :refresh!))}
+                            )))
+
+(behavior ::force-delete-file
+          :triggers #{:force-delete!}
+          :reaction (fn [this]
+                      (files/delete! (:path @this))
+                      (dom/remove (object/->content this))
+                      (object/raise workspace/current-ws :watched.delete (:path @this))
+                      (object/destroy! this)))
 
 (behavior ::delete-file
-                  :triggers #{:delete!}
-                  :reaction (fn [this]
-                              (files/delete! (:path @this))
-                              (dom/remove (object/->content this))
-                              (object/destroy! this)))
+          :triggers #{:delete!}
+          :reaction (fn [this]
+                      (popup/popup! {:header "Delete this file?"
+                                     :body (str "This will delete " (:path @this) " from disk and cannot be undone.")
+                                     :buttons [{:label "Delete file"
+                                                :action (fn [] (object/raise this :force-delete!))}
+                                               popup/cancel-button]})))
 
 (behavior ::force-delete-folder
-                  :triggers #{:force-delete!}
-                  :reaction (fn [this]
-                              (files/delete! (:path @this))
-                              (dom/remove (object/->content this))
-                              (object/destroy! this)))
+          :triggers #{:force-delete!}
+          :reaction (fn [this]
+                      (files/delete! (:path @this))
+                      (dom/remove (object/->content this))
+                      (object/raise workspace/current-ws :watched.delete (:path @this))
+                      (object/destroy! this)))
 
 (behavior ::delete-folder
-                  :triggers #{:delete!}
-                  :reaction (fn [this]
-                              (popup/popup! {:header "Delete this folder?"
-                                            :body (str "This will delete " (:path @this) " from disk and cannot be undone.")
-                                            :buttons [{:label "Delete folder"
-                                                       :action (fn [] (object/raise this :force-delete!))}
-                                                      popup/cancel-button]})))
+          :triggers #{:delete!}
+          :reaction (fn [this]
+                      (popup/popup! {:header "Delete this folder?"
+                                     :body (str "This will delete " (:path @this) " from disk and cannot be undone.")
+                                     :buttons [{:label "Delete folder"
+                                                :action (fn [] (object/raise this :force-delete!))}
+                                               popup/cancel-button]})))
 
 (behavior ::new-file!
-                  :triggers #{:new-file!}
-                  :reaction (fn [this]
-                              (let [ext (if-let [ffile (-> @this :files first)]
-                                          (when-let [path (-> ffile deref :path)] (files/ext path))
-                                          "txt")
-                                    path (files/join (:path @this) (str "untitled." ext))
-                                    final-path (files/next-available-name path)
-                                    folder (object/create ::workspace.file final-path)]
-                                (object/update! this [:files] conj folder)
-                                (object/merge! this {:open? true})
-                                (files/save final-path "")
-                                (object/raise opener/opener :open! final-path)
-                                (object/raise folder :start-rename!))))
+          :triggers #{:new-file!}
+          :reaction (fn [this]
+                      (let [ext (if-let [ffile (-> @this :files first)]
+                                  (when-let [path (-> ffile deref :path)] (files/ext path))
+                                  "txt")
+                            path (files/join (:path @this) (str "untitled." ext))
+                            final-path (files/next-available-name path)
+                            folder (object/create ::workspace.file final-path)]
+                        (object/update! this [:files] conj folder)
+                        (object/merge! this {:open? true})
+                        (files/save final-path "")
+                        (object/raise opener/opener :open! final-path)
+                        (object/raise folder :start-rename!))))
 
 (behavior ::new-folder!
-                  :triggers #{:new-folder!}
-                  :reaction (fn [this]
-                              (let [path (files/join (:path @this) "NewFolder")
-                                    final-path (files/next-available-name path)
-                                    folder (object/create ::workspace.folder final-path)]
-                                (object/update! this [:folders] conj folder)
-                                (object/merge! this {:open? true})
-                                (files/mkdir final-path)
-                                (object/raise folder :start-rename!))))
+          :triggers #{:new-folder!}
+          :reaction (fn [this]
+                      (let [path (files/join (:path @this) "NewFolder")
+                            final-path (files/next-available-name path)
+                            folder (object/create ::workspace.folder final-path)]
+                        (object/update! this [:folders] conj folder)
+                        (object/merge! this {:open? true})
+                        (files/mkdir final-path)
+                        (object/raise folder :start-rename!))))
 
 (behavior ::rename-folder
-                  :triggers #{:rename}
-                  :reaction (fn [this n]
-                              (let [path (:path @this)
-                                    neue (files/join (files/parent path) n)]
-                                (when-not (= path neue)
-                                  (if (files/exists? neue)
-                                    (popup/popup! {:header "Folder already exists."
-                                                   :body (str "The folder " neue " already exists, you'll have to pick a different name.")
-                                                   :buttons [{:label "ok"
-                                                              :post-action (fn []
-                                                                             (object/raise this :rename.cancel)
-                                                                             (object/raise this :start-rename!))}]})
-                                    (let [root? (object/has-tag? this :workspace.folder.root)]
-                                      (object/merge! this {:path neue :realized? false})
-                                      (files/move! path neue)
-                                      (object/raise this :refresh!)
-                                      (if root?
-                                        (object/raise workspace/current-ws :rename! path neue)
-                                        (object/raise workspace/current-ws :watched.rename path neue))
-                                      ))))))
+          :triggers #{:rename}
+          :reaction (fn [this n]
+                      (let [path (:path @this)
+                            neue (files/join (files/parent path) n)]
+                        (when-not (= path neue)
+                          (if (files/exists? neue)
+                            (popup/popup! {:header "Folder already exists."
+                                           :body (str "The folder " neue " already exists, you'll have to pick a different name.")
+                                           :buttons [{:label "ok"
+                                                      :post-action (fn []
+                                                                     (object/raise this :rename.cancel)
+                                                                     (object/raise this :start-rename!))}]})
+                            (let [root? (object/has-tag? this :workspace.folder.root)]
+                              (object/merge! this {:path neue :realized? false})
+                              (files/move! path neue)
+                              (object/raise this :refresh!)
+                              (if root?
+                                (object/raise workspace/current-ws :rename! path neue)
+                                (object/raise workspace/current-ws :watched.rename path neue))
+                              ))))))
 
 (behavior ::rename-file
-                  :triggers #{:rename}
-                  :reaction (fn [this n]
-                              (let [path (:path @this)
-                                    neue (files/join (files/parent path) n)]
-                                (when-not (= path neue)
-                                  (if (files/exists? neue)
-                                    (popup/popup! {:header "File already exists."
-                                                   :body (str "The file" neue " already exists, you'll have to pick a different name.")
-                                                   :buttons [{:label "ok"
-                                                              :post-action (fn []
-                                                                             (object/raise this :rename.cancel)
-                                                                             (object/raise this :start-rename!))}]})
-                                    (do
-                                      (if (or (object/has-tag? this :workspace.folder.root)
-                                              (object/has-tag? this :workspace.file.root))
-                                        (object/raise workspace/current-ws :rename! path neue)
-                                        (object/raise workspace/current-ws :watched.rename path neue))
-                                      (files/move! path neue)
-                                      (object/merge! this {:path neue})))))))
+          :triggers #{:rename}
+          :reaction (fn [this n]
+                      (let [path (:path @this)
+                            neue (files/join (files/parent path) n)]
+                        (when-not (= path neue)
+                          (if (files/exists? neue)
+                            (popup/popup! {:header "File already exists."
+                                           :body (str "The file" neue " already exists, you'll have to pick a different name.")
+                                           :buttons [{:label "ok"
+                                                      :post-action (fn []
+                                                                     (object/raise this :rename.cancel)
+                                                                     (object/raise this :start-rename!))}]})
+                            (do
+                              (if (or (object/has-tag? this :workspace.folder.root)
+                                      (object/has-tag? this :workspace.file.root))
+                                (object/raise workspace/current-ws :rename! path neue)
+                                (object/raise workspace/current-ws :watched.rename path neue))
+                              (files/move! path neue)
+                              (object/merge! this {:path neue})))))))
 
 (behavior ::start-rename
-                  :triggers #{:start-rename!}
-                  :reaction (fn [this]
-                              (object/merge! this {:renaming? true})
-                              (let [input (dom/$ :input (object/->content this))
-                                    len (count (files/without-ext (files/basename (:path @this))))]
-                                (dom/focus input)
-                                (dom/selection input 0 len "forward"))))
+          :triggers #{:start-rename!}
+          :reaction (fn [this]
+                      (object/merge! this {:renaming? true})
+                      (let [input (dom/$ :input (object/->content this))
+                            len (count (files/without-ext (files/basename (:path @this))))]
+                        (dom/focus input)
+                        (dom/selection input 0 len "forward"))))
 
 (behavior ::rename-focus
-                  :triggers #{:rename.focus}
-                  :reaction (fn [this]
-                              (ctx/in! :tree.rename this)))
+          :triggers #{:rename.focus}
+          :reaction (fn [this]
+                      (ctx/in! :tree.rename this)))
 
 (behavior ::rename-submit
-                  :triggers #{:rename.submit!}
-                  :reaction (fn [this]
-                              (let [val (-> (dom/$ :input (object/->content this))
-                                            (dom/val))]
-                                (object/merge! this {:renaming? false})
-                                (object/raise this :rename val))))
+          :triggers #{:rename.submit!}
+          :reaction (fn [this]
+                      (let [val (-> (dom/$ :input (object/->content this))
+                                    (dom/val))]
+                        (object/merge! this {:renaming? false})
+                        (object/raise this :rename val))))
 
 (behavior ::rename-blur
-                  :triggers #{:rename.blur}
-                  :reaction (fn [this]
-                              (ctx/out! :tree.rename)
-                              (when (:renaming? @this)
-                                (object/raise this :rename.submit!))))
+          :triggers #{:rename.blur}
+          :reaction (fn [this]
+                      (ctx/out! :tree.rename)
+                      (when (:renaming? @this)
+                        (object/raise this :rename.submit!))))
 
 (behavior ::rename-cancel
-                  :triggers #{:rename.cancel!}
-                  :reaction (fn [this]
-                              (object/merge! this {:renaming? false})
-                              ))
+          :triggers #{:rename.cancel!}
+          :reaction (fn [this]
+                      (object/merge! this {:renaming? false})
+                      ))
 
 (behavior ::destroy-sub-tree
-                  :trigger #{:destroy}
-                  :reaction (fn [this]
-                              (doseq [f (concat (:files @this) (:folders @this))]
-                                (object/destroy! f))))
+          :trigger #{:destroy}
+          :reaction (fn [this]
+                      (doseq [f (concat (:files @this) (:folders @this))]
+                        (object/destroy! f))))
 
 (defui file-toggle [this]
   [:p (bound this #(files/basename (:path @this)))]
@@ -380,7 +391,7 @@
   :focus (fn []
            (object/raise this :rename.focus))
   :blur (fn []
-           (object/raise this :rename.blur)))
+          (object/raise this :rename.blur)))
 
 (defn renameable [this cur content]
   (if cur
@@ -393,8 +404,8 @@
                 :init (fn [this path]
                         (object/merge! this {:path path})
                         [:li {:class (bound this #(if (:renaming? %)
-                                                      "renaming"
-                                                      ""))}
+                                                    "renaming"
+                                                    ""))}
                          (rename-input this)
                          [:div.tree-item
                           (file-toggle this)]]))
@@ -407,16 +418,16 @@
                 :folders []
                 :files []
                 :init (fn [this path]
-                          (object/merge! this {:path path})
-                          [:li {:class (bound this #(if (:renaming? %)
-                                                      "renaming"
-                                                      ""))}
-                           (rename-input this)
-                           [:div.tree-item
-                            (when path
-                              (folder-toggle this))
-                            [:div
-                             (bound this sub-folders)]]]))
+                        (object/merge! this {:path path})
+                        [:li {:class (bound this #(if (:renaming? %)
+                                                    "renaming"
+                                                    ""))}
+                         (rename-input this)
+                         [:div.tree-item
+                          (when path
+                            (folder-toggle this))
+                          [:div
+                           (bound this sub-folders)]]]))
 
 (object/object* ::workspace.root
                 :tags #{:workspace.root}
@@ -477,23 +488,23 @@
            (object/raise this :tree!)))
 
 (behavior ::recent!
-                  :triggers #{:recent!}
-                  :reaction (fn [this]
-                              (object/merge! this {:recents (recents this (workspace/all))})
-                              ))
+          :triggers #{:recent!}
+          :reaction (fn [this]
+                      (object/merge! this {:recents (recents this (workspace/all))})
+                      ))
 
 (behavior ::tree!
-                  :triggers #{:tree!}
-                  :reaction (fn [this]
-                              (object/merge! this {:recents nil})
-                              ))
+          :triggers #{:tree!}
+          :reaction (fn [this]
+                      (object/merge! this {:recents nil})
+                      ))
 
 (behavior ::recent.select!
-                  :triggers #{:recent.select!}
-                  :reaction (fn [this sel]
-                              (workspace/open workspace/current-ws (:path sel))
-                              (object/raise this :tree!)
-                              ))
+          :triggers #{:recent.select!}
+          :reaction (fn [this sel]
+                      (workspace/open workspace/current-ws (:path sel))
+                      (object/raise this :tree!)
+                      ))
 
 (defn ws-class [ws]
   (str "workspace" (when (:recents ws)
@@ -510,8 +521,8 @@
      [:li.sep "|"]
      (button "recent" #(recent this))
      ]
-   [:ul.root
-    (object/->content tree)]]
+    [:ul.root
+     (object/->content tree)]]
    [:div.recent
     (bound this :recents)
     ]]
@@ -528,24 +539,24 @@
 
 ;(dom/trigger (input) :click)
 (behavior ::sidebar-menu
-                  :triggers #{:menu!}
-                  :reaction (fn [this e]
-                              (-> (menu [{:label "Add folder"
-                                          :click (fn [] (cmd/exec! :workspace.add-folder))}
-                                         {:label "Add file"
-                                          :click (fn [] (cmd/exec! :workspace.add-file))}
-                                         {:type "separator"}
-                                         {:label "Clear workspace"
-                                          :click (fn [] (object/raise tree :clear!))}])
-                                  (show-menu (.-clientX e) (.-clientY e)))
-                              ))
+          :triggers #{:menu!}
+          :reaction (fn [this e]
+                      (-> (menu [{:label "Add folder"
+                                  :click (fn [] (cmd/exec! :workspace.add-folder))}
+                                 {:label "Add file"
+                                  :click (fn [] (cmd/exec! :workspace.add-file))}
+                                 {:type "separator"}
+                                 {:label "Clear workspace"
+                                  :click (fn [] (object/raise tree :clear!))}])
+                          (show-menu (.-clientX e) (.-clientY e)))
+                      ))
 
 (behavior ::workspace.open-on-start
-                  :triggers #{:init}
-                  :type :user
-                  :desc "Workspace: Show workspace on start"
-                  :reaction (fn [this]
-                              (cmd/exec! :workspace.show)))
+          :triggers #{:init}
+          :type :user
+          :desc "Workspace: Show workspace on start"
+          :reaction (fn [this]
+                      (cmd/exec! :workspace.show)))
 
 (def sidebar-workspace (object/create ::sidebar.workspace))
 

@@ -402,6 +402,10 @@
 (defn get-doc [e]
   (.getDoc (->cm-ed e)))
 
+(defn set-doc! [e doc]
+  (object/merge! e {:doc doc})
+  (.swapDoc (->cm-ed e) (:doc @doc)))
+
 ;;*********************************************************
 ;; Object
 ;;*********************************************************

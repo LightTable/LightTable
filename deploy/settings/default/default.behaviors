@@ -494,6 +494,7 @@
    :lt.objs.sidebar.workspace/rename-file
    :lt.objs.sidebar.workspace/subfile-menu
    :lt.objs.sidebar.workspace/delete-file
+   :lt.objs.sidebar.workspace/force-delete-file
    :lt.objs.sidebar.workspace/on-menu},
  :workspace.file.root #{:lt.objs.sidebar.workspace/on-root-menu},
  :workspace.folder

@@ -18,25 +18,25 @@
   (object/by-tag :editor))
 
 (behavior ::theme-changed
-                  :triggers #{:theme-change}
-                  :reaction (fn [this theme]
-                              (doseq [ed (get-all)
-                                      :let [e (:ed @ed)]]
-                                (editor/set-options e {:theme theme}))))
+          :triggers #{:theme-change}
+          :reaction (fn [this theme]
+                      (doseq [ed (get-all)
+                              :let [e (:ed @ed)]]
+                        (editor/set-options e {:theme theme}))))
 
 (behavior ::line-numbers-changed
-                  :triggers #{:line-numbers-change}
-                  :reaction (fn [this numbers?]
-                              (doseq [ed (get-all)
-                                      :let [e (:ed @ed)]]
-                                (editor/set-options e {:lineNumbers numbers?}))))
+          :triggers #{:line-numbers-change}
+          :reaction (fn [this numbers?]
+                      (doseq [ed (get-all)
+                              :let [e (:ed @ed)]]
+                        (editor/set-options e {:lineNumbers numbers?}))))
 
 (behavior ::options-changed
-                  :triggers #{:options-changed}
-                  :reaction (fn [this opts]
-                              (doseq [ed (get-all)
-                                      :let [e (:ed @ed)]]
-                                (editor/set-options e opts))))
+          :triggers #{:options-changed}
+          :reaction (fn [this opts]
+                      (doseq [ed (get-all)
+                              :let [e (:ed @ed)]]
+                        (editor/set-options e opts))))
 
 (object/object* ::pool
                 :tags #{:editor.pool})
@@ -54,10 +54,10 @@
     (filter #(> (.indexOf (-> @% :info :path string/lower-case) path) -1) (object/by-tag :editor))))
 
 (defui button [label & [cb]]
-       [:div.button.right label]
-       :click (fn []
-                (when cb
-                  (cb))))
+  [:div.button.right label]
+  :click (fn []
+           (when cb
+             (cb))))
 
 (defn unsaved-prompt [on-yes]
   (popup/popup! {:header "You will lose changes."
@@ -69,35 +69,35 @@
 (def pool (object/create ::pool))
 
 (behavior ::track-active
-                  :triggers #{:active}
-                  :reaction (fn [this]
-                              (object/merge! pool {:last this})))
+          :triggers #{:active}
+          :reaction (fn [this]
+                      (object/merge! pool {:last this})))
 
 (behavior ::stop-close-dirty
-                  :triggers #{:close}
-                  :reaction (fn [this]
-                              (when (unsaved?)
-                                (app/prevent-close)
-                                (unsaved-prompt (partial app/close true)))))
+          :triggers #{:close}
+          :reaction (fn [this]
+                      (when (unsaved?)
+                        (app/prevent-close)
+                        (unsaved-prompt (partial app/close true)))))
 
 (behavior ::stop-reload-dirty
-                  :triggers #{:reload}
-                  :reaction (fn [this]
-                              (when (unsaved?)
-                                (app/prevent-close)
-                                (unsaved-prompt app/refresh))))
+          :triggers #{:reload}
+          :reaction (fn [this]
+                      (when (unsaved?)
+                        (app/prevent-close)
+                        (unsaved-prompt app/refresh))))
 
 (behavior ::ed-close
-                  :triggers #{:close}
-                  :reaction (fn [this]
-                              (if (:dirty @this)
-                                (unsaved-prompt #(object/raise this :close.force))
-                                (object/raise this :close.force))))
+          :triggers #{:close}
+          :reaction (fn [this]
+                      (if (:dirty @this)
+                        (unsaved-prompt #(object/raise this :close.force))
+                        (object/raise this :close.force))))
 
 (behavior ::focus-last-on-focus
-                  :triggers #{:focus!}
-                  :reaction (fn [this]
-                              (focus-last)))
+          :triggers #{:focus!}
+          :reaction (fn [this]
+                      (focus-last)))
 
 (defn make-transient-dirty [ed]
   (object/merge! ed {:dirty true})
@@ -116,27 +116,27 @@
   (object/merge! ed {:dirty false}))
 
 (behavior ::warn-on-active
-                  :triggers #{:active}
-                  :reaction (fn [this]
-                              (when (:active-warn @this)
-                                (popup/popup! (:active-warn @this))
-                                (object/merge! this {:active-warn nil}))))
+          :triggers #{:active}
+          :reaction (fn [this]
+                      (when (:active-warn @this)
+                        (popup/popup! (:active-warn @this))
+                        (object/merge! this {:active-warn nil}))))
 
 (behavior ::watched.update
-                  :triggers #{:watched.update}
-                  :reaction (fn [ws f stat]
-                              (when (files/file? f)
-                                (when-let [ed (first (by-path f))]
-                                  (when-not (doc/check-mtime (doc/->stats f) stat)
-                                    (if (:dirty @ed)
-                                      (active-warn ed {:header "This file has been modified."
-                                                       :body "This file seems to have been modified outside of Light Table. Do you want to load the latest and lose your changs?"
-                                                       :buttons [{:label "Reload from disk"
-                                                                  :action (fn []
-                                                                            (reload ed))}
-                                                                 {:label "Cancel"}
-                                                                 ]})
-                                      (reload ed)))))))
+          :triggers #{:watched.update}
+          :reaction (fn [ws f stat]
+                      (when (files/file? f)
+                        (when-let [ed (first (by-path f))]
+                          (when-not (doc/check-mtime (doc/->stats f) stat)
+                            (if (:dirty @ed)
+                              (active-warn ed {:header "This file has been modified."
+                                               :body "This file seems to have been modified outside of Light Table. Do you want to load the latest and lose your changs?"
+                                               :buttons [{:label "Reload from disk"
+                                                          :action (fn []
+                                                                    (reload ed))}
+                                                         {:label "Cancel"}
+                                                         ]})
+                              (reload ed)))))))
 
 (defn warn-delete [ed]
   (active-warn ed {:header "This file has been deleted."
@@ -147,37 +147,39 @@
                              {:label "ok"}]}))
 
 (behavior ::watched.delete
-                  :triggers #{:watched.delete}
-                  :reaction (fn [ws del]
-                              (if (files/file? del)
-                                (when-let [ed (first (by-path del))]
-                                  (warn-delete ed)
-                                  (make-transient-dirty ed)
-                                  (when-let [ts (:lt.objs.tabs/tabset @ed)]
-                                    (object/raise ts :tab.updated)))
-                                (let [open (filter #(if-let  [path (-> @% :info :path)]
-                                                      (= 0 (.indexOf path del))
-                                                      false)
-                                                   (object/by-tag :editor))]
-                                  (doseq [ed open]
-                                    (warn-delete ed)
-                                    (make-transient-dirty ed))))))
+          :triggers #{:watched.delete}
+          :reaction (fn [ws del]
+                      (if (files/file? del)
+                        (when-let [ed (first (by-path del))]
+                          (warn-delete ed)
+                          (make-transient-dirty ed)
+                          (when-let [ts (:lt.objs.tabs/tabset @ed)]
+                            (object/raise ts :tab.updated)))
+                        (let [open (filter #(if-let  [path (-> @% :info :path)]
+                                              (= 0 (.indexOf path (str del files/separator)))
+                                              false)
+                                           (object/by-tag :editor))]
+                          (doseq [ed open]
+                            (warn-delete ed)
+                            (make-transient-dirty ed))))))
 
 (behavior ::watched.rename
-                  :triggers #{:watched.rename :rename}
-                  :reaction (fn [this old neue]
-                              (if (files/file? old)
-                                (when-let [ed (first (by-path old))]
-                                  (doc/update-stats neue)
-                                  (object/update! ed [:info] assoc :path neue :name (files/basename neue))
-                                  (set-syntax-by-path ed neue)
-                                  (when-let [ts (:lt.objs.tabs/tabset @ed)]
-                                    (object/raise ts :tab.updated)))
-                                (let [open (filter #(= 0 (.indexOf (-> @% :info :path) old)) (object/by-tag :editor))]
-                                  (doseq [ed open
-                                          :let [neue-path (string/replace (-> @ed :info :path) old neue)]]
-                                    (doc/update-stats neue-path)
-                                    (object/update! ed [:info] assoc :path neue-path :name (files/basename neue-path)))))))
+          :triggers #{:watched.rename :rename}
+          :reaction (fn [this old neue]
+                      (if (files/file? neue)
+                        (when-let [ed (first (by-path old))]
+                          (object/update! ed [:info] assoc :path neue :name (files/basename neue))
+                          (doc/move-doc old neue)
+                          (set-syntax-by-path ed neue)
+                          (when-let [ts (:lt.objs.tabs/tabset @ed)]
+                            (object/raise ts :tab.updated)))
+                        (let [old-folder (str old files/separator)
+                              open (filter #(= 0 (.indexOf (-> @% :info :path) old-folder)) (object/by-tag :editor))]
+                          (doseq [ed open
+                                  :let [neue-path (string/replace (-> @ed :info :path) old neue)]]
+                            (object/update! ed [:info] assoc :path neue-path :name (files/basename neue-path))
+                            (doc/move-doc old neue-path)
+                            )))))
 
 (defn last-active []
   (let [l (:last @pool)]
@@ -222,14 +224,14 @@
   (set-syntax ed (files/path->type path)))
 
 (behavior ::set-syntax
-                  :triggers #{:select}
-                  :reaction (fn [this v]
-                              (cmd/exec-active! v)))
+          :triggers #{:select}
+          :reaction (fn [this v]
+                      (cmd/exec-active! v)))
 
 (behavior ::init-syntax-selector
-                  :triggers #{:init}
-                  :reaction (fn [app]
-                              (object/raise syntax-selector :refresh!)))
+          :triggers #{:init}
+          :reaction (fn [app]
+                      (object/raise syntax-selector :refresh!)))
 
 
 (object/add-behavior! syntax-selector ::set-syntax)
