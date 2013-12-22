@@ -1,6 +1,7 @@
 (ns lt.objs.plugins
   (:require [lt.object :as object]
             [lt.objs.command :as cmd]
+            [lt.objs.context :as ctx]
             [lt.objs.console :as console]
             [lt.objs.app :as app]
             [lt.objs.files :as files]
@@ -77,89 +78,96 @@
   (files/join plugins-dir plugin-name "node_modules" module-name))
 
 (behavior ::init-plugins
-                  :triggers #{:pre-init}
-                  :reaction (fn [app]
-                              ;;load enabled plugins
-                              (object/merge! app/app {::plugins (available-plugins)})
-                              (cmd/exec! :behaviors.reload)))
+          :triggers #{:pre-init}
+          :reaction (fn [app]
+                      ;;load enabled plugins
+                      (object/merge! app/app {::plugins (available-plugins)})
+                      (cmd/exec! :behaviors.reload)))
 
 (behavior ::behaviors.refreshed-load-keys
-                  :triggers #{:behaviors.refreshed}
-                  :reaction (fn []
-                              (cmd/exec! :keymaps.reload)))
+          :triggers #{:behaviors.refreshed}
+          :reaction (fn []
+                      (cmd/exec! :keymaps.reload)))
 
 (behavior ::plugin-behavior-diffs
-                  :triggers #{:behaviors.diffs.plugin+}
-                  :reaction (fn [this diffs]
-                              (concat diffs (mapv plugin-behaviors (vals (::plugins @this))))))
+          :triggers #{:behaviors.diffs.plugin+}
+          :reaction (fn [this diffs]
+                      (concat diffs (mapv plugin-behaviors (vals (::plugins @this))))))
 
 (behavior ::plugin-keymap-diffs
-                  :triggers #{:keymap.diffs.plugin+}
-                  :reaction (fn [this diffs]
-                              (concat diffs (mapv settings/parse-key-file (::keymaps @this)))))
+          :triggers #{:keymap.diffs.plugin+}
+          :reaction (fn [this diffs]
+                      (concat diffs (mapv settings/parse-key-file (::keymaps @this)))))
 
 (behavior ::load-js
-                  :triggers #{:object.instant}
-                  :desc "App: Load a javascript file"
-                  :params [{:label "path"}]
-                  :type :user
-                  :reaction (fn [this path sync?]
-                              (let [path (adjust-path path)]
-                                (when-not (get (::loaded-files @this) path)
-                                  (object/update! this [::loaded-files] #(conj (or % #{}) path))
-                                  (load/js path true)))))
+          :triggers #{:object.instant}
+          :desc "App: Load a javascript file"
+          :params [{:label "path"}]
+          :type :user
+          :reaction (fn [this path sync?]
+                      (let [path (adjust-path path)]
+                        (when-not (get (::loaded-files @this) path)
+                          (object/update! this [::loaded-files] #(conj (or % #{}) path))
+                          (load/js path true)))))
 
 (behavior ::load-css
-                  :triggers #{:object.instant}
-                  :desc "App: Load a css file"
-                  :params [{:label "path"}]
-                  :type :user
-                  :reaction (fn [this path]
-                              (let [path (adjust-path path)]
-                                (when-not (get (::loaded-files @this) path)
-                                  (object/update! this [::loaded-files] #(conj (or % #{}) path))
-                                  (load/css path)))))
+          :triggers #{:object.instant}
+          :desc "App: Load a css file"
+          :params [{:label "path"}]
+          :type :user
+          :reaction (fn [this path]
+                      (let [path (adjust-path path)]
+                        (when-not (get (::loaded-files @this) path)
+                          (object/update! this [::loaded-files] #(conj (or % #{}) path))
+                          (load/css path)))))
 
 (behavior ::load-keymap
-                  :triggers #{:object.instant}
-                  :desc "App: Load a keymap file"
-                  :params [{:label "path"}]
-                  :type :user
-                  :reaction (fn [this path]
-                              (let [path (adjust-path path)]
-                                (if (::keymaps @this)
-                                  (object/update! this [::keymaps] conj path)
-                                  (object/merge! this {::keymaps #{path}})))))
+          :triggers #{:object.instant}
+          :desc "App: Load a keymap file"
+          :params [{:label "path"}]
+          :type :user
+          :reaction (fn [this path]
+                      (let [path (adjust-path path)]
+                        (if (::keymaps @this)
+                          (object/update! this [::keymaps] conj path)
+                          (object/merge! this {::keymaps #{path}})))))
 
 (behavior ::check-for-plugin-file
-                  :triggers #{:create}
-                  :desc "Plugin: Determine if this is a plugin file"
-                  :reaction (fn [this]
-                              (let [path (-> @this :info :path)
-                                    plugin-edn (or (files/walk-up-find path "plugin.json") (files/walk-up-find path "plugin.edn"))]
-                                (when plugin-edn
-                                  (object/merge! this {::plugin-path (files/parent plugin-edn)})
-                                  (object/add-tags this [:plugin.file])))))
+          :triggers #{:create}
+          :desc "Plugin: Determine if this is a plugin file"
+          :reaction (fn [this]
+                      (let [path (-> @this :info :path)
+                            plugin-edn (or (files/walk-up-find path "plugin.json") (files/walk-up-find path "plugin.edn"))]
+                        (when plugin-edn
+                          (object/merge! this {::plugin-path (files/parent plugin-edn)})
+                          (object/add-tags this [:plugin.file])))))
 
-(def plugin-url "http://localhost:8082")
+(def plugin-url "http://plugins.lighttable.com")
 
 (behavior ::update-server-plugins
-                :triggers #{:fetch-plugins}
-                :desc "Plugin Manager: fetch plugins"
-                :reaction (fn [this]
+          :triggers #{:fetch-plugins}
+          :desc "Plugin Manager: fetch plugins"
+          :reaction (fn [this]
 
-                            (fetch/xhr [:get plugin-url] {}
-                                       (fn [data]
-                                         (when data
-                                           (object/raise this :plugin-results (reader/read-string data)))
-                                         ))))
+                      (fetch/xhr [:get plugin-url] {}
+                                 (fn [data]
+                                   (when data
+                                     (object/raise this :plugin-results (reader/read-string data)))
+                                   ))))
+
+(defui source-button [plugin]
+  [:span.source [:a {:href (:url plugin (:source plugin))} "source"]]
+  :click (fn [e]
+           (dom/prevent e)
+           (dom/stop-propagation e)
+           (.Shell.openExternal app/gui (:url plugin (:source plugin)))))
 
 (defui server-plugin-ui [plugin]
   (let [info (:info plugin)]
     [:li
      (when (-> @app/app ::plugins (get (:name info)))
        [:span.installed])
-     [:span.source [:a {:href (:url plugin)} "source"]]
+     (source-button plugin)
      [:h1 (:name info) [:span.version (-> plugin :versions first :version)]]
      [:h3 (:author info)]
      [:p (:desc info)]])
@@ -172,30 +180,73 @@
                           (fetch-and-install (-> plugin :versions first :tar) name
                                              (fn []
                                                (dom/append me (crate/html [:span.installed]))
+                                               (object/raise manager :refresh!)
                                                ))))
                (notifos/set-msg! (str name " is already installed"))))))
 
+(defn uninstall [plugin]
+  (println "uninstalling: " (:dir plugin))
+  (files/delete! (:dir plugin))
+  (object/raise manager :refresh!))
+
+(defui uninstall-button [plugin]
+  [:span.uninstall]
+  :click (fn []
+           (uninstall plugin)))
+
+(defui installed-plugin-ui [plugin]
+  [:li
+   (uninstall-button plugin)
+   (source-button plugin)
+   [:h1 (:name plugin) [:span.version (:version plugin)]]
+   [:h3 (:author plugin)]
+   [:p (:desc plugin)]
+   ])
+
 (behavior ::render-server-plugins
-                :triggers #{:plugin-results}
-                :desc "Plugin Manager: render plugin results"
-                :reaction (fn [this plugins]
-                            (let [ul (dom/$ :.server-plugins (object/->content this))]
-                              (dom/empty ul)
-                              (dom/append ul (dom/fragment (map server-plugin-ui plugins))))))
+          :triggers #{:plugin-results}
+          :desc "Plugin Manager: render plugin results"
+          :reaction (fn [this plugins]
+                      (let [ul (dom/$ :.server-plugins (object/->content this))]
+                        (dom/empty ul)
+                        (dom/append ul (dom/fragment (map server-plugin-ui plugins))))))
 
 (behavior ::submit-plugin
-                  :triggers #{:submit-plugin!}
-                  :desc "Plugin Manager: submit a new plugin"
-                  :reaction (fn [this url]
-                              (fetch/xhr [:post (str plugin-url "/add" )] {:url url}
-                                       (fn [data]
-                                         (println data)
-                                         ))))
+          :triggers #{:submit-plugin!}
+          :desc "Plugin Manager: submit a new plugin"
+          :reaction (fn [this url]
+                      (fetch/xhr [:post (str plugin-url "/add" )] {:url url}
+                                 (fn [data]
+                                   (println data)
+                                   ))))
+
+(behavior ::search-server-plugins
+          :triggers #{:search-plugins!}
+          :desc "Plugin Manager: search plugins"
+          :reaction (fn [this search]
+                      (if (empty? search)
+                        (object/raise this :fetch-plugins)
+                        (fetch/xhr [:post (str plugin-url "/search")] {:term search}
+                                   (fn [data]
+                                     (println data)
+                                     (when data
+                                       (object/raise this :plugin-results (reader/read-string data)))
+                                     )))))
+
+(behavior ::render-installed-plugins
+          :triggers #{:refresh!}
+          :desc "Plugin Manager: refresh installed plugins"
+          :reaction (fn [this plugins]
+                      (println "here refreshing")
+                      (let [ul (dom/$ :.plugins (object/->content this))]
+                        (println ul)
+                        (dom/empty ul)
+                        (dom/append ul (dom/fragment (map installed-plugin-ui (vals (available-plugins))))))))
 
 (behavior ::on-close
-                  :triggers #{:close}
-                  :reaction (fn [this]
-                              (tabs/rem! this)))
+          :triggers #{:close}
+          :reaction (fn [this]
+                      (tabs/rem! this)))
 
 (defui tab [this tab-name label]
   [:button {:class (bound this #(when (= tab-name (:tab %))
@@ -205,7 +256,11 @@
            (object/merge! this {:tab tab-name})))
 
 (defui search-input [this]
-  [:input {:placeholder "search plugins"}])
+  [:input {:placeholder "Search available plugins"}]
+  :focus (fn []
+           (ctx/in! :plugin-manager.search this))
+  :blur (fn []
+           (ctx/out! :plugin-manager.search)))
 
 (defui tabs-and-search [this]
   [:div.tabs
@@ -225,14 +280,7 @@
                          (tabs-and-search this)
                          [:ul.server-plugins
                           ]
-                         [:ul.plugins
-                          (for [plugin (vals (available-plugins))]
-                            [:li
-                             [:h1 (:name plugin) [:span.version "0.0.1"]]
-                             [:h3 (:author plugin)]
-                             [:p (:desc plugin)]
-                             ]
-                            )]]))
+                         [:ul.plugins]]))
 
 (defn fetch-and-install [url name cb]
   (let [tmp-gz (str plugins-dir "/" name "tmp.tar.gz")
@@ -253,21 +301,31 @@
                                                            (cb))
                                                          )))))))
 
+;(object/raise manager :submit-plugin! "https://github.com/LightTable/LightTable-Rainbow")
+
 (def manager (object/create ::plugin-manager))
 
-(comment
+(cmd/command {:command :plugin-manager.search
+              :hidden true
+              :desc "Plugins: Search"
+              :exec (fn [term]
+                      (let [term (or term
+                                     (dom/val (dom/$ :input (object/->content manager))))]
+                        (object/merge! manager {:tab :server})
+                        (object/raise manager :search-plugins! term)))})
 
-  (::plugins @app/app)
+(cmd/command {:command :plugin-manager.refresh
+              :desc "Plugins: refresh plugin list"
+              :exec (fn []
+                      (object/merge! app/app {::plugins (available-plugins)})
+                      (object/raise manager :refresh!)
+                      (object/raise manager :fetch-plugins))})
 
-  (object/raise manager :fetch-plugins)
-  (object/merge! app/app {::plugins (available-plugins)})
-
-  (object/merge! manager {:tab :server})
-
-  (lt.objs.tabs/add! manager)
-
-
-  )
+(cmd/command {:command :plugin-manager.show
+              :desc "Plugins: Show plugin manager"
+              :exec (fn []
+                      (tabs/add-or-focus! manager)
+                      (cmd/exec! :plugin-manager.refresh))})
 
 (cmd/command {:command :build
               :desc "Editor: build file or project"

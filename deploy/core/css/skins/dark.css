@@ -321,6 +321,9 @@ input { color: var(highlight-fg); background:var(highlight-bg); }
 .plugin-manager input {background: var(dark-pane-bg); -webkit-flex:1; }
 .plugin-manager .enabled { background:var(accent-background); color:var(accent-foreground); }
 .plugin-manager .installed { box-sizing:border-box; background:var(light-accent-background); display:inline-block; height:25px; position:absolute; right:0; top:-8; width:5px; -webkit-transition:width 0.1s ease-in-out; }
+.plugin-manager .uninstall { box-sizing:border-box; background:var(light-accent-background); display:inline-block; height:25px; position:absolute; right:0; top:-8; width:5px; -webkit-transition:width 0.1s ease-in-out; }
+.plugin-manager li:hover .uninstall { width:70px; overflow:hidden; }
+.plugin-manager li:hover .uninstall:before { color:var(dark-accent-background); padding:4px 8px; display:inline-block; content: "uninstall";  }
 .plugin-manager li:hover .installed { width:70px; overflow:hidden; }
 .plugin-manager li:hover .installed:before { color:var(dark-accent-background); padding:4px 8px; display:inline-block; content: "installed";  }
 .plugin-manager .source { color:transparent; position:absolute; height:25px; width:5px; top:17px; right:0; background:var(secondary-accent-fg); overflow:hidden; -webkit-transition:width 0.1s ease-in-out, right 0.1s ease-in-out; }

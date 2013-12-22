@@ -48,6 +48,7 @@
              "right" [(:popup.move-active -1)]}
      :popup.input {"left" [:passthrough],
                    "right" [:passthrough]}
+     :plugin-manager.search {"enter" [:plugin-manager.search]}
      :sidebar.clients {"esc" [:hide-connect]}
      :sidebar.doc.search.input {"enter" [:docs.search.exec]
                                 "esc" [:docs.search.hide]}
