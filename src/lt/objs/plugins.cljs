@@ -237,11 +237,10 @@
           :triggers #{:refresh!}
           :desc "Plugin Manager: refresh installed plugins"
           :reaction (fn [this plugins]
-                      (println "here refreshing")
+                      (object/merge! app/app {::plugins (available-plugins)})
                       (let [ul (dom/$ :.plugins (object/->content this))]
-                        (println ul)
                         (dom/empty ul)
-                        (dom/append ul (dom/fragment (map installed-plugin-ui (vals (available-plugins))))))))
+                        (dom/append ul (dom/fragment (map installed-plugin-ui (-> @app/app ::plugins vals)))))))
 
 (behavior ::on-close
           :triggers #{:close}
