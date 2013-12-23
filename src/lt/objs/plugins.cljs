@@ -143,6 +143,7 @@
                           (object/add-tags this [:plugin.file])))))
 
 (def plugin-url "http://plugins.lighttable.com")
+(def plugin-url "http://localhost:8087")
 
 (behavior ::update-server-plugins
           :triggers #{:fetch-plugins}
@@ -162,6 +163,52 @@
            (dom/stop-propagation e)
            (.Shell.openExternal app/gui (:url plugin (:source plugin)))))
 
+(defn install-version [plugin cb]
+  (let [name (-> plugin :info :name)
+        ver (-> plugin :version)
+        installed? (-> @app/app ::plugins (get name))]
+    (if (or (not installed?)
+            (and (:version installed?)
+                 (deploy/is-newer? (:version installed?) ver)))
+      (do
+        (object/update! app/app [::plugins] assoc name {})
+        (fetch-and-install (-> plugin :tar) name
+                           (fn []
+                             (when cb
+                               (cb))
+                             (object/raise manager :refresh!)
+                             )))
+      (do
+        (notifos/set-msg! (str name " is already installed"))
+        (when cb
+          (cb))))))
+
+(defn transitive-install [plugin deps cb]
+  (let [cur (-> plugin :info :name)
+        others (dissoc deps cur)
+        counter (atom (count others))
+        count-down (fn []
+                     (swap! counter dec)
+                     ;;then install the actual plugin
+                     (when (<= @counter 0)
+                       (install-version (deps cur) (fn []
+                                  (when cb
+                                    (cb))
+                                  ;;a new plugin has been installed, we should reload everything
+                                  (cmd/exec! :behaviors.reload)))))]
+    ;;first get and install all the deps
+    ;;count them down and then install the real plugin and reload.
+    (if (seq others)
+      (doseq [[_ dep] others]
+        (install-version dep count-down))
+      (count-down))))
+
+(defn discover-deps [plugin cb]
+  (fetch/xhr [:post (str plugin-url "/install")] {:name (-> plugin :info :name)
+                                                  :version (-> plugin :versions first :version)}
+                                   (fn [data]
+                                     (transitive-install plugin (reader/read-string data) cb))))
+
 (defui server-plugin-ui [plugin]
   (let [info (:info plugin)]
     [:li
@@ -172,17 +219,10 @@
      [:h3 (:author info)]
      [:p (:desc info)]])
   :click (fn []
-           (let [name (-> plugin :info :name)]
-             (if-not (-> @app/app ::plugins (get name))
-               (do
-                 (object/update! app/app [::plugins] assoc name {})
-                 (this-as me
-                          (fetch-and-install (-> plugin :versions first :tar) name
-                                             (fn []
-                                               (dom/append me (crate/html [:span.installed]))
-                                               (object/raise manager :refresh!)
-                                               ))))
-               (notifos/set-msg! (str name " is already installed"))))))
+           (this-as me
+                    (discover-deps plugin (fn []
+                                            (dom/append me (crate/html [:span.installed]))
+                                            )))))
 
 (defn uninstall [plugin]
   (println "uninstalling: " (:dir plugin))
@@ -301,6 +341,7 @@
                                                          )))))))
 
 ;(object/raise manager :submit-plugin! "https://github.com/LightTable/LightTable-Rainbow")
+
 
 (def manager (object/create ::plugin-manager))
 
