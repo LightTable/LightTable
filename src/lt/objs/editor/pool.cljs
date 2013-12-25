@@ -166,7 +166,7 @@
 (behavior ::watched.rename
           :triggers #{:watched.rename :rename}
           :reaction (fn [this old neue]
-                      (if (files/file? neue)
+                      (if (files/file? old)
                         (when-let [ed (first (by-path old))]
                           (object/update! ed [:info] assoc :path neue :name (files/basename neue))
                           (doc/move-doc old neue)
@@ -174,7 +174,7 @@
                           (when-let [ts (:lt.objs.tabs/tabset @ed)]
                             (object/raise ts :tab.updated)))
                         (let [old-folder (str old files/separator)
-                              open (filter #(= 0 (.indexOf (-> @% :info :path) old-folder)) (object/by-tag :editor))]
+                              open (filter #(= 0 (.indexOf (-> @% :info (get :path "")) old-folder)) (object/by-tag :editor))]
                           (doseq [ed open
                                   :let [neue-path (string/replace (-> @ed :info :path) old neue)]]
                             (object/update! ed [:info] assoc :path neue-path :name (files/basename neue-path))
