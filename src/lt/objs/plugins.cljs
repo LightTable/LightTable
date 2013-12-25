@@ -7,6 +7,7 @@
             [lt.objs.files :as files]
             [lt.objs.settings :as settings]
             [lt.objs.editor.pool :as pool]
+            [lt.objs.popup :as popup]
             [lt.objs.deploy :as deploy]
             [lt.objs.notifos :as notifos]
             [lt.objs.tabs :as tabs]
@@ -80,6 +81,25 @@
       (for [[nme v] plugins]
         [nme (set (map name (keys (:dependencies v))))])))
 
+(defn find-cycles [cur {:keys [seen root stack graph] :as state}]
+  (first (filter identity (for [c (remove seen cur)]
+                            (if (= c root)
+                              (conj stack c)
+                              (find-cycles (get graph c) (-> state
+                                                             (update-in [:stack] conj c)
+                                                             (update-in [:seen] conj c))))))))
+
+(defn ->cycles [graph]
+  (filterv identity
+           (for [[root deps] graph
+                 :let [stack (find-cycles deps {:seen #{} :stack [root] :graph graph :root root})]]
+             stack)))
+
+(defn cycle-desc [cycles]
+  (for [cycle cycles]
+    [:div
+     (reduce str (interpose " => " cycle))]))
+
 (defn local-module [plugin-name module-name]
   (files/join plugins-dir plugin-name "node_modules" module-name))
 
@@ -99,8 +119,26 @@
           :triggers #{:behaviors.diffs.plugin+}
           :reaction (fn [this diffs]
                       (let [plugins (::plugins @this)
-                            dep-ordered (reverse (kahn/kahn-sort (plugin-dependency-graph plugins)))]
-                        (concat diffs (mapv plugin-behaviors (map plugins dep-ordered))))))
+                            dep-graph (plugin-dependency-graph plugins)
+                            dep-ordered (-> dep-graph
+                                            (kahn/kahn-sort)
+                                            (reverse)
+                                            (seq))
+                            mapped (if dep-ordered
+                                     (map plugins dep-ordered)
+                                     (vals plugins))]
+                        (when (and (not dep-ordered)
+                                   (not (::cycle-warned @this)))
+                          (object/merge! this {::cycle-warned true})
+                          (popup/popup! {:header "There's a cycle in your plugin dependencies."
+                                         :body [:div "As a result, we can't come up with an optimal way to load them.
+                                                This means there may be unexpected consequences to being loaded out of order.
+                                                Here are the plugins causing the cycle: "
+                                                (-> dep-graph
+                                                    (->cycles)
+                                                    (cycle-desc))]
+                                         :buttons [{:label "ok"}]}))
+                        (concat diffs (mapv plugin-behaviors mapped)))))
 
 (behavior ::plugin-keymap-diffs
           :triggers #{:keymap.diffs.plugin+}
