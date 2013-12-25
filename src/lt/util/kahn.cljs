@@ -1,4 +1,5 @@
-(ns lt.util.kahn)
+(ns lt.util.kahn
+  (:require [clojure.set :as set :refer [difference union intersection]]))
 
 (defn without
   "Returns set s with x removed."
