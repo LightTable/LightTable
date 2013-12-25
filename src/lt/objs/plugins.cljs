@@ -127,7 +127,8 @@
                             mapped (if dep-ordered
                                      (map plugins dep-ordered)
                                      (vals plugins))]
-                        (when (and (not dep-ordered)
+                        (when (and plugins
+                                   (not dep-ordered)
                                    (not (::cycle-warned @this)))
                           (object/merge! this {::cycle-warned true})
                           (popup/popup! {:header "There's a cycle in your plugin dependencies."
@@ -412,6 +413,35 @@
               :exec (fn []
                       (tabs/add-or-focus! manager)
                       (cmd/exec! :plugin-manager.refresh))})
+
+
+(defui url-input []
+  [:input {:type "text" :placeholder "Github URL"}]
+  :focus (fn []
+           (ctx/in! :popup.input))
+  :blur (fn []
+          (ctx/out! :popup.input)))
+
+(defn submit-url []
+  (let [input (url-input)
+        p (popup/popup! {:header "Submit a plugin."
+                         :body [:div
+                                [:p ""]
+                                [:label "Github URL for plugin: "]
+                                input
+                                ]
+                         :buttons [{:label "cancel"}
+                                   {:label "submit"
+                                    :action (fn []
+                                              (object/raise manager :submit-plugin! (dom/val input)))}]})]
+    (dom/focus input)
+    (.setSelectionRange input 1000 1000)))
+
+(cmd/command {:command :plugin-manager.submit
+              :desc "Plugins: Submit a plugin"
+              :exec (fn []
+                      (submit-url)
+                      )})
 
 (cmd/command {:command :build
               :desc "Editor: build file or project"
