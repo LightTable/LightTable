@@ -14,6 +14,7 @@
             [fetch.core :as fetch]
             [crate.core :as crate]
             [crate.binding :refer [bound]]
+            [lt.util.kahn :as kahn]
             [lt.util.load :as load]
             [lt.util.dom :as dom]
             [clojure.string :as string]
@@ -74,6 +75,11 @@
                     behs)
       behs)))
 
+(defn plugin-dependency-graph [plugins]
+  (into {}
+      (for [[nme v] plugins]
+        [nme (set (map name (keys (:dependencies v))))])))
+
 (defn local-module [plugin-name module-name]
   (files/join plugins-dir plugin-name "node_modules" module-name))
 
@@ -92,7 +98,9 @@
 (behavior ::plugin-behavior-diffs
           :triggers #{:behaviors.diffs.plugin+}
           :reaction (fn [this diffs]
-                      (concat diffs (mapv plugin-behaviors (vals (::plugins @this))))))
+                      (let [plugins (::plugins @this)
+                            dep-ordered (reverse (kahn/kahn-sort (plugin-dependency-graph plugins)))]
+                        (concat diffs (mapv plugin-behaviors (map plugins dep-ordered))))))
 
 (behavior ::plugin-keymap-diffs
           :triggers #{:keymap.diffs.plugin+}
@@ -377,3 +385,4 @@
 ;;This call to tag-behaviors is necessary as there are no behaviors loaded when the
 ;;app is first run.
 (object/tag-behaviors :app [::init-plugins ::plugin-behavior-diffs ::plugin-keymap-diffs])
+
