@@ -20,25 +20,25 @@
 ;;**********************************************************
 
 (behavior ::op-select!
-                  :triggers #{:select!}
-                  :reaction (fn [this idx]
-                              (let [input (object/->content this)]
-                                (object/raise this :select (dom/val input))
-                                (object/raise this :selected))))
+          :triggers #{:select!}
+          :reaction (fn [this idx]
+                      (let [input (object/->content this)]
+                        (object/raise this :select (dom/val input))
+                        (object/raise this :selected))))
 
 (behavior ::op-clear!
-                  :triggers #{:clear!}
-                  :reaction (fn [this]
-                              (let [input (object/->content this)]
-                                (dom/val input "")
-                                (object/raise this :change! ""))))
+          :triggers #{:clear!}
+          :reaction (fn [this]
+                      (let [input (object/->content this)]
+                        (dom/val input "")
+                        (object/raise this :change! ""))))
 
 (behavior ::op-focus!
-                  :triggers #{:focus!}
-                  :reaction (fn [this]
-                              (let [input (object/->content this)]
-                                (dom/focus input)
-                                (.select input))))
+          :triggers #{:focus!}
+          :reaction (fn [this]
+                      (let [input (object/->content this)]
+                        (dom/focus input)
+                        (.select input))))
 
 
 (defn ->value [{:keys [value]}]
@@ -109,91 +109,91 @@
      :else nil)))
 
 (behavior ::move-selection
-                  :triggers #{:move-selection}
-                  :reaction (fn [this dir]
-                              (object/update! this [:selected] + dir)
-                              (object/raise this :refresh!)
-                              (ensure-visible this)
-                              ))
+          :triggers #{:move-selection}
+          :reaction (fn [this dir]
+                      (object/update! this [:selected] + dir)
+                      (object/raise this :refresh!)
+                      (ensure-visible this)
+                      ))
 
 (behavior ::set-selection!
-                  :triggers #{:set-selection!}
-                  :reaction (fn [this idx]
-                              (object/merge! this {:selected idx})
-                              (object/raise this :refresh!)
-                              ))
+          :triggers #{:set-selection!}
+          :reaction (fn [this idx]
+                      (object/merge! this {:selected idx})
+                      (object/raise this :refresh!)
+                      ))
 
 (behavior ::change!
-                  :triggers #{:change!}
-                  :reaction (fn [this v]
-                              (let [v (object/raise-reduce this :change+ v)]
-                                (when-not (= (:search @this) v)
-                                  (object/merge! this {:selected 0
-                                                       :search v})
-                                  (object/raise this :refresh!)))))
+          :triggers #{:change!}
+          :reaction (fn [this v]
+                      (let [v (object/raise-reduce this :change+ v)]
+                        (when-not (= (:search @this) v)
+                          (object/merge! this {:selected 0
+                                               :search v})
+                          (object/raise this :refresh!)))))
 
 (behavior ::escape!
-                  :triggers #{:escape!}
-                  :reaction (fn [this]
-                              (object/raise this :inactive)
-                              (exec! :close-sidebar)))
+          :triggers #{:escape!}
+          :reaction (fn [this]
+                      (object/raise this :inactive)
+                      (exec! :close-sidebar)))
 
 (behavior ::options-escape!
-                  :triggers #{:escape!}
-                  :reaction (fn [this]
-                              (object/raise sidebar-command :cancel!)
-                              (exec! :close-sidebar)))
+          :triggers #{:escape!}
+          :reaction (fn [this]
+                      (object/raise sidebar-command :cancel!)
+                      (exec! :close-sidebar)))
 
 (behavior ::set-on-select
-                  :triggers #{:select}
-                  :reaction (fn [this thing]
-                              (when (:set-on-select @this)
-                                (set-val this ((:key @this) thing)))))
+          :triggers #{:select}
+          :reaction (fn [this thing]
+                      (when (:set-on-select @this)
+                        (set-val this ((:key @this) thing)))))
 
 (behavior ::select!
-                  :triggers #{:select!}
-                  :reaction (fn [this idx]
-                              (let [cur (indexed-results @this)
-                                    cnt (count cur)
-                                    idx (or idx (:selected @this))
-                                    i (mod idx (if (> cnt (:size @this)) (:size @this) cnt))]
-                                (if (> cnt 0)
-                                  (do
-                                    (object/raise this :select (aget (aget cur i) 0))
-                                    (object/raise this :selected))
-                                  (object/raise this :select-unknown (input-val this)))
-                                )))
+          :triggers #{:select!}
+          :reaction (fn [this idx]
+                      (let [cur (indexed-results @this)
+                            cnt (count cur)
+                            idx (or idx (:selected @this))
+                            i (mod idx (if (> cnt (:size @this)) (:size @this) cnt))]
+                        (if (> cnt 0)
+                          (do
+                            (object/raise this :select (aget (aget cur i) 0))
+                            (object/raise this :selected))
+                          (object/raise this :select-unknown (input-val this)))
+                        )))
 
 (behavior ::filter-active
-                  :triggers #{:active}
-                  :reaction (fn [this]
-                              (ctx/in! :filter-list.input this)))
+          :triggers #{:active}
+          :reaction (fn [this]
+                      (ctx/in! :filter-list.input this)))
 
 (behavior ::filter-inactive
-                  :triggers #{:inactive}
-                  :reaction (fn [this]
-                              (ctx/out! :filter-list.input)))
+          :triggers #{:inactive}
+          :reaction (fn [this]
+                      (ctx/out! :filter-list.input)))
 
 (behavior ::clear!
-                  :triggers #{:clear!}
-                  :reaction (fn [this]
-                              (let [input (dom/$ :input (object/->content this))]
-                                (dom/val input "")
-                                (object/raise this :change! ""))))
+          :triggers #{:clear!}
+          :reaction (fn [this]
+                      (let [input (dom/$ :input (object/->content this))]
+                        (dom/val input "")
+                        (object/raise this :change! ""))))
 
 (behavior ::filter-list.focus!
-                  :triggers #{:focus!}
-                  :reaction (fn [this]
-                              (let [input (dom/$ :.search (object/->content this))]
-                                (dom/focus input)
-                                (.select input))))
+          :triggers #{:focus!}
+          :reaction (fn [this]
+                      (let [input (dom/$ :.search (object/->content this))]
+                        (dom/focus input)
+                        (.select input))))
 
 (behavior ::update-lis
-                  :triggers #{:refresh!}
-                  :reaction (fn [this]
-                              (object/merge! this {:cur (indexed-results @this)})
-                              (fill-lis @this
-                                        (:cur @this))))
+          :triggers #{:refresh!}
+          :reaction (fn [this]
+                      (object/merge! this {:cur (indexed-results @this)})
+                      (fill-lis @this
+                                (:cur @this))))
 
 
 (defui input [this]
@@ -252,8 +252,8 @@
             :when res]
       (dom/html li (transform (aget res 1) (aget res 4) (if-not (empty? search)
 
-                                             (js/wrapMatch (aget res 1) (aget res 4))
-                                             (aget res 1))
+                                                          (js/wrapMatch (aget res 1) (aget res 4))
+                                                          (aget res 1))
                               (aget res 0)))
       (dom/css li {:display "block"})
       (if (= i cur)
@@ -290,80 +290,80 @@
 ;;**********************************************************
 
 (behavior ::select-command
-                  :triggers #{:select}
-                  :reaction (fn [this sel]
-                              (when-let [cmd (by-id sel)]
-                                (if (:options cmd)
-                                  (do
-                                    (object/merge! sidebar-command {:active cmd})
-                                    (object/raise (:options cmd) :focus!))
-                                  (do
-                                    (object/raise sidebar-command :exec! cmd)
-                                    (object/raise sidebar-command :selected-exec cmd)
-                                    (object/merge! sidebar-command {:active nil})))
-                                )
-                              ))
+          :triggers #{:select}
+          :reaction (fn [this sel]
+                      (when-let [cmd (by-id sel)]
+                        (if (:options cmd)
+                          (do
+                            (object/merge! sidebar-command {:active cmd})
+                            (object/raise (:options cmd) :focus!))
+                          (do
+                            (object/raise sidebar-command :exec! cmd)
+                            (object/raise sidebar-command :selected-exec cmd)
+                            (object/merge! sidebar-command {:active nil})))
+                        )
+                      ))
 
 (behavior ::select-hidden
-                  :triggers #{:select-unknown}
-                  :reaction (fn [this v]
-                              (when-let [cmd (by-id (keyword v))]
-                                (object/raise this :select cmd))))
+          :triggers #{:select-unknown}
+          :reaction (fn [this v]
+                      (when-let [cmd (by-id (keyword v))]
+                        (object/raise this :select cmd))))
 
 (behavior ::post-select-pop
-                  :triggers #{:selected-exec}
-                  :reaction (fn [this]
-                              (when (= this (:active @sidebar/rightbar))
-                                (object/raise sidebar/rightbar :close!))))
+          :triggers #{:selected-exec}
+          :reaction (fn [this]
+                      (when (= this (:active @sidebar/rightbar))
+                        (object/raise sidebar/rightbar :close!))))
 
 (behavior ::exec-command
-                  :triggers #{:exec!}
-                  :reaction (fn [this sel & args]
-                              (let [cmd (by-id sel)]
-                                (cond
-                                 (not (:options cmd)) (apply exec! cmd args)
-                                 (and (:options cmd) (seq args)) (apply (:exec cmd) args)
-                                 :else (do (exec! :show-commandbar-transient)
-                                         (object/raise (:selector @this) :select cmd))))))
+          :triggers #{:exec!}
+          :reaction (fn [this sel & args]
+                      (let [cmd (by-id sel)]
+                        (cond
+                         (not (:options cmd)) (apply exec! cmd args)
+                         (and (:options cmd) (seq args)) (apply (:exec cmd) args)
+                         :else (do (exec! :show-commandbar-transient)
+                                 (object/raise (:selector @this) :select cmd))))))
 
 (behavior ::exec-active!
-                  :triggers #{:exec-active!}
-                  :reaction (fn [this args]
-                              (let [cmd (:active @this)]
-                                (apply (:exec cmd) args)
-                                (object/raise this :selected-exec cmd)
-                                (object/merge! this {:active nil}))))
+          :triggers #{:exec-active!}
+          :reaction (fn [this args]
+                      (let [cmd (:active @this)]
+                        (apply (:exec cmd) args)
+                        (object/raise this :selected-exec cmd)
+                        (object/merge! this {:active nil}))))
 
 (behavior ::focus-on-show
-                  :triggers #{:show}
-                  :reaction (fn [this]
-                              (object/raise this :focus!)))
+          :triggers #{:show}
+          :reaction (fn [this]
+                      (object/raise this :focus!)))
 
 (behavior ::focus!
-                  :triggers #{:focus!}
-                  :reaction (fn [this]
-                              (if-not (:active @this)
-                                (let [input (dom/$ :.search (object/->content this))]
-                                  (dom/focus input)
-                                  (.select input))
-                                (object/raise (-> @this :active :options) :focus!))))
+          :triggers #{:focus!}
+          :reaction (fn [this]
+                      (if-not (:active @this)
+                        (let [input (dom/$ :.search (object/->content this))]
+                          (dom/focus input)
+                          (.select input))
+                        (object/raise (-> @this :active :options) :focus!))))
 
 (behavior ::soft-focus!
-                  :triggers #{:soft-focus!}
-                  :reaction (fn [this]
-                              (let [input (dom/$ :.search (object/->content this))]
-                                (dom/focus input))))
+          :triggers #{:soft-focus!}
+          :reaction (fn [this]
+                      (let [input (dom/$ :.search (object/->content this))]
+                        (dom/focus input))))
 
 (behavior ::refresh!
-                  :triggers #{:refresh!}
-                  :reaction (fn [this]
-                              (object/raise (:selector @this) :refresh!)))
+          :triggers #{:refresh!}
+          :reaction (fn [this]
+                      (object/raise (:selector @this) :refresh!)))
 
 (behavior ::cancel!
-                  :triggers #{:cancel!}
-                  :reaction (fn [this]
-                              (object/merge! this {:active nil})
-                              (object/raise this :focus!)))
+          :triggers #{:cancel!}
+          :reaction (fn [this]
+                      (object/merge! this {:active nil})
+                      (object/raise this :focus!)))
 
 (defui header-button [this]
   [:h2 (bound this #(-> % :active :desc))]
@@ -400,8 +400,8 @@
                 :init (fn [this]
                         (let [commands (subatom cmd/manager :commands)
                               f2 (computed [commands]
-                                                 (fn [cmds]
-                                                   (filter #(not (:hidden %)) (vals cmds))))
+                                           (fn [cmds]
+                                             (filter #(not (:hidden %)) (vals cmds))))
                               s2 (filter-list {:items f2
                                                :transform #(command->display % %2 %3 %4)
                                                :key :desc})]
@@ -418,9 +418,9 @@
                           )))
 
 (behavior ::init-commands
-                  :triggers #{:post-init}
-                  :reaction (fn [app]
-                              (object/raise sidebar-command :refresh!)))
+          :triggers #{:post-init}
+          :reaction (fn [app]
+                      (object/raise sidebar-command :refresh!)))
 
 (def sidebar-command (object/create ::sidebar.command))
 (ctx/in! :commandbar sidebar-command)

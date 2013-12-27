@@ -579,12 +579,14 @@
 
 (cmd/command {:command :workspace.rename.cancel!
               :desc "Workspace: Cancel rename"
+              :hidden true
               :exec (fn []
                       (when-let [c (ctx/->obj :tree.rename)]
                         (object/raise c :rename.cancel!)))})
 
 (cmd/command {:command :workspace.rename.submit!
               :desc "Workspace: Submit rename"
+              :hidden true
               :exec (fn []
                       (when-let [c (ctx/->obj :tree.rename)]
                         (object/raise c :rename.submit!)))})

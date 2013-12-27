@@ -210,6 +210,13 @@
            (dom/stop-propagation e)
            (.Shell.openExternal app/gui (:url plugin (:source plugin)))))
 
+(defui update-button [plugin]
+  [:span.update]
+  :click (fn [e]
+           (dom/prevent e)
+           (dom/stop-propagation e)
+           (discover-deps plugin nil)))
+
 (defn install-version [plugin cb]
   (let [name (-> plugin :info :name)
         ver (-> plugin :version)
@@ -222,13 +229,13 @@
         (fetch-and-install (-> plugin :tar) name
                            (fn []
                              (when cb
-                               (cb))
+                               (cb true))
                              (object/raise manager :refresh!)
                              )))
       (do
         (notifos/set-msg! (str name " is already installed"))
         (when cb
-          (cb))))))
+          (cb false))))))
 
 (defn transitive-install [plugin deps cb]
   (let [cur (-> plugin :info :name)
@@ -238,11 +245,12 @@
                      (swap! counter dec)
                      ;;then install the actual plugin
                      (when (<= @counter 0)
-                       (install-version (deps cur) (fn []
-                                  (when cb
-                                    (cb))
-                                  ;;a new plugin has been installed, we should reload everything
-                                  (cmd/exec! :behaviors.reload)))))]
+                       (install-version (deps cur) (fn [installed?]
+                                                     (when cb
+                                                       (cb installed?))
+                                                     (when installed?
+                                                       ;;a new plugin has been installed, we should reload everything
+                                                       (cmd/exec! :behaviors.reload))))))]
     ;;first get and install all the deps
     ;;count them down and then install the real plugin and reload.
     (if (seq others)
@@ -252,17 +260,22 @@
 
 (defn discover-deps [plugin cb]
   (fetch/xhr [:post (str plugin-url "/install")] {:name (-> plugin :info :name)
-                                                  :version (-> plugin :versions first :version)}
+                                                  :version (or (-> plugin :info :version) (-> plugin :versions first :version))}
                                    (fn [data]
                                      (transitive-install plugin (reader/read-string data) cb))))
 
 (defui server-plugin-ui [plugin]
-  (let [info (:info plugin)]
+  (let [info (:info plugin)
+        ver (-> plugin :versions first :version)
+        installed (-> @app/app ::plugins (get (:name info)))]
     [:li
-     (when (-> @app/app ::plugins (get (:name info)))
-       [:span.installed])
+     (when installed
+       (if (and (:version installed)
+                (deploy/is-newer? (:version installed) ver))
+         (update-button)
+         [:span.installed]))
      (source-button plugin)
-     [:h1 (:name info) [:span.version (-> plugin :versions first :version)]]
+     [:h1 (:name info) [:span.version ver]]
      [:h3 (:author info)]
      [:p (:desc info)]])
   :click (fn []
@@ -304,8 +317,9 @@
           :reaction (fn [this url]
                       (fetch/xhr [:post (str plugin-url "/add" )] {:url url}
                                  (fn [data]
-                                   (println data)
-                                   ))))
+                                   (let [data (reader/read-string data)]
+                                     (popup/popup! {:header "woo"
+                                              :body (:description data)}))))))
 
 (behavior ::search-server-plugins
           :triggers #{:search-plugins!}
