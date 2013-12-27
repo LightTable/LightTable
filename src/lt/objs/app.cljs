@@ -38,7 +38,7 @@
                                                                      :new-instance true
                                                                      :min_height 400
                                                                      :min_width 400
-                                                                     :frame false
+                                                                     :frame true
                                                                      :show false}))]
     (set! (.-ltid w) id)
     w))
