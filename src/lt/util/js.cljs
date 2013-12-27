@@ -31,5 +31,6 @@
                "/" "&#x2F;"})
 
 (defn escape [str]
-  (.replace str (js/RegExp. "[&<>\"'/]" "g") (fn [s]
-                                               (entities s))))
+  (when str
+    (.replace str (js/RegExp. "[&<>\"'/]" "g") (fn [s]
+                                                 (entities s)))))

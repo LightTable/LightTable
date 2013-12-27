@@ -54,3 +54,10 @@
   :desc "Editor: Jump back to where you jumped from"
   :exec (fn []
           (object/raise jump-stack :jump-stack.pop!))})
+
+(cmd/command
+ {:command :editor.jump-to
+  :desc "Editor: Jump to file/pos"
+  :hidden true
+  :exec (fn [file pos]
+          (jump-to file pos))})

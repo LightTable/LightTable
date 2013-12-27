@@ -244,6 +244,7 @@ window.CodeMirror = (function() {
     var map = keyMap[cm.options.keyMap], style = map.style;
     cm.display.wrapper.className = cm.display.wrapper.className.replace(/\s*cm-keymap-\S+/g, "") +
       (style ? " cm-keymap-" + style : "");
+    if (cm.state.disableInput && !map.disableInput) resetInput(cm, true);
     cm.state.disableInput = map.disableInput;
   }
 
@@ -450,7 +451,7 @@ window.CodeMirror = (function() {
   // updates.
   function updateDisplayInner(cm, changes, visible, forced) {
     var display = cm.display, doc = cm.doc;
-    if (!display.wrapper.clientWidth) {
+    if (!display.wrapper.offsetWidth) {
       display.showingFrom = display.showingTo = doc.first;
       display.viewOffset = 0;
       return;
@@ -1500,17 +1501,27 @@ window.CodeMirror = (function() {
     var same = 0, l = Math.min(prevInput.length, text.length);
     while (same < l && prevInput.charCodeAt(same) == text.charCodeAt(same)) ++same;
     var from = sel.from, to = sel.to;
+    var inserted = text.slice(same);
     if (same < prevInput.length)
       from = Pos(from.line, from.ch - (prevInput.length - same));
     else if (cm.state.overwrite && posEq(from, to) && !cm.state.pasteIncoming)
-      to = Pos(to.line, Math.min(getLine(doc, to.line).text.length, to.ch + (text.length - same)));
+      to = Pos(to.line, Math.min(getLine(doc, to.line).text.length, to.ch + inserted.length));
 
     var updateInput = cm.curOp.updateInput;
-    var changeEvent = {from: from, to: to, text: splitLines(text.slice(same)),
+    var changeEvent = {from: from, to: to, text: splitLines(inserted),
                        origin: cm.state.pasteIncoming ? "paste" : "+input"};
     makeChange(cm.doc, changeEvent, "end");
     cm.curOp.updateInput = updateInput;
     signalLater(cm, "inputRead", cm, changeEvent);
+    if (!cm.state.pasteIncoming && cm.options.electricChars &&
+        cm.options.smartIndent && sel.head.ch < 100) {
+      var electric = cm.getModeAt(sel.head).electricChars;
+      if (electric) for (var i = 0; i < electric.length; i++)
+        if (inserted.indexOf(electric.charAt(i)) > -1) {
+          indentLine(cm, sel.head.line, "smart");
+          break;
+        }
+    }
 
     if (text.length > 1000 || text.indexOf("\n") > -1) input.value = cm.display.prevInput = "";
     else cm.display.prevInput = text;
@@ -2148,10 +2159,6 @@ window.CodeMirror = (function() {
     if (opera && keyCode == lastStoppedKey) {lastStoppedKey = null; e_preventDefault(e); return;}
     if (((opera && (!e.which || e.which < 10)) || khtml) && handleKeyBinding(cm, e)) return;
     var ch = String.fromCharCode(charCode == null ? keyCode : charCode);
-    if (this.options.electricChars && this.doc.mode.electricChars &&
-        this.options.smartIndent && !isReadOnly(this) &&
-        this.doc.mode.electricChars.indexOf(ch) > -1)
-      setTimeout(operation(cm, function() {indentLine(cm, cm.doc.sel.to.line, "smart");}), 75);
     if (handleCharBinding(cm, e, ch)) return;
     if (ie && !ie_lt9) cm.display.inputHasSelection = null;
     fastPoll(cm);
@@ -2507,6 +2514,7 @@ window.CodeMirror = (function() {
 
   function posEq(a, b) {return a.line == b.line && a.ch == b.ch;}
   function posLess(a, b) {return a.line < b.line || (a.line == b.line && a.ch < b.ch);}
+  function cmp(a, b) {return a.line - b.line || a.ch - b.ch;}
   function copyPos(x) {return Pos(x.line, x.ch);}
 
   // SELECTION
@@ -2651,14 +2659,13 @@ window.CodeMirror = (function() {
     if (coords.top + box.top < 0) doScroll = true;
     else if (coords.bottom + box.top > (window.innerHeight || document.documentElement.clientHeight)) doScroll = false;
     if (doScroll != null && !phantom) {
-      var hidden = display.cursor.style.display == "none";
-      if (hidden) {
-        display.cursor.style.display = "";
-        display.cursor.style.left = coords.left + "px";
-        display.cursor.style.top = (coords.top - display.viewOffset) + "px";
-      }
-      display.cursor.scrollIntoView(doScroll);
-      if (hidden) display.cursor.style.display = "none";
+      var scrollNode = elt("div", "\u200b", null, "position: absolute; top: " +
+                           (coords.top - display.viewOffset) + "px; height: " +
+                           (coords.bottom - coords.top + scrollerCutOff) + "px; left: " +
+                           coords.left + "px; width: 2px;");
+      cm.display.lineSpace.appendChild(scrollNode);
+      scrollNode.scrollIntoView(doScroll);
+      cm.display.lineSpace.removeChild(scrollNode);
     }
   }
 
@@ -2741,7 +2748,10 @@ window.CodeMirror = (function() {
     var tabSize = cm.options.tabSize;
     var line = getLine(doc, n), curSpace = countColumn(line.text, null, tabSize);
     var curSpaceString = line.text.match(/^\s*/)[0], indentation;
-    if (how == "smart") {
+    if (!aggressive && !/\S/.test(line.text)) {
+      indentation = 0;
+      how = "not";
+    } else if (how == "smart") {
       indentation = cm.doc.mode.indent(state, line.text.slice(curSpaceString.length), line.text);
       if (indentation == Pass) {
         if (!aggressive) return;
@@ -2923,7 +2933,7 @@ window.CodeMirror = (function() {
     }),
     indentSelection: operation(null, function(how) {
       var sel = this.doc.sel;
-      if (posEq(sel.from, sel.to)) return indentLine(this, sel.from.line, how);
+      if (posEq(sel.from, sel.to)) return indentLine(this, sel.from.line, how, true);
       var e = sel.to.line - (sel.to.ch ? 0 : 1);
       for (var i = sel.from.line; i <= e; ++i) indentLine(this, i, how);
     }),
@@ -2968,11 +2978,31 @@ window.CodeMirror = (function() {
     },
 
     getHelper: function(pos, type) {
-      if (!helpers.hasOwnProperty(type)) return;
+      return this.getHelpers(pos, type)[0];
+    },
+
+    getHelpers: function(pos, type) {
+      var found = [];
+      if (!helpers.hasOwnProperty(type)) return helpers;
       var help = helpers[type], mode = this.getModeAt(pos);
-      return mode[type] && help[mode[type]] ||
-        mode.helperType && help[mode.helperType] ||
-        help[mode.name];
+      if (typeof mode[type] == "string") {
+        if (help[mode[type]]) found.push(help[mode[type]]);
+      } else if (mode[type]) {
+        for (var i = 0; i < mode[type].length; i++) {
+          var val = help[mode[type][i]];
+          if (val) found.push(val);
+        }
+      } else if (mode.helperType && help[mode.helperType]) {
+        found.push(help[mode.helperType]);
+      } else if (help[mode.name]) {
+        found.push(help[mode.name]);
+      }
+      for (var i = 0; i < help._global.length; i++) {
+        var cur = help._global[i];
+        if (cur.pred(mode, this) && indexOf(found, cur.val) == -1)
+          found.push(cur.val);
+      }
+      return found;
     },
 
     getStateAfter: function(line, precise) {
@@ -3161,14 +3191,18 @@ window.CodeMirror = (function() {
     },
 
     moveV: operation(null, function(dir, unit) {
-      var sel = this.doc.sel;
-      var pos = cursorCoords(this, sel.head, "div");
-      if (sel.goalColumn != null) pos.left = sel.goalColumn;
-      var target = findPosV(this, pos, dir, unit);
-
-      if (unit == "page") addToScrollPos(this, 0, charCoords(this, target, "div").top - pos.top);
+      var sel = this.doc.sel, target, goal;
+      if (sel.shift || sel.extend || posEq(sel.from, sel.to)) {
+        var pos = cursorCoords(this, sel.head, "div");
+        if (sel.goalColumn != null) pos.left = sel.goalColumn;
+        target = findPosV(this, pos, dir, unit);
+        if (unit == "page") addToScrollPos(this, 0, charCoords(this, target, "div").top - pos.top);
+        goal = pos.left;
+      } else {
+        target = dir < 0 ? sel.from : sel.to;
+      }
       extendSelection(this.doc, target, target, dir);
-      sel.goalColumn = pos.left;
+      if (goal != null) sel.goalColumn = goal;
     }),
 
     toggleOverwrite: function(value) {
@@ -3400,6 +3434,9 @@ window.CodeMirror = (function() {
       }
     }
     modeObj.name = spec.name;
+    if (spec.helperType) modeObj.helperType = spec.helperType;
+    if (spec.modeProps) for (var prop in spec.modeProps)
+      modeObj[prop] = spec.modeProps[prop];
 
     return modeObj;
   };
@@ -3430,8 +3467,12 @@ window.CodeMirror = (function() {
 
   var helpers = CodeMirror.helpers = {};
   CodeMirror.registerHelper = function(type, name, value) {
-    if (!helpers.hasOwnProperty(type)) helpers[type] = CodeMirror[type] = {};
+    if (!helpers.hasOwnProperty(type)) helpers[type] = CodeMirror[type] = {_global: []};
     helpers[type][name] = value;
+  };
+  CodeMirror.registerGlobalHelper = function(type, name, predicate, value) {
+    CodeMirror.registerHelper(type, name, value);
+    helpers[type]._global.push({pred: predicate, val: value});
   };
 
   // UTILITIES
@@ -3826,7 +3867,7 @@ window.CodeMirror = (function() {
     if (withOp) endOperation(cm);
   };
 
-  TextMarker.prototype.find = function() {
+  TextMarker.prototype.find = function(bothSides) {
     var from, to;
     for (var i = 0; i < this.lines.length; ++i) {
       var line = this.lines[i];
@@ -3837,7 +3878,7 @@ window.CodeMirror = (function() {
         if (span.to != null) to = Pos(found, span.to);
       }
     }
-    if (this.type == "bookmark") return from;
+    if (this.type == "bookmark" && !bothSides) return from;
     return from && {from: from, to: to};
   };
 
@@ -3874,6 +3915,8 @@ window.CodeMirror = (function() {
     }
   };
 
+  var nextMarkerId = 0;
+
   function markText(doc, from, to, options, type) {
     if (options && options.shared) return markTextShared(doc, from, to, options, type);
     if (doc.cm && !doc.cm.curOp) return operation(doc.cm, markText)(doc, from, to, options, type);
@@ -3887,25 +3930,25 @@ window.CodeMirror = (function() {
       marker.replacedWith = elt("span", [marker.replacedWith], "CodeMirror-widget");
       if (!options.handleMouseEvents) marker.replacedWith.ignoreEvents = true;
     }
-    if (marker.collapsed) sawCollapsedSpans = true;
+    if (marker.collapsed) {
+      if (conflictingCollapsedRange(doc, from.line, from, to, marker) ||
+          from.line != to.line && conflictingCollapsedRange(doc, to.line, from, to, marker))
+        throw new Error("Inserting collapsed marker partially overlapping an existing one");
+      sawCollapsedSpans = true;
+    }
 
     if (marker.addToHistory)
       addToHistory(doc, {from: from, to: to, origin: "markText"},
                    {head: doc.sel.head, anchor: doc.sel.anchor}, NaN);
 
-    var curLine = from.line, size = 0, collapsedAtStart, collapsedAtEnd, cm = doc.cm, updateMaxLine;
+    var curLine = from.line, cm = doc.cm, updateMaxLine;
     doc.iter(curLine, to.line + 1, function(line) {
       if (cm && marker.collapsed && !cm.options.lineWrapping && visualLine(doc, line) == cm.display.maxLine)
         updateMaxLine = true;
       var span = {from: null, to: null, marker: marker};
-      size += line.text.length;
-      if (curLine == from.line) {span.from = from.ch; size -= from.ch;}
-      if (curLine == to.line) {span.to = to.ch; size -= line.text.length - to.ch;}
-      if (marker.collapsed) {
-        if (curLine == to.line) collapsedAtEnd = collapsedSpanAt(line, to.ch);
-        if (curLine == from.line) collapsedAtStart = collapsedSpanAt(line, from.ch);
-        else updateLineHeight(line, 0);
-      }
+      if (curLine == from.line) span.from = from.ch;
+      if (curLine == to.line) span.to = to.ch;
+      if (marker.collapsed && curLine != from.line) updateLineHeight(line, 0);
       addMarkedSpan(line, span);
       ++curLine;
     });
@@ -3921,9 +3964,7 @@ window.CodeMirror = (function() {
         doc.clearHistory();
     }
     if (marker.collapsed) {
-      if (collapsedAtStart != collapsedAtEnd)
-        throw new Error("Inserting collapsed marker overlapping an existing one");
-      marker.size = size;
+      marker.id = ++nextMarkerId;
       marker.atomic = true;
     }
     if (cm) {
@@ -4139,20 +4180,48 @@ window.CodeMirror = (function() {
     return parts;
   }
 
-  function collapsedSpanAt(line, ch) {
+  function extraLeft(marker) { return marker.inclusiveLeft ? -1 : 0; }
+  function extraRight(marker) { return marker.inclusiveRight ? 1 : 0; }
+
+  function compareCollapsedMarkers(a, b) {
+    var lenDiff = a.lines.length - b.lines.length;
+    if (lenDiff != 0) return lenDiff;
+    var aPos = a.find(), bPos = b.find();
+    var fromCmp = cmp(aPos.from, bPos.from) || extraLeft(a) - extraLeft(b);
+    if (fromCmp) return -fromCmp;
+    var toCmp = cmp(aPos.to, bPos.to) || extraRight(a) - extraRight(b);
+    if (toCmp) return toCmp;
+    return b.id - a.id;
+  }
+
+  function collapsedSpanAtSide(line, start) {
     var sps = sawCollapsedSpans && line.markedSpans, found;
     if (sps) for (var sp, i = 0; i < sps.length; ++i) {
       sp = sps[i];
-      if (!sp.marker.collapsed) continue;
-      if ((sp.from == null || sp.from < ch) &&
-          (sp.to == null || sp.to > ch) &&
-          (!found || found.width < sp.marker.width))
+      if (sp.marker.collapsed && (start ? sp.from : sp.to) == null &&
+          (!found || compareCollapsedMarkers(found, sp.marker) < 0))
         found = sp.marker;
     }
     return found;
   }
-  function collapsedSpanAtStart(line) { return collapsedSpanAt(line, -1); }
-  function collapsedSpanAtEnd(line) { return collapsedSpanAt(line, line.text.length + 1); }
+  function collapsedSpanAtStart(line) { return collapsedSpanAtSide(line, true); }
+  function collapsedSpanAtEnd(line) { return collapsedSpanAtSide(line, false); }
+
+  function conflictingCollapsedRange(doc, lineNo, from, to, marker) {
+    var line = getLine(doc, lineNo);
+    var sps = sawCollapsedSpans && line.markedSpans;
+    if (sps) for (var i = 0; i < sps.length; ++i) {
+      var sp = sps[i];
+      if (!sp.marker.collapsed) continue;
+      var found = sp.marker.find(true);
+      var fromCmp = cmp(found.from, from) || extraLeft(sp.marker) - extraLeft(marker);
+      var toCmp = cmp(found.to, to) || extraRight(sp.marker) - extraRight(marker);
+      if (fromCmp >= 0 && toCmp <= 0 || fromCmp <= 0 && toCmp >= 0) continue;
+      if (fromCmp <= 0 && (cmp(found.to, from) || extraRight(sp.marker) - extraLeft(marker)) > 0 ||
+          fromCmp >= 0 && (cmp(found.from, to) || extraLeft(sp.marker) - extraRight(marker)) < 0)
+        return true;
+    }
+  }
 
   function visualLine(doc, line) {
     var merged;
@@ -4583,7 +4652,7 @@ window.CodeMirror = (function() {
             if (m.startStyle && sp.from == pos) spanStartStyle += " " + m.startStyle;
             if (m.endStyle && sp.to == nextChange) spanEndStyle += " " + m.endStyle;
             if (m.title && !title) title = m.title;
-            if (m.collapsed && (!collapsed || collapsed.marker.size < m.size))
+            if (m.collapsed && (!collapsed || compareCollapsedMarkers(collapsed.marker, m) < 0))
               collapsed = sp;
           } else if (sp.from > pos && nextChange > sp.from) {
             nextChange = sp.from;
@@ -4916,10 +4985,11 @@ window.CodeMirror = (function() {
     clearHistory: function() {this.history = makeHistory(this.history.maxGeneration);},
 
     markClean: function() {
-      this.cleanGeneration = this.changeGeneration();
+      this.cleanGeneration = this.changeGeneration(true);
     },
-    changeGeneration: function() {
-      this.history.lastOp = this.history.lastOrigin = null;
+    changeGeneration: function(forceSplit) {
+      if (forceSplit)
+        this.history.lastOp = this.history.lastOrigin = null;
       return this.history.generation;
     },
     isClean: function (gen) {
@@ -5223,10 +5293,10 @@ window.CodeMirror = (function() {
              anchorBefore: doc.sel.anchor, headBefore: doc.sel.head,
              anchorAfter: selAfter.anchor, headAfter: selAfter.head};
       hist.done.push(cur);
-      hist.generation = ++hist.maxGeneration;
       while (hist.done.length > hist.undoDepth)
         hist.done.shift();
     }
+    hist.generation = ++hist.maxGeneration;
     hist.lastTime = time;
     hist.lastOp = opId;
     hist.lastOrigin = change.origin;

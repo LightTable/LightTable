@@ -196,12 +196,17 @@
           :triggers #{:fetch-plugins}
           :desc "Plugin Manager: fetch plugins"
           :reaction (fn [this]
-
+                      (fetch/xhr [:post (str plugin-url "/versions")] {:names (pr-str (-> @app/app ::plugins keys vec))}
+                                 (fn [data]
+                                   (object/merge! this {:version-cache (reader/read-string data)})
+                                   (object/raise this :refresh!)
+                                   ))
                       (fetch/xhr [:get plugin-url] {}
                                  (fn [data]
                                    (when data
                                      (object/raise this :plugin-results (reader/read-string data)))
                                    ))))
+
 
 (defui source-button [plugin]
   [:span.source [:a {:href (:url plugin (:source plugin))} "source"]]
@@ -238,7 +243,7 @@
           (cb false))))))
 
 (defn transitive-install [plugin deps cb]
-  (let [cur (-> plugin :info :name)
+  (let [cur (or (-> plugin :name) (-> plugin :info :name))
         others (dissoc deps cur)
         counter (atom (count others))
         count-down (fn []
@@ -259,8 +264,10 @@
       (count-down))))
 
 (defn discover-deps [plugin cb]
-  (fetch/xhr [:post (str plugin-url "/install")] {:name (-> plugin :info :name)
-                                                  :version (or (-> plugin :info :version) (-> plugin :versions first :version))}
+  (fetch/xhr [:post (str plugin-url "/install")] {:name (or (-> plugin :name) (-> plugin :info :name))
+                                                  :version (or (-> plugin :version)
+                                                               (-> plugin :info :version)
+                                                               (-> plugin :versions first :version))}
                                    (fn [data]
                                      (transitive-install plugin (reader/read-string data) cb))))
 
@@ -272,7 +279,7 @@
      (when installed
        (if (and (:version installed)
                 (deploy/is-newer? (:version installed) ver))
-         (update-button)
+         (update-button plugin)
          [:span.installed]))
      (source-button plugin)
      [:h1 (:name info) [:span.version ver]]
@@ -295,13 +302,16 @@
            (uninstall plugin)))
 
 (defui installed-plugin-ui [plugin]
-  [:li
-   (uninstall-button plugin)
-   (source-button plugin)
-   [:h1 (:name plugin) [:span.version (:version plugin)]]
-   [:h3 (:author plugin)]
-   [:p (:desc plugin)]
-   ])
+  (let [cached (-> @manager :version-cache (get (:name plugin)))]
+    [:li
+     (if (and (deploy/is-newer? (:version plugin) cached))
+       (update-button (assoc plugin :version cached))
+       (uninstall-button plugin))
+     (source-button plugin)
+     [:h1 (:name plugin) [:span.version (:version plugin)]]
+     [:h3 (:author plugin)]
+     [:p (:desc plugin)]
+     ]))
 
 (behavior ::render-server-plugins
           :triggers #{:plugin-results}
@@ -329,7 +339,6 @@
                         (object/raise this :fetch-plugins)
                         (fetch/xhr [:post (str plugin-url "/search")] {:term search}
                                    (fn [data]
-                                     (println data)
                                      (when data
                                        (object/raise this :plugin-results (reader/read-string data)))
                                      )))))
@@ -418,7 +427,6 @@
 (cmd/command {:command :plugin-manager.refresh
               :desc "Plugins: refresh plugin list"
               :exec (fn []
-                      (object/merge! app/app {::plugins (available-plugins)})
                       (object/raise manager :refresh!)
                       (object/raise manager :fetch-plugins))})
 

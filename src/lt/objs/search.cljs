@@ -200,7 +200,7 @@
                         (when (< (:result-count @this) result-threshold)
                           (dom/append (->res this) (->result-item result)))
                         (.push (:results @this) result)
-                        (object/update! this [:result-count] i+ total))))
+                        (object/update! this [:result-count] + total))))
 
 (behavior ::focus
           :triggers #{:focus! :show}

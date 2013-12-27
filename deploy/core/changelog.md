@@ -1,8 +1,11 @@
 #Changes
 
-##0.5.21
+##0.6.0
 
 * FIX: \r\r\n at the end of files on windows #912
+* ADDED: `Editor: On change execute command` behavior
+* UPDATED: Latest CodeMirror
+* UPDATED: Latest vim/emacs mode
 
 ##0.5.20
 

@@ -27,7 +27,7 @@
    (.getOption cm "indentWithTabs") (.replaceSelection cm "\t" "end" "+input")
    :else
    (let [spaces (.join (js/Array (inc (.getOption cm "indentUnit"))) " ")]
-      (.replaceSelection cm spaces "end" "+input"))))
+     (.replaceSelection cm spaces "end" "+input"))))
 
 
 ;;*********************************************************
@@ -38,8 +38,8 @@
 
 (defn ed-with-elem [$elem opts]
   (js/CodeMirror (if (.-get $elem)
-                            (.get $elem 0)
-                            $elem)
+                   (.get $elem 0)
+                   $elem)
                  (clj->js opts)))
 
 (defn ed-headless [opts]
@@ -65,13 +65,13 @@
 
 (defn make [context]
   (let [e (->editor {:mode (if (:mime context)
-                                   (name (:mime context))
-                                   "plaintext")
-                           :autoClearEmptyLines true
-                           :dragDrop false
-                           :onDragEvent (fn [] true)
-                           :undoDepth 10000
-                           :matchBrackets true})]
+                             (name (:mime context))
+                             "plaintext")
+                     :autoClearEmptyLines true
+                     :dragDrop false
+                     :onDragEvent (fn [] true)
+                     :undoDepth 10000
+                     :matchBrackets true})]
     (set-props e (dissoc context :content :doc))
     (when-let [c (:content context)]
       (set-val e c)
@@ -201,28 +201,28 @@
   e)
 
 (defn on-move [e func]
- (.on e "onCursorActivity"
-            (fn [ed delta]
-              (func ed delta)))
+  (.on e "onCursorActivity"
+       (fn [ed delta]
+         (func ed delta)))
   e)
 
 (defn on-change [e func]
- (.on e "onChange"
-            (fn [ed delta]
-              (func ed delta)))
+  (.on e "onChange"
+       (fn [ed delta]
+         (func ed delta)))
   e)
 
 (defn on-update [e func]
- (.on e "onUpdate"
-            (fn [ed delta]
-              (func ed delta)))
+  (.on e "onUpdate"
+       (fn [ed delta]
+         (func ed delta)))
   e)
 
 (defn on-scroll [e func]
- (.on e "onScroll"
-            (fn [ed]
-              (func ed)
-              ))
+  (.on e "onScroll"
+       (fn [ed]
+         (func ed)
+         ))
   e)
 
 (defn replace
@@ -429,213 +429,222 @@
 
 
 (behavior ::read-only
-           :triggers #{:init}
-           :reaction (fn [obj]
-                       (set-options (:ed @obj) {:readOnly "nocursor"})))
+          :triggers #{:init}
+          :reaction (fn [obj]
+                      (set-options (:ed @obj) {:readOnly "nocursor"})))
 
 (behavior ::wrap
-           :triggers #{:object.instant :lt.object/tags-removed}
-           :desc "Editor: Wrap lines"
-           :exclusive [::no-wrap]
-           :type :user
-           :reaction (fn [obj]
-                       (set-options obj {:lineWrapping true})))
+          :triggers #{:object.instant :lt.object/tags-removed}
+          :desc "Editor: Wrap lines"
+          :exclusive [::no-wrap]
+          :type :user
+          :reaction (fn [obj]
+                      (set-options obj {:lineWrapping true})))
 
 (behavior ::no-wrap
-           :triggers #{:object.instant :lt.object/tags-removed}
-           :desc "Editor: Unwrap lines"
-           :exclusive [::wrap]
-           :type :user
-           :reaction (fn [obj]
-                       (set-options obj {:lineWrapping false})))
+          :triggers #{:object.instant :lt.object/tags-removed}
+          :desc "Editor: Unwrap lines"
+          :exclusive [::wrap]
+          :type :user
+          :reaction (fn [obj]
+                      (set-options obj {:lineWrapping false})))
 
 (behavior ::line-numbers
-           :triggers #{:object.instant :lt.object/tags-removed}
-           :desc "Editor: Show line numbers"
-           :exclusive [::hide-line-numbers]
-           :type :user
-           :reaction (fn [this]
-                       (set-options this {:lineNumbers true})))
+          :triggers #{:object.instant :lt.object/tags-removed}
+          :desc "Editor: Show line numbers"
+          :exclusive [::hide-line-numbers]
+          :type :user
+          :reaction (fn [this]
+                      (set-options this {:lineNumbers true})))
 
 (behavior ::hide-line-numbers
-           :triggers #{:object.instant :lt.object/tags-removed}
-           :desc "Editor: Hide line numbers"
-           :exclusive [::line-numbers]
-           :type :user
-           :reaction (fn [this]
-                       (set-options this {:lineNumbers false})))
+          :triggers #{:object.instant :lt.object/tags-removed}
+          :desc "Editor: Hide line numbers"
+          :exclusive [::line-numbers]
+          :type :user
+          :reaction (fn [this]
+                      (set-options this {:lineNumbers false})))
 
 (behavior ::scroll-past-end
-           :triggers #{:object.instant :lt.object/tags-removed}
-           :desc "Editor: Allow scrolling past the end of the file"
-           :exclusive true
-           :type :user
-           :reaction (fn [this]
-                       (set-options this {:scrollPastEnd true})))
+          :triggers #{:object.instant :lt.object/tags-removed}
+          :desc "Editor: Allow scrolling past the end of the file"
+          :exclusive true
+          :type :user
+          :reaction (fn [this]
+                      (set-options this {:scrollPastEnd true})))
 
 (behavior ::tab-settings
-           :triggers #{:object.instant}
-           :desc "Editor: indent settings (tab size, etc)"
-           :params [{:label "Use tabs?"
-                     :type :boolean}
-                    {:label "Tab size in spaces"
-                     :type :number}
-                    {:label "Spaces per indent"
-                     :type :number}]
-           :type :user
-           :exclusive true
-           :reaction (fn [obj use-tabs? tab-size indent-unit]
-                       (set-options obj {:tabSize tab-size
-                                         :indentWithTabs use-tabs?
-                                         :indentUnit indent-unit})))
+          :triggers #{:object.instant}
+          :desc "Editor: indent settings (tab size, etc)"
+          :params [{:label "Use tabs?"
+                    :type :boolean}
+                   {:label "Tab size in spaces"
+                    :type :number}
+                   {:label "Spaces per indent"
+                    :type :number}]
+          :type :user
+          :exclusive true
+          :reaction (fn [obj use-tabs? tab-size indent-unit]
+                      (set-options obj {:tabSize tab-size
+                                        :indentWithTabs use-tabs?
+                                        :indentUnit indent-unit})))
 
 (behavior ::read-only
-                  :triggers #{:object.instant}
-                  :desc "Editor: make editor read-only"
-                  :exclusive [::not-read-only]
-                  :reaction (fn [this]
-                              (object/update! this [:info :name] str " (read-only)")
-                              (set-options this {:readOnly true})))
+          :triggers #{:object.instant}
+          :desc "Editor: make editor read-only"
+          :exclusive [::not-read-only]
+          :reaction (fn [this]
+                      (object/update! this [:info :name] str " (read-only)")
+                      (set-options this {:readOnly true})))
 
 (behavior ::not-read-only
-                  :triggers #{:object.instant}
-                  :desc "Editor: make editor writable"
-                  :exclusive [::read-only]
-                  :reaction (fn [this]
-                              (set-options this {:readOnly false})))
+          :triggers #{:object.instant}
+          :desc "Editor: make editor writable"
+          :exclusive [::read-only]
+          :reaction (fn [this]
+                      (set-options this {:readOnly false})))
 
 (behavior ::blink-rate
-                  :triggers #{:object.instant}
-                  :desc "Editor: set cursor blink rate"
-                  :exclusive true
-                  :type :user
-                  :reaction (fn [this rate]
-                              (if rate
-                                (set-options this {:cursorBlinkRate rate})
-                                (set-options this {:cursorBlinkRate 0}))))
+          :triggers #{:object.instant}
+          :desc "Editor: set cursor blink rate"
+          :exclusive true
+          :type :user
+          :reaction (fn [this rate]
+                      (if rate
+                        (set-options this {:cursorBlinkRate rate})
+                        (set-options this {:cursorBlinkRate 0}))))
 
 (behavior ::active-on-focus
-           :triggers #{:focus}
-           :reaction (fn [obj]
-                       (object/add-tags obj [:editor.active])
-                       (object/raise obj :active)))
+          :triggers #{:focus}
+          :reaction (fn [obj]
+                      (object/add-tags obj [:editor.active])
+                      (object/raise obj :active)))
 
 (behavior ::inactive-on-blur
-           :triggers #{:blur}
-           :reaction (fn [obj]
-                       (object/remove-tags obj [:editor.active])
-                       (object/raise obj :inactive)))
+          :triggers #{:blur}
+          :reaction (fn [obj]
+                      (object/remove-tags obj [:editor.active])
+                      (object/raise obj :inactive)))
 
 (behavior ::refresh!
-           :triggers #{:refresh!}
-           :reaction (fn [this]
-                       (refresh this)))
+          :triggers #{:refresh!}
+          :reaction (fn [this]
+                      (refresh this)))
 
 (behavior ::on-tags-added
-           :triggers #{:lt.object/tags-added}
-           :reaction (fn [this added]
-                       (doseq [a added
-                               :when a]
-                         (ctx-obj/in! a this))))
+          :triggers #{:lt.object/tags-added}
+          :reaction (fn [this added]
+                      (doseq [a added
+                              :when a]
+                        (ctx-obj/in! a this))))
 
 (behavior ::on-tags-removed
-           :triggers #{:lt.object/tags-removed}
-           :reaction (fn [this removed]
-                       (doseq [r removed
-                               :when r]
-                         (ctx-obj/out! r this))))
+          :triggers #{:lt.object/tags-removed}
+          :reaction (fn [this removed]
+                      (doseq [r removed
+                              :when r]
+                        (ctx-obj/out! r this))))
 
 (behavior ::context-on-active
-           :triggers #{:active}
-           :reaction (fn [obj]
-                       ;;TODO: this is probably inefficient due to inactive
-                       (ctx-obj/in! (:tags @obj) obj)
-                         ))
+          :triggers #{:active}
+          :reaction (fn [obj]
+                      ;;TODO: this is probably inefficient due to inactive
+                      (ctx-obj/in! (:tags @obj) obj)
+                      ))
 
 (behavior ::context-on-inactive
-           :triggers #{:inactive}
-           :reaction (fn [obj]
-                       (let [tags (:tags @obj)
-                             cur-editor (ctx-obj/->obj :editor)]
-                         ;;blur comes after the focus of a second editor
-                         ;;so only go out if I was the editor that is active
-                         (ctx-obj/out! tags)
-                         (when (and cur-editor
-                                    (not= cur-editor obj))
-                           (ctx-obj/in! (:tags @cur-editor) cur-editor)
-                           ))))
+          :triggers #{:inactive}
+          :reaction (fn [obj]
+                      (let [tags (:tags @obj)
+                            cur-editor (ctx-obj/->obj :editor)]
+                        ;;blur comes after the focus of a second editor
+                        ;;so only go out if I was the editor that is active
+                        (ctx-obj/out! tags)
+                        (when (and cur-editor
+                                   (not= cur-editor obj))
+                          (ctx-obj/in! (:tags @cur-editor) cur-editor)
+                          ))))
 
 (behavior ::refresh-on-show
-           :triggers #{:show}
-           :reaction (fn [obj]
-                       (refresh (:ed @obj))
-                       (object/raise obj :focus!)
-                       ))
+          :triggers #{:show}
+          :reaction (fn [obj]
+                      (refresh (:ed @obj))
+                      (object/raise obj :focus!)
+                      ))
 
 (behavior ::focus
-           :triggers #{:focus!}
-           :reaction (fn [obj]
-                       (focus (:ed @obj))))
+          :triggers #{:focus!}
+          :reaction (fn [obj]
+                      (focus (:ed @obj))))
 
 (behavior ::destroy-on-close
-           :triggers #{:close.force}
-           :reaction (fn [obj]
-                       (object/raise obj :closed)
-                       (object/destroy! obj)))
+          :triggers #{:close.force}
+          :reaction (fn [obj]
+                      (object/raise obj :closed)
+                      (object/destroy! obj)))
 
 (behavior ::highlight-current-line
-           :triggers #{:object.instant}
-           :type :user
-           :desc "Editor: Highlight the current line"
-           :exclusive true
-           :reaction (fn [this]
-                       (set-options this {:styleActiveLine true})))
+          :triggers #{:object.instant}
+          :type :user
+          :desc "Editor: Highlight the current line"
+          :exclusive true
+          :reaction (fn [this]
+                      (set-options this {:styleActiveLine true})))
+
+(behavior ::on-change
+          :debounce 300
+          :triggers #{:change}
+          :type :user
+          :desc "Editor: On change execute command"
+          :params [{:label "command"}]
+          :reaction (fn [this cmd & args]
+                      (apply cmd/exec! cmd args)))
 
 (behavior ::menu!
-           :triggers #{:menu!}
-           :reaction (fn [this e]
-                       (let [items (sort-by :order (object/raise-reduce this :menu+ []))]
-                                (-> (menu/menu items)
-                                    (menu/show-menu (.-clientX e) (.-clientY e))))
-                       (dom/prevent e)
-                       (dom/stop-propagation e)
-                       ))
+          :triggers #{:menu!}
+          :reaction (fn [this e]
+                      (let [items (sort-by :order (object/raise-reduce this :menu+ []))]
+                        (-> (menu/menu items)
+                            (menu/show-menu (.-clientX e) (.-clientY e))))
+                      (dom/prevent e)
+                      (dom/stop-propagation e)
+                      ))
 
 (behavior ::copy-paste-menu+
-           :triggers #{:menu+}
-           :reaction (fn [this items]
-                       (conj items
-                             {:label "Copy"
-                              :order 1
-                              :enabled (boolean (selection? this))
-                              :click (fn []
-                                       (copy this))}
-                             {:label "Cut"
-                              :order 2
-                              :enabled (boolean (selection? this))
-                              :click (fn []
-                                       (cut this))}
-                             {:label "Paste"
-                              :order 3
-                              :enabled (boolean (not (empty? (.get clipboard "text"))))
-                              :click (fn []
-                                       (paste this))}
-                             {:type "separator"
-                              :order 4}
-                             {:label "Select all"
-                              :order 5
-                              :click (fn []
-                                       (select-all this))})))
+          :triggers #{:menu+}
+          :reaction (fn [this items]
+                      (conj items
+                            {:label "Copy"
+                             :order 1
+                             :enabled (boolean (selection? this))
+                             :click (fn []
+                                      (copy this))}
+                            {:label "Cut"
+                             :order 2
+                             :enabled (boolean (selection? this))
+                             :click (fn []
+                                      (cut this))}
+                            {:label "Paste"
+                             :order 3
+                             :enabled (boolean (not (empty? (.get clipboard "text"))))
+                             :click (fn []
+                                      (paste this))}
+                            {:type "separator"
+                             :order 4}
+                            {:label "Select all"
+                             :order 5
+                             :click (fn []
+                                      (select-all this))})))
 
 (behavior ::init-codemirror
-                  :triggers #{:init}
-                  :reaction (fn [this]
-                              (load/js "core/node_modules/codemirror/matchbracket.js" :sync)
-                              (load/js "core/node_modules/codemirror/comment.js" :sync)
-                              (load/js "core/node_modules/codemirror/active-line.js" :sync)
-                              (load/js "core/node_modules/codemirror/overlay.js" :sync)
-                              (load/js "core/node_modules/codemirror/scrollpastend.js" :sync)
-                              (doseq [mode (files/ls "core/node_modules/codemirror/modes")
-                                      :when (= (files/ext mode) "js")]
-                                (load/js (str "core/node_modules/codemirror/modes/" mode) :sync))
-                              (aset js/CodeMirror.keyMap.basic "Tab" expand-tab)))
+          :triggers #{:init}
+          :reaction (fn [this]
+                      (load/js "core/node_modules/codemirror/matchbracket.js" :sync)
+                      (load/js "core/node_modules/codemirror/comment.js" :sync)
+                      (load/js "core/node_modules/codemirror/active-line.js" :sync)
+                      (load/js "core/node_modules/codemirror/overlay.js" :sync)
+                      (load/js "core/node_modules/codemirror/scrollpastend.js" :sync)
+                      (doseq [mode (files/ls "core/node_modules/codemirror/modes")
+                              :when (= (files/ext mode) "js")]
+                        (load/js (str "core/node_modules/codemirror/modes/" mode) :sync))
+                      (aset js/CodeMirror.keyMap.basic "Tab" expand-tab)))
