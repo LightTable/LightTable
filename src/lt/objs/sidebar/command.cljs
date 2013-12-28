@@ -314,7 +314,9 @@
           :triggers #{:selected-exec}
           :reaction (fn [this]
                       (when (= this (:active @sidebar/rightbar))
-                        (object/raise sidebar/rightbar :close!))))
+                        (object/raise sidebar/rightbar :close!
+                                      (not (or (ctx/in? :filter-list.input)
+                                               (ctx/in? :options-input)))))))
 
 (behavior ::exec-command
           :triggers #{:exec!}

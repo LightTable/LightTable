@@ -325,11 +325,20 @@
           :triggers #{:submit-plugin!}
           :desc "Plugin Manager: submit a new plugin"
           :reaction (fn [this url]
+                      (notifos/working (str "Submitting plugin: " url))
                       (fetch/xhr [:post (str plugin-url "/add" )] {:url url}
                                  (fn [data]
+                                   (notifos/done-working "")
                                    (let [data (reader/read-string data)]
-                                     (popup/popup! {:header "woo"
-                                              :body (:description data)}))))))
+                                     (popup/popup! {:header (condp = (:status data)
+                                                              :success "Plugin added!"
+                                                              :error "There's a problem with the plugin."
+                                                              :refresh "Plugin refreshed!")
+                                                    :body [:div
+                                                           (if (= (:status data) :error)
+                                                             [:div "Url submitted: " url])
+                                                           [:p (:description data)]]
+                                                    :buttons [{:label "ok"}]}))))))
 
 (behavior ::search-server-plugins
           :triggers #{:search-plugins!}
@@ -446,9 +455,11 @@
 
 (defn submit-url []
   (let [input (url-input)
-        p (popup/popup! {:header "Submit a plugin."
+        p (popup/popup! {:header "Submit a plugin to the central repository"
                          :body [:div
-                                [:p ""]
+                                [:p "You can submit a github url to add a plugin to the central repository.
+                                 All plugin repos must have at least one tag in version format, e.g. 0.1.2 and must have a plugin.json
+                                 with a name, version, and description. To refresh the available versions, just resubmit the plugin."]
                                 [:label "Github URL for plugin: "]
                                 input
                                 ]

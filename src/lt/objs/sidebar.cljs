@@ -16,76 +16,77 @@
   :dragstart (fn [e]
                (object/raise this :start-drag))
   :dragend (fn [e]
-               (object/raise this :end-drag))
+             (object/raise this :end-drag))
   :drag (fn [e]
           (object/raise this :width! e)
-             ))
+          ))
 
 (behavior ::no-anim-on-drag
-                  :triggers #{:start-drag}
-                  :reaction (fn [this]
-                              (anim/off)))
+          :triggers #{:start-drag}
+          :reaction (fn [this]
+                      (anim/off)))
 
 (behavior ::reanim-on-drop
-                  :triggers #{:end-drag}
-                  :reaction (fn [this]
-                              (anim/on)))
+          :triggers #{:end-drag}
+          :reaction (fn [this]
+                      (anim/on)))
 
 (behavior ::width!
-                  :triggers #{:width!}
-                  :throttle 5
-                  :reaction (fn [this e]
-                              (when-not (= 0 (.-clientX e))
-                                (let [width (if (= (:side @this) :left)
-                                              (.-clientX e)
-                                              (- (dom/width js/document.body) (.-clientX e)))]
-                                  (object/merge! tabs/multi {(:side @this) width})
-                                  (object/merge! this {:width width
-                                                       :max-width width})
-                                  ))))
+          :triggers #{:width!}
+          :throttle 5
+          :reaction (fn [this e]
+                      (when-not (= 0 (.-clientX e))
+                        (let [width (if (= (:side @this) :left)
+                                      (.-clientX e)
+                                      (- (dom/width js/document.body) (.-clientX e)))]
+                          (object/merge! tabs/multi {(:side @this) width})
+                          (object/merge! this {:width width
+                                               :max-width width})
+                          ))))
 
 (behavior ::pop-transient
-                  :triggers #{:pop!}
-                  :reaction (fn [this]
-                              (object/raise this :close!)))
+          :triggers #{:pop!}
+          :reaction (fn [this]
+                      (object/raise this :close!)))
 
 (behavior ::open!
-                  :triggers #{:open!}
-                  :reaction (fn [this]
-                              (object/merge! this {:width (:max-width @this)
-                                                   :open true})
-                              (object/merge! tabs/multi {(:side @this) (+ (:max-width @this) )})
-                              (dom/add-class (object/->content (:active @this)) :active)
-                              ))
+          :triggers #{:open!}
+          :reaction (fn [this]
+                      (object/merge! this {:width (:max-width @this)
+                                           :open true})
+                      (object/merge! tabs/multi {(:side @this) (+ (:max-width @this) )})
+                      (dom/add-class (object/->content (:active @this)) :active)
+                      ))
 
 (behavior ::close!
-                  :triggers #{:close!}
-                  :reaction (fn [this]
-                              (when (:active @this)
-                                (dom/remove-class (object/->content (:active @this)) :active))
-                              (object/merge! tabs/multi {(:side @this) 0})
-                              (object/merge! this {:width 0
-                                                   :active false
-                                                   :open false})
-                              (cmd/exec! :tabs.focus-active)))
+          :triggers #{:close!}
+          :reaction (fn [this no-focus]
+                      (when (:active @this)
+                        (dom/remove-class (object/->content (:active @this)) :active))
+                      (object/merge! tabs/multi {(:side @this) 0})
+                      (object/merge! this {:width 0
+                                           :active false
+                                           :open false})
+                      (when-not no-focus
+                        (cmd/exec! :tabs.focus-active))))
 
 
 (behavior ::item-toggled
-                  :triggers #{:toggle}
-                  :reaction (fn [this item {:keys [force? transient? soft?]}]
-                              (if (and (not force?)
-                                       (= (:active @this) item)
-                                       (:open @this))
-                                (object/raise this :close!)
-                                (when (not= (:active @this) item)
-                                  (when (:active @this)
-                                    (dom/remove-class (object/->content (:active @this)) :active))
-                                  (object/merge! this {:active item})
-                                  (object/raise this :open!)
-                                  (when-not soft?
-                                    (object/raise item :show)
-                                    )
-                                  ))))
+          :triggers #{:toggle}
+          :reaction (fn [this item {:keys [force? transient? soft?]}]
+                      (if (and (not force?)
+                               (= (:active @this) item)
+                               (:open @this))
+                        (object/raise this :close!)
+                        (when (not= (:active @this) item)
+                          (when (:active @this)
+                            (dom/remove-class (object/->content (:active @this)) :active))
+                          (object/merge! this {:active item})
+                          (object/raise this :open!)
+                          (when-not soft?
+                            (object/raise item :show)
+                            )
+                          ))))
 
 (defn active-content [active]
   (when active
@@ -103,9 +104,9 @@
                 :max-width default-width
                 :init (fn [this]
                         [:div#side {:style {:width (bound (subatom this :width) ->width)}}
-                          [:div.content
-                           (bound (subatom this :active) active-content)]
-                          (vertical-grip this)]))
+                         [:div.content
+                          (bound (subatom this :active) active-content)]
+                         (vertical-grip this)]))
 
 (object/object* ::right-bar
                 :items {}
@@ -114,10 +115,10 @@
                 :side :right
                 :max-width 300
                 :init (fn [this]
-                         [:div#right-bar {:style {:width (bound (subatom this :width) ->width)}}
-                          (vertical-grip this)
-                          [:div.content
-                           ]]))
+                        [:div#right-bar {:style {:width (bound (subatom this :width) ->width)}}
+                         (vertical-grip this)
+                         [:div.content
+                          ]]))
 
 (def sidebar (object/create ::sidebar))
 (def rightbar (object/create ::right-bar))
