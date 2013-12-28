@@ -156,12 +156,12 @@
                   (cb))))
 
 (defn overwrite-warn [cb]
-  (popup/show! [:h2 "This file was modified."]
-               [:p "It looks like this file was modified outside of Light Table and saving
-                would overwrite those changes. Do you want to overwrite or cancel?"]
-               (button "Cancel")
-               (button "Overwrite" cb)
-               ))
+  (popup/popup! {:header "This file was modified."
+                 :body [:p "It looks like this file was modified outside of Light Table and saving
+                  would overwrite those changes. Do you want to overwrite or cancel?"]
+                 :buttons [{:label "Overwrite file"
+                            :action cb}
+                           {:label "Cancel"}]}))
 
 (defn path->doc [path]
   (-> @manager :files (get path)))
