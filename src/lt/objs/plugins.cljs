@@ -190,12 +190,12 @@
                           (object/add-tags this [:plugin.file])))))
 
 (def plugin-url "http://plugins.lighttable.com")
-(def plugin-url "http://localhost:8087")
 
 (behavior ::update-server-plugins
           :triggers #{:fetch-plugins}
           :desc "Plugin Manager: fetch plugins"
           :reaction (fn [this]
+                      (notifos/working "Fetching available plugins...")
                       (fetch/xhr [:post (str plugin-url "/versions")] {:names (pr-str (-> @app/app ::plugins keys vec))}
                                  (fn [data]
                                    (object/merge! this {:version-cache (reader/read-string data)})
@@ -203,6 +203,7 @@
                                    ))
                       (fetch/xhr [:get plugin-url] {}
                                  (fn [data]
+                                   (notifos/done-working "")
                                    (when data
                                      (object/raise this :plugin-results (reader/read-string data)))
                                    ))))
@@ -266,14 +267,13 @@
 (defn discover-deps [plugin cb]
   (fetch/xhr [:post (str plugin-url "/install")] {:name (or (-> plugin :name) (-> plugin :info :name))
                                                   :version (or (-> plugin :version)
-                                                               (-> plugin :info :version)
-                                                               (-> plugin :versions first :version))}
+                                                               (-> plugin :info :version))}
                                    (fn [data]
                                      (transitive-install plugin (reader/read-string data) cb))))
 
 (defui server-plugin-ui [plugin]
   (let [info (:info plugin)
-        ver (-> plugin :versions first :version)
+        ver (:version info)
         installed (-> @app/app ::plugins (get (:name info)))]
     [:li
      (when installed
@@ -299,7 +299,13 @@
 (defui uninstall-button [plugin]
   [:span.uninstall]
   :click (fn []
-           (uninstall plugin)))
+           (popup/popup! {:header "Uninstall plugin?"
+                          :body [:div "This will delete the plugin from your system, removing any local
+                                 changes you may have made, and cannot be undone."]
+                          :buttons [{:label "Delete plugin"
+                                     :action (fn []
+                                               (uninstall plugin))}
+                                    {:label "Cancel"}]})))
 
 (defui installed-plugin-ui [plugin]
   (let [cached (-> @manager :version-cache (get (:name plugin)))]
@@ -346,11 +352,14 @@
           :reaction (fn [this search]
                       (if (empty? search)
                         (object/raise this :fetch-plugins)
-                        (fetch/xhr [:post (str plugin-url "/search")] {:term search}
-                                   (fn [data]
-                                     (when data
-                                       (object/raise this :plugin-results (reader/read-string data)))
-                                     )))))
+                        (do
+                          (notifos/working (str "Searching plugins for: " search))
+                          (fetch/xhr [:post (str plugin-url "/search")] {:term search}
+                                     (fn [data]
+                                       (notifos/done-working "")
+                                       (when data
+                                         (object/raise this :plugin-results (reader/read-string data)))
+                                       ))))))
 
 (behavior ::render-installed-plugins
           :triggers #{:refresh!}
