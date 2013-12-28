@@ -25,6 +25,11 @@
 
 (def plugins-dir (files/lt-home "plugins"))
 
+(defn EOF-read [s]
+  (when (and s
+             (seq s))
+    (reader/read-string s)))
+
 (defn adjust-path [path]
   (if (files/absolute? path)
     path
@@ -40,7 +45,7 @@
 
 (defn plugin-edn [dir]
   (when-let [content (files/open-sync (files/join dir "plugin.edn"))]
-    (-> (reader/read-string (:content content))
+    (-> (EOF-read (:content content))
         (assoc :dir dir)
         (validate))))
 
@@ -198,14 +203,15 @@
                       (notifos/working "Fetching available plugins...")
                       (fetch/xhr [:post (str plugin-url "/versions")] {:names (pr-str (-> @app/app ::plugins keys vec))}
                                  (fn [data]
-                                   (object/merge! this {:version-cache (reader/read-string data)})
-                                   (object/raise this :refresh!)
-                                   ))
+                                   (let [cache (EOF-read data)]
+                                     (when-not (= cache (:version-cache @this))
+                                       (object/merge! this {:version-cache cache})
+                                       (object/raise this :refresh!)))))
                       (fetch/xhr [:get plugin-url] {}
                                  (fn [data]
                                    (notifos/done-working "")
                                    (when data
-                                     (object/raise this :plugin-results (reader/read-string data)))
+                                     (object/raise this :plugin-results (EOF-read data)))
                                    ))))
 
 
@@ -269,7 +275,7 @@
                                                   :version (or (-> plugin :version)
                                                                (-> plugin :info :version))}
                                    (fn [data]
-                                     (transitive-install plugin (reader/read-string data) cb))))
+                                     (transitive-install plugin (EOF-read data) cb))))
 
 (defui server-plugin-ui [plugin]
   (let [info (:info plugin)
@@ -292,7 +298,6 @@
                                             )))))
 
 (defn uninstall [plugin]
-  (println "uninstalling: " (:dir plugin))
   (files/delete! (:dir plugin))
   (object/raise manager :refresh!))
 
@@ -335,7 +340,7 @@
                       (fetch/xhr [:post (str plugin-url "/add" )] {:url url}
                                  (fn [data]
                                    (notifos/done-working "")
-                                   (let [data (reader/read-string data)]
+                                   (let [data (EOF-read data)]
                                      (popup/popup! {:header (condp = (:status data)
                                                               :success "Plugin added!"
                                                               :error "There's a problem with the plugin."
@@ -358,7 +363,7 @@
                                      (fn [data]
                                        (notifos/done-working "")
                                        (when data
-                                         (object/raise this :plugin-results (reader/read-string data)))
+                                         (object/raise this :plugin-results (EOF-read data)))
                                        ))))))
 
 (behavior ::render-installed-plugins
@@ -468,7 +473,7 @@
                          :body [:div
                                 [:p "You can submit a github url to add a plugin to the central repository.
                                  All plugin repos must have at least one tag in version format, e.g. 0.1.2 and must have a plugin.json
-                                 with a name, version, and description. To refresh the available versions, just resubmit the plugin."]
+                                 with name, version, desc, and behaviors keys. To refresh the available versions, just resubmit the plugin."]
                                 [:label "Github URL for plugin: "]
                                 input
                                 ]
