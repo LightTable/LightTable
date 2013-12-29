@@ -590,3 +590,9 @@
               :exec (fn []
                       (when-let [c (ctx/->obj :tree.rename)]
                         (object/raise c :rename.submit!)))})
+
+(cmd/command {:command :workspace.show-recents
+              :desc "Workspace: Open recent workspace"
+              :exec (fn []
+                      (cmd/exec! :workspace.show :force)
+                      (recent sidebar-workspace))})

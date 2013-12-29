@@ -6,8 +6,20 @@ input { border:none; padding:5px; outline:none; border-radius:2px; font-size:10p
 a {text-decoration:none; }
 ul { list-style:none; }
 h1 { font-size: 16pt; margin-bottom:10px; }
-button { border:none; outline:none; border-radius:2px; padding:2px 5px; outline:none; font-size:100%; }
+button { cursor:default; border:none; outline:none; border-radius:2px; padding:2px 5px; outline:none; font-size:100%; }
 *:focus { outline:none; }
+
+.fullscreen #titlebar { display:none; }
+#titlebar { -webkit-app-region: drag; height:29px; }
+#titlebar p { text-align:center; padding-top:5px;  }
+#titlebar .window-buttons { position:absolute; left:8px; top:5px; }
+#titlebar .window-buttons .button { position:relative; display:inline-block; border-radius:10px !important; width:12px; height:12px; margin-right:8px; }
+#titlebar .window-buttons .button span { font-size:11px; }
+#titlebar .window-buttons .close span { position:absolute; top:-3px; left:3px; }
+#titlebar .window-buttons .minimize span { position:absolute; top:-5px; left:3px; font-size:14px }
+#titlebar .window-buttons .maximize span { position:absolute; top:-3px; left:2px; }
+#titlebar .fullscreen { position:absolute; top:5px; right:8px; }
+#titlebar .button { -webkit-app-region: no-drag; }
 
 body { -webkit-user-select: none; }
 
@@ -42,10 +54,11 @@ body { -webkit-user-select: none; }
 .inspector-object.open > div > ul { display:inline-block; margin-left:16px; }
 .inspector-object.open .inspector-object > div > ul {margin:0;}
 
-#wrapper { height:100vh; width:100vw; overflow:hidden; -webkit-transition:opacity 0.2s ease-in-out 0.2s; }
+#wrapper { position:fixed; top:29px; bottom:0px; width:100vw; overflow:hidden; -webkit-transition:opacity 0.2s ease-in-out 0.2s; }
+.fullscreen #wrapper { top:0; }
 #canvas {  height:100vh; width:100vw; overflow:hidden; }
 
-#multi { z-index:20; position:fixed; left:0px; right:0px; top:0px; bottom:0px; padding-right:10px; overflow:hidden; }
+#multi { z-index:20; position:absolute; left:0px; right:0px; top:0px; bottom:0px; padding-right:10px; overflow:hidden; }
 #multi .tabsets { left:0; right:0; position:absolute; top:0; bottom:34px; max-width:100%; width:100%; overflow:hidden; white-space:nowrap; }
 #multi .tabset { box-sizing:border-box; position:relative; overflow:hidden; width:100%; height:100%; float:none; vertical-align:top; display:inline-block; white-space:normal; }
 #multi .list { display:block; background:transparent; overflow-y:hidden; overflow-x:hidden; margin:0 8px; z-index:10000000; }
@@ -139,9 +152,9 @@ body { -webkit-user-select: none; }
 #version-info .button { padding:8px 10px; cursor:pointer; border-radius:3px; position:absolute; bottom:0px; box-sizing:border-box; right:30px; left:20px; }
 #version-info .CodeMirror { width:73%; height:100%; float:left; display:inline; }
 
-#side { position:fixed; top:0; left:0; height:100%; z-index:1000000; }
+#side { position:absolute; top:0; left:0; height:100%; z-index:1000000; }
 
-#right-bar { background:transparent; position:fixed; right:0; z-index:10000; height:100%; box-sizing:border-box; }
+#right-bar { background:transparent; position:absolute; right:0; z-index:10000; height:100%; box-sizing:border-box; }
 #right-bar .content { height:100%; overflow:hidden; padding:10px; box-sizing:border-box;}
 #right-bar .content > * { padding:0px 0px;  box-sizing:border-box; height:100%; }
 #right-bar .vertical-grip { left:-4px; }
@@ -153,7 +166,7 @@ body { -webkit-user-select: none; }
 #sidebar {  pointer-events:auto; z-index:2; margin-left:0px; box-sizing:border-box; padding:0px 0; margin-left:0px; margin-top:100%; -webkit-transform:rotate(-90deg); -webkit-transform-origin: 0px 0px; height:40px; }
 #sidebar li {  cursor:default; width:auto; float:left; display:inline; overflow:hidden; padding:9px 10px; text-align:center; font-size:11pt; background:transparent; }
 
-#side { z-index:200; position:fixed; left:0px; background:transparent; height:100%; box-sizing:border-box; overflow:hidden;}
+#side { z-index:200; position:absolute; left:0px; background:transparent; height:100%; box-sizing:border-box; overflow:hidden;}
 #side .content { height:100%; overflow:hidden; padding:4px 5px; box-sizing:border-box;}
 #side .content > * { padding:0px 0px;  box-sizing:border-box; }
 #side .vertical-grip { right:-4px; pointer-events:auto; }
@@ -256,7 +269,7 @@ body { -webkit-user-select: none; }
 #right-bar .docs-search button { pointer-events:auto; }
 #right-bar .docs-search pre { white-space:pre-wrap; margin:5px 0;}
 
-#bottombar {  z-index:100000; position:fixed; bottom:0; right:0; background:transparent; padding-top:0px; padding-bottom:0px; box-sizing:border-box; }
+#bottombar {  z-index:100000; position:absolute; bottom:0; right:0; background:transparent; padding-top:0px; padding-bottom:0px; box-sizing:border-box; }
 #bottombar .content { padding:10px 10px; padding-right:10px; box-sizing:border-box; height:100%; }
 #bottombar .horizontal-grip {position:absolute; top:0px; width:100%; height:10px; z-index:10000; cursor:row-resize; }
 #bottombar.closed { padding:0; }
@@ -274,7 +287,7 @@ body { -webkit-user-select: none; }
 
 .vertical-grip { background: transparent; width:7px; height:100%; z-index:10000000; position:absolute; top:0; right:0; cursor:col-resize; }
 
-#find-bar {z-index:1000; position:fixed; overflow:hidden; right:0; height:30px; background:transparent;}
+#find-bar {z-index:1000; position:absolute; overflow:hidden; right:0; height:30px; background:transparent;}
 #find-bar input { display:inline-block; font-size:11pt; font-family:"Inconsolata", "Ubuntu Mono", "Consolas", monospace; border-radius:0;  width:50%; height:30px; box-sizing:border-box; padding:5px; padding-left:10px; outline:none; }
 #find-bar button { position:absolute; right:-3px; z-index: 100000; padding:6px 10px;}
 

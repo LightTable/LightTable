@@ -58,6 +58,7 @@
    (:lt.objs.files/file.ignore-pattern "(^\\..*)|\\.class$|target/|svn|cvs|\\.git|\\.pyc|~|\\.swp|\\.jar|.DS_Store|\\.nrepl-port")
    (:lt.objs.style/provide-skin "dark" "/core/css/skins/dark.css")
    (:lt.objs.style/provide-skin "light" "/core/css/skins/light.css")
+   (:lt.objs.style/provide-skin "new-dark" "/core/css/skins/new-dark.css")
    (:lt.objs.style/provide-theme "3024-day" "/core/css/themes/3024-day.css")
    (:lt.objs.style/provide-theme "3024-night" "/core/css/themes/3024-night.css")
    (:lt.objs.style/provide-theme "ambiance" "/core/css/themes/ambiance.css")

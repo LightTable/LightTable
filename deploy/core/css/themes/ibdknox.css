@@ -39,7 +39,7 @@
 
 .cm-s-ibdknox span.cm-SUBST { color:#FF1F69; }
 
-.cm-s-ibdknox .CodeMirror-activeline { background:#373a3f; }
+.cm-s-ibdknox .CodeMirror-activeline { background:var(highlight-bg); }
 .cm-s-ibdknox .CodeMirror-activeline .CodeMirror-linenumber { background:#474a4f; color:#888; }
 .cm-s-ibdknox span.CodeMirror-matchingbracket {box-sizing:border-box; background:transparent; border-bottom:1px solid #3FF; font-weight:normal;}
 .cm-s-ibdknox span.CodeMirror-nonmatchingbracket {color: #F33; border-bottom:1px solid #F33; background:none;}
@@ -52,4 +52,4 @@
 .CodeMirror div.CodeMirror-secondarycursor { border-left: 1px solid silver; }
 .CodeMirror.cm-keymap-fat-cursor div.CodeMirror-cursor { width: auto; border: none !important; background: #80838a; z-index:0;}
 
-.CodeMirror-gutters { background: #202020; border-right:1px solid #444; }
+.CodeMirror-gutters { background: var(multi); border-right:0px solid #444; }

@@ -47,6 +47,13 @@
    (button :minimize minimize "-")
    (button :maximize maximize "+")])
 
+(defui titlebar []
+  [:div#titlebar
+   (window-buttons)
+   [:p "Light Table"]
+   (button :fullscreen fullscreen "f")])
+
+(append ($ :body) (titlebar))
 (append ($ :#multi) (button :fullscreen fullscreen "-"))
 
 (cmd/command {:command :window.fullscreen
