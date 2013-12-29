@@ -69,7 +69,8 @@
                                      (dom/stop-propagation e)
                                      false))
 
-(def menubar (create-menu "menubar"))
+(def menubar
+  (create-menu "menubar"))
 
 (defn set-menubar [items]
   (clear! menubar)
@@ -155,7 +156,10 @@
                                            (cmd-item "About Light Table" :version))]}
                 ]))
 
-(main-menu)
+(behavior ::create-menu
+           :triggers #{:init}
+           :reaction (fn [this]
+                       (main-menu)))
 
 (behavior ::recreate-menu
                   :debounce 20
