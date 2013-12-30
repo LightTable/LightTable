@@ -34,37 +34,12 @@
 ;; Creating
 ;;*********************************************************
 
-(def ed-id (atom 0))
-
-(defn ed-with-elem [$elem opts]
-  (js/CodeMirror (if (.-get $elem)
-                   (.get $elem 0)
-                   $elem)
-                 (clj->js opts)))
-
-(defn ed-headless [opts]
+(defn headless [opts]
   (-> (js/CodeMirror. (fn []))
       (set-options opts)))
 
-(defn ->editor [opts]
-  (let [ed (ed-headless opts)]
-    (set! (.-ltid ed) (swap! ed-id inc))
-    (set! (.-ltproperties ed) (atom {}))
-    ed))
-
-(defn init [ed context]
-  (-> ed
-      (clear-props)
-      (set-props (dissoc context :content :doc))
-      (set-val (:content context))
-      (set-options {:mode (name (:mime context))
-                    :readOnly false
-                    :dragDrop false
-                    :lineNumbers false
-                    :lineWrapping true})))
-
 (defn make [context]
-  (let [e (->editor {:mode (if (:mime context)
+  (let [e (headless {:mode (if (:mime context)
                              (name (:mime context))
                              "plaintext")
                      :autoClearEmptyLines true
@@ -72,7 +47,6 @@
                      :onDragEvent (fn [] true)
                      :undoDepth 10000
                      :matchBrackets true})]
-    (set-props e (dissoc context :content :doc))
     (when-let [c (:content context)]
       (set-val e c)
       (clear-history e))
@@ -104,21 +78,6 @@
 ;;*********************************************************
 ;; Params
 ;;*********************************************************
-
-(defn clear-props [ed]
-  (reset! (.-ltproperties ed) {})
-  ed)
-
-(defn set-props [ed m]
-  (swap! (.-ltproperties ed) merge m)
-  ed)
-
-(defn ->ltid [ed]
-  (.-ltid ed))
-
-(defn ->prop
-  ([ed] (deref (.-ltproperties ed)))
-  ([ed k] (get (->prop ed) k)))
 
 (defn ->val [e]
   (. (->cm-ed e) (getValue)))
@@ -488,6 +447,15 @@
                       (set-options obj {:tabSize tab-size
                                         :indentWithTabs use-tabs?
                                         :indentUnit indent-unit})))
+
+(behavior ::set-codemirror-flags
+          :triggers #{:object.instant}
+          :type :user
+          :desc "Editor: Set CodeMirror flags"
+          :params [{:label "Flags map"
+                    :ex "{:undoDepth 1000}"}]
+          :reaction (fn [this flags]
+                      (set-options this flags)))
 
 (behavior ::read-only
           :triggers #{:object.instant}

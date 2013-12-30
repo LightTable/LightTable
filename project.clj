@@ -5,7 +5,7 @@
                  [crate "0.2.5"]
                  [fetch "0.1.1" :exclusions [org.clojure/clojure]]
                  ;[core.async "0.1.0-SNAPSHOT"]
-                 [ibdknox/clojurescript "0.0-2121"
+                 [org.clojure/clojurescript "0.0-2127"
                   :exclusions [org.apache.ant/ant]]
                  ]
   :cljsbuild {:builds [{:source-paths ["src"]

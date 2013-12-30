@@ -8,6 +8,8 @@
             [crate.binding :refer [map-bound bound subatom]])
   (:require-macros [lt.macros :refer [behavior defui]]))
 
+
+(def min-height 30)
 (def default-height 130)
 
 (defui horizontal-grip [this]
@@ -78,7 +80,7 @@
                   :reaction (fn [this e]
                               (when-not (= 0 (.-clientY e))
                                 (let [win-height (.-innerHeight js/window)
-                                      height (- win-height (.-clientY e))]
+                                      height (max (- win-height (.-clientY e)) min-height)]
                                 (object/raise tabs/multi :bottom! (- height (:height @this)))
                                 (object/merge! this {:height height
                                                      :max-height height})))

@@ -47,7 +47,7 @@
 (defn by-path [path]
   (when path
     (let [path (string/lower-case path)]
-      (filter #(= (-> @% :info (get :path "") string/lower-case) path) (object/by-tag :editor)))))
+      (filter #(= (-> @% :info (get :path) (or "") string/lower-case) path) (object/by-tag :editor)))))
 
 (defn containing-path [path]
   (let [path (string/lower-case path)]
@@ -149,8 +149,8 @@
 (behavior ::watched.delete
           :triggers #{:watched.delete}
           :reaction (fn [ws del]
-                      (if (files/file? del)
-                        (when-let [ed (first (by-path del))]
+                      (if-let [ed (first (by-path del))]
+                        (do
                           (warn-delete ed)
                           (make-transient-dirty ed)
                           (when-let [ts (:lt.objs.tabs/tabset @ed)]
@@ -174,7 +174,7 @@
                           (when-let [ts (:lt.objs.tabs/tabset @ed)]
                             (object/raise ts :tab.updated)))
                         (let [old-folder (str old files/separator)
-                              open (filter #(= 0 (.indexOf (-> @% :info (get :path "")) old-folder)) (object/by-tag :editor))]
+                              open (filter #(= 0 (.indexOf (-> @% :info (get :path) (or "")) old-folder)) (object/by-tag :editor))]
                           (doseq [ed open
                                   :let [neue-path (string/replace (-> @ed :info :path) old neue)]]
                             (object/update! ed [:info] assoc :path neue-path :name (files/basename neue-path))

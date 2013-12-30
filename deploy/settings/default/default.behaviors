@@ -46,6 +46,7 @@
    :lt.plugins.doc/init-doc-search
    :lt.objs.intro/show-intro
    :lt.objs.menu/recreate-menu
+   :lt.objs.menu/create-menu
    :lt.objs.settings/default-keymap-diffs
    :lt.objs.settings/user-keymap-diffs
    :lt.objs.settings/default-behavior-diffs
