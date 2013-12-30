@@ -11,6 +11,7 @@
             [lt.objs.platform :as platform]
             [lt.objs.context :as ctx]
             [lt.objs.editor :as editor]
+            [lt.objs.editor.pool :as pool]
             [lt.objs.keyboard :as keyboard]
             [lt.objs.notifos :as notifos]
             [lt.objs.clients.devtools :as devtools]
@@ -135,7 +136,7 @@
                   :reaction (fn [this]
                               (when (= (ctx/->obj :global.browser) this)
                                 (ctx/out! :global.browser))
-                              (when-let [b (first (object/by-tag :browser))]
+                              (when-let [b (first (remove #{this} (object/by-tag :browser)))]
                                 (ctx/in! :global.browser b))
                               (clients/rem! (:client @this))))
 
@@ -487,6 +488,16 @@
                       (when-let [b (ctx/->obj :global.browser)]
                         (when @b
                           (object/raise b :refresh!))))})
+
+(cmd/command {:command :editor.open-current-file-in-browser
+              :desc "Editor: Open current file in browser"
+              :exec (fn []
+                      (let [b (ctx/->obj :global.browser)
+                            ed (pool/last-active)]
+                        (when (and ed (-> @ed :info :path))
+                          (when-not b
+                            (cmd/exec! :add-browser-tab))
+                          (object/raise (ctx/->obj :global.browser) :navigate! (str "file://" (-> @ed :info :path))))))})
 
 ;;*********************************************************
 ;; Misc
