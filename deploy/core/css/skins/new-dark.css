@@ -223,7 +223,7 @@ input { color: var(highlight-fg); background:var(highlight-bg); }
 #side .workspace ul.buttons li:hover:not(.sep) { color:var(highlight-fg); background:var(highlight-bg); }
 #side .workspace li:hover > div > p { color: var(highlight-fg); }
 #side .workspace li p:hover { background: var(highlight-bg); color:var(highlight-fg); }
-#side .workspace .recent > div > ul > li + li { border-top:1px solid var(pane-border); }
+#side .workspace .recent > div > ul > li + li { border-top:0px solid var(pane-border); }
 #side .workspace .recent > div > ul > li:hover { border-color: var(pane-border); background:var(highlight-bg); color: var(highlight-fg); }
 #side .workspace .recent > div > ul > li:hover + li { border-top-color: var(pane-border); }
 #side .workspace .recent h2:hover { background: var(highlight-bg); color:var(highlight-fg); }
@@ -365,7 +365,7 @@ input { color: var(highlight-fg); background:var(highlight-bg); }
 
 #side .workspace ul.root { top:0px; }
 #right-bar .filter-list input { padding:6px 10px; font-size:10pt; margin-top:0; border-radius:0px; }
-#right-bar .filter-list ul { top:35px; }
+#right-bar .filter-list ul { top:35px; bottom:10px; }
 #right-bar .content { padding:0 10px; }
 
 button { border-radius:0; }
