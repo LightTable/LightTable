@@ -4,6 +4,8 @@
 
 * FIX: \r\r\n at the end of files on windows #912
 * ADDED: `Editor: On change execute command` behavior
+* ADDED: `Editor: Set CodeMirror flags` behavior
+* ADDED: `Editor: Disconnect clients attached to editor` command
 * ADDED: `Editor: Open current file in browser` command
 * UPDATED: Latest CodeMirror
 * UPDATED: Latest vim/emacs mode

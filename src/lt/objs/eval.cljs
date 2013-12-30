@@ -495,3 +495,10 @@
                           (doseq [[_ client] (:client @ed)]
                             (clients/cancel-all! client)))))})
 
+(cmd/command {:command :editor.disconnect-clients
+              :desc "Editor: Disconnect clients attached to editor"
+              :exec (fn []
+                      (when-let [ed (pool/last-active)]
+                        (doseq [client (-> @ed :client vals)]
+                          (clients/close! client))))})
+
