@@ -351,8 +351,6 @@ input { color: var(highlight-fg); background:var(highlight-bg); }
 
 #titlebar .button { color:var(fg); }
 
-.fullscreen #wrapper { top:5px; }
-
 .load-wrapper .img { background:url("/core/img/loaderdark.gif"); }
 
 .timed { border-bottom:1px solid #fa5; }
