@@ -4,7 +4,7 @@
 
 :root {
   var-bg: #1c1f26;
-  var-fg: #65737e;
+  var-fg: #718799;
   var-multi: #2b303b;
   var-border: #444;
   var-shadow: black;
@@ -358,7 +358,7 @@ input { color: var(highlight-fg); background:var(highlight-bg); }
 .timed { border-bottom:1px solid #fa5; }
 .timed-result { background: #741; color:#fb0; }
 .workspace .buttons { display:none; }
-#multi .CodeMirror { background:var(multi) !important; }
+#multi .CodeMirror { background:var(multi); }
 #multi .list { margin:0; }
 #multi .list li { height:29px; padding:6px 10px; font-size: 9pt; text-align:left; }
 #multi .content { margin:0; top:29px; left:0; right:0; padding:0; }

@@ -53,7 +53,13 @@
    [:p "Light Table"]
    (button :fullscreen fullscreen "f")])
 
-(append ($ :body) (titlebar))
+(behavior ::add-titlebar
+          :triggers #{:init}
+          :desc "App: Append custom titlebar"
+          :reaction (fn [app]
+                      (when-not ($ :#titlebar)
+                        (append ($ :body) (titlebar)))))
+
 (append ($ :#multi) (button :fullscreen fullscreen "-"))
 
 (cmd/command {:command :window.fullscreen

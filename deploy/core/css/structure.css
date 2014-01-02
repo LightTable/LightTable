@@ -54,7 +54,7 @@ body { -webkit-user-select: none; }
 .inspector-object.open > div > ul { display:inline-block; margin-left:16px; }
 .inspector-object.open .inspector-object > div > ul {margin:0;}
 
-#wrapper { position:fixed; top:29px; bottom:0px; width:100vw; overflow:hidden; -webkit-transition:opacity 0.2s ease-in-out 0.2s; }
+#wrapper { position:fixed; top:10px; bottom:0px; width:100vw; overflow:hidden; -webkit-transition:opacity 0.2s ease-in-out 0.2s; }
 .fullscreen #wrapper { top:0; }
 #canvas {  height:100vh; width:100vw; overflow:hidden; }
 
