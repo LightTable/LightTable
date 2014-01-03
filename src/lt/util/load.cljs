@@ -1,4 +1,5 @@
-(ns lt.util.load)
+(ns lt.util.load
+  (:require [clojure.string :as string]))
 
 (def fpath (js/require "path"))
 (def fs (js/require "fs"))
@@ -38,3 +39,10 @@
      (js/document.head.appendChild link)
      link))
 
+(defn provided? [s]
+  (loop [parts (string/split s ".")
+         cur js/window]
+    (if-not (first parts)
+      true
+      (if-let [cur (aget cur (first parts))]
+        (recur (rest parts) cur)))))
