@@ -11,7 +11,9 @@
               "pmeta-shift-s" [:save-as]
               "pmeta-l" [:goto-line]
               "ctrl-." [:editor.jump-to-definition-at-cursor]
-              "ctrl-," [:editor.unjump]}
+              "ctrl-," [:editor.unjump]
+              "ctrl-d" [:editor.doc.toggle]
+              "ctrl-shift-d" [:docs.search.show]}
      :editor.keys.normal {"\"" [(:editor.repeat-pair "\"")]
                           "(" [(:editor.open-pair "(")]
                           ")" [(:editor.close-pair ")")]
