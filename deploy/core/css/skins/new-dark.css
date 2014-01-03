@@ -10,7 +10,7 @@
 
   var-placeholder-fg: #888;
   var-dim-fg: #777;
-  var-bright-fg: #333;
+  var-bright-fg: #93A6B5;
   var-blinding-fg: #000;
   var-hidden-fg: #999;
 
@@ -67,7 +67,7 @@
   var-scrollbar: #606970;
   var-placeholder-fg: #aaa;
   var-dim-fg: #bbb;
-  var-bright-fg: #ddd;
+  var-bright-fg: #93A6B5;
   var-blinding-fg: #fff;
   var-hidden-fg: #999;
 
@@ -291,11 +291,16 @@ input { color: var(highlight-fg); background:var(highlight-bg); }
 #right-bar .command input { background:var(highlight-bg); color:var(highlight-fg); }
 #right-bar .command li + li { border-top:1px solid var(dark-pane-border); }
 
-#right-bar .filter-list .selected, .filter-list li:hover { color:var(highlight-fg); background: var(highlight-bg); }
-#right-bar .navigate p { color:var(fg);  }
-#right-bar .navigate .selected p { color: #93A6B5; }
+#right-bar .command .filter-list p { color:var(bright-fg); }
+#right-bar .command .filter-list .selected p { color:var(highlight-fg); }
+#right-bar .command .filter-list p.binding { color:var(fg); }
+#right-bar .command .filter-list .selected p.binding { color: var(bright-fg); }
+
+#right-bar .filter-list h2 { color:var(bright-fg);  }
+#right-bar .filter-list .selected, #right-bar .filter-list .selected h2, #right-bar .filter-list li:hover { color:var(highlight-fg); background: var(highlight-bg); }
 #right-bar .filter-list input { border:0px solid var(pane-border); background:var(multi); }
-#right-bar .command p.binding { color:var(placeholder-fg); }
+
+#right-bar .navigate .filter-list .selected p { color:var(bright-fg); }
 
 #right-bar .filter-list li + li { border-top:0px solid var(dark-pane-border); }
 
