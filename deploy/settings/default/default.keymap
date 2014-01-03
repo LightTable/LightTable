@@ -3,6 +3,7 @@
            "pmeta-o" [:navigate-workspace-transient]
            "pmeta-shift-o" [:open-file]
            "pmeta-shift-f" [:searcher.show]
+           "ctrl-shift-d" [:docs.search.show]
            "pmeta-n" [:new-file]
            "ctrl-space" [:show-commandbar-transient]}
      :editor {"pmeta-enter" [:eval-editor-form]
@@ -11,7 +12,8 @@
               "pmeta-shift-s" [:save-as]
               "pmeta-l" [:goto-line]
               "ctrl-." [:editor.jump-to-definition-at-cursor]
-              "ctrl-," [:editor.unjump]}
+              "ctrl-," [:editor.unjump]
+              "ctrl-d" [:editor.doc.toggle]}
      :editor.keys.normal {"\"" [(:editor.repeat-pair "\"")]
                           "(" [(:editor.open-pair "(")]
                           ")" [(:editor.close-pair ")")]
