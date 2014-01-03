@@ -43,7 +43,7 @@ body { -webkit-user-select: none; }
 .underline-result .spacer { display:inline-block; white-space:pre; vertical-align:top; }
 
 .dragimage { display:block; height:0; width:0; cursor:default; }
-.sortable-placeholder { box-sizing:border-box; border:1px solid #777; border-top:none; }
+.sortable-placeholder { box-sizing:border-box; background:var(multi); border:2px solid var(bg); border-top:none; }
 
 .inspector-object h2 { cursor:default; }
 .inspector-object > h2:before { content:"▶"; margin-right:10px; font-size:8px; width:6px; display:inline-block; vertical-align:middle; box-sizing:border-box; }
@@ -149,7 +149,7 @@ body { -webkit-user-select: none; }
 #version-info .info { position:relative; height:100%; width:27%; float:left; display:inline; box-sizing:border-box; padding:30px; -webkit-user-select:text; }
 #version-info .info dt { font-size: 18pt; }
 #version-info .info dd { font-size: 12pt; margin-bottom:20px; }
-#version-info .button { padding:8px 10px; cursor:pointer; border-radius:3px; position:absolute; bottom:0px; box-sizing:border-box; right:30px; left:20px; }
+#version-info .button { padding:8px 10px; cursor:pointer; border-radius:3px; position:absolute; bottom:10px; box-sizing:border-box; right:30px; left:20px; }
 #version-info .CodeMirror { width:73%; height:100%; float:left; display:inline; }
 
 #side { position:absolute; top:0; left:0; height:100%; z-index:1000000; }
@@ -306,7 +306,7 @@ body { -webkit-user-select: none; }
 #side .tab-settings .filter-list li { padding:0 10px; border-radius:2px; }
 #side .tab-settings .filter-list input:focus + * { display:block; }
 
-.search-results { overflow-y:auto; overflow-x:hidden; overflow:hidden; position:relative; }
+.search-results { overflow:hidden; position:relative; padding:10px 15px; box-sizing:border-box; }
 .search-results input { width:100%; }
 .search-results .res { position:absolute; overflow:auto; width:100%; top:0; bottom:130px; }
 .search-results .searcher { margin-bottom:10px; margin-top:10px; position:absolute; bottom:0px; width:100%; }

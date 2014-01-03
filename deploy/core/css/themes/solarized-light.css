@@ -27,9 +27,9 @@ http://ethanschoonover.com/solarized/img/solarized-palette.png
 
 /* Color scheme for code-mirror */
 
-#multi.theme-solarized-light {
-  background-color: #fdf6e3;
-  color: #657b83;
+:root .theme-solarized-light {
+  var-multi: #fdf6e3;
+  var-color: #657b83;
 }
 
 .cm-s-solarized-light {

@@ -1,4 +1,9 @@
-.cm-s-ibdknox { background: #202020; color:#ccc; }
+:root .theme-ibdknox {
+  var-multi: 2b303b;
+
+}
+
+.cm-s-ibdknox { background: var(multi); color:#ccc; }
 
 .cm-s-ibdknox span.cm-bracket {color: #999;}
 .cm-s-ibdknox span.cm-bracket1 {color: #999;}

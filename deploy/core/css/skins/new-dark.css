@@ -2,13 +2,69 @@
 * Vars
 ***********************************************************/
 
-:root {
+:root .skin-light {
+  var-bg: #f5f5f5;
+  var-fg: #555;
+  var-border: #ccc;
+  var-shadow: #ccc;
+
+  var-placeholder-fg: #888;
+  var-dim-fg: #777;
+  var-bright-fg: #333;
+  var-blinding-fg: #000;
+  var-hidden-fg: #999;
+
+  var-hidden-bg: #ddd;
+
+  var-highlight-bg: #b5b5b5;
+  var-highlight-fg: #222;
+
+  var-dark-highlight-bg: #d5d5d5;
+  var-medium-highlight-bg: #bbb;
+
+  var-button-bg: #d7d7d7;
+  var-button-fg: #666;
+  var-button-active-bg: #666;
+  var-button-active-fg: #d7d7d7;
+
+  var-pane-bg: #ccc;
+  var-pane-scrollbar: #a0a0a0;
+  var-dark-pane-bg: #ddd;
+  var-dark-pane-border: #aaa;
+  var-pane-border: #888;
+
+  var-error-bg: #fFd2d9;
+  var-error-fg: #d0316D;
+  var-error-highlight-fg: #633;
+  var-error-border: #E0919D;
+
+  var-usage-bg: #d0b2f9;
+  var-usage-fg: #8021ff;
+
+  var-result-bg: #BFD4FF;
+  var-result-fg: #216BFF;
+
+  var-overlay-dimmer: rgba(255,255,255,0.7);
+
+  var-accent-foreground: #213BfF;
+  var-accent-background: #BFD4FF;
+  var-light-accent-background: #75A3FF;
+  var-light-accent-foreground: #216BFF;
+  var-dark-accent-background: #BFD4FF;
+
+  var-secondary-accent-fg: #098;
+  var-secondary-accent-dim-fg: #6a9;
+  var-secondary-accent-desat-fg: #5a9;
+}
+
+:root .skin-new-dark {
   var-bg: #1c1f26;
   var-fg: #718799;
   var-multi: #2b303b;
   var-border: #444;
   var-shadow: black;
 
+  var-scrollbar: #606970;
   var-placeholder-fg: #aaa;
   var-dim-fg: #bbb;
   var-bright-fg: #ddd;
@@ -34,28 +90,28 @@
   var-dark-pane-border: #606060;
   var-pane-border: #888;
 
-  var-error-bg: #8A1C3B;
-  var-error-fg: #FFADAD;
+  var-error-bg: #73404C;
+  var-error-fg: #FFA6A6;
   var-error-highlight-fg: #FFCDCD;
   var-error-border: #aF5D5D;
 
-  var-usage-bg: #5C0087;
-  var-usage-fg: #E8B5FF;
+  var-usage-bg: #3E6B6B;
+  var-usage-fg: #7FFFFD;
 
-  var-result-bg: #0B525E;
-  var-result-fg: #96FAFF;
+  var-result-bg: #505D6B;
+  var-result-fg: #C7E6FF;
 
   var-overlay-dimmer: rgba(0,0,0,0.5);
 
-  var-accent-foreground: #96FAFF;
-  var-accent-background: #13879C;
+  var-accent-foreground: #C7E6FF;
+  var-accent-background: #505D6B;
   var-light-accent-background: #18B1CC;
   var-light-accent-foreground: #CCFCFF;
-  var-dark-accent-background: #0B525E;
+  var-dark-accent-background: #505D6B;
 
-  var-secondary-accent-fg: #03FFc0;
-  var-secondary-accent-dim-fg: #5EBDA5;
-  var-secondary-accent-desat-fg: #9BC2B8;
+  var-secondary-accent-fg: #C7E6FF;
+  var-secondary-accent-dim-fg: #C7E6FF;
+  var-secondary-accent-desat-fg: var(fg);
 
   var-tertiary-accent-fg: #FF9E42;
   var-tertiary-accent-bg: #612F00;
@@ -147,7 +203,7 @@ input { color: var(highlight-fg); background:var(highlight-bg); }
 ::-webkit-input-placeholder { color: var(placeholder-fg); }
 ::-webkit-scrollbar {background: transparent;}
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(bg); border:1px solid var(bg); }
+::-webkit-scrollbar-thumb { background: var(scrollbar); border:1px solid var(scrollbar); }
 ::-webkit-scrollbar-thumb:hover { background: var(medium-highlight-bg); border:1px solid var(medium-highlight-bg); }
 ::-webkit-scrollbar-corner { background:transparent; }
 ::selection { background: var(placeholder-fg); }
@@ -207,14 +263,16 @@ input { color: var(highlight-fg); background:var(highlight-bg); }
 .popup .button:hover, .popup .button.active { background:var(accent-foreground); color:var(accent-background); }
 .popup ::-webkit-scrollbar-thumb { background: var(accent-foreground); border:1px solid var(accent-foreground); }
 
+#version-info {background:var(multi);}
+#version-info .info { border-right:1px solid var(bg); }
 #version-info .info dt { color:var(hidden-fg); }
 #version-info .button { background:var(button-bg); color:var(button-fg); border:none; }
 #version-info .button:hover { background: var(button-active-bg); color:var(button-active-fg); }
 
 .filter-list { color: var(fg); }
-.filter-list em { color:var(accent-foreground); }
+.filter-list em { color:#C7E6FF; }
 .filter-list .selected, .filter-list li:hover { color:var(highlight-fg); background: var(highlight-bg);}
-.filter-list .selected em, .filter-list li:hover em { color:var(accent-foreground); }
+.filter-list .selected em, .filter-list li:hover em { color:#C7E6FF; }
 
 #side .content { background:var(pane-bg); box-shadow: 0 0 10px var(shadow); }
 #side ::-webkit-scrollbar-thumb { background: transparent; border:0px solid var(multi); }
@@ -235,6 +293,7 @@ input { color: var(highlight-fg); background:var(highlight-bg); }
 
 #right-bar .filter-list .selected, .filter-list li:hover { color:var(highlight-fg); background: var(highlight-bg); }
 #right-bar .navigate p { color:var(fg);  }
+#right-bar .navigate .selected p { color: #93A6B5; }
 #right-bar .filter-list input { border:0px solid var(pane-border); background:var(multi); }
 #right-bar .command p.binding { color:var(placeholder-fg); }
 
@@ -299,7 +358,7 @@ input { color: var(highlight-fg); background:var(highlight-bg); }
 .search-results .entry:hover .line { background:var(medium-highlight-bg); color:var(bg); }
 .search-results .path { color:var(secondary-accent-dim-fg); }
 .search-results .file { color:var(secondary-accent-fg); }
-.search-results input { background:var(dark-pane-bg); }
+.search-results input { background:#454B59; }
 
 .watch-result { display:inline-block; padding-left:2px; vertical-align:top; background:var(usage-bg); color:var(usage-fg); border-radius:2px; }
 .CodeMirror .watched { border-bottom:1px solid var(usage-fg); }
@@ -356,10 +415,9 @@ input { color: var(highlight-fg); background:var(highlight-bg); }
 .timed { border-bottom:1px solid #fa5; }
 .timed-result { background: #741; color:#fb0; }
 .workspace .buttons { display:none; }
-#multi .CodeMirror { background:var(multi); }
 #multi .list { margin:0; }
 #multi .list li { height:29px; padding:6px 10px; font-size: 9pt; text-align:left; }
-#multi .content { margin:0; top:29px; left:0; right:0; padding:0; }
+#multi .content { background:var(multi); margin:0; top:29px; left:0; right:0; padding:0; }
 
 #side .workspace ul.root { top:0px; }
 #right-bar .filter-list input { padding:6px 10px; font-size:10pt; margin-top:0; border-radius:0px; }

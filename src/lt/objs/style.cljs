@@ -100,6 +100,9 @@
                             :items get-skins}]
                   :type :user
                   :reaction (fn [this skin]
+                              (when (:skin @styles)
+                                (dom/remove-class (dom/$ :body) (str "skin-" (:skin @styles))))
+                              (dom/add-class (dom/$ :body) (str "skin-" skin))
                               (object/merge! styles {:skin skin})))
 
 ;;**********************************************************
