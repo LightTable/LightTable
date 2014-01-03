@@ -417,7 +417,7 @@
                         (object/raise manager :search-plugins! term)))})
 
 (cmd/command {:command :plugin-manager.refresh
-              :desc "Plugins: refresh plugin list"
+              :desc "Plugins: Refresh plugin list"
               :exec (fn []
                       (object/raise manager :refresh!)
                       (object/raise manager :fetch-plugins))})
