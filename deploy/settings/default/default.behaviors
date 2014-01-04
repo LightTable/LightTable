@@ -340,6 +340,7 @@
  #{:lt.objs.eval/result-menu! :lt.objs.eval/ex-clear :lt.objs.eval/destroy-on-clear},
  :inline.watch #{:lt.plugins.watches/clear!}
  :inspector.object #{:lt.objs.clients.devtools/clear-inspector-object},
+ :jump-stack [:lt.objs.jump-stack/jump-stack.push :lt.objs.jump-stack/jump-stack.pop]
  :navigate.selector
  #{:lt.objs.sidebar.navigate/escape!
    :lt.objs.sidebar.navigate/pop-transient-on-select
