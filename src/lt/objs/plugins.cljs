@@ -483,8 +483,15 @@
           :reaction (fn [this path sync?]
                       (let [path (adjust-path path)]
                         (when-not (get (::loaded-files @this) path)
-                          (object/update! this [::loaded-files] #(conj (or % #{}) path))
-                          (load/js path true)))))
+                          (try
+                            (load/js path true)
+                            (object/update! this [::loaded-files] #(conj (or % #{}) path))
+                            (catch js/Error e
+                              (.error js/console (str "Error loading JS file: " path " : " e))
+                              (.error js/console (.-stack e)))
+                            (catch js/global.Error e
+                              (.error js/console (str "Error loading JS file: " path " : " e))
+                              (.error js/console (.-stack e))))))))
 
 (behavior ::load-css
           :triggers #{:object.instant}
