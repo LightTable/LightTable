@@ -202,10 +202,7 @@
                                     (object/raise hinter :escape!)
                                     (do
                                       (object/raise hinter :change! (:string token))
-                                      (object/merge! hinter {:token token})
-                                      (when (-> (:cur @hinter) (count) (zero?))
-                                        (object/raise hinter :escape!))))))))
-
+                                      (object/merge! hinter {:token token})))))))
 (defn on-line-change [line ch]
   (object/raise hinter :line-change line ch))
 
@@ -223,13 +220,11 @@
                                 (async-hints this))
                               ))
 
-
 (defn start-hinting [this opts]
   (let [pos (editor/->cursor this)
         token (get-token this pos)
         line (editor/line-handle this (:line pos))
         elem (object/->content hinter)]
-    (object/add-tags this [:editor.hinting :editor.keys.hinting.active])
     (ctx/in! [:editor.keys.hinting.active] this)
     (object/merge! hinter {:token token
                            :starting-token token
@@ -240,7 +235,6 @@
     (object/raise hinter :active)
     (let [count (count (:cur @hinter))]
       (cond
-       (= 0 count) (object/raise hinter :escape!)
        (and (= 1 count)
             (:select-single opts)) (object/raise hinter :select! 0)
        :else (do
@@ -287,16 +281,10 @@
                   :type :user
                   :desc "Auto-complete: Show on change"
                   :reaction (fn [this _ ch]
-                              (when-let [t (::timeout @this)]
-                                (js/clearTimeout t))
                               (when-not (non-token-change? this ch)
-                                (object/merge! this {::timeout (wait 100 (fn []
-                                                                           (when-not (and (:active @hinter)
-                                                                                          (= (:ed @hinter) this))
-                                                                             (object/add-tags this [:editor.hinting :editor.keys.hinting.active])
-                                                                             (ctx/in! [:editor.keys.hinting.active] this)
-                                                                             (object/raise this :hint {:select-single false}))
-                                                                           ))}))))
+                                (when-not (and (:active @hinter)
+                                               (= (:ed @hinter) this))
+                                  (object/raise this :hint {:select-single false})))))
 
 (cmd/command {:command :auto-complete.remove
               :hidden true
