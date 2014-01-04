@@ -111,17 +111,22 @@
 (behavior ::move-selection
           :triggers #{:move-selection}
           :reaction (fn [this dir]
-                      (object/update! this [:selected] + dir)
-                      (object/raise this :refresh!)
+                      (object/raise this :set-selection! (+ dir (:selected @this)))
                       (ensure-visible this)
                       ))
 
 (behavior ::set-selection!
           :triggers #{:set-selection!}
           :reaction (fn [this idx]
-                      (object/merge! this {:selected idx})
-                      (object/raise this :refresh!)
-                      ))
+                      (let [cnt (count (:cur @this))
+                            neue-idx (mod idx (if (> cnt (:size @this))
+                                                (:size @this)
+                                                cnt))
+                            old (nth (:lis @this) (:selected @this))
+                            neue (nth (:lis @this) neue-idx)]
+                        (dom/remove-class old :selected)
+                        (dom/add-class neue :selected)
+                        (object/merge! this {:selected neue-idx}))))
 
 (behavior ::change!
           :triggers #{:change!}
@@ -271,8 +276,8 @@
                 :init (fn [this opts]
                         (let [opts (merge {:size 100} opts)
                               lis (for [x (range (:size opts))]
-                                    (item this x))]
-                          (object/merge! this (merge {:lis lis} opts))
+                                         (item this x))]
+                          (object/merge! this (merge {:lis (vec lis)} opts))
                           [:div.filter-list
                            (input this)
                            [:ul

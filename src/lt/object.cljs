@@ -158,11 +158,11 @@
         (raise obj :object.behavior.time r time)))
       (catch js/Error e
         (.error js/console (str "Invalid behavior: " (-> (->behavior r) :name)))
-        (throw e)
+        (.error js/console (str e "\n" (.-stack e)))
         )
       (catch js/global.Error e
         (.error js/console (str "Invalid behavior: " (-> (->behavior r) :name)))
-        (throw e)
+        (.error js/console (str e "\n" (.-stack e)))
         ))))
 
 (defn raise [obj k & args]
