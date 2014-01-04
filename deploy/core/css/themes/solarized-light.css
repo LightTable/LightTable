@@ -27,10 +27,10 @@ http://ethanschoonover.com/solarized/img/solarized-palette.png
 
 /* Color scheme for code-mirror */
 
-:root .theme-solarized-light {
-  var-multi: #fdf6e3;
-  var-color: #657b83;
-}
+
+#multi.theme-solarized-light .content { background: fdf6e3; }
+#multi.theme-solarized-light .list .active, #multi.theme-solarized-light .list li:hover { background:#fdf6e3; color:#657b83; }
+#multi.theme-solarized-light .list .dirty { color:#d33682; }
 
 .cm-s-solarized-light {
   color-profile: sRGB;

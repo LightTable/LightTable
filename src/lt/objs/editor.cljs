@@ -530,8 +530,8 @@
                         (ctx-obj/out! tags)
                         (when (and cur-editor
                                    (not= cur-editor obj))
-                          (ctx-obj/in! (:tags @cur-editor) cur-editor)
-                          ))))
+                          (ctx-obj/in! (:tags @cur-editor) cur-editor))
+                        (object/raise obj :deactivated))))
 
 (behavior ::refresh-on-show
           :triggers #{:show}

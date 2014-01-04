@@ -490,6 +490,10 @@
           0
           (:tabsets @multi)))
 
+(defn active-tab []
+  (when-let [cur-tabset (ctx/->obj :tabset)]
+    (:active-obj @cur-tabset)))
+
 (append (object/->content canvas/canvas) (:content @multi))
 
 (cmd/command {:command :tabs.move-next-tabset

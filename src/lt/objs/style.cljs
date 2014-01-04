@@ -2,6 +2,8 @@
   (:require [lt.object :as object]
             [lt.objs.sidebar.command :as cmd]
             [lt.objs.app :as app]
+            [lt.objs.tabs :as tabs]
+            [lt.objs.context :as ctx]
             [lt.objs.plugins :as plugins]
             [lt.objs.editor :as editor]
             [lt.objs.editor.pool :as pool]
@@ -140,6 +142,13 @@
                   :reaction (fn [this themes name path]
                               (assoc themes name path)
                               ))
+
+(behavior ::remove-theme
+          :triggers #{:deactivated}
+          :reaction (fn [this]
+                      (when-not (object/has-tag? (tabs/active-tab) :editor)
+                        (when-not (empty? prev-theme)
+                          (dom/remove-class (dom/$ :#multi) prev-theme)))))
 
 
 (behavior ::set-theme

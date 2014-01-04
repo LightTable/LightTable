@@ -1,4 +1,7 @@
-.cm-s-codemirror, #multi.theme-codemirror { background: #fff; }
+#multi.theme-codemirror .list .active, #multi.theme-codemirror .list li:hover { background:#f8f8f8; color:#333; }
+#multi.theme-codemirror .list .dirty { color:#red; }
+
+.cm-s-codemirror { background: #f8f8f8; }
 .cm-s-codemirror span.cm-keyword {color: #708;}
 .cm-s-codemirror span.cm-atom {color: #219;}
 .cm-s-codemirror span.cm-number {color: #164;}
