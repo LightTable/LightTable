@@ -235,7 +235,9 @@
             score1 (.. score0  (map map-func) (sort score-sort))
             score2 (.. score1 (slice 0 50) (map map-func2) (filter has-score) (sort score-sort2))]
         score2)
-      (.. items (map #(array % (key %) nil nil)) (sort #(.localeCompare (second %) (second %2)))))))
+      (.. items (map #(array % (key %) nil nil))))))
+
+
 
 (defui item [this x]
   [:li {:index x}]
