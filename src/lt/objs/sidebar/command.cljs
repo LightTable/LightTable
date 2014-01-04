@@ -275,9 +275,9 @@
                 :search ""
                 :init (fn [this opts]
                         (let [opts (merge {:size 100} opts)
-                              lis (vec (for [x (range (:size opts))]
-                                         (item this x)))]
-                          (object/merge! this (merge {:lis lis} opts))
+                              lis (for [x (range (:size opts))]
+                                         (item this x))]
+                          (object/merge! this (merge {:lis (vec lis)} opts))
                           [:div.filter-list
                            (input this)
                            [:ul
