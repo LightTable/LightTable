@@ -1,7 +1,8 @@
-#multi.theme-eclipse .list .active, #multi.theme-eclipse .list li:hover { background:#f8f8f8; color:#333; }
+#multi.theme-eclipse .content { background:#f6f6f6; }
+#multi.theme-eclipse .list .active, #multi.theme-eclipse .list li:hover { background:#f6f6f6; color:#333; }
 #multi.theme-eclipse .list .dirty { color:#red; }
 
-.cm-s-eclipse { background: #f8f8f8; }
+.cm-s-eclipse { background: #f6f6f6; }
 
 .cm-s-eclipse span.cm-meta {color: #FF1717;}
 .cm-s-eclipse span.cm-keyword { line-height: 1em; font-weight: bold; color: #7F0055; }

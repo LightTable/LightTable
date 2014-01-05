@@ -1,6 +1,9 @@
 /* Port of TextMate's Blackboard theme */
+#multi.theme-blackboard .content { background: #0C1021; }
+#multi.theme-blackboard .list .active, #multi.theme-blackboard .list li:hover { background:#0C1021; color:#F8F8F8; }
+#multi.theme-blackboard .list .dirty { color:#FBDE2D; }
 
-.cm-s-blackboard.CodeMirror, #multi.theme-blackboard { background: #0C1021; color: #F8F8F8; }
+.cm-s-blackboard.CodeMirror { background: #0C1021; color: #F8F8F8; }
 .cm-s-blackboard .CodeMirror-selected { background: #253B76 !important; }
 .cm-s-blackboard .CodeMirror-gutters { background: #0C1021; border-right: 0; }
 .cm-s-blackboard .CodeMirror-linenumber { color: #888; }

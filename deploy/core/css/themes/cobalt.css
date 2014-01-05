@@ -1,4 +1,8 @@
-.cm-s-cobalt.CodeMirror, #multi.theme-cobalt { background: #002240; color: white; }
+#multi.theme-cobalt .content { background: #002240; }
+#multi.theme-cobalt .list .active, #multi.theme-cobalt .list li:hover { background:#002240; color:#ccc; }
+#multi.theme-cobalt .list .dirty { color:#ffee80; }
+
+.cm-s-cobalt.CodeMirror { background: #002240; color: white; }
 .cm-s-cobalt div.CodeMirror-selected { background: #b36539 !important; }
 .cm-s-cobalt .CodeMirror-gutters { background: #002240; border-right: 1px solid #aaa; }
 .cm-s-cobalt .CodeMirror-linenumber { color: #d0d0d0; }

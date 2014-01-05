@@ -1,4 +1,8 @@
-.cm-s-the-matrix.CodeMirror, #multi.theme-the-matrix { background: #000000; color: #00FF00; }
+#multi.theme-the-matrix .content { background: #000000; }
+#multi.theme-the-matrix .list .active, #multi.theme-the-matrix .list li:hover { background:#000000; color:#ccc; }
+#multi.theme-the-matrix .list .dirty { color:#00FF00; }
+
+.cm-s-the-matrix.CodeMirror { background: #000000; color: #00FF00; }
 .cm-s-the-matrix span.CodeMirror-selected { background: #a8f !important; }
 .cm-s-the-matrix .CodeMirror-gutters { background: #060; border-right: 2px solid #00FF00; }
 .cm-s-the-matrix .CodeMirror-linenumber { color: #FFFFFF; }

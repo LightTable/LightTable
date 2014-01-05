@@ -7,8 +7,11 @@
     Original Base16 color scheme by Chris Kempson (https://github.com/chriskempson/base16)
 
 */
+#multi.theme-3024-day .content { background: #f7f7f7; }
+#multi.theme-3024-day .list .active, #multi.theme-3024-day .list li:hover { background:#f7f7f7; color:#3a3432; }
+#multi.theme-3024-day .list .dirty { color:#01a252; }
 
-.cm-s-3024-day.CodeMirror, #multi.theme-3024-day {background: #f7f7f7; color: #3a3432;}
+.cm-s-3024-day.CodeMirror {background: #f7f7f7; color: #3a3432;}
 .cm-s-3024-day div.CodeMirror-selected {background: #d6d5d4 !important;}
 .cm-s-3024-day .CodeMirror-gutters {background: #f7f7f7; border-right: 0px;}
 .cm-s-3024-day .CodeMirror-linenumber {color: #807d7c;}

@@ -1,4 +1,8 @@
-.cm-s-twilight.CodeMirror, #multi.theme-twilight { background: #141414; color: #f7f7f7; } /**/
+#multi.theme-twilight .content { background: #141414; }
+#multi.theme-twilight .list .active, #multi.theme-twilight .list li:hover { background:#141414; color:#f7f7f7; }
+#multi.theme-twilight .list .dirty { color:#f9ee98; }
+
+.cm-s-twilight.CodeMirror { background: #141414; color: #f7f7f7; } /**/
 .cm-s-twilight .CodeMirror-selected { background: #323232 !important; } /**/
 
 .cm-s-twilight .CodeMirror-gutters { background: #222; border-right: 1px solid #aaa; }

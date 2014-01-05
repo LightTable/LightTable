@@ -8,7 +8,11 @@
 
 */
 
-.cm-s-tomorrow-night-eighties.CodeMirror, #multi.theme-tomorrow-night-eighties {background: #000000; color: #CCCCCC;}
+#multi.theme-tomorrow-night-eighties .content { background: #000000; }
+#multi.theme-tomorrow-night-eighties .list .active, #multi.theme-tomorrow-night-eighties .list li:hover { background:#000000; color:#CCCCCC; }
+#multi.theme-tomorrow-night-eighties .list .dirty { color:#f2777a; }
+
+.cm-s-tomorrow-night-eighties.CodeMirror {background: #000000; color: #CCCCCC;}
 .cm-s-tomorrow-night-eighties div.CodeMirror-selected {background: #2D2D2D !important;}
 .cm-s-tomorrow-night-eighties .CodeMirror-gutters {background: #000000; border-right: 0px;}
 .cm-s-tomorrow-night-eighties .CodeMirror-linenumber {color: #515151;}

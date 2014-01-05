@@ -8,7 +8,11 @@
 
 */
 
-.cm-s-paraiso-light.CodeMirror, #multi.theme-paraiso-light {background: #e7e9db; color: #41323f;}
+#multi.theme-paraiso-light .content { background: #e7e9db; }
+#multi.theme-paraiso-light .list .active, #multi.theme-paraiso-light .list li:hover { background:#e7e9db; color:#41323f; }
+#multi.theme-paraiso-light .list .dirty { color:#ef6155; }
+
+.cm-s-paraiso-light.CodeMirror {background: #e7e9db; color: #41323f;}
 .cm-s-paraiso-light div.CodeMirror-selected {background: #b9b6b0 !important;}
 .cm-s-paraiso-light .CodeMirror-gutters {background: #e7e9db; border-right: 0px;}
 .cm-s-paraiso-light .CodeMirror-linenumber {color: #8d8687;}

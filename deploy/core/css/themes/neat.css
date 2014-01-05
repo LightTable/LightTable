@@ -14,5 +14,5 @@
 
 .cm-s-neat div.CodeMirror-cursor { border-color:#777; }
 
-.cm-s-neat .CodeMirror-activeline-background {background: #e8f2ff !important;}
-.cm-s-neat .CodeMirror-matchingbracket { outline: 0; border-bottom:1px solid #33f; color:black !important;}
+.cm-s-neat .CodeMirror-activeline {background: #e8f2ff !important;}
+.cm-s-neat .CodeMirror-matchingbracket { border-bottom:1px solid #33f; color:black !important;}

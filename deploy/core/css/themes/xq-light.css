@@ -20,7 +20,10 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-#multi.theme-xq-light {background:white;}
+#multi.theme-xq-light .content { background: #fff; }
+#multi.theme-xq-light .list .active, #multi.theme-xq-light .list li:hover { background:#fff; color:#555; }
+#multi.theme-xq-light .list .dirty { color:#0080FF; }
+
 .cm-s-xq-light span.cm-keyword {line-height: 1em; font-weight: bold; color: #5A5CAD; }
 .cm-s-xq-light span.cm-atom {color: #6C8CD5;}
 .cm-s-xq-light span.cm-number {color: #164;}
@@ -39,6 +42,8 @@ THE SOFTWARE.
 .cm-s-xq-light span.cm-bracket {color: #cc7;}
 .cm-s-xq-light span.cm-tag {color: #3F7F7F;}
 .cm-s-xq-light span.cm-attribute {color: #7F007F;}
+
+.cm-s-xq-light div.CodeMirror-cursor { border-color:#777; }
 
 .cm-s-xq-light .CodeMirror-activeline-background {background: #e8f2ff !important;}
 .cm-s-xq-light .CodeMirror-matchingbracket {outline:1px solid grey;color:black !important;background:yellow;}

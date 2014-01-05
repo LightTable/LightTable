@@ -1,6 +1,10 @@
 /* Taken from the popular Visual Studio Vibrant Ink Schema */
 
-.cm-s-vibrant-ink.CodeMirror, #multi.theme-vibrant-ink { background: black; color: white; }
+#multi.theme-vibrant-ink .content { background: black; }
+#multi.theme-vibrant-ink .list .active, #multi.theme-vibrant-ink .list li:hover { background:black; color:#fff; }
+#multi.theme-vibrant-ink .list .dirty { color:#FFEE98; }
+
+.cm-s-vibrant-ink.CodeMirror { background: black; color: white; }
 .cm-s-vibrant-ink .CodeMirror-selected { background: #35493c !important; }
 
 .cm-s-vibrant-ink .CodeMirror-gutters { background: #002240; border-right: 1px solid #aaa; }

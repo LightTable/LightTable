@@ -1,4 +1,7 @@
-#multi.theme-elegant {background: white;}
+#multi.theme-elegant .content { background: #f3f3f3; }
+#multi.theme-elegant .list .active, #multi.theme-elegant .list li:hover { background:#f3f3f3; color:#555; }
+#multi.theme-elegant .list .dirty { color:#b11; }
+
 .cm-s-elegant span.cm-number, .cm-s-elegant span.cm-string, .cm-s-elegant span.cm-atom {color: #762;}
 .cm-s-elegant span.cm-comment {color: #262; font-style: italic; line-height: 1em;}
 .cm-s-elegant span.cm-meta {color: #555; font-style: italic; line-height: 1em;}
@@ -9,6 +12,8 @@
 .cm-s-elegant span.cm-builtin {color: #30a;}
 .cm-s-elegant span.cm-error {background-color: #fdd;}
 .cm-s-elegant span.cm-link {color: #762;}
+
+.cm-s-elegant div.CodeMirror-cursor { border-color:#777; }
 
 .cm-s-elegant .CodeMirror-activeline-background {background: #e8f2ff !important;}
 .cm-s-elegant .CodeMirror-matchingbracket {outline:1px solid grey; color:black !important;}

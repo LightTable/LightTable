@@ -1,5 +1,6 @@
-#multi.theme-codemirror .list .active, #multi.theme-codemirror .list li:hover { background:#f8f8f8; color:#333; }
-#multi.theme-codemirror .list .dirty { color:#red; }
+#multi.theme-codemirror .content { background: #f8f8f8; }
+#multi.theme-codemirror .list .active, #multi.theme-codemirror .list li:hover { background:#f8f8f8; color:#555; }
+#multi.theme-codemirror .list .dirty { color:#f50; }
 
 .cm-s-codemirror { background: #f8f8f8; }
 .cm-s-codemirror span.cm-keyword {color: #708;}

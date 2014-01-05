@@ -8,7 +8,11 @@
 
 */
 
-.cm-s-3024-night.CodeMirror, #multi.theme-3024-night {background: #090300; color: #d6d5d4;}
+#multi.theme-3024-night .content { background: #090300; }
+#multi.theme-3024-night .list .active, #multi.theme-3024-night .list li:hover { background:#090300; color:#d6d5d4; }
+#multi.theme-3024-night .list .dirty { color:#01a252; }
+
+.cm-s-3024-night.CodeMirror {background: #090300; color: #d6d5d4;}
 .cm-s-3024-night div.CodeMirror-selected {background: #3a3432 !important;}
 .cm-s-3024-night .CodeMirror-gutters {background: #090300; border-right: 0px;}
 .cm-s-3024-night .CodeMirror-linenumber {color: #5c5855;}

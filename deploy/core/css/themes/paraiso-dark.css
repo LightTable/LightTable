@@ -8,7 +8,11 @@
 
 */
 
-.cm-s-paraiso-dark.CodeMirror, #multi.theme-paraiso-dark {background: #2f1e2e; color: #b9b6b0;}
+#multi.theme-paraiso-dark .content { background: #2f1e2e; }
+#multi.theme-paraiso-dark .list .active, #multi.theme-paraiso-dark .list li:hover { background:#2f1e2e; color:#b9b6b0; }
+#multi.theme-paraiso-dark .list .dirty { color:#ef6155; }
+
+.cm-s-paraiso-dark.CodeMirror {background: #2f1e2e; color: #b9b6b0;}
 .cm-s-paraiso-dark div.CodeMirror-selected {background: #41323f !important;}
 .cm-s-paraiso-dark .CodeMirror-gutters {background: #2f1e2e; border-right: 0px;}
 .cm-s-paraiso-dark .CodeMirror-linenumber {color: #776e71;}

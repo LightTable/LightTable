@@ -1,5 +1,9 @@
 /* Based on the theme at http://bonsaiden.github.com/JavaScript-Garden */
 
+#multi.theme-midnight .content { background: #0F192A; }
+#multi.theme-midnight .list .active, #multi.theme-midnight .list li:hover { background:#0F192A; color:#D1EDFF; }
+#multi.theme-midnight .list .dirty { color:#4DD; }
+
 /*<!--match-->*/
 .cm-s-midnight span.CodeMirror-matchhighlight { background: #494949 }
 .cm-s-midnight.CodeMirror-focused span.CodeMirror-matchhighlight { background: #314D67 !important; }
@@ -7,7 +11,7 @@
 /*<!--activeline-->*/
 .cm-s-midnight .CodeMirror-activeline-background {background: #253540 !important;}
 
-.cm-s-midnight.CodeMirror, #multi.theme-midnight {
+.cm-s-midnight.CodeMirror {
     background: #0F192A;
     color: #D1EDFF;
 }
