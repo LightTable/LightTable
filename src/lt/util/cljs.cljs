@@ -109,3 +109,6 @@ Maps become Objects. Arbitrary keys are encoded to by key->js."
 
 (defn str-contains? [str x]
   (> (.indexOf str x) -1))
+
+(defn index-of [e coll]
+  (first (keep-indexed #(if (= e %2) %1) coll)))

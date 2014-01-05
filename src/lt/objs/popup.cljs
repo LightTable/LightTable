@@ -110,7 +110,7 @@
 (defn popup! [options]
   (let [p (object/create ::popup options)]
     (object/raise p :move-active 0)
-    (canvas/add! p)
+    (dom/append (dom/$ :body) (object/->content p))
     (.focus (object/->content p))
     (ctx/in! :popup p)
     p))

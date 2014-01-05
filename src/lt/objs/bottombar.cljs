@@ -17,10 +17,10 @@
   :dragstart (fn [e]
                (object/raise this :start-drag))
   :dragend (fn [e]
-               (object/raise this :end-drag))
+             (object/raise this :end-drag))
   :drag (fn [e]
           (object/raise this :height! e)
-             ))
+          ))
 
 (defn active-content [active]
   (when active
@@ -65,38 +65,38 @@
 ;;*********************************************************
 
 (behavior ::no-anim-on-drag
-                  :triggers #{:start-drag}
-                  :reaction (fn [this]
-                              (anim/off)))
+          :triggers #{:start-drag}
+          :reaction (fn [this]
+                      (anim/off)))
 
 (behavior ::reanim-on-drop
-                  :triggers #{:end-drag}
-                  :reaction (fn [this]
-                              (anim/on)))
+          :triggers #{:end-drag}
+          :reaction (fn [this]
+                      (anim/on)))
 
 (behavior ::height!
-                  :triggers #{:height!}
-                  :throttle 5
-                  :reaction (fn [this e]
-                              (when-not (= 0 (.-clientY e))
-                                (let [win-height (.-innerHeight js/window)
-                                      height (max (- win-height (.-clientY e)) min-height)]
-                                (object/raise tabs/multi :bottom! (- height (:height @this)))
-                                (object/merge! this {:height height
-                                                     :max-height height})))
-                              ))
+          :triggers #{:height!}
+          :throttle 16
+          :reaction (fn [this e]
+                      (when-not (= 0 (.-clientY e))
+                        (let [win-height (.-innerHeight js/window)
+                              height (max (- win-height (.-clientY e)) min-height)]
+                          (object/raise tabs/multi :bottom! (- height (:height @this)))
+                          (object/merge! this {:height height
+                                               :max-height height})))
+                      ))
 
 (behavior ::item-toggled
-                  :triggers #{:toggle}
-                  :reaction (fn [this item force?]
-                              (if (or (not= item (:active @this))
-                                      force?)
-                                (do
-                                  (object/merge! this {:active item
-                                                       :height (:max-height @this)})
-                                  (object/raise tabs/multi :bottom! (:max-height @this)))
-                                (do
-                                  (object/raise tabs/multi :bottom! (- (:max-height @this)))
-                                  (object/merge! this {:active nil
-                                                       :height 0})))))
+          :triggers #{:toggle}
+          :reaction (fn [this item force?]
+                      (if (or (not= item (:active @this))
+                              force?)
+                        (do
+                          (object/merge! this {:active item
+                                               :height (:max-height @this)})
+                          (object/raise tabs/multi :bottom! (:max-height @this)))
+                        (do
+                          (object/raise tabs/multi :bottom! (- (:max-height @this)))
+                          (object/merge! this {:active nil
+                                               :height 0})))))
 

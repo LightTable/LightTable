@@ -1,13 +1,13 @@
 (ns lt.objs.find
   (:require [lt.object :as object]
             [lt.objs.context :as ctx]
+            [lt.objs.statusbar :as statusbar]
             [lt.util.load :as load]
             [lt.objs.canvas :as canvas]
             [lt.objs.sidebar.command :as cmd]
             [lt.objs.editor.pool :as pool]
             [lt.objs.keyboard :as keyboard]
             [lt.objs.editor :as editor]
-            [lt.objs.tabs :as tabs]
             [lt.util.dom :as dom]
             [crate.binding :refer [bound subatom]]
             [lt.util.style :refer [->px]])
@@ -63,34 +63,11 @@
 (defn set-val [this v]
   (dom/val (dom/$ :input.find (object/->content this)) v))
 
-(behavior ::show!
-          :triggers #{:show!}
-          :reaction (fn [this]
-                      (when-not (:shown @this)
-                        (let [tabs (ctx/->obj :tabs)]
-                          (object/merge! this {:bottom (:bottom @tabs)
-                                               :left (:left @tabs)
-                                               :right (:right @tabs)
-                                               :shown true})
-                          (object/raise tabs :bottom! find-height)
-                          ))))
-
-(behavior ::adjust-find-on-resize
-          :triggers #{:resize}
-          :reaction (fn [this]
-                      (when (:shown @bar)
-                        (object/merge! bar {:bottom (- (:bottom @tabs/multi) find-height)}))))
-
 (behavior ::hide!
           :triggers #{:hide!}
           :reaction (fn [this]
-                      (when (:shown @this)
-                        (let [tabs (ctx/->obj :tabs)]
-                          (object/merge! this {:shown false})
-                          (object/raise tabs :bottom! (- find-height))
-                          (when-let [ed (pool/last-active)]
-                            (editor/focus ed))
-                          ))))
+                      (when-let [ed (pool/last-active)]
+                            (editor/focus ed))))
 
 (behavior ::next!
           :triggers #{:next!}
@@ -150,17 +127,13 @@
 
 (object/object* ::find-bar
                 :tags #{:find-bar}
-                :bottom 0
-                :left 0
+                :height 30
+                :order -1
                 :searching? false
                 :reverse? false
                 :shown false
                 :init (fn [this]
-                        [:div#find-bar {:style {:bottom (bound (subatom this :bottom) ->px)
-                                                :left (bound (subatom (ctx/->obj :tabs) :left) ->px)
-                                                :right (bound (subatom (ctx/->obj :tabs) :right) ->px)
-                                                :width (bound (subatom this :shown) ->shown-width)
-                                                :height (bound (subatom this :shown) ->shown-width)}}
+                        [:div#find-bar
                          (input this)
                          (replace-input this)
                          (replace-all-button this)]))
@@ -174,8 +147,7 @@
                       ))
 
 (def bar (object/create ::find-bar))
-
-(canvas/add! bar)
+(statusbar/add-container bar)
 
 (cmd/command {:command :find.show
               :desc "Find: In current editor"

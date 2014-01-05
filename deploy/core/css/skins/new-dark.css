@@ -343,9 +343,11 @@ input { color: var(highlight-fg); background:var(highlight-bg); }
 #statusbar .log .error { color:var(error-fg); background:var(error-bg); }
 #statusbar .log .tip { color: var(accent-foreground); }
 
-#find-bar input { border-top:0px solid var(border); background:var(multi); }
+#find-bar input { border-top:2px solid var(bg); background:var(multi); }
 #find-bar input + input { border-left:2px solid var(bg); }
 #find-bar ::-webkit-input-placeholder { color:var(hidden-fg); }
+#find-bar button { background:var(bg); }
+#find-bar button:hover, #find-bar button:focus, #find-bar button:active, #find-bar button.active { background:var(button-active-bg); }
 
 #browser input { background:var(hidden-bg); color:var(fg); }
 #browser button {  }
