@@ -118,15 +118,16 @@
 (behavior ::set-selection!
           :triggers #{:set-selection!}
           :reaction (fn [this idx]
-                      (let [cnt (count (:cur @this))
-                            neue-idx (mod idx (if (> cnt (:size @this))
-                                                (:size @this)
-                                                cnt))
-                            old (nth (:lis @this) (:selected @this))
-                            neue (nth (:lis @this) neue-idx)]
-                        (dom/remove-class old :selected)
-                        (dom/add-class neue :selected)
-                        (object/merge! this {:selected neue-idx}))))
+                      (when idx
+                        (let [cnt (count (:cur @this))
+                              neue-idx (mod idx (if (> cnt (:size @this))
+                                                  (:size @this)
+                                                  cnt))
+                              old (nth (:lis @this) (:selected @this))
+                              neue (nth (:lis @this) neue-idx)]
+                          (dom/remove-class old :selected)
+                          (dom/add-class neue :selected)
+                          (object/merge! this {:selected neue-idx})))))
 
 (behavior ::change!
           :triggers #{:change!}
@@ -247,7 +248,7 @@
                (object/raise this :set-selection! x)
                (object/raise this :select! x)))
 
-(defn fill-lis [{:keys [lis size search selected key transform]} results]
+(defn fill-lis [{:keys [lis size search selected key transform] :as this} results]
   (let [cnt (count results)
         cur (mod selected (if (> cnt size)
                             size
@@ -255,6 +256,9 @@
         transform (if transform
                     transform
                     #(do %3))]
+    (if (= cnt 0)
+      (dom/add-class (:content this) :empty)
+      (dom/remove-class (:content this) :empty))
     (doseq [[i li res] (map vector (range) lis results)
             :when res]
       (dom/html li (transform (aget res 1) (aget res 4) (if-not (empty? search)

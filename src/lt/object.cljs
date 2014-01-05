@@ -140,6 +140,13 @@
       (wrap-debounce)
       (store-behavior*)))
 
+(defn safe-report-error [e]
+  (if js/lt.objs.console
+    (js/lt.objs.console.error e)
+    (.error js/console (if (string? e)
+                         e
+                         (.-stack e)))))
+
 (defn raise* [obj reactions args trigger]
   (doseq [r reactions
           :let [func (:reaction (->behavior r))
@@ -157,12 +164,12 @@
       (when-not (= trigger :object.behavior.time)
         (raise obj :object.behavior.time r time)))
       (catch js/Error e
-        (.error js/console (str "Invalid behavior: " (-> (->behavior r) :name)))
-        (.error js/console (str e "\n" (.-stack e)))
+        (safe-report-error (str "Invalid behavior: " (-> (->behavior r) :name)))
+        (safe-report-error e)
         )
       (catch js/global.Error e
-        (.error js/console (str "Invalid behavior: " (-> (->behavior r) :name)))
-        (.error js/console (str e "\n" (.-stack e)))
+        (safe-report-error (str "Invalid behavior: " (-> (->behavior r) :name)))
+        (safe-report-error e)
         ))))
 
 (defn raise [obj k & args]
