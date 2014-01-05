@@ -305,10 +305,10 @@ body { -webkit-user-select: none; }
 #side .tab-settings .filter-list li { padding:0 10px; border-radius:2px; }
 #side .tab-settings .filter-list input:focus + * { display:block; }
 
-.search-results { overflow:hidden; position:relative; padding:10px 15px; box-sizing:border-box; }
+.search-results { overflow:hidden; position:relative; box-sizing:border-box; }
 .search-results input { width:100%; }
-.search-results .res { position:absolute; overflow:auto; width:100%; top:0; bottom:130px; }
-.search-results .searcher { margin-bottom:10px; margin-top:10px; position:absolute; bottom:0px; width:100%; }
+.search-results .res { position:absolute; overflow:auto; left:10px; right:10px; top:10px; bottom:130px; }
+.search-results .searcher { margin-bottom:10px; margin-top:10px; position:absolute; left:10px; right:10px; bottom:0px; }
 .search-results .res li { background:transparent; padding:7px 0; margin-bottom:5px; border-bottom:0px solid #444; }
 .search-results .path .file { font-size:11pt; margin-right:10px; }
 .search-results .path { font-size:10pt; margin-bottom:3px; }
@@ -317,7 +317,7 @@ body { -webkit-user-select: none; }
 .search-results p { white-space:nowrap; cursor:default;}
 .search-results .line { display:inline-block; margin-right:5px; padding:0 5px; }
 .search-results div div { position:relative; }
-.search-results  button { position:absolute; right:-3px; padding:5px 10px; border-radius:3px; }
+.search-results  button { position:absolute; right:-3px; padding:5px 10px; border-radius:0px; }
 
 .struct-tree { overflow:auto; height:100%; }
 .struct-tree span { margin:0 2px; }

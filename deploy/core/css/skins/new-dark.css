@@ -197,7 +197,7 @@ html { background: var(bg); }
 body { background: var(bg); color: var(fg); }
 a {text-decoration:none; color: var(fg); }
 .button, button { background:var(button-bg); color:var(button-fg); }
-.button:hover, .button:focus, button:hover, button:focus, button.active { background:var(button-active-bg); color: var(button-active-fg); }
+.button:hover, .button:focus, button:hover, button:focus, button.active { background:var(button-active-bg) !important; color: var(button-active-fg); }
 input { color: var(highlight-fg); background:var(highlight-bg); }
 
 ::-webkit-scrollbar { width: 7px; height: 7px; }
@@ -370,7 +370,8 @@ input { color: var(highlight-fg); background:var(highlight-bg); }
 .search-results .entry:hover .line { background:var(medium-highlight-bg); color:var(bg); }
 .search-results .path { color:var(secondary-accent-dim-fg); }
 .search-results .file { color:var(secondary-accent-fg); }
-.search-results input { background:#454B59; }
+.search-results input { background:var(highlight-bg); }
+.search-results button { background:var(bg); }
 
 .watch-result { display:inline-block; padding-left:2px; vertical-align:top; background:var(usage-bg); color:var(usage-fg); border-radius:0px; }
 .CodeMirror .watched { border-bottom:1px solid var(usage-fg); }
