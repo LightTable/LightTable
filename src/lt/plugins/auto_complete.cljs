@@ -137,12 +137,21 @@
 (defn text+completion [x]
   (str (.-text x) (.-completion x)))
 
+(defn distinct-completions [hints]
+  (let [seen #js {}]
+    (filter (fn [hint]
+              (if (true? (aget seen (.-completion hint)))
+                false
+                (aset seen (.-completion hint) true)))
+            hints)))
+
 (def hinter (-> (scmd/filter-list {:items (fn []
                                         (when-let [cur (pool/last-active)]
-                                          (if (:starting-token @hinter)
-                                            (remove #(= (-> @hinter :starting-token :string) (.-completion %))
-                                                    (object/raise-reduce cur :hints+ []))
-                                            (object/raise-reduce cur :hints+ []))))
+                                          (distinct-completions
+                                           (if (:starting-token @hinter)
+                                             (remove #(= (-> @hinter :starting-token :string) (.-completion %))
+                                                     (object/raise-reduce cur :hints+ []))
+                                             (object/raise-reduce cur :hints+ [])))))
                                :key text|completion})
                 (object/add-tags [:hinter])))
 
