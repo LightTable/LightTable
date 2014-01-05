@@ -64,89 +64,89 @@
   (dom/val (dom/$ :input.find (object/->content this)) v))
 
 (behavior ::show!
-                  :triggers #{:show!}
-                  :reaction (fn [this]
-                              (when-not (:shown @this)
-                                (let [tabs (ctx/->obj :tabs)]
-                                  (object/merge! this {:bottom (:bottom @tabs)
-                                                       :left (:left @tabs)
-                                                       :right (:right @tabs)
-                                                       :shown true})
-                                  (object/raise tabs :bottom! find-height)
-                                  ))))
+          :triggers #{:show!}
+          :reaction (fn [this]
+                      (when-not (:shown @this)
+                        (let [tabs (ctx/->obj :tabs)]
+                          (object/merge! this {:bottom (:bottom @tabs)
+                                               :left (:left @tabs)
+                                               :right (:right @tabs)
+                                               :shown true})
+                          (object/raise tabs :bottom! find-height)
+                          ))))
 
 (behavior ::adjust-find-on-resize
-                  :triggers #{:resize}
-                  :reaction (fn [this]
-                              (when (:shown @bar)
-                                (object/merge! bar {:bottom (- (:bottom @tabs/multi) find-height)}))))
+          :triggers #{:resize}
+          :reaction (fn [this]
+                      (when (:shown @bar)
+                        (object/merge! bar {:bottom (- (:bottom @tabs/multi) find-height)}))))
 
 (behavior ::hide!
-                  :triggers #{:hide!}
-                  :reaction (fn [this]
-                              (when (:shown @this)
-                                (let [tabs (ctx/->obj :tabs)]
-                                  (object/merge! this {:shown false})
-                                  (object/raise tabs :bottom! (- find-height))
-                                  (when-let [ed (pool/last-active)]
-                                    (editor/focus ed))
-                                  ))))
+          :triggers #{:hide!}
+          :reaction (fn [this]
+                      (when (:shown @this)
+                        (let [tabs (ctx/->obj :tabs)]
+                          (object/merge! this {:shown false})
+                          (object/raise tabs :bottom! (- find-height))
+                          (when-let [ed (pool/last-active)]
+                            (editor/focus ed))
+                          ))))
 
 (behavior ::next!
-                  :triggers #{:next!}
-                  :reaction (fn [this]
-                              (when-let [cur (pool/last-active)]
-                                (if (and (:searching? @this)
-                                         (= (:searching.for @cur) (->val this)))
-                                  (js/CodeMirror.commands.findNext (current-ed) (:reverse? @this))
-                                  (object/raise this :search! (->val this))))))
+          :triggers #{:next!}
+          :reaction (fn [this]
+                      (when-let [cur (pool/last-active)]
+                        (if (and (:searching? @this)
+                                 (= (:searching.for @cur) (->val this)))
+                          (js/CodeMirror.commands.findNext (current-ed) (:reverse? @this))
+                          (object/raise this :search! (->val this))))))
 
 (behavior ::prev!
-                  :triggers #{:prev!}
-                  :reaction (fn [this]
-                              (when-let [cur (pool/last-active)]
-                                (if (and (:searching? @this)
-                                         (= (:searching.for @cur) (->val this)))
-                                  (js/CodeMirror.commands.findPrev (current-ed) (:reverse? @this))
-                                  (object/raise this :search! (->val this))))))
+          :triggers #{:prev!}
+          :reaction (fn [this]
+                      (when-let [cur (pool/last-active)]
+                        (if (and (:searching? @this)
+                                 (= (:searching.for @cur) (->val this)))
+                          (js/CodeMirror.commands.findPrev (current-ed) (:reverse? @this))
+                          (object/raise this :search! (->val this))))))
 
 (behavior ::focus!
-                  :triggers #{:focus!}
-                  :reaction (fn [this]
-                              (let [input (dom/$ :input (object/->content this))]
-                                (dom/focus input)
-                                (.select input))))
+          :triggers #{:focus!}
+          :reaction (fn [this]
+                      (let [input (dom/$ :input (object/->content this))]
+                        (dom/focus input)
+                        (.select input))))
 
 (behavior ::clear!
-                  :triggers #{:clear!}
-                  :reaction (fn [this]
-                              (object/merge! this {:searching? false})
-                              (when-let [ed (pool/last-active)]
-                                (js/CodeMirror.commands.clearSearch (editor/->cm-ed ed)))
-                              (let [input (dom/$ :input (object/->content this))]
-                                (when (= "" (dom/val input))
-                                  (dom/val input "")))))
+          :triggers #{:clear!}
+          :reaction (fn [this]
+                      (object/merge! this {:searching? false})
+                      (when-let [ed (pool/last-active)]
+                        (js/CodeMirror.commands.clearSearch (editor/->cm-ed ed)))
+                      (let [input (dom/$ :input (object/->content this))]
+                        (when (= "" (dom/val input))
+                          (dom/val input "")))))
 
 
 (behavior ::replace!
-                  :triggers #{:replace!}
-                  :reaction (fn [this all?]
-                              (when-not (:searching? @this)
-                                (object/raise this :search! (->val this)))
-                              (js/CodeMirror.commands.replace (editor/->cm-ed (pool/last-active)) (->replacement this) (:reverse? @this) (boolean all?))
-                              (object/raise this :next!)))
+          :triggers #{:replace!}
+          :reaction (fn [this all?]
+                      (when-not (:searching? @this)
+                        (object/raise this :search! (->val this)))
+                      (js/CodeMirror.commands.replace (editor/->cm-ed (pool/last-active)) (->replacement this) (:reverse? @this) (boolean all?))
+                      (object/raise this :next!)))
 
 (behavior ::search!
-                  :triggers #{:search!}
-                  :debounce 50
-                  :reaction (fn [this v]
-                              (if (empty? v)
-                                (object/raise this :clear!)
-                                (when-let [e (pool/last-active)]
-                                  (object/merge! this {:searching? true})
-                                  (object/merge! e {:searching.for v})
-                                  (let [ed (editor/->cm-ed e)]
-                                    (js/CodeMirror.commands.find ed v (:reverse? @this)))))))
+          :triggers #{:search!}
+          :debounce 50
+          :reaction (fn [this v]
+                      (if (empty? v)
+                        (object/raise this :clear!)
+                        (when-let [e (pool/last-active)]
+                          (object/merge! this {:searching? true})
+                          (object/merge! e {:searching.for v})
+                          (let [ed (editor/->cm-ed e)]
+                            (js/CodeMirror.commands.find ed v (:reverse? @this)))))))
 
 (object/object* ::find-bar
                 :tags #{:find-bar}
@@ -166,12 +166,12 @@
                          (replace-all-button this)]))
 
 (behavior ::init
-                  :triggers #{:init}
-                  :reaction (fn [this]
-                              (load/js "core/node_modules/codemirror/search.js" :sync)
-                              (load/js "core/node_modules/codemirror/searchcursor.js" :sync)
+          :triggers #{:init}
+          :reaction (fn [this]
+                      (load/js "core/node_modules/codemirror/search.js" :sync)
+                      (load/js "core/node_modules/codemirror/searchcursor.js" :sync)
 
-                              ))
+                      ))
 
 (def bar (object/create ::find-bar))
 
@@ -226,9 +226,9 @@
 (def line-input (cmd/options-input {:placeholder "line number"}))
 
 (behavior ::exec-active!
-                  :triggers #{:select}
-                  :reaction (fn [this l]
-                              (cmd/exec-active! l)))
+          :triggers #{:select}
+          :reaction (fn [this l]
+                      (cmd/exec-active! l)))
 
 (object/add-behavior! line-input ::exec-active!)
 
