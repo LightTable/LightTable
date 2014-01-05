@@ -137,99 +137,102 @@
 (defn text+completion [x]
   (str (.-text x) (.-completion x)))
 
+(defn distinct-completions [hints]
+  (let [seen #js {}]
+    (filter (fn [hint]
+              (if (true? (aget seen (.-completion hint)))
+                false
+                (aset seen (.-completion hint) true)))
+            hints)))
+
 (def hinter (-> (scmd/filter-list {:items (fn []
-                                        (when-let [cur (pool/last-active)]
-                                          (if (:starting-token @hinter)
-                                            (remove #(= (-> @hinter :starting-token :string) (.-completion %))
-                                                    (object/raise-reduce cur :hints+ []))
-                                            (object/raise-reduce cur :hints+ []))))
-                               :key text|completion})
+                                            (when-let [cur (pool/last-active)]
+                                              (distinct-completions
+                                               (if (:starting-token @hinter)
+                                                 (remove #(= (-> @hinter :starting-token :string) (.-completion %))
+                                                         (object/raise-reduce cur :hints+ []))
+                                                 (object/raise-reduce cur :hints+ [])))))
+                                   :key text|completion})
                 (object/add-tags [:hinter])))
 
 (behavior ::textual-hints
-                  :triggers #{:hints+}
-                  :reaction (fn [this hints]
-                              (concat (::hints @this) hints)))
+          :triggers #{:hints+}
+          :reaction (fn [this hints]
+                      (concat (::hints @this) hints)))
 
 (behavior ::escape!
-                  :triggers #{:escape!}
-                  :reaction (fn [this force?]
-                              (let [elem (object/->content this)]
-                                (when (:line @this)
-                                  (js/CodeMirror.off (:line @this) "change" on-line-change))
-                                (object/remove-tags (:ed @this) [:editor.hinting :editor.keys.hinting.active])
-                                (ctx/out! [:editor.keys.hinting.active])
-                                (when (or force? (= 0 (count (:cur @this))))
-                                  (keyboard/passthrough))
-                                (object/merge! this {:active false
-                                                     :selected 0
-                                                     :ed nil
-                                                     :starting-token nil
-                                                     :token nil
-                                                     :search ""})
-                                (object/raise this :inactive)
-                                (when (dom/parent elem)
-                                  (dom/remove elem)))))
+          :triggers #{:escape!}
+          :reaction (fn [this force?]
+                      (let [elem (object/->content this)]
+                        (when (:line @this)
+                          (js/CodeMirror.off (:line @this) "change" on-line-change))
+                        (ctx/out! [:editor.keys.hinting.active])
+                        (when (or force? (= 0 (count (:cur @this))))
+                          (keyboard/passthrough))
+                        (object/merge! this {:active false
+                                             :selected 0
+                                             :ed nil
+                                             :starting-token nil
+                                             :token nil
+                                             :search ""})
+                        (object/raise this :inactive)
+                        (when (dom/parent elem)
+                          (dom/remove elem)))))
 
 (behavior ::select
-                  :triggers #{:select}
-                  :reaction (fn [this c]
-                              (let [token (:token @this)
-                                    start {:line (:line token)
-                                           :ch (:start token)}
-                                    end {:line (:line token)
-                                         :ch (:end token)}]
-                                (object/merge! this {:active false})
-                                (if (.-select c)
-                                  ((.-select c) (partial editor/replace (:ed @this) start end) c)
-                                  (editor/replace (:ed @this) start end (.-completion c)))
-                                (object/raise this :escape!))))
+          :triggers #{:select}
+          :reaction (fn [this c]
+                      (let [token (:token @this)
+                            start {:line (:line token)
+                                   :ch (:start token)}
+                            end {:line (:line token)
+                                 :ch (:end token)}]
+                        (object/merge! this {:active false})
+                        (if (.-select c)
+                          ((.-select c) (partial editor/replace (:ed @this) start end) c)
+                          (editor/replace (:ed @this) start end (.-completion c)))
+                        (object/raise this :escape!))))
 
 (behavior ::select-unknown
-                  :triggers #{:select-unknown}
-                  :reaction (fn [this v]
-                              (object/raise this :escape!)
-                              (keyboard/passthrough)))
+          :triggers #{:select-unknown}
+          :reaction (fn [this v]
+                      (object/raise this :escape!)
+                      (keyboard/passthrough)))
 
 (behavior ::line-change
-                  :triggers #{:line-change}
-                  :reaction (fn [this l c]
-                              (when (:active @hinter)
-                                (let [pos (editor/->cursor (:ed @this))
-                                      token (get-token (:ed @this) pos)]
-                                  (if (or (non-token-change? (:ed @this) c)
-                                          (< (:ch pos) (-> @hinter :starting-token :start)))
-                                    (object/raise hinter :escape!)
-                                    (do
-                                      (object/raise hinter :change! (:string token))
-                                      (object/merge! hinter {:token token})
-                                      (when (-> (:cur @hinter) (count) (zero?))
-                                        (object/raise hinter :escape!))))))))
-
+          :triggers #{:line-change}
+          :reaction (fn [this l c]
+                      (when (:active @hinter)
+                        (let [pos (editor/->cursor (:ed @this))
+                              token (get-token (:ed @this) pos)]
+                          (if (or (non-token-change? (:ed @this) c)
+                                  (< (:ch pos) (-> @hinter :starting-token :start)))
+                            (object/raise hinter :escape!)
+                            (do
+                              (object/raise hinter :change! (:string token))
+                              (object/merge! hinter {:token token})))))))
 (defn on-line-change [line ch]
   (object/raise hinter :line-change line ch))
 
 (behavior ::async-hint-tokens
-                  :triggers #{:hint-tokens}
-                  :reaction (fn [this tokens]
-                              (object/merge! this {::hints tokens})))
+          :triggers #{:hint-tokens}
+          :reaction (fn [this tokens]
+                      (object/merge! this {::hints tokens})))
 
 (behavior ::intra-buffer-string-hints
-                  :triggers #{:change}
-                  :debounce 400
-                  :reaction (fn [this ch]
-                              (when (or (not= (:ed @hinter) this)
-                                        (not (:active @hinter)))
-                                (async-hints this))
-                              ))
-
+          :triggers #{:change}
+          :debounce 400
+          :reaction (fn [this ch]
+                      (when (or (not= (:ed @hinter) this)
+                                (not (:active @hinter)))
+                        (async-hints this))
+                      ))
 
 (defn start-hinting [this opts]
   (let [pos (editor/->cursor this)
         token (get-token this pos)
         line (editor/line-handle this (:line pos))
         elem (object/->content hinter)]
-    (object/add-tags this [:editor.hinting :editor.keys.hinting.active])
     (ctx/in! [:editor.keys.hinting.active] this)
     (object/merge! hinter {:token token
                            :starting-token token
@@ -240,7 +243,6 @@
     (object/raise hinter :active)
     (let [count (count (:cur @hinter))]
       (cond
-       (= 0 count) (object/raise hinter :escape!)
        (and (= 1 count)
             (:select-single opts)) (object/raise hinter :select! 0)
        :else (do
@@ -249,54 +251,50 @@
                (js/CodeMirror.positionHint (editor/->cm-ed this) elem (:start token)))))))
 
 (behavior ::show-hint
-                  :triggers #{:hint}
-                  :reaction (fn [this opts]
-                              (let [cur (string/trim (editor/get-char this -1))
-                                    opts (merge {:select-single true} opts)]
-                                (cond
-                                 (and (:active @hinter)
-                                      (= (:ed @hinter) this)) (object/raise hinter :select!)
-                                 (and (empty? cur)
-                                      (not (:force? opts))) (keyboard/passthrough)
-                                 (:active @hinter) (do (object/raise hinter :escape!) (start-hinting this))
-                                 :else (start-hinting this opts)))))
+          :triggers #{:hint}
+          :reaction (fn [this opts]
+                      (let [cur (string/trim (editor/get-char this -1))
+                            opts (merge {:select-single true} opts)]
+                        (cond
+                         (and (:active @hinter)
+                              (= (:ed @hinter) this)) (object/raise hinter :select!)
+                         (and (empty? cur)
+                              (not (:force? opts))) (keyboard/passthrough)
+                         (:active @hinter) (do (object/raise hinter :escape!) (start-hinting this))
+                         :else (start-hinting this opts)))))
 
 (behavior ::remove-on-scroll-inactive
-                  :triggers #{:scroll :inactive}
-                  :reaction (fn [this]
-                              (object/raise hinter :escape!)))
+          :triggers #{:scroll :inactive}
+          :reaction (fn [this]
+                      (when (:active @hinter)
+                        (object/raise hinter :escape!))))
 
 (behavior ::remove-on-move-line
-                  :triggers #{:move}
-                  :reaction (fn [this c]
-                              ;;HACK: line change events are sent *after* cursor move
-                              ;;this means that we need to wait for those to fire and then
-                              ;;check if we're out of bounds.
-                              (wait 0 (fn []
-                                        (let [starting (:starting-token @hinter)
-                                              cur (:token @hinter)
-                                              cursor (editor/->cursor this)]
-                                          (when (and starting
-                                                     cur
-                                                     (or (not (<= (:start cur) (:ch cursor) (:end cur)))
-                                                         (not= (:line starting) (:line cursor))))
-                                            (object/raise hinter :escape!)))))))
+          :triggers #{:move}
+          :reaction (fn [this c]
+                      (when (:active @hinter)
+                        ;;HACK: line change events are sent *after* cursor move
+                        ;;this means that we need to wait for those to fire and then
+                        ;;check if we're out of bounds.
+                        (wait 0 (fn []
+                                  (let [starting (:starting-token @hinter)
+                                        cur (:token @hinter)
+                                        cursor (editor/->cursor this)]
+                                    (when (and starting
+                                               cur
+                                               (or (not (<= (:start cur) (:ch cursor) (:end cur)))
+                                                   (not= (:line starting) (:line cursor))))
+                                      (object/raise hinter :escape!))))))))
 
 (behavior ::auto-show-on-input
-                  :triggers #{:input}
-                  :type :user
-                  :desc "Auto-complete: Show on change"
-                  :reaction (fn [this _ ch]
-                              (when-let [t (::timeout @this)]
-                                (js/clearTimeout t))
-                              (when-not (non-token-change? this ch)
-                                (object/merge! this {::timeout (wait 100 (fn []
-                                                                           (when-not (and (:active @hinter)
-                                                                                          (= (:ed @hinter) this))
-                                                                             (object/add-tags this [:editor.hinting :editor.keys.hinting.active])
-                                                                             (ctx/in! [:editor.keys.hinting.active] this)
-                                                                             (object/raise this :hint {:select-single false}))
-                                                                           ))}))))
+          :triggers #{:input}
+          :type :user
+          :desc "Auto-complete: Show on change"
+          :reaction (fn [this _ ch]
+                      (when-not (non-token-change? this ch)
+                        (when-not (and (:active @hinter)
+                                       (= (:ed @hinter) this))
+                          (object/raise this :hint {:select-single false})))))
 
 (cmd/command {:command :auto-complete.remove
               :hidden true
@@ -327,10 +325,10 @@
 ;;*********************************************************
 
 (behavior ::init
-                  :triggers #{:init}
-                  :reaction (fn [this]
-                              (load/js "core/node_modules/codemirror/show-hint.js" :sync)
-                              (js/CodeMirror.extendMode "clojure" (clj->js {:hint-pattern #"[\w\-\>\:\*\$\?\<\!\+\.\/foo]"}))
-                              (js/CodeMirror.extendMode "text/x-clojurescript" (clj->js {:hint-pattern #"[\w\-\>\:\*\$\?\<\!\+\.\/foo]"}))
-                              (js/CodeMirror.extendMode "css" (clj->js {:hint-pattern #"[\w\.\-\#]"}))
-                              ))
+          :triggers #{:init}
+          :reaction (fn [this]
+                      (load/js "core/node_modules/codemirror/show-hint.js" :sync)
+                      (js/CodeMirror.extendMode "clojure" (clj->js {:hint-pattern #"[\w\-\>\:\*\$\?\<\!\+\.\/foo]"}))
+                      (js/CodeMirror.extendMode "text/x-clojurescript" (clj->js {:hint-pattern #"[\w\-\>\:\*\$\?\<\!\+\.\/foo]"}))
+                      (js/CodeMirror.extendMode "css" (clj->js {:hint-pattern #"[\w\.\-\#]"}))
+                      ))

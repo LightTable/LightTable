@@ -39,7 +39,6 @@
 
 (def jump-stack (object/create (object/object* ::jump-stack
                                                :tags [:jump-stack]
-                                               :behaviors [::jump-stack.push ::jump-stack.pop]
                                                :stack [])))
 
 (cmd/command

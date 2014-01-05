@@ -177,6 +177,8 @@
    :lt.objs.style/remove-theme
    (:lt.objs.style/set-theme "default")
    (:lt.objs.editor/tab-settings false 2 2)
+   :lt.plugins.auto-complete/remove-on-move-line
+   :lt.plugins.auto-complete/remove-on-scroll-inactive
    },
  :editor.active #{:lt.objs.statusbar/report-cursor-location},
  :editor.behaviors #{:lt.objs.settings/on-behaviors-editor-save
@@ -210,9 +212,6 @@
    :lt.objs.editor.file/dirty-on-change :lt.objs.editor.file/file-save
    :lt.objs.opener/save-as :lt.objs.editor.file/preserve-line-endings
    :lt.objs.editor.file/last-char-newline},
- :editor.hinting
- #{:lt.plugins.auto-complete/remove-on-move-line
-   :lt.plugins.auto-complete/remove-on-scroll-inactive},
  :editor.html
  #{:lt.objs.langs.html/eval-on-save :lt.objs.langs.html/on-eval (:lt.objs.editor/tab-settings false 4 4)},
  :editor.inline-result
@@ -342,6 +341,7 @@
  #{:lt.objs.eval/result-menu! :lt.objs.eval/ex-clear :lt.objs.eval/destroy-on-clear},
  :inline.watch #{:lt.plugins.watches/clear!}
  :inspector.object #{:lt.objs.clients.devtools/clear-inspector-object},
+ :jump-stack [:lt.objs.jump-stack/jump-stack.push :lt.objs.jump-stack/jump-stack.pop]
  :navigate.selector
  #{:lt.objs.sidebar.navigate/escape!
    :lt.objs.sidebar.navigate/pop-transient-on-select
