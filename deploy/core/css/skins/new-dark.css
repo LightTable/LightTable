@@ -2,62 +2,7 @@
 * Vars
 ***********************************************************/
 
-:root .skin-light {
-  var-bg: #f5f5f5;
-  var-fg: #555;
-  var-border: #ccc;
-  var-shadow: #ccc;
-
-  var-placeholder-fg: #888;
-  var-dim-fg: #777;
-  var-bright-fg: #93A6B5;
-  var-blinding-fg: #000;
-  var-hidden-fg: #999;
-
-  var-hidden-bg: #ddd;
-
-  var-highlight-bg: #b5b5b5;
-  var-highlight-fg: #222;
-
-  var-dark-highlight-bg: #d5d5d5;
-  var-medium-highlight-bg: #bbb;
-
-  var-button-bg: #d7d7d7;
-  var-button-fg: #666;
-  var-button-active-bg: #666;
-  var-button-active-fg: #d7d7d7;
-
-  var-pane-bg: #ccc;
-  var-pane-scrollbar: #a0a0a0;
-  var-dark-pane-bg: #ddd;
-  var-dark-pane-border: #aaa;
-  var-pane-border: #888;
-
-  var-error-bg: #fFd2d9;
-  var-error-fg: #d0316D;
-  var-error-highlight-fg: #633;
-  var-error-border: #E0919D;
-
-  var-usage-bg: #d0b2f9;
-  var-usage-fg: #8021ff;
-
-  var-result-bg: #BFD4FF;
-  var-result-fg: #216BFF;
-
-  var-overlay-dimmer: rgba(255,255,255,0.7);
-
-  var-accent-foreground: #213BfF;
-  var-accent-background: #BFD4FF;
-  var-light-accent-background: #75A3FF;
-  var-light-accent-foreground: #216BFF;
-  var-dark-accent-background: #BFD4FF;
-
-  var-secondary-accent-fg: #098;
-  var-secondary-accent-dim-fg: #6a9;
-  var-secondary-accent-desat-fg: #5a9;
-}
-
-:root .skin-dark {
+:root .skin-dark, :root .skin-light {
   var-bg: #3b3f41;
   var-fg: #ccc;
   var-multi: #202020;

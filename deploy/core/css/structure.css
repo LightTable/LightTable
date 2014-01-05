@@ -63,7 +63,7 @@ body { -webkit-user-select: none; }
 #wrapper { position:fixed; top:var(top-offset); bottom:0px; left:0; right:0; overflow:hidden; -webkit-transition:opacity 0.2s ease-in-out 0.2s; }
 #canvas { position:fixed; top:var(top-offset); bottom:0; left:0; right:0; overflow:hidden; }
 
-#multi { z-index:20; position:fixed; left:0px; right:0px; top:var(top-offset); bottom:0px; padding-right:10px; overflow:hidden; }
+#multi { z-index:20; position:fixed; left:0px; right:0px; top:var(top-offset); bottom:0px; overflow:hidden; }
 #multi .tabsets { left:0; right:0; position:absolute; top:0; bottom:34px; max-width:100%; width:100%; overflow:hidden; white-space:nowrap; }
 #multi .tabset { box-sizing:border-box; position:relative; overflow:hidden; width:100%; height:100%; float:none; vertical-align:top; display:inline-block; white-space:normal; }
 #multi .list { display:block; background:transparent; overflow-y:hidden; overflow-x:hidden; margin:0 8px; z-index:10000000; }
@@ -74,7 +74,7 @@ body { -webkit-user-select: none; }
 #multi .content { left:0px; right:10px; position:absolute; top:36px; bottom:0; padding-left:10px; white-space:normal;}
 #multi .content > * { width:100%; height:100%; box-sizing:border-box; }
 
-#multi .vertical-grip { width:10px; background:transparent; }
+#multi .vertical-grip { width:7px; background:transparent; right:-2px; }
 
 #filer { padding:5px 10px; border-radius:3px; min-width:80px; font-size:10pt; }
 #filer .results { max-height:200px; overflow-x:hidden; overflow-y:auto;  }

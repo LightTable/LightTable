@@ -10,42 +10,42 @@
 (def *no-close* nil)
 
 (behavior ::on-click-destroy
-                  :triggers #{:click}
-                  :reaction (fn [this]
-                              (object/raise this :close!)))
+          :triggers #{:click}
+          :reaction (fn [this]
+                      (object/raise this :close!)))
 
 (behavior ::close!
-                  :triggers #{:close!}
-                  :reaction (fn [this]
-                              (object/raise this :close)
-                              (object/destroy! this)
-                              (if-let [others (-> (object/by-tag :popup)
-                                                  (seq))]
-                                (ctx/in! :popup (last others))
-                                (ctx/out! :popup)
-                                )))
+          :triggers #{:close!}
+          :reaction (fn [this]
+                      (object/raise this :close)
+                      (object/destroy! this)
+                      (if-let [others (-> (object/by-tag :popup)
+                                          (seq))]
+                        (ctx/in! :popup (last others))
+                        (ctx/out! :popup)
+                        )))
 
 (behavior ::refocus-on-close
-                  :triggers #{:close}
-                  :reaction (fn [this]
-                              (cmd/exec! :tabs.focus-active)))
+          :triggers #{:close}
+          :reaction (fn [this]
+                      (cmd/exec! :tabs.focus-active)))
 
 (behavior ::change-active-button
-                  :triggers #{:move-active}
-                  :reaction (fn [this dir]
-                              (let [buttons (dom/$$ ".button" (object/->content this))
-                                    button (mod (+ (:button @this) dir) (count buttons))]
-                                (dom/remove-class (aget buttons (:button @this)) :active)
-                                (dom/add-class (aget buttons button) :active)
-                                (object/merge! this {:button button})
-                                )
-                              ))
+          :triggers #{:move-active}
+          :reaction (fn [this dir]
+                      (let [buttons (dom/$$ ".button" (object/->content this))
+                            button (mod (+ (:button @this) dir) (count buttons))]
+                        (dom/remove-class (aget buttons (:button @this)) :active)
+                        (dom/add-class (aget buttons button) :active)
+                        (object/merge! this {:button button})
+                        )
+                      ))
 
 (behavior ::exec-active
-                  :triggers #{:exec-active}
-                  :reaction (fn [this]
-                              (let [buttons (dom/$$ ".button" (object/->content this))]
-                                (dom/trigger (aget buttons (:button @this)) :click))))
+          :triggers #{:exec-active}
+          :reaction (fn [this]
+                      (let [buttons (dom/$$ ".button" (object/->content this))]
+                        (dom/trigger (aget buttons (:button @this)) :click))))
 
 (defn remain-open []
   (set! *no-close* true))
