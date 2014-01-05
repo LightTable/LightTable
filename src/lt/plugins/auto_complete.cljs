@@ -166,7 +166,6 @@
                               (let [elem (object/->content this)]
                                 (when (:line @this)
                                   (js/CodeMirror.off (:line @this) "change" on-line-change))
-                                (object/remove-tags (:ed @this) [:editor.hinting :editor.keys.hinting.active])
                                 (ctx/out! [:editor.keys.hinting.active])
                                 (when (or force? (= 0 (count (:cur @this))))
                                   (keyboard/passthrough))
@@ -267,23 +266,25 @@
 (behavior ::remove-on-scroll-inactive
                   :triggers #{:scroll :inactive}
                   :reaction (fn [this]
-                              (object/raise hinter :escape!)))
+                              (when (:active @hinter)
+                                (object/raise hinter :escape!))))
 
 (behavior ::remove-on-move-line
                   :triggers #{:move}
                   :reaction (fn [this c]
-                              ;;HACK: line change events are sent *after* cursor move
-                              ;;this means that we need to wait for those to fire and then
-                              ;;check if we're out of bounds.
-                              (wait 0 (fn []
-                                        (let [starting (:starting-token @hinter)
-                                              cur (:token @hinter)
-                                              cursor (editor/->cursor this)]
-                                          (when (and starting
-                                                     cur
-                                                     (or (not (<= (:start cur) (:ch cursor) (:end cur)))
-                                                         (not= (:line starting) (:line cursor))))
-                                            (object/raise hinter :escape!)))))))
+                              (when (:active @hinter)
+                                ;;HACK: line change events are sent *after* cursor move
+                                ;;this means that we need to wait for those to fire and then
+                                ;;check if we're out of bounds.
+                                (wait 0 (fn []
+                                          (let [starting (:starting-token @hinter)
+                                                cur (:token @hinter)
+                                                cursor (editor/->cursor this)]
+                                            (when (and starting
+                                                       cur
+                                                       (or (not (<= (:start cur) (:ch cursor) (:end cur)))
+                                                           (not= (:line starting) (:line cursor))))
+                                              (object/raise hinter :escape!))))))))
 
 (behavior ::auto-show-on-input
                   :triggers #{:input}
