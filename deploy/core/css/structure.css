@@ -380,3 +380,4 @@ body { -webkit-user-select: none; }
 .CodeMirror-linenumber { padding-right:10px;}
 .CodeMirror-lines { padding: 10px 0; /* Vertical padding around content */ }
 .CodeMirror pre { padding: 0 0 0 5px; /* Horizontal padding of content */ }
+.CodeMirror-hints.empty { display:none; }

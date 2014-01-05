@@ -57,12 +57,6 @@
   var-secondary-accent-desat-fg: #5a9;
 }
 
-:root .skin-dark #multi {
-  var-multi: #202020;
-  var-highlight-fg: #f4f4f4;
-  var-accent-foreground: #C7E6FF;
-}
-
 :root .skin-dark {
   var-bg: #3b3f41;
   var-fg: #ccc;
@@ -73,13 +67,13 @@
   var-scrollbar: #606970;
   var-placeholder-fg: #aaa;
   var-dim-fg: #bbb;
-  var-bright-fg: #93A6B5;
+  var-bright-fg: #aaa;
   var-blinding-fg: #fff;
-  var-hidden-fg: #999;
+  var-hidden-fg: #bbb;
 
   var-hidden-bg: #404040;
 
-  var-highlight-bg: #666;
+  var-highlight-bg: #616161;
   var-highlight-fg: #f4f4f4;
 
   var-dark-highlight-bg: #666;
@@ -90,7 +84,7 @@
   var-button-active-bg: #ccc;
   var-button-active-fg: #555;
 
-  var-pane-bg: #1c1f26;
+  var-pane-bg: #3b3f41;
   var-pane-scrollbar: #7c7c7c;
   var-dark-pane-bg: #1c1f26;
   var-dark-pane-border: #606060;
@@ -499,3 +493,4 @@ button { border-radius:0; }
 * { border-radius:0; }
 
 .CodeMirror pre { padding: 0 0 0 5px; /* Horizontal padding of content */ }
+.CodeMirror-hints

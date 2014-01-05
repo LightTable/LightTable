@@ -1,4 +1,7 @@
-#multi.theme-neat {background:white; }
+#multi.theme-neat .content { background: #f3f3f3; }
+#multi.theme-neat .list .active, #multi.theme-neat .list li:hover { background:#f3f3f3; color:#555; }
+#multi.theme-neat .list .dirty { color:#d33682; }
+
 .cm-s-neat span.cm-comment { color: #a86; }
 .cm-s-neat span.cm-keyword { line-height: 1em; font-weight: bold; color: blue; }
 .cm-s-neat span.cm-string { color: #a22; }
@@ -9,5 +12,7 @@
 .cm-s-neat span.cm-meta {color: #555;}
 .cm-s-neat span.cm-link { color: #3a3; }
 
+.cm-s-neat div.CodeMirror-cursor { border-color:#777; }
+
 .cm-s-neat .CodeMirror-activeline-background {background: #e8f2ff !important;}
-.cm-s-neat .CodeMirror-matchingbracket {outline:1px solid grey; color:black !important;}
+.cm-s-neat .CodeMirror-matchingbracket { outline: 0; border-bottom:1px solid #33f; color:black !important;}
