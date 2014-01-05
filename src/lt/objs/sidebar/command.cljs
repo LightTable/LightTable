@@ -284,7 +284,7 @@
                               lis (for [x (range (:size opts))]
                                          (item this x))]
                           (object/merge! this (merge {:lis (vec lis)} opts))
-                          [:div.filter-list
+                          [:div.filter-list.empty
                            (input this)
                            [:ul
                             lis]
