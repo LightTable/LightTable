@@ -545,6 +545,8 @@
                                   :click (fn [] (cmd/exec! :workspace.add-folder))}
                                  {:label "Add file"
                                   :click (fn [] (cmd/exec! :workspace.add-file))}
+                                 {:label "Open recent workspace"
+                                  :click (fn [] (cmd/exec! :workspace.show-recents))}
                                  {:type "separator"}
                                  {:label "Clear workspace"
                                   :click (fn [] (object/raise tree :clear!))}])

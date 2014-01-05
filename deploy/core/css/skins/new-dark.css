@@ -432,10 +432,10 @@ input { color: var(highlight-fg); background:var(highlight-bg); }
 #side .workspace ul.root { top:0px; }
 #right-bar .filter-list input { padding:6px 10px; font-size:10pt; margin-top:0; border-radius:0px; }
 #right-bar .filter-list ul { top:35px; bottom:10px; }
-#right-bar .content { padding:0 10px; }
+#right-bar .content { padding:0 15px; }
 
 button { border-radius:0; }
 * { border-radius:0; }
 
 .CodeMirror pre { padding: 0 0 0 5px; /* Horizontal padding of content */ }
-.CodeMirror-hints
+.CodeMirror-hints.empty { display:none; }

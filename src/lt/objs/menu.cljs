@@ -91,12 +91,14 @@
        :modifiers (when (> (count ks) 1)
                     (string/join "-" (butlast ks)))})))
 
-(defn cmd-item [label cmd opts]
-  (merge
-   {:label label
-    :click (fn [] (cmd/exec! cmd))}
-   opts
-   (command->menu-binding cmd opts)))
+(defn cmd-item
+  ([label cmd] (cmd-item label cmd {}))
+  ([label cmd opts]
+   (merge
+    {:label label
+     :click (fn [] (cmd/exec! cmd))}
+    opts
+    (command->menu-binding cmd opts))))
 
 
 (defn main-menu []
@@ -113,6 +115,7 @@
                                          {:label "Open folder" :click #(do
                                                                          (cmd/exec! :workspace.show :force)
                                                                          (cmd/exec! :workspace.add-folder))}
+                                         (cmd-item "Open recent workspace" :workspace.show-recents {})
                                          (cmd-item "Save file" :save {:key "s"})
                                          (cmd-item "Save file as.." :save-as {:key "s" :modifiers "cmd-shift"})
                                          {:type "separator"}
