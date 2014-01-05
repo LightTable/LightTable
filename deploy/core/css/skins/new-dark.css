@@ -243,9 +243,9 @@ input { color: var(highlight-fg); background:var(highlight-bg); }
 
 #bottombar .content { background:var(bg); border-top:0px solid var(border); }
 .console > li, .console td { color:var(light-accent-foreground); }
-.console > li + li { border-top:0px solid var(border); }
-.console > li.error + li { border-color:var(error-border);}
-.console li.error { color:var(error-fg); background:var(error-bg); border-color:var(error-border);}
+.console > li + li { border-top:2px solid var(bg); }
+.console > li.error + li { border-color:var(bg);}
+.console li.error { color:var(error-fg); background:var(error-bg); border-color:var(bg);}
 .console li.error table td { color:var(error-fg); }
 .console li.error tr:hover td { color:var(error-highlight-fg); }
 .console li .file { color: var(dim-fg); }
