@@ -54,72 +54,13 @@
   var-light-accent-foreground: #CCFCFF;
   var-dark-accent-background: #505D6B;
 
-  var-secondary-accent-fg: #C7E6FF;
+  var-secondary-accent-fg: #7FFFFD;
+  var-secondary-accent-bg: #3E6B6B;
   var-secondary-accent-dim-fg: #C7E6FF;
   var-secondary-accent-desat-fg: var(fg);
 
-  var-tertiary-accent-fg: #FF9E42;
-  var-tertiary-accent-bg: #612F00;
-}
-
-:root .skin-new-dark {
-  var-bg: #1c1f26;
-  var-fg: #718799;
-  var-multi: #2b303b;
-  var-border: #444;
-  var-shadow: black;
-
-  var-scrollbar: #606970;
-  var-placeholder-fg: #aaa;
-  var-dim-fg: #bbb;
-  var-bright-fg: #93A6B5;
-  var-blinding-fg: #fff;
-  var-hidden-fg: #999;
-
-  var-hidden-bg: #404040;
-
-  var-highlight-bg: #343d46;
-  var-highlight-fg: #dfe1e8;
-
-  var-dark-highlight-bg: #666;
-  var-medium-highlight-bg: #999;
-
-  var-button-bg: #343d46;
-  var-button-fg: #d0d0d0;
-  var-button-active-bg: #ccc;
-  var-button-active-fg: #555;
-
-  var-pane-bg: #1c1f26;
-  var-pane-scrollbar: #7c7c7c;
-  var-dark-pane-bg: #1c1f26;
-  var-dark-pane-border: #606060;
-  var-pane-border: #888;
-
-  var-error-bg: #73404C;
-  var-error-fg: #FFA6A6;
-  var-error-highlight-fg: #FFCDCD;
-  var-error-border: #aF5D5D;
-
-  var-usage-bg: #3E6B6B;
-  var-usage-fg: #7FFFFD;
-
-  var-result-bg: #505D6B;
-  var-result-fg: #C7E6FF;
-
-  var-overlay-dimmer: rgba(0,0,0,0.5);
-
-  var-accent-foreground: #C7E6FF;
-  var-accent-background: #505D6B;
-  var-light-accent-background: #18B1CC;
-  var-light-accent-foreground: #CCFCFF;
-  var-dark-accent-background: #505D6B;
-
-  var-secondary-accent-fg: #C7E6FF;
-  var-secondary-accent-dim-fg: #C7E6FF;
-  var-secondary-accent-desat-fg: var(fg);
-
-  var-tertiary-accent-fg: #FF9E42;
-  var-tertiary-accent-bg: #612F00;
+  var-tertiary-accent-fg: #DFC7FF;
+  var-tertiary-accent-bg: #5E3870;
 }
 
 /**********************************************************
@@ -393,24 +334,28 @@ input { color: var(highlight-fg); background:var(highlight-bg); }
 .plugin-manager h3 { color: var(hidden-fg); }
 .plugin-manager h3:before { content:"by "; }
 .plugin-manager li { border:none; position:relative; }
+.plugin-manager li h1 { color:var(accent-foreground); }
+.plugin-manager li.has-update .version { color:var(error-fg);  }
+.plugin-manager li.has-update .version { color:var(error-fg);  }
+.plugin-manager li.has-update h1 { color:var(error-fg);  }
 .plugin-manager li + li { border-top:1px solid var(border); }
 .plugin-manager > ul > li:hover { background:var(hidden-bg); }
 .plugin-manager .tabs { margin-bottom:15px; display:flex; -webkit-flex-direction:row; -webkit-align-items:stretch; height:30px; width:100%; }
-.plugin-manager input {background: var(dark-pane-bg); -webkit-flex:1; }
-.plugin-manager .enabled { background:var(accent-background); color:var(accent-foreground); }
-.plugin-manager .installed { box-sizing:border-box; background:var(light-accent-background); display:inline-block; height:25px; position:absolute; right:0; top:0; width:5px; -webkit-transition:width 0.1s ease-in-out; }
-.plugin-manager .uninstall { box-sizing:border-box; background:var(light-accent-background); display:inline-block; height:25px; position:absolute; right:0; top:0; width:5px; -webkit-transition:width 0.1s ease-in-out; }
-.plugin-manager .update { box-sizing:border-box; background:var(tertiary-accent-fg); display:inline-block; height:25px; position:absolute; right:0; top:0; width:5px; -webkit-transition:width 0.1s ease-in-out; }
+.plugin-manager input {background: var(highlight-bg); -webkit-flex:1; }
+.plugin-manager button {background: var(highlight-bg); }
+.plugin-manager .installed { box-sizing:border-box; color:var(secondary-accent-bg); background:var(secondary-accent-fg); display:inline-block; height:25px; position:absolute; right:0; top:0; width:5px; -webkit-transition:width 0.1s ease-in-out; }
+.plugin-manager .uninstall { box-sizing:border-box; color:var(tertiary-accent-bg); background:var(tertiary-accent-fg); display:inline-block; height:25px; position:absolute; right:0; top:0; width:5px; -webkit-transition:width 0.1s ease-in-out; }
+.plugin-manager .update { box-sizing:border-box; background:var(error-fg); display:inline-block; height:25px; position:absolute; right:0; top:0; width:5px; -webkit-transition:width 0.1s ease-in-out; }
 .plugin-manager li:hover .update { width:70px; overflow:hidden; }
-.plugin-manager li:hover .update:before { color:var(tertiary-accent-bg); padding:4px 8px; display:inline-block; content: "update";  }
+.plugin-manager li:hover .update:before { color:var(error-bg); padding:4px 8px; display:inline-block; content: "update";  }
 .plugin-manager li:hover .uninstall { width:70px; overflow:hidden; }
-.plugin-manager li:hover .uninstall:before { color:var(dark-accent-background); padding:4px 8px; display:inline-block; content: "uninstall";  }
+.plugin-manager li:hover .uninstall:before { padding:4px 8px; display:inline-block; content: "uninstall";  }
 .plugin-manager li:hover .installed { width:70px; overflow:hidden; }
-.plugin-manager li:hover .installed:before { color:var(dark-accent-background); padding:4px 8px; display:inline-block; content: "installed";  }
-.plugin-manager .source { color:transparent; position:absolute; height:25px; width:5px; top:25px; right:0; background:var(secondary-accent-fg); overflow:hidden; -webkit-transition:width 0.1s ease-in-out, right 0.1s ease-in-out; }
+.plugin-manager li:hover .installed:before { padding:4px 8px; display:inline-block; content: "installed";  }
+.plugin-manager .source { color:transparent; position:absolute; height:25px; width:5px; top:25px; right:0; background:var(accent-foreground); overflow:hidden; -webkit-transition:width 0.1s ease-in-out, right 0.1s ease-in-out; }
 .plugin-manager .source a { color:transparent; padding:4px 8px; display:inline-block; width:100%;}
 .plugin-manager li:hover .source { width:70px; }
-.plugin-manager li:hover .source a { color:var(dark-accent-background); }
+.plugin-manager li:hover .source a { color:var(accent-background); }
 
 /**********************************************************
 * Theme specific

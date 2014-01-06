@@ -239,8 +239,8 @@
 
 (defui tabs-and-search [this]
   [:div.tabs
-   (tab this :server "Available")
    (tab this :installed "Installed")
+   (tab this :server "Available")
    (search-input this)])
 
 (defui source-button [plugin]
@@ -260,11 +260,13 @@
 (defui server-plugin-ui [plugin]
   (let [info (:info plugin)
         ver (:version info)
-        installed (-> @app/app ::plugins (get (:name info)))]
-    [:li
+        installed (-> @app/app ::plugins (get (:name info)))
+        update? (and (:version installed)
+                     (deploy/is-newer? (:version installed) ver))]
+    [:li {:class (if update?
+                   "has-update")}
      (when installed
-       (if (and (:version installed)
-                (deploy/is-newer? (:version installed) ver))
+       (if update?
          (update-button plugin)
          [:span.installed]))
      (source-button plugin)
@@ -290,9 +292,11 @@
                                     {:label "Cancel"}]})))
 
 (defui installed-plugin-ui [plugin]
-  (let [cached (-> @manager :version-cache (get (:name plugin)))]
-    [:li
-     (if (and (deploy/is-newer? (:version plugin) cached))
+  (let [cached (-> @manager :version-cache (get (:name plugin)))
+        update? (deploy/is-newer? (:version plugin) cached)]
+    [:li {:class (if update?
+                   "has-update")}
+     (if update?
        (update-button (assoc plugin :version cached))
        (uninstall-button plugin))
      (source-button plugin)
@@ -308,7 +312,7 @@
 (object/object* ::plugin-manager
                 :tags #{:plugin-manager}
                 :name "Plugins"
-                :tab :server
+                :tab :installed
                 :init (fn [this]
                         [:div {:class (bound this #(str "plugin-manager"
                                                         (if (= (:tab %) :server)
