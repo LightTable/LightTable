@@ -210,7 +210,13 @@
                             (object/raise hinter :escape!)
                             (do
                               (object/raise hinter :change! (:string token))
+                              (if (= 0 (count (:cur @hinter)))
+                                (ctx/out! [:editor.keys.hinting.active :filter-list.input])
+                                (when-not (ctx/in? :editor.keys.hinting.active)
+                                  (ctx/in! [:filter-list.input] hinter)
+                                  (ctx/in! [:editor.keys.hinting.active] (:ed @hinter))))
                               (object/merge! hinter {:token token})))))))
+
 (defn on-line-change [line ch]
   (object/raise hinter :line-change line ch))
 
@@ -243,6 +249,7 @@
     (object/raise hinter :active)
     (let [count (count (:cur @hinter))]
       (cond
+       (= 0 count) (ctx/out! [:editor.keys.hinting.active :filter-list.input])
        (and (= 1 count)
             (:select-single opts)) (object/raise hinter :select! 0)
        :else (do
