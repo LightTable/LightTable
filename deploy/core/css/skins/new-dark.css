@@ -24,8 +24,8 @@
   var-dark-highlight-bg: #666;
   var-medium-highlight-bg: #999;
 
-  var-button-bg: #343d46;
-  var-button-fg: #d0d0d0;
+  var-button-bg: #616161;
+  var-button-fg: #f4f4f4;
   var-button-active-bg: #ccc;
   var-button-active-fg: #555;
 
@@ -256,17 +256,18 @@ input { color: var(highlight-fg); background:var(highlight-bg); }
 #right-bar .docs-search .types li { background: var(pane-border); color:var(blinding-fg); }
 #right-bar .docs-search .types li:hover { background: var(medium-highlight-bg); color:var(blinding-fg); }
 
-#right-bar .clients h2 { color:var(bright-fg); }
 #right-bar .clients td { color:var(dim-fg); }
 #right-bar .clients .button { background:var(button-bg); color:var(button-fg); }
 #right-bar .clients .button:hover { background:var(button-active-bg); color:var(button-active-fg); }
+#right-bar .clients .list li h2 { color:var(accent-foreground); font-size:12pt; }
 #right-bar .clients .list > ul > li:first-child { border-top:0px solid var(pane-border); }
 #right-bar .clients .list > ul > li:last-child  { border-bottom:0px solid var(pane-border);  }
 #right-bar .clients .list > ul > li + li { background:transparent; border-top:0px solid var(pane-border); }
 #right-bar .clients .list .active {background:var(highlight-bg); color: inherit; border-color: var(pane-border); }
 #right-bar .clients .list .active * {color: inherit; }
 #right-bar .clients .list .active h2 {color:  var(highlight-fg); }
-#right-bar .clients .list .active .button:hover { background:var(button-active-bg); color:var(button-active-fg); }
+#right-bar .clients .list .active .button { background:var(button-active-bg); color:var(button-active-fg); }
+#right-bar .clients .list .active .button:hover { background:var(accent-foreground) !important; color:var(accent-background); }
 #right-bar .clients .connector li { border-top:0px solid var(pane-border); border-bottom:1px solid var(pane-border); }
 #right-bar .clients .connector li:first-child {border:none;}
 #right-bar .clients .connector li:last-child {border-bottom:none;}
@@ -274,7 +275,6 @@ input { color: var(highlight-fg); background:var(highlight-bg); }
 #right-bar .clients .connector li h2 {color: var(highlight-fg); }
 #right-bar .clients .connector li:hover h2 {color: var(highlight-fg); }
 #right-bar .clients .connector li:hover {background: var(highlight-bg); color: var(fg); border-color: var(pane-border); }
-#right-bar .clients .toggle:hover { background: var(highlight-bg); border-radius:0px; color:var(highlight-fg); }
 
 #statusbar { color: var(hidden-fg); }
 #statusbar .console-toggle { cursor:default; background:var(hidden-bg); color:var(fg); min-width:12px; padding:0 4px; width:auto; display:none; text-align:center; margin-left:0px; border-radius:2px; }

@@ -216,33 +216,34 @@ body { -webkit-user-select: none; }
 #right-bar .navigate .filter-list.empty ul:before { content: "Add some files or folders to your workspace to fill the navigator."; padding:10px 0; text-align:center; display:inline-block;}
 
 #right-bar .clients.active {overflow:auto; height:100%; }
-#right-bar .clients .list > h2.add { float:none; display:inline-block; box-sizing:border-box; text-align:left; padding:2px 5px; margin-bottom:15px; }
-#right-bar .clients .list > ul > li { -webkit-user-select:text; overflow:hidden; box-sizing:border-box; padding:10px 10px; margin-bottom:0px; border-radius:0px; }
+#right-bar .clients .list > h2.add { float:none; display:block; box-sizing:border-box; text-align:left; margin-bottom:15px; }
+#right-bar .clients .list > ul > li { -webkit-user-select:text; overflow:hidden; box-sizing:border-box; padding:10px 10px; margin-bottom:2px; border-radius:0px; }
 #right-bar .clients .list > ul > li:first-child { border-top-right-radius:2px; border-top-left-radius:2px; }
 #right-bar .clients .list > ul > li:last-child  { border-bottom-right-radius:2px; border-bottom-left-radius:2px;  }
 #right-bar .clients .list > ul:empty:before { content:"Eval in an editor or explicitly add a connection above."; padding:5px; display:block; box-sizing:border-box; margin-top:60px; }
 #right-bar .clients h2 { font-size:12pt; margin-bottom:5px; }
 #right-bar .clients td { vertical-align:top; text-align:left; }
 #right-bar .clients td + td { padding-left: 10px; text-align:left; }
-#right-bar .clients .button { cursor:default; padding:2px 5px; box-sizing:border-box; border-radius:2px; float:none; display:inline-block; margin-top:10px; margin-bottom:5px; }
-#right-bar .clients .button + .button { margin-left:5px; }
+#right-bar .clients li .button { cursor:default; padding:2px 5px; box-sizing:border-box; border-radius:0px; float:none; display:inline-block; margin-top:10px; margin-bottom:5px; }
+#right-bar .clients li .button + .button { margin-left:5px; }
 #right-bar .clients li:hover .button { visibility:visible; }
 #right-bar .clients .details { display:block; }
 #right-bar .clients .connecting { padding:3px; }
 #right-bar .clients .connecting p { margin-left:10px; padding-top:1px; vertical-align:middle; display:inline-block; }
-#right-bar .clients .unset { display:none; }
+#right-bar .clients  li .unset { display:none; }
 #right-bar .clients .active .unset { display:inline-block; }
 #right-bar .clients .connector { display:none; }
 #right-bar .clients.selecting .connector { display:block; }
 #right-bar .clients.selecting .list { display:none; }
 #right-bar .clients .list .add { cursor:default; }
-#right-bar .clients .connector ul { margin-top:15px; }
+#right-bar .clients .connector ul { margin-top:8px; }
 #right-bar .clients .connector ul li { padding:10px 10px; border-radius:0px; cursor:default; }
 #right-bar .clients .connector ul li:first-child { border-top-right-radius:2px; border-top-left-radius:2px; }
 #right-bar .clients .connector ul li:last-child { border-bottom-right-radius:2px; border-bottom-left-radius:2px; }
 #right-bar .clients .connector > h2 { cursor:default; }
 #right-bar .clients .connector > h2:after { float:right; content: "⇡"; }
-#right-bar .clients .toggle { padding:2px 5px; font-size:10pt;  border-radius:2px;  }
+#right-bar .clients .toggle { padding:5px 10px; font-size:10pt;  border-radius:0px;  }
+#right-bar .clients .toggle:after { float:right; content: "⇡"; }
 
 #right-bar .filter-list { box-sizing:border-box; position:relative; height:100%; }
 #right-bar .filter-list > ul {position:absolute; top:55px; left:0px; right:0px; overflow-y:auto; bottom:0px;}

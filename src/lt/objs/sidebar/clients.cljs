@@ -23,12 +23,12 @@
            (object/raise clients :unset! i)))
 
 (defui add-button [this]
-  [:h2.toggle.add "Add Connection"]
+  [:h2.toggle.add.button "Add Connection"]
   :click (fn []
            (object/raise this :selecting!)))
 
 (defui choose-cancel [this]
-  [:h2.toggle [:span "Choose a client type"]]
+  [:h2.toggle.button [:span "Choose a client type"]]
   :click (fn []
            (object/raise this :cancel)))
 
