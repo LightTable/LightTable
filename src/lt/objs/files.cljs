@@ -10,6 +10,7 @@
 (def fpath (js/require "path"))
 (def wrench (load/node-module "wrench"))
 (def os (js/require "os"))
+(def app (.-App (js/require "nw.gui")))
 
 (defn typelist->index [cur types]
   (let [full (map (juxt :name identity) types)
@@ -277,10 +278,12 @@
     (join h (or path separator))))
 
 (defn lt-home [path]
-  (if js/process.env.LTHOME
-    (join js/process.env.LTHOME (or path ""))
-    (home (join ".lighttable" path)))
   (join pwd path))
+
+(defn lt-user-dir [path]
+  (if js/process.env.LT_USER_DIR
+    (join js/process.env.LT_USER_DIR (or path ""))
+    (join (.-dataPath app) path)))
 
 (defn walk-up-find [start find]
   (let [roots (get-roots)]

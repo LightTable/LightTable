@@ -59,21 +59,11 @@
       :content
       (safe-read file)))
 
-(defn default-dir []
-  (if js/process.env.LTLOCAL
-    (str js/process.env.LTLOCAL "settings/default/")
-    (files/lt-home "settings/default/")))
-
 (defn behavior-diffs-in [path]
   (->>
    (filter #(= (files/ext %) "behaviors")
            (files/full-path-ls path))
    (mapv parse-file)))
-
-(defn ordered-files []
-  (filter #(= (files/ext %) "behaviors")
-          (concat (files/full-path-ls (str files/pwd "/settings/default/"))
-                  (files/full-path-ls ))))
 
 (defn load-all []
   (let [final (reduce (fn [fin cur]
@@ -107,8 +97,9 @@
           (.error js/console e))
         (catch js/Error e
           (.error js/console e)))
-      (js/global.setImmediate (fn []
+      (js/process.nextTick (fn []
                              (refresh-all (next objs)))))))
+
 
 ;;*********************************************************
 ;; Behaviors
@@ -123,7 +114,7 @@
 (behavior ::user-behavior-diffs
                   :triggers #{:behaviors.diffs.user+}
                   :reaction (fn [this diffs]
-                              (concat diffs (behavior-diffs-in (files/lt-home "settings/user/")))
+                              (concat diffs (behavior-diffs-in (files/lt-user-dir "settings/")))
                               ))
 
 (behavior ::initial-behaviors
@@ -139,6 +130,7 @@
                               (load-all)
                               (notifos/working "loading behaviors...")
                               (refresh-all (vals @object/instances))))
+
 
 (behavior ::eval-settings
                   :triggers #{:eval :eval.one}
@@ -172,12 +164,14 @@
                                 (object/raise editor :clean)
                                 (object/raise workspace/current-ws :serialize!))))
 
-(def user-behaviors-path (files/lt-home "/settings/user/user.behaviors"))
-(def user-keymap-path (files/lt-home "/settings/user/user.keymap"))
+(def user-behaviors-path (files/lt-user-dir "settings/user.behaviors"))
+(def user-keymap-path (files/lt-user-dir "settings/user.keymap"))
 
 (behavior ::create-user-settings
                   :triggers #{:init}
                   :reaction (fn [app]
+                              (when-not (files/exists? (files/lt-user-dir "settings"))
+                                (files/mkdir (files/lt-user-dir "settings")))
                               (when-not (files/exists? user-behaviors-path)
                                 (files/copy (files/lt-home "/core/misc/example.behaviors") user-behaviors-path))
                               (when-not (files/exists? user-keymap-path)
@@ -205,7 +199,7 @@
 (cmd/command {:command :behaviors.modify-user
               :desc "Settings: User behaviors"
               :exec (fn []
-                      (cmd/exec! :open-path (files/lt-home "/settings/user/user.behaviors")))})
+                      (cmd/exec! :open-path user-behaviors-path))})
 
 (cmd/command {:command :behaviors.view-default
               :desc "Settings: Default behaviors"
@@ -224,7 +218,7 @@
 (cmd/command {:command :keymap.modify-user
               :desc "Settings: User keymap"
               :exec (fn []
-                      (cmd/exec! :open-path (files/lt-home "/settings/user/user.keymap")))})
+                      (cmd/exec! :open-path user-keymap-path))})
 
 (cmd/command {:command :keymap.view-default
               :desc "Settings: Default keymap"
@@ -291,11 +285,6 @@
            (files/full-path-ls path))
    (map parse-key-file)))
 
-(defn ordered-key-files []
-  (filter #(= (files/ext %) "keymap")
-          (concat (files/full-path-ls (default-dir))
-                  (files/full-path-ls (files/lt-home "settings/user/")))))
-
 (defn load-all-keys []
   (let [final (reduce (fn [fin cur]
                         (key-diff cur fin))
@@ -308,13 +297,13 @@
 (behavior ::default-keymap-diffs
                   :triggers #{:keymap.diffs.default+}
                   :reaction (fn [this diffs]
-                              (concat diffs (keymap-diffs-in (str files/pwd "/settings/default/")))
+                              (concat diffs (keymap-diffs-in (files/lt-home "/settings/default/")))
                               ))
 
 (behavior ::user-keymap-diffs
                   :triggers #{:keymap.diffs.user+}
                   :reaction (fn [this diffs]
-                              (concat diffs (keymap-diffs-in (str files/pwd "/settings/user/")))
+                              (concat diffs (keymap-diffs-in (files/lt-user-dir "/settings/")))
                               ))
 
 (behavior ::load-keys

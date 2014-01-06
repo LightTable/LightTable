@@ -56,6 +56,7 @@
         :lt.objs.plugins/behaviors.refreshed-load-keys
         :lt.objs.statusbar/init-statusbar-container
         :lt.objs.statusbar/show-statusbar
+        :lt.objs.workspace/init-workspace-cache-dir
         (:lt.objs.keyboard/chord-timeout 1000)
         (:lt.objs.files/file.ignore-pattern "(^\\..*)|\\.class$|target/|svn|cvs|\\.git|\\.pyc|~|\\.swp|\\.jar|.DS_Store|\\.nrepl-port")
         (:lt.objs.style/provide-skin "dark" "/core/css/skins/new-dark.css")

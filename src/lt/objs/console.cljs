@@ -1,6 +1,7 @@
 (ns lt.objs.console
   (:require [lt.object :as object]
             [lt.objs.app :as app]
+            [lt.objs.files :as files]
             [lt.objs.bottombar :as bottombar]
             [lt.objs.sidebar.command :as cmd]
             [lt.objs.statusbar :as statusbar]
@@ -14,9 +15,21 @@
 
 (def console-limit 50)
 (def util-inspect (.-inspect (js/require "util")))
-(def core-log (.. (js/require "fs") (createWriteStream (str "logs/window" (app/window-number) ".log"))))
+(def logs-dir (files/lt-user-dir "logs"))
+(def core-log (try
+                (when-not (files/exists? logs-dir)
+                  (files/mkdir logs-dir))
+                (.. (js/require "fs") (createWriteStream (files/join logs-dir (str "window" (app/window-number) ".log"))))
+                (catch js/global.Error e
+                  (.error js/console (str "Failed to initialize the log writer: " e)))
+                (catch js/Error e
+                  (.error js/console (str "Failed to initialize the log writer: " e)))))
 
 (.on js/process "uncaughtException" #(error %))
+
+(defn write-to-log [thing]
+  (when core-log
+    (.write core-log thing)))
 
 (defui console-ui [this]
   [:ul.console]
@@ -24,10 +37,10 @@
                  (object/raise this :menu! e)))
 
 (behavior ::on-close
-                  :triggers #{:close}
-                  :reaction (fn [this]
-                              (object/merge! this {:current-ui :bottom})
-                              (tabs/rem! this)))
+          :triggers #{:close}
+          :reaction (fn [this]
+                      (object/merge! this {:current-ui :bottom})
+                      (tabs/rem! this)))
 
 (object/object* ::console
                 :tags #{:console}
@@ -54,10 +67,10 @@
     (statusbar/dirty))
   (append $console msg))
 
-(defn verbatim [thing class str-version]
+(defn verbatim [thing class str-content]
   (let [$console (->ui console)]
-    (when str-version
-      (.write core-log str-version))
+    (when str-content
+      (write-to-log str-content))
     (when class
       (statusbar/console-class class))
     (write $console (->item thing class))
@@ -70,32 +83,32 @@
       (dom/append pre (dom/text-node content))
       true)))
 
-(defn loc-log [{:keys [file line content class str-version id] :as msg}]
+(defn loc-log [{:keys [file line content class str-content id] :as msg}]
   (when content
-  (when (or (string? content) str-version) (.write core-log (str file "[" line "]: " (if (string? content)
-                                                                      content
-                                                                      str-version) "\n")))
-  (when-not (try-update msg)
-    (verbatim [:table
-               [:tr
-                [:td.loc
-                 [:em.file file
-                  (when line [:em.line "[" line "]"])
-                  ": "]]
-                [:td [:pre (when id {:id (str "console" id)}) (if (string? content)
-                                                                (string/replace content #"^\s+" "")
-                                                                content)]]]]
-              class))))
+    (when (or (string? content) str-content) (write-to-log (str file "[" line "]: " (if (string? content)
+                                                                                      content
+                                                                                      str-content) "\n")))
+    (when-not (try-update msg)
+      (verbatim [:table
+                 [:tr
+                  [:td.loc
+                   [:em.file file
+                    (when line [:em.line "[" line "]"])
+                    ": "]]
+                  [:td [:pre (when id {:id (str "console" id)}) (if (string? content)
+                                                                  (string/replace content #"^\s+" "")
+                                                                  content)]]]]
+                class))))
 
-(defn log [l class str-version]
+(defn log [l class str-content]
   (when-not (= "" l)
     (let [$console (->ui console)]
-      (when (or (string? l) str-version) (.write core-log (if (string? l)
-                                                            l
-                                                            str-version))
-      (write $console (->item [:pre l] class))
-      (dom/scroll-top $console 10000000000)
-      nil))))
+      (when (or (string? l) str-content) (write-to-log (if (string? l)
+                                                         l
+                                                         str-content))
+        (write $console (->item [:pre l] class))
+        (dom/scroll-top $console 10000000000)
+        nil))))
 
 (defn error [e]
   (statusbar/console-class "error")
@@ -118,33 +131,33 @@
 (def console (object/create ::console))
 
 (behavior ::menu+
-                  :triggers #{:menu+}
-                  :reaction (fn [this]
-                              (conj items
-                                    {:label "Clear"
-                                     :order 1
-                                     :click (fn []
-                                              (cmd/exec! :clear-console))}
-                                    (when (not= :tab (:current-ui @console))
-                                      {:label "Hide console"
-                                       :order 2
-                                       :click (fn []
-                                                (cmd/exec! :toggle-console))})
-                                    (when (not= :tab (:current-ui @console))
-                                      {:label "Open console tab"
-                                       :order 3
-                                       :click (fn []
-                                                (cmd/exec! :toggle-console)
-                                                (cmd/exec! :console-tab))}))))
+          :triggers #{:menu+}
+          :reaction (fn [this]
+                      (conj items
+                            {:label "Clear"
+                             :order 1
+                             :click (fn []
+                                      (cmd/exec! :clear-console))}
+                            (when (not= :tab (:current-ui @console))
+                              {:label "Hide console"
+                               :order 2
+                               :click (fn []
+                                        (cmd/exec! :toggle-console))})
+                            (when (not= :tab (:current-ui @console))
+                              {:label "Open console tab"
+                               :order 3
+                               :click (fn []
+                                        (cmd/exec! :toggle-console)
+                                        (cmd/exec! :console-tab))}))))
 
 (behavior ::statusbar-console-toggle
-                  :triggers #{:toggle}
-                  :reaction (fn [this]
-                              (object/raise bottombar/bottombar :toggle console)
-                              (when (bottombar/active? console)
-                                (dom/scroll-top (object/->content console) 10000000000)
-                                (statusbar/clean))
-                              ))
+          :triggers #{:toggle}
+          :reaction (fn [this]
+                      (object/raise bottombar/bottombar :toggle console)
+                      (when (bottombar/active? console)
+                        (dom/scroll-top (object/->content console) 10000000000)
+                        (statusbar/clean))
+                      ))
 
 (bottombar/add-item console)
 

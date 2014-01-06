@@ -3,6 +3,7 @@
             [lt.objs.app :as app]
             [lt.objs.files :as files]
             [lt.objs.command :as cmd]
+            [lt.objs.cache :as cache]
             [cljs.reader :as reader]
             [lt.util.load :as load]
             [lt.util.js :refer [now]]
@@ -112,6 +113,8 @@
 ;; Files and folders
 ;;*********************************************************
 
+(def workspace-cache-path (files/join cache/cache-path "workspace"))
+
 (defn files-and-folders [path]
   (reduce (fn [res cur]
             (let [dir? (files/dir? cur)]
@@ -143,7 +146,7 @@
 
 (defn open [ws file]
   (let [loc (if-not (> (.indexOf file files/separator) -1)
-              (files/lt-home (files/join "core" "cache" "workspace" file))
+              (files/join workspace-cache-path file)
               file)]
     (object/merge! ws {:file (new-cached-file)})
     (try
@@ -154,11 +157,11 @@
         ))))
 
 (defn save [ws file]
-  (files/save (files/lt-home (files/join "core" "cache" "workspace" file)) (pr-str (serialize @ws)))
+  (files/save (files/join workspace-cache-path file) (pr-str (serialize @ws)))
   (object/raise ws :save))
 
 (defn cached []
-  (filter #(> (.indexOf % ".clj") -1) (files/full-path-ls (files/lt-home (files/join "core" "cache" "workspace")))))
+  (filter #(> (.indexOf % ".clj") -1) (files/full-path-ls workspace-cache-path)))
 
 (defn file->ws [file]
   (-> (files/open-sync file)
@@ -267,6 +270,12 @@
                   :triggers #{:close :refresh}
                   :reaction (fn [app]
                               (stop-watching current-ws)))
+
+(behavior ::init-workspace-cache-dir
+          :triggers #{:init}
+          :reaction (fn [app]
+                      (when-not (files/exists? workspace-cache-path)
+                        (files/mkdir workspace-cache-path))))
 
 (object/object* ::workspace
                 :tags #{:workspace}

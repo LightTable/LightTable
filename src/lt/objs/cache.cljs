@@ -4,7 +4,8 @@
             [cljs.reader :as reader])
   (:require-macros [lt.macros :refer [behavior]]))
 
-(def settings-path (str (files/lt-home "settings/default.clj")))
+(def cache-path (files/lt-user-dir "ltcache"))
+(def settings-path (str (files/lt-user-dir "ltcache/default.clj")))
 (def settings (atom {}))
 
 (defn on-disk [cb]
@@ -35,6 +36,8 @@
              (swap! settings merge setts))))
 
 (behavior ::init
-                  :triggers #{:init}
-                  :reaction (fn [this]
-                              (init)))
+          :triggers #{:init}
+          :reaction (fn [this]
+                      (when-not (files/exists? cache-path)
+                        (files/mkdir cache-path))
+                      (init)))
