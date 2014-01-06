@@ -34,8 +34,9 @@
 
 (defn ->active? [cur clients]
   (let [actives (:active clients)
-        found? (first (filter #(= cur (val %)) actives))]
-    (if found?
+        found? (first (filter #(= cur (val %)) actives))
+        connected? (:connected @cur)]
+    (if (and found? connected)
       (str "active client-" (name (first found?)))
       "")))
 
