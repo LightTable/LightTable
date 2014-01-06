@@ -128,7 +128,7 @@
 .CodeMirror-hints ul li { margin: 0; padding: 0 4px; border-radius: 2px; max-width: 60em; overflow: hidden; white-space: pre; color: #ccc; cursor: pointer; }
 .CodeMirror-hints input { display:none; }
 .CodeMirror-hints .selected { background: var(highlight-bg); color: var(highlight-fg); }
-.CodeMirror-hints ul::-webkit-scrollbar-thumb { background: var(pane-scrollbar); border-color: var(pane-scrollbar); }
+.CodeMirror-hints ul::-webkit-scrollbar-thumb { background: var(scrollbar); border-color: var(scrollbar); }
 
 /**********************************************************
 * Shared
@@ -221,8 +221,7 @@ input { color: var(highlight-fg); background:var(highlight-bg); }
 .filter-list .selected em, .filter-list li:hover em { color:#C7E6FF; }
 
 #side .content { background:var(bg); box-shadow: 0 0 10px var(shadow); }
-#side ::-webkit-scrollbar-thumb { background: transparent; border:0px solid var(multi); }
-#side:hover ::-webkit-scrollbar-thumb { background: var(multi); border:1px solid var(multi); }
+#side ::-webkit-scrollbar-thumb { background: var(scrollbar); border:1px solid var(scrollbar); }
 
 #side .workspace ul.buttons li:hover:not(.sep) { color:var(highlight-fg); background:var(highlight-bg); }
 #side .workspace li:hover > div > p { color: var(highlight-fg); }
@@ -296,12 +295,12 @@ input { color: var(highlight-fg); background:var(highlight-bg); }
 #browser ::-webkit-scrollbar { background: var(bg) !important; }
 #browser ::-webkit-scrollbar-track { background: var(bg) !important; }
 #browser ::-webkit-scrollbar-corner { background: var(bg) !important; }
-#browser ::-webkit-scrollbar-thumb { background: var(dark-highlight-bg); border:1px solid var(dark-highlight-bg);  }
+#browser ::-webkit-scrollbar-thumb { background: var(scrollbar); border:1px solid var(scrollbar);  }
 
 .docs ::-webkit-scrollbar { background: var(bg) !important; }
 .docs ::-webkit-scrollbar-track { background: var(bg) !important; }
 .docs ::-webkit-scrollbar-corner { background: var(bg) !important; }
-.docs ::-webkit-scrollbar-thumb { background: var(dark-highlight-bg); border:1px solid var(dark-highlight-bg);  }
+.docs ::-webkit-scrollbar-thumb { background: var(scrollbar); border:1px solid var(scrollbar);  }
 
 .search-results .path, .search-results .line { color:var(hidden-fg); }
 .search-results .line { color:var(secondary-accent-desat-fg); }

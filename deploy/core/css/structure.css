@@ -162,8 +162,8 @@ body { -webkit-user-select: none; }
 #right-bar .content > * { padding:0px 0px;  box-sizing:border-box; height:100%; }
 #right-bar .vertical-grip { left:-4px; }
 
-#side { position:fixed; top:var(top-offset); left:0; height:100%; z-index:1000000; overflow:hidden; }
-#side .content { height:100%; overflow:hidden; padding:4px 5px; box-sizing:border-box;}
+#side { position:fixed; top:var(top-offset); left:0; bottom:0; z-index:1000000; overflow:hidden; }
+#side .content { height:100%; overflow:hidden; padding:4px 5px; padding-bottom:10px; box-sizing:border-box;}
 #side .content > * { padding:0px 0px;  box-sizing:border-box; }
 #side .vertical-grip { right:-4px; pointer-events:auto; }
 
