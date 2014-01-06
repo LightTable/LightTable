@@ -183,7 +183,7 @@ input { color: var(highlight-fg); background:var(highlight-bg); }
 #multi .tabset + .tabset { border-left:2px solid var(bg); }
 
 #bottombar .content { background:var(bg); border-top:0px solid var(border); }
-.console > li, .console td { color:var(light-accent-foreground); }
+.console > li, .console td { color:var(accent-foreground); }
 .console > li + li { border-top:2px solid var(bg); }
 .console > li.error + li { border-color:var(bg);}
 .console li.error { color:var(error-fg); background:var(error-bg); border-color:var(bg);}
@@ -245,7 +245,7 @@ input { color: var(highlight-fg); background:var(highlight-bg); }
 #right-bar .filter-list .selected, #right-bar .filter-list .selected h2, #right-bar .filter-list li:hover { color:var(highlight-fg); background: var(highlight-bg); }
 #right-bar .filter-list input { border:0px solid var(pane-border); background:var(highlight-bg); }
 
-#right-bar .navigate .filter-list .selected p { color:var(bright-fg); }
+#right-bar .navigate .filter-list .selected p { color:var(fg); }
 
 #right-bar .filter-list li + li { border-top:0px solid var(dark-pane-border); }
 
