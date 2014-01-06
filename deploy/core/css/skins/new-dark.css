@@ -239,7 +239,7 @@ input { color: var(highlight-fg); background:var(highlight-bg); }
 #right-bar .command .filter-list p { color:var(bright-fg); }
 #right-bar .command .filter-list .selected p { color:var(highlight-fg); }
 #right-bar .command .filter-list p.binding { color:var(fg); }
-#right-bar .command .filter-list .selected p.binding { color: var(bright-fg); }
+#right-bar .command .filter-list .selected p.binding { color: var(fg); }
 
 #right-bar .filter-list h2 { color:var(bright-fg);  }
 #right-bar .filter-list .selected, #right-bar .filter-list .selected h2, #right-bar .filter-list li:hover { color:var(highlight-fg); background: var(highlight-bg); }
