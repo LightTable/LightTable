@@ -111,6 +111,14 @@
     "http://app.kodowa.com/latest-version/nw-edge"
     "http://app.kodowa.com/latest-version/nw"))
 
+(defn should-update-popup [data]
+  (popup/popup! {:header "There's a newer version of Light Table!"
+                 :body (str "Would you like us to download and install version " data "?")
+                 :buttons [{:label "Cancel"}
+                           {:label "Download and install"
+                            :action (fn []
+                                      (fetch-and-deploy data))}]}))
+
 (defn check-version [& [notify?]]
   (fetch/xhr (version-url) {}
              (fn [data]
@@ -118,11 +126,12 @@
                  (if (and (not= data "")
                           (not= data (:version version))
                           (is-newer? (:version version) data)
-                          (not= js/localStorage.fetchedVersion data))
+                          (or notify?
+                              (not= js/localStorage.fetchedVersion data)))
                    (do
                      (set! js/localStorage.fetchedVersion data)
                      (set! version (assoc version :version data))
-                     (fetch-and-deploy data))
+                     (should-update-popup data))
                    (when notify?
                      (notifos/set-msg! (str "At latest version: " (:version version)))))))))
 
