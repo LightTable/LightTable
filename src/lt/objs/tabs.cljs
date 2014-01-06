@@ -34,7 +34,7 @@
         ))))
 
 (behavior ::on-destroy-remove
-          :triggers #{:destroy}
+          :triggers #{:destroy :closed}
           :reaction (fn [this]
                       (rem! this)
                       ))

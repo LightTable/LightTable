@@ -144,7 +144,7 @@
                               ))
 
 (behavior ::remove-theme
-          :triggers #{:deactivated}
+          :triggers #{:deactivated :destroy}
           :reaction (fn [this]
                       (when-not (object/has-tag? (tabs/active-tab) :editor)
                         (when-not (empty? prev-theme)
