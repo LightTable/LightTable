@@ -139,7 +139,7 @@
 
 (defn fetch-and-install [url name cb]
   (let [munged-name (munge-plugin-name name)
-        tmp-gz (str user-plugins-dir "/" munged-name "tmp.tar.gz")
+        tmp-gz (str user-plugins-dir "/" munged-name "-tmp.tar.gz")
         tmp-dir (str user-plugins-dir "/" munged-name "-tmp")]
     (notifos/working (str "Downloading plugin: " name))
     (deploy/download-file url tmp-gz (fn []
