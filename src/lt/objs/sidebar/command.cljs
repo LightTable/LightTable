@@ -118,16 +118,18 @@
 (behavior ::set-selection!
           :triggers #{:set-selection!}
           :reaction (fn [this idx]
-                      (when idx
-                        (let [cnt (count (:cur @this))
-                              neue-idx (mod idx (if (> cnt (:size @this))
+                      (let [cnt (count (:cur @this))
+                            neue-idx (when (> cnt 0)
+                                       (mod idx (if (> cnt (:size @this))
                                                   (:size @this)
-                                                  cnt))
-                              old (nth (:lis @this) (:selected @this))
-                              neue (nth (:lis @this) neue-idx)]
-                          (dom/remove-class old :selected)
-                          (dom/add-class neue :selected)
-                          (object/merge! this {:selected neue-idx})))))
+                                                  cnt)))]
+                        (when neue-idx
+                          (let [old (nth (:lis @this) (:selected @this))
+                                neue (nth (:lis @this) neue-idx)]
+                            (when neue
+                              (dom/remove-class old :selected)
+                              (dom/add-class neue :selected)
+                              (object/merge! this {:selected neue-idx})))))))
 
 (behavior ::change!
           :triggers #{:change!}
