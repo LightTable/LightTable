@@ -47,7 +47,8 @@
     (doseq [x xs]
       (.push arr #js [(count (string/split (str x) ".")) (str x) x]))
     (.sort arr)
-    (amap arr i _ (aget arr (- (.-length arr) i 1) 2))))
+    (.reverse arr)
+    (amap arr i _ (aget arr i 2))))
 
 (defn tags->behaviors [ts]
   (let [duped (apply concat (map @tags (specificity-sort ts)))
