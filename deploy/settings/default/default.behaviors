@@ -113,9 +113,7 @@
            :lt.objs.clients/try-send]
   :client.local [:lt.objs.clients.local/send!]
   :client.placeholder [:lt.objs.clients/remove-placeholder-on-swapped]
-  :clients [:lt.objs.clients/raise-on-object
-            :lt.objs.langs.python/ipython-error
-            :lt.objs.langs.python/pyzmq-error]
+  :clients [:lt.objs.clients/raise-on-object]
   :clients.devtools [:lt.objs.clients.devtools/clear-queue-on-connect
                      :lt.objs.clients.devtools/console-log
                      :lt.objs.clients.devtools/handle-message
@@ -219,16 +217,6 @@
                 :lt.objs.editor.pool/options-changed
                 :lt.objs.editor.pool/line-numbers-changed
                 :lt.objs.editor.pool/theme-changed]
-  :editor.python [:lt.objs.langs.python/python-exception :lt.objs.langs.python/on-eval
-                  :lt.objs.langs.python/on-eval.one
-                  :lt.objs.langs.python/python-result
-                  :lt.objs.langs.python/python-success
-                  :lt.objs.langs.python/python-printer
-                  :lt.objs.langs.python/python-watch
-                  :lt.objs.langs.python/python-image
-                  :lt.objs.langs.python/watch-src
-                  [:lt.object/add-tag :watchable]
-                  (:lt.objs.editor/tab-settings false 4 4)]
   :editor.read-only [:lt.objs.editor/read-only]
   :editor.structural [:lt.plugins.struct/rem-on-close]
   :editor.transient [:lt.objs.editor.file/dirty-on-change
@@ -359,7 +347,6 @@
           :lt.objs.popup/on-click-destroy
           :lt.objs.popup/change-active-button
           :lt.objs.popup/exec-active]
-  :python.lang [:lt.objs.langs.python/eval! :lt.objs.langs.python/connect]
   :searcher [:lt.objs.search/on-error
              :lt.objs.search/on-data :lt.objs.search/clear!
              :lt.objs.search/on-end

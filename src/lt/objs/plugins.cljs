@@ -454,13 +454,12 @@
 ;;*********************************************************
 
 (behavior ::init-plugins
-          :triggers #{:pre-init}
+          :triggers #{:pre-load}
           :reaction (fn [app]
                       (when-not (files/exists? user-plugins-dir)
                         (files/mkdir user-plugins-dir))
                       ;;load enabled plugins
-                      (object/merge! app/app {::plugins (available-plugins)})
-                      (cmd/exec! :behaviors.reload)))
+                      (object/merge! app/app {::plugins (available-plugins)})))
 
 (behavior ::behaviors.refreshed-load-keys
           :triggers #{:behaviors.refreshed}
@@ -499,22 +498,26 @@
                       (concat diffs (mapv settings/parse-key-file (::keymaps @this)))))
 
 (behavior ::load-js
-          :triggers #{:object.instant}
+          :triggers #{:object.instant-load}
           :desc "App: Load a javascript file"
           :params [{:label "path"}]
           :type :user
-          :reaction (fn [this path sync?]
-                      (let [path (adjust-path path)]
-                        (when-not (get (::loaded-files @this) path)
-                          (try
-                            (load/js path true)
-                            (object/update! this [::loaded-files] #(conj (or % #{}) path))
-                            (catch js/Error e
-                              (.error js/console (str "Error loading JS file: " path " : " e))
-                              (.error js/console (.-stack e)))
-                            (catch js/global.Error e
-                              (.error js/console (str "Error loading JS file: " path " : " e))
-                              (.error js/console (.-stack e))))))))
+          :reaction (fn [this path]
+                      (let [paths (if (coll? path)
+                                    path
+                                    [path])]
+                        (doseq [path paths]
+                          (let [path (adjust-path path)]
+                            (when-not (get (::loaded-files @this) path)
+                              (try
+                                (load/js path true)
+                                (object/update! this [::loaded-files] #(conj (or % #{}) path))
+                                (catch js/Error e
+                                  (.error js/console (str "Error loading JS file: " path " : " e))
+                                  (.error js/console (.-stack e)))
+                                (catch js/global.Error e
+                                  (.error js/console (str "Error loading JS file: " path " : " e))
+                                  (.error js/console (.-stack e))))))))))
 
 (behavior ::load-css
           :triggers #{:object.instant}

@@ -90,7 +90,7 @@
   (if-not (seq objs)
     (do
       (object/raise app/app :behaviors.refreshed)
-      (notifos/done-working ""))
+      (notifos/done-working "Behaviors loaded"))
     (do
       (try
         (object/refresh! (first objs))
@@ -123,6 +123,7 @@
           :reaction (fn [this]
                       (when-not (files/exists? (files/lt-user-dir "settings"))
                         (files/mkdir (files/lt-user-dir "settings")))
+                      (object/raise this :pre-load)
                       (load-all)
                       (doseq [inst (vals @object/instances)]
                         (object/refresh! inst))))
@@ -130,8 +131,8 @@
 (behavior ::load-behaviors
           :triggers #{:behaviors.reload}
           :reaction (fn [this]
-                      (load-all)
                       (notifos/working "loading behaviors...")
+                      (load-all)
                       (refresh-all (vals @object/instances))))
 
 

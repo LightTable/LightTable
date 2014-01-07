@@ -71,9 +71,17 @@
   (let [cur @obj
         behs (set (concat (:behaviors cur) (tags->behaviors (:tags cur))))
         trigs (->triggers behs)
+        ;;We need to load new JS files here because they may define the behaviors that we're meant to
+        ;;capture. If we have a load, then load and recalculate the triggers to pick up those newly
+        ;;defined behaviors
+        trigs (if (:object.instant-load trigs)
+                (do
+                  (raise* obj (:object.instant-load trigs) nil :object.instant-load)
+                  (->triggers behs))
+                trigs)
         trigs (if instants
                 trigs
-                (dissoc trigs :object.instant))]
+                (dissoc trigs :object.instant :object.instant-load))]
     (assoc cur :listeners trigs)))
 
 (defn make-object* [name & r]
