@@ -49,48 +49,48 @@
       (ed/->val doc))))
 
 (behavior ::clear!
-                  :triggers #{:clear}
-                  :reaction (fn [inline-watch]
-                              (let [ed (-> @inline-watch :ed)
-                                    id (-> @inline-watch :opts :id)]
-                                (.clear (-> @ed :watches (get id) :mark))
-                                (object/update! ed [:watches] dissoc id)
-                                (object/raise ed :unwatch))))
+          :triggers #{:clear}
+          :reaction (fn [inline-watch]
+                      (let [ed (-> @inline-watch :ed)
+                            id (-> @inline-watch :opts :id)]
+                        (.clear (-> @ed :watches (get id) :mark))
+                        (object/update! ed [:watches] dissoc id)
+                        (object/raise ed :unwatch))))
 
 (behavior ::watch!
-                  :triggers #{:watch!}
-                  :reaction (fn [this opts]
-                              (when-let [sel (ed/selection-bounds this)]
-                                (let [id (-> (gensym "watch")
-                                             (str))
-                                      mark (ed/mark this (:from sel) (:to sel) {:className (or (:class opts) "watched")
-                                                                                :inclusiveLeft false
-                                                                                :inclusiveRight false})
-                                      res (inline this (merge {:type :watch :id id} opts) (:to sel))]
-                                  (.on mark "hide" (fn []
-                                                     (object/raise res :clear!)))
-                                  (set! (.-custom mark) (when (:exp opts) opts))
-                                  (set! (.-lttype mark) :watch)
-                                  (set! (.-ltwatchid mark) id)
-                                  (object/update! this [:watches] assoc id {:mark mark
-                                                                            :inline-result res})
-                                  (object/raise this :watch)))))
+          :triggers #{:watch!}
+          :reaction (fn [this opts]
+                      (when-let [sel (ed/selection-bounds this)]
+                        (let [id (-> (gensym "watch")
+                                     (str))
+                              mark (ed/mark this (:from sel) (:to sel) {:className (or (:class opts) "watched")
+                                                                        :inclusiveLeft false
+                                                                        :inclusiveRight false})
+                              res (inline this (merge {:type :watch :id id} opts) (:to sel))]
+                          (.on mark "hide" (fn []
+                                             (object/raise res :clear!)))
+                          (set! (.-custom mark) (when (:exp opts) opts))
+                          (set! (.-lttype mark) :watch)
+                          (set! (.-ltwatchid mark) id)
+                          (object/update! this [:watches] assoc id {:mark mark
+                                                                    :inline-result res})
+                          (object/raise this :watch)))))
 
 (behavior ::unwatch!
-                  :triggers #{:unwatch!}
-                  :reaction (fn [this]
-                              (when-let [cur (ed/->cursor this)]
-                                (doseq [mark (ed/find-marks this cur)
-                                        :when (= (.-lttype mark) :watch)]
-                                  (object/raise (-> @this :watches (get (.-ltwatchid mark)) :inline-result) :clear!)))))
+          :triggers #{:unwatch!}
+          :reaction (fn [this]
+                      (when-let [cur (ed/->cursor this)]
+                        (doseq [mark (ed/find-marks this cur)
+                                :when (= (.-lttype mark) :watch)]
+                          (object/raise (-> @this :watches (get (.-ltwatchid mark)) :inline-result) :clear!)))))
 
 (behavior ::eval-on-watch-or-unwatch
-                  :triggers #{:unwatch :watch}
-                  :reaction (fn [this]
-                              (when (ed/selection? this)
-                                (let [cursor (ed/->cursor this)]
-                                  (ed/set-selection this cursor cursor)))
-                              (object/raise this :eval.one)))
+          :triggers #{:unwatch :watch}
+          :reaction (fn [this]
+                      (when (ed/selection? this)
+                        (let [cursor (ed/->cursor this)]
+                          (ed/set-selection this cursor cursor)))
+                      (object/raise this :eval.one)))
 
 (cmd/command {:command :editor.watch.watch-selection
               :desc "Editor: Watch selection"

@@ -28,42 +28,42 @@
     (editor/move-cursor ed (adjust-loc loc dir))))
 
 (behavior ::open-pair
-                  :triggers #{:open-pair!}
-                  :reaction (fn [this ch]
-                              (if (re-seq word-char (get-char this 1))
-                                (editor/insert-at-cursor this ch)
-                                (do
-                                  (editor/insert-at-cursor this (str ch (pairs ch)))
-                                  (move-cursor this -1)))))
+          :triggers #{:open-pair!}
+          :reaction (fn [this ch]
+                      (if (re-seq word-char (get-char this 1))
+                        (editor/insert-at-cursor this ch)
+                        (do
+                          (editor/insert-at-cursor this (str ch (pairs ch)))
+                          (move-cursor this -1)))))
 
 (behavior ::close-pair
-                  :triggers #{:close-pair!}
-                  :reaction (fn [this ch]
-                             	(if (= ch (get-char this 1))
-                                (move-cursor this 1)
-                                (passthrough))
-                              ))
+          :triggers #{:close-pair!}
+          :reaction (fn [this ch]
+                      (if (= ch (get-char this 1))
+                        (move-cursor this 1)
+                        (passthrough))
+                      ))
 
 (behavior ::repeat-pair
-                  :triggers #{:repeat-pair!}
-                  :reaction (fn [this ch]
-                              (cond
-                               (= ch (get-char this 1)) (move-cursor this 1)
-                               (re-seq word-char (get-char this 1)) (editor/insert-at-cursor this ch)
-                               (re-seq word-char (get-char this -1)) (editor/insert-at-cursor this ch)
-                               :else (do
-                                       (editor/insert-at-cursor this (str ch ch))
-                                       (move-cursor this -1)))))
+          :triggers #{:repeat-pair!}
+          :reaction (fn [this ch]
+                      (cond
+                       (= ch (get-char this 1)) (move-cursor this 1)
+                       (re-seq word-char (get-char this 1)) (editor/insert-at-cursor this ch)
+                       (re-seq word-char (get-char this -1)) (editor/insert-at-cursor this ch)
+                       :else (do
+                               (editor/insert-at-cursor this (str ch ch))
+                               (move-cursor this -1)))))
 
 (behavior ::try-remove-pair
-                  :triggers #{:backspace!}
-                  :reaction (fn [this]
-                              (let [ch (get-char this -1)]
-                                (if (and (pairs ch)
-                                         (= (get-char this 1) (pairs ch)))
-                                  (let [loc (editor/->cursor this)]
-                                    (editor/replace this (adjust-loc loc -1) (adjust-loc loc 1) ""))
-                                  (passthrough)))))
+          :triggers #{:backspace!}
+          :reaction (fn [this]
+                      (let [ch (get-char this -1)]
+                        (if (and (pairs ch)
+                                 (= (get-char this 1) (pairs ch)))
+                          (let [loc (editor/->cursor this)]
+                            (editor/replace this (adjust-loc loc -1) (adjust-loc loc 1) ""))
+                          (passthrough)))))
 
 
 (cmd/command {:command :editor.close-pair

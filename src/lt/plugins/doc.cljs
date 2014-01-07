@@ -21,36 +21,36 @@
   (object/raise cur :clear!))
 
 (behavior ::clear
-                  :triggers #{:clear}
-                  :reaction (fn [this]
-                              (object/update! (:ed @this) [:widgets] dissoc [(:line @this) :underline])))
+          :triggers #{:clear}
+          :reaction (fn [this]
+                      (object/update! (:ed @this) [:widgets] dissoc [(:line @this) :underline])))
 
 (defn inline-doc [this res opts loc]
   (let [ed (:ed @this)
         type :underline
         line (editor/line-handle ed (:line loc))
         res-obj (object/create :lt.objs.eval/underline-result {:ed this
-                                                            :class (name type)
-                                                            :opts opts
-                                                            :result res
-                                                            :loc loc
-                                                            :line line})]
+                                                               :class (name type)
+                                                               :opts opts
+                                                               :result res
+                                                               :loc loc
+                                                               :line line})]
     (object/add-tags res-obj [:inline.doc])
     (object/update! this [:widgets] assoc [line :underline] res-obj)
     res-obj))
 
 (behavior ::doc-menu+
-           :triggers #{:menu+}
-           :reaction (fn [this items]
-                       (conj items
-                             {:label "Show docs"
-                              :order 0.1
-                              :enabled (not (editor/selection? this))
-                              :click (fn []
-                                       (cmd/exec! :editor.doc.toggle))}
-                             {:type "separator"
-                              :order 0.2}
-                             )))
+          :triggers #{:menu+}
+          :reaction (fn [this items]
+                      (conj items
+                            {:label "Show docs"
+                             :order 0.1
+                             :enabled (not (editor/selection? this))
+                             :click (fn []
+                                      (cmd/exec! :editor.doc.toggle))}
+                            {:type "separator"
+                             :order 0.2}
+                            )))
 
 
 (cmd/command {:command :editor.doc.toggle
@@ -76,11 +76,11 @@
      [:pre (:doc doc)])])
 
 (behavior ::editor.doc.show!
-                  :triggers #{:editor.doc.show!}
-                  :reaction (fn [editor doc]
-                              (when (not= (:name doc) "")
-                                (inline-doc editor (doc-ui doc) {} (:loc doc)))
-                              ))
+          :triggers #{:editor.doc.show!}
+          :reaction (fn [editor doc]
+                      (when (not= (:name doc) "")
+                        (inline-doc editor (doc-ui doc) {} (:loc doc)))
+                      ))
 
 (defui search-item [item]
   [:li
@@ -94,7 +94,7 @@
   :focus (fn []
            (ctx/in! :sidebar.doc.search.input this))
   :blur (fn []
-           (ctx/out! :sidebar.doc.search.input)))
+          (ctx/out! :sidebar.doc.search.input)))
 
 (defui type-item [this i]
   [:li (:label i)]
@@ -146,62 +146,62 @@
      :exact exact}))
 
 (behavior ::set-item
-                  :triggers #{:set-item!}
-                  :reaction (fn [this i]
-                              (object/merge! this {:cur i})
-                              (object/raise this :clear!)
-                              (dom/replace-with (dom/$ :.types (object/->content this)) (type-list this))
-                              (object/raise this :focus!)))
+          :triggers #{:set-item!}
+          :reaction (fn [this i]
+                      (object/merge! this {:cur i})
+                      (object/raise this :clear!)
+                      (dom/replace-with (dom/$ :.types (object/->content this)) (type-list this))
+                      (object/raise this :focus!)))
 
 (behavior ::clear!
-                  :triggers #{:clear!}
-                  :reaction (fn [this]
-                              (dom/empty (dom/$ :.results (object/->content this)))
-                              (object/merge! this {:results #{}})))
+          :triggers #{:clear!}
+          :reaction (fn [this]
+                      (dom/empty (dom/$ :.results (object/->content this)))
+                      (object/merge! this {:results #{}})))
 
 (behavior ::no-client
-                  :triggers #{:no-client}
-                  :reaction (fn [this]
-                              (when-not (dom/$ :.no-client (object/->content this))
-                                (dom/before (dom/$ :.results (object/->content this)) (no-client-ui this)))))
+          :triggers #{:no-client}
+          :reaction (fn [this]
+                      (when-not (dom/$ :.no-client (object/->content this))
+                        (dom/before (dom/$ :.results (object/->content this)) (no-client-ui this)))))
 
 (behavior ::cur-from-last-editor
-                  :triggers #{:show}
-                  :reaction (fn [this]
-                              (when-let [ed (pool/last-active)]
-                                (let [ed-type (-> @ed :info :type-name)]
-                                  (when-not (-> @this :cur :file-types (get ed-type))
-                                    (when-let [neue (first (filter #(-> % :file-types (get ed-type))
-                                                                   (object/raise-reduce this :types+ [])))]
-                                      (object/raise this :set-item! neue)
-                                      ))))))
+          :triggers #{:show}
+          :reaction (fn [this]
+                      (when-let [ed (pool/last-active)]
+                        (let [ed-type (-> @ed :info :type-name)]
+                          (when-not (-> @this :cur :file-types (get ed-type))
+                            (when-let [neue (first (filter #(-> % :file-types (get ed-type))
+                                                           (object/raise-reduce this :types+ [])))]
+                              (object/raise this :set-item! neue)
+                              ))))))
 
 (behavior ::sidebar.doc.search.exec
-                  :triggers #{:sidebar.doc.search.exec}
-                  :reaction (fn [this]
-                              (let [v (->val this)
-                                    trigger (-> @this :cur :trigger)]
-                                (object/raise this :clear!)
-                                (when-not (empty? v)
-                                  (if (fn? trigger)
-                                    (trigger v)
-                                    (try-trigger this (:cur @this) v))))))
+          :triggers #{:sidebar.doc.search.exec}
+          :reaction (fn [this]
+                      (let [v (->val this)
+                            trigger (-> @this :cur :trigger)]
+                        (object/raise this :clear!)
+                        (when-not (empty? v)
+                          (if (fn? trigger)
+                            (trigger v)
+                            (try-trigger this (:cur @this) v))))))
 
 (behavior ::doc.search.results
-                  :triggers #{:doc.search.results}
-                  :reaction (fn [this results]
-                              (let [v (->val this)
-                                    {:keys [normal exact]} (grouped-items results v (:results @this))
-                                    old (dom/$ :.results (object/->content this))]
-                                (object/merge! this {:results (into (:results @this) results)})
-                                (notifos/done-working (str "Found " (count (:results @this)) " doc results."))
-                                (dom/prepend old exact)
-                                (dom/append old normal))))
+          :triggers #{:doc.search.results}
+          :reaction (fn [this results]
+                      (let [v (->val this)
+                            {:keys [normal exact]} (grouped-items results v (:results @this))
+                            old (dom/$ :.results (object/->content this))]
+                        (object/merge! this {:results (into (:results @this) results)})
+                        (notifos/done-working (str "Found " (count (:results @this)) " doc results."))
+                        (dom/prepend old exact)
+                        (dom/append old normal))))
 
 (behavior ::focus!
-                  :triggers #{:focus!}
-                  :reaction (fn [this]
-                              (dom/focus (dom/$ :input (object/->content this)))))
+          :triggers #{:focus!}
+          :reaction (fn [this]
+                      (dom/focus (dom/$ :input (object/->content this)))))
 
 (object/object* ::sidebar.doc.search
                 :tags #{:sidebar.docs.search}
@@ -240,11 +240,11 @@
                       )})
 
 (behavior ::init-doc-search
-                  :triggers #{:init}
-                  :reaction (fn [this]
-                              (set! doc-search (object/create ::sidebar.doc.search))
-                              (sidebar/add-item sidebar/rightbar doc-search)
-                              ))
+          :triggers #{:init}
+          :reaction (fn [this]
+                      (set! doc-search (object/create ::sidebar.doc.search))
+                      (sidebar/add-item sidebar/rightbar doc-search)
+                      ))
 
 (def doc-search nil)
 
