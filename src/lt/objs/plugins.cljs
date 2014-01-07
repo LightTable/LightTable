@@ -24,6 +24,7 @@
 
 
 (def plugins-dir (files/lt-home "plugins"))
+(def user-plugins-dir (files/lt-user-dir "plugins"))
 (def plugins-url "http://plugins.lighttable.com")
 
 (defn EOF-read [s]
@@ -31,13 +32,24 @@
              (seq s))
     (reader/read-string s)))
 
+(defn munge-plugin-name [n]
+  (when n
+    (-> n
+        (string/replace " " "_")
+        (string/replace "-" "_")
+        (string/replace "." "_"))))
+
 (defn adjust-path [path]
   (if (files/absolute? path)
     path
     (files/join (or (::dir object/*behavior-meta*) (files/lt-home)) path)))
 
 (defn local-module [plugin-name module-name]
-  (files/join plugins-dir plugin-name "node_modules" module-name))
+  (let [plugin-name (munge-plugin-name plugin-name)]
+    (cond
+     (::dir object/*behavior-meta*) (files/join (::dir object/*behavior-meta*) "node_modules" module-name)
+     (files/exists? (files/join user-plugins-dir plugin-name)) (files/join user-plugins-dir plugin-name "node_modules" module-name)
+     (files/exists? (files/join plugins-dir plugin-name)) (files/join plugins-dir plugin-name "node_modules" module-name))))
 
 (cmd/command {:command :build
               :desc "Editor: build file or project"
@@ -75,7 +87,8 @@
   (or (plugin-json dir) (plugin-edn dir)))
 
 (defn available-plugins []
-  (let [ds (files/dirs (files/join deploy/home-path "plugins"))]
+  (let [ds (concat (files/dirs plugins-dir)
+                   (files/dirs user-plugins-dir))]
     (into {}
           (->> ds
                (map plugin-info)
@@ -125,8 +138,9 @@
 ;;*********************************************************
 
 (defn fetch-and-install [url name cb]
-  (let [tmp-gz (str plugins-dir "/" name "tmp.tar.gz")
-        tmp-dir (str plugins-dir "/" name "-tmp")]
+  (let [munged-name (munge-plugin-name name)
+        tmp-gz (str user-plugins-dir "/" munged-name "-tmp.tar.gz")
+        tmp-dir (str user-plugins-dir "/" munged-name "-tmp")]
     (notifos/working (str "Downloading plugin: " name))
     (deploy/download-file url tmp-gz (fn []
                                        (notifos/done-working)
@@ -134,7 +148,7 @@
                                        (deploy/untar tmp-gz tmp-dir
                                                      (fn []
                                                        (let [munged-dir (first (files/full-path-ls tmp-dir))]
-                                                         (files/move! munged-dir (str plugins-dir "/" name "/"))
+                                                         (files/move! munged-dir (str user-plugins-dir "/" munged-name "/"))
                                                          (files/delete! tmp-dir)
                                                          (files/delete! tmp-gz)
                                                          (notifos/done-working (str "Plugin fetched: " name))
@@ -439,6 +453,8 @@
 (behavior ::init-plugins
           :triggers #{:pre-init}
           :reaction (fn [app]
+                      (when-not (files/exists? user-plugins-dir)
+                        (files/mkdir user-plugins-dir))
                       ;;load enabled plugins
                       (object/merge! app/app {::plugins (available-plugins)})
                       (cmd/exec! :behaviors.reload)))

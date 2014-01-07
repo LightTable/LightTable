@@ -31,13 +31,6 @@
       }
       win.show();
 
-      //replace stdout so that we create a log file
-      process.__defineGetter__('stdout', function() {
-        if (process.__stdout) return process.__stdout;
-        process.__stdout = require('fs').createWriteStream('logs/core.log');
-        return process.__stdout;
-      });
-
       //give it a little bit to paint before loading.
       setTimeout(function() {
        var script = document.createElement("script");

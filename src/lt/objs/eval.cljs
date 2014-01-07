@@ -18,13 +18,13 @@
   (:require-macros [lt.macros :refer [behavior defui]]))
 
 (defui button [label & [cb]]
-       [:div.button.right label]
-       :click (fn []
-                (when cb
-                  (cb))))
+  [:div.button.right label]
+  :click (fn []
+           (when cb
+             (cb))))
 
 (defn unsupported []
-    (popup/show! [:h2 "We can't eval that yet."]
+  (popup/show! [:h2 "We can't eval that yet."]
                [:p "We can't eval this type of file yet. The extensions that we know how to execute are:"
                 (str " [ " (apply str (map #(str "." % " ") supported-types)) "]")]
                (button "Cancel")
@@ -81,57 +81,57 @@
    :else (pr-str n)))
 
 (behavior ::on-selected-cb
-                  :triggers #{:selected}
-                  :reaction (fn [obj client]
-                              (let [cb (@obj :cb)]
-                                (cb client))))
+          :triggers #{:selected}
+          :reaction (fn [obj client]
+                      (let [cb (@obj :cb)]
+                        (cb client))))
 
 (behavior ::on-selected-destroy
-                  :triggers #{:selected}
-                  :reaction (fn [obj client]
-                              (object/raise obj :destroy)
-                              ))
+          :triggers #{:selected}
+          :reaction (fn [obj client]
+                      (object/raise obj :destroy)
+                      ))
 
 (def eval-queue (atom []))
 
 (behavior ::queue-on-no-client
-                  :triggers #{:no-client}
-                  :reaction (fn [this queue-item]
-                              (swap! eval-queue conj queue-item)
-                              ))
+          :triggers #{:no-client}
+          :reaction (fn [this queue-item]
+                      (swap! eval-queue conj queue-item)
+                      ))
 
 (behavior ::alert-on-no-client
-                  :triggers #{:no-client}
-                  :reaction (fn [this]
-                              (popup/popup! {:header "No client available."
-                                             :body "We don't know what kind of client you want for this one. Try starting a client by choosing one of the connection types in the connect panel."
-                                             :buttons [{:label "Connect a client"
-                                                        :action (fn []
-                                                                  (cmd/exec! :show-add-connection))}]})
-                              ))
+          :triggers #{:no-client}
+          :reaction (fn [this]
+                      (popup/popup! {:header "No client available."
+                                     :body "We don't know what kind of client you want for this one. Try starting a client by choosing one of the connection types in the connect panel."
+                                     :buttons [{:label "Connect a client"
+                                                :action (fn []
+                                                          (cmd/exec! :show-add-connection))}]})
+                      ))
 
 (behavior ::queue!
-                  :triggers #{:queue!}
-                  :reaction (fn [this queue-item]
-                              (swap! eval-queue conj queue-item)
-                              ))
+          :triggers #{:queue!}
+          :reaction (fn [this queue-item]
+                      (swap! eval-queue conj queue-item)
+                      ))
 
 
 (defn drain [queue]
   (vec (remove
-          (fn [cur]
-            (let [[_ _ cb] cur
-                  [result client] (apply clients/discover cur)]
-              (when (= :found result)
-                (cb client)
-                true)))
-          queue)))
+        (fn [cur]
+          (let [[_ _ cb] cur
+                [result client] (apply clients/discover cur)]
+            (when (= :found result)
+              (cb client)
+              true)))
+        queue)))
 
 (behavior ::on-connect-check-queue
-                  :triggers #{:connect}
-                  :reaction (fn [this]
-                              (swap! eval-queue drain)
-                              ))
+          :triggers #{:connect}
+          :reaction (fn [this]
+                      (swap! eval-queue drain)
+                      ))
 
 (object/object* ::evaler
                 :tags #{:evaler}
@@ -179,92 +179,95 @@
        [:span.truncated truncated])
      [:span.full r]])
   :mousewheel (fn [e]
-            (dom/stop-propagation e))
-  :click (fn []
+                (dom/stop-propagation e))
+  :click (fn [e]
+           (dom/prevent e)
            (object/raise this :click))
   :contextmenu (fn [e]
+                 (dom/prevent e)
                  (object/raise this :menu! e))
-  :dblclick (fn []
+  :dblclick (fn [e]
+              (dom/prevent e)
               (object/raise this :double-click)))
 
 (behavior ::result-menu!
-                  :triggers #{:menu!}
-                  :reaction (fn [this ev]
-                              (-> (menu/menu [{:label "Remove result"
-                                               :click (fn [] (object/raise this :clear!))}])
-                                  (menu/show-menu (.-clientX ev) (.-clientY ev)))
-                              (dom/prevent ev)
-                              (dom/stop-propagation ev)))
+          :triggers #{:menu!}
+          :reaction (fn [this ev]
+                      (-> (menu/menu [{:label "Remove result"
+                                       :click (fn [] (object/raise this :clear!))}])
+                          (menu/show-menu (.-clientX ev) (.-clientY ev)))
+                      (dom/prevent ev)
+                      (dom/stop-propagation ev)))
 
 (behavior ::expand-on-click
-                  :triggers #{:click :expand!}
-                  :reaction (fn [this]
-                              (object/merge! this {:open true})
-                              (object/raise this :changed)
-                              ))
+          :triggers #{:click :expand!}
+          :reaction (fn [this]
+                      (object/merge! this {:open true})
+                      (object/raise this :changed)
+                      ))
 
 (behavior ::shrink-on-double-click
-                  :triggers #{:double-click :shrink!}
-                  :reaction (fn [this]
-                              (object/merge! this {:open false})
-                              (object/raise this :changed)
-                              (ed/focus (:ed @this))))
+          :triggers #{:double-click :shrink!}
+          :reaction (fn [this]
+                      (object/merge! this {:open false})
+                      (object/raise this :changed)
+                      (ed/focus (:ed @this))))
 
 (behavior ::destroy-on-cleared
-                  :triggers #{:cleared}
-                  :reaction (fn [this]
-                              (object/destroy! this)))
+          :triggers #{:cleared}
+          :reaction (fn [this]
+                      (object/destroy! this)))
 
 (behavior ::clear-mark
-                  :triggers #{:clear!}
-                  :reaction (fn [this]
-                              (when (deref (:ed @this))
-                                (js/CodeMirror.off (:line @this) "change" (:listener @this))
-                                (js/CodeMirror.off (:line @this) "delete" (:delete @this))
-                                (.clear (:mark @this))
-                                (object/raise this :clear)
-                                (object/raise this :cleared))))
+          :triggers #{:clear!}
+          :reaction (fn [this]
+                      (when (deref (:ed @this))
+                        (js/CodeMirror.off (:line @this) "change" (:listener @this))
+                        (js/CodeMirror.off (:line @this) "delete" (:delete @this))
+                        (.clear (:mark @this))
+                        (object/raise this :clear)
+                        (object/raise this :cleared))))
 
 (behavior ::changed
-                  :triggers #{:changed}
-                  :reaction (fn [this]
-                              (.changed (:mark @this))
-                              ))
+          :triggers #{:changed}
+          :reaction (fn [this]
+                      (.changed (:mark @this))
+                      ))
 
 (behavior ::update!
-                  :triggers #{:update!}
-                  :reaction (fn [this res]
-                              (let [content (object/->content this)
-                                    full (dom/$ :.full content)
-                                    scroll (dom/scroll-top full)]
-                                (when-let [t (truncate-result res)]
-                                  (when-let [trunc (dom/$ :.truncated content)]
-                                    (dom/html trunc t)))
-                                (dom/html full res)
-                                (dom/scroll-top full scroll))))
+          :triggers #{:update!}
+          :reaction (fn [this res]
+                      (let [content (object/->content this)
+                            full (dom/$ :.full content)
+                            scroll (dom/scroll-top full)]
+                        (when-let [t (truncate-result res)]
+                          (when-let [trunc (dom/$ :.truncated content)]
+                            (dom/html trunc t)))
+                        (dom/html full res)
+                        (dom/scroll-top full scroll))))
 
 (def new-line-change ["" ""])
 (behavior ::move-mark
-                  :triggers #{:move!}
-                  :reaction (fn [this ch]
-                              (when ch
-                                (let [orig (:mark @this)
-                                      loc (.find orig)
-                                      cur-line (ed/lh->line (:ed @this) (:line @this))]
-                                  (if (or (not loc)
-                                          (empty? (.-text (:line @this))))
-                                    (object/raise this :clear!)
-                                    (when (or (and (> (.-line loc) (.-to.line ch))
-                                                   (empty? (string/trim (ed/line (:ed @this) (.-line loc)))))
-                                              (or (and (>= (.-to.ch ch) (.-ch loc))
-                                                       (= (.-to.line ch) (.-line loc)))
-                                                  (> (.-to.line ch) (.-from.line ch))))
-                                      (object/merge! this {:mark (ed/bookmark (ed/->cm-ed (:ed @this))
-                                                                                  {:line cur-line}
-                                                                                  {:widget (object/->content this)
-                                                                                   :insertLeft true})})
-                                      (when orig
-                                        (.clear orig))))))))
+          :triggers #{:move!}
+          :reaction (fn [this ch]
+                      (when ch
+                        (let [orig (:mark @this)
+                              loc (.find orig)
+                              cur-line (ed/lh->line (:ed @this) (:line @this))]
+                          (if (or (not loc)
+                                  (empty? (.-text (:line @this))))
+                            (object/raise this :clear!)
+                            (when (or (and (> (.-line loc) (.-to.line ch))
+                                           (empty? (string/trim (ed/line (:ed @this) (.-line loc)))))
+                                      (or (and (>= (.-to.ch ch) (.-ch loc))
+                                               (= (.-to.line ch) (.-line loc)))
+                                          (> (.-to.line ch) (.-from.line ch))))
+                              (object/merge! this {:mark (ed/bookmark (ed/->cm-ed (:ed @this))
+                                                                      {:line cur-line}
+                                                                      {:widget (object/->content this)
+                                                                       :insertLeft true})})
+                              (when orig
+                                (.clear orig))))))))
 
 
 (object/object* ::inline-result
@@ -294,26 +297,26 @@
 
 
 (behavior ::inline-results
-                  :triggers #{:editor.result}
-                  :reaction (fn [this res loc opts]
-                              (let [ed (:ed @this)
-                                    type (or (:type opts) :inline)
-                                    line (ed/line-handle ed (:line loc))
-                                    res-obj (object/create ::inline-result {:ed this
-                                                                            :class (name type)
-                                                                            :opts opts
-                                                                            :result res
-                                                                            :loc loc
-                                                                            :line line})]
-                                (when-let [prev (get (@this :widgets) [line type])]
-                                  (when (:open @prev)
-                                    (object/merge! res-obj {:open true}))
-                                  (object/raise prev :clear!))
-                                (when (:start-line loc)
-                                  (doseq [widget (map #(get (@this :widgets) [(ed/line-handle ed %) type]) (range (:start-line loc) (:line loc)))
-                                          :when widget]
-                                    (object/raise widget :clear!)))
-                                (object/update! this [:widgets] assoc [line type] res-obj))))
+          :triggers #{:editor.result}
+          :reaction (fn [this res loc opts]
+                      (let [ed (:ed @this)
+                            type (or (:type opts) :inline)
+                            line (ed/line-handle ed (:line loc))
+                            res-obj (object/create ::inline-result {:ed this
+                                                                    :class (name type)
+                                                                    :opts opts
+                                                                    :result res
+                                                                    :loc loc
+                                                                    :line line})]
+                        (when-let [prev (get (@this :widgets) [line type])]
+                          (when (:open @prev)
+                            (object/merge! res-obj {:open true}))
+                          (object/raise prev :clear!))
+                        (when (:start-line loc)
+                          (doseq [widget (map #(get (@this :widgets) [(ed/line-handle ed %) type]) (range (:start-line loc) (:line loc)))
+                                  :when widget]
+                            (object/raise widget :clear!)))
+                        (object/update! this [:widgets] assoc [line type] res-obj))))
 
 ;;****************************************************
 ;; underline result
@@ -323,11 +326,14 @@
   [:div {:class (str "underline-result " (when (-> info :class) (:class info)))}
    [:span.spacer (->spacing (ed/line (:ed info) (-> info :loc :line)))]
    [:pre (:result info)]]
-  :click (fn []
+  :click (fn [e]
+           (dom/prevent e)
            (object/raise this :click))
   :contextmenu (fn [e]
+                 (dom/prevent e)
                  (object/raise this :menu! e))
-  :dblclick (fn []
+  :dblclick (fn [e]
+              (dom/prevent e)
               (object/raise this :double-click)))
 
 (object/object* ::underline-result
@@ -349,24 +355,24 @@
                           content)))
 
 (behavior ::underline-results
-                  :triggers #{:editor.result.underline}
-                  :reaction (fn [this res loc opts]
-                              (let [ed (:ed @this)
-                                    line (ed/line-handle ed (:line loc))
-                                    res-obj (object/create ::underline-result {:ed this
-                                                                               :opts opts
-                                                                               :result res
-                                                                               :loc loc
-                                                                               :line line})]
-                                (when-let [prev (get (@this :widgets) [line :underline])]
-                                  (when (:open @prev)
-                                    (object/merge! res-obj {:open true}))
-                                  (object/raise prev :clear!))
-                                (when (:start-line loc)
-                                  (doseq [widget (map #(get (@this :widgets) [(ed/line-handle ed %) :underline]) (range (:start-line loc) (:line loc)))
-                                          :when widget]
-                                    (object/raise widget :clear!)))
-                                (object/update! this [:widgets] assoc [line :underline] res-obj))))
+          :triggers #{:editor.result.underline}
+          :reaction (fn [this res loc opts]
+                      (let [ed (:ed @this)
+                            line (ed/line-handle ed (:line loc))
+                            res-obj (object/create ::underline-result {:ed this
+                                                                       :opts opts
+                                                                       :result res
+                                                                       :loc loc
+                                                                       :line line})]
+                        (when-let [prev (get (@this :widgets) [line :underline])]
+                          (when (:open @prev)
+                            (object/merge! res-obj {:open true}))
+                          (object/raise prev :clear!))
+                        (when (:start-line loc)
+                          (doseq [widget (map #(get (@this :widgets) [(ed/line-handle ed %) :underline]) (range (:start-line loc) (:line loc)))
+                                  :when widget]
+                            (object/raise widget :clear!)))
+                        (object/update! this [:widgets] assoc [line :underline] res-obj))))
 
 ;;****************************************************
 ;; inline exception
@@ -380,42 +386,42 @@
 (defn ->exception-class [this]
   (str "inline-exception " (when (:open this)
                              "open"
-                          )))
+                             )))
 
 (defui ->inline-exception [this info]
-    [:div {:class (bound this ->exception-class)}
-     [:span.spacer (->spacing (ed/line (:ed info) (-> info :loc :line)))]
-     [:pre (str (:ex info))]]
-    :click (fn []
-             (object/raise this :click))
-  	:contextmenu (fn [e]
-                   (object/raise this :menu! e))
-    :dblclick (fn []
-                (object/raise this :double-click)))
+  [:div {:class (bound this ->exception-class)}
+   [:span.spacer (->spacing (ed/line (:ed info) (-> info :loc :line)))]
+   [:pre (str (:ex info))]]
+  :click (fn []
+           (object/raise this :click))
+  :contextmenu (fn [e]
+                 (object/raise this :menu! e))
+  :dblclick (fn []
+              (object/raise this :double-click)))
 
 (behavior ::ex-shrink-on-double-click
-                  :triggers #{:double-click :shrink!}
-                  :reaction (fn [this]
-                              (ed/focus (:ed @this))
-                              (object/raise this :clear!)))
+          :triggers #{:double-click :shrink!}
+          :reaction (fn [this]
+                      (ed/focus (:ed @this))
+                      (object/raise this :clear!)))
 
 
 (behavior ::ex-clear
-                  :triggers #{:clear!}
-                  :reaction (fn [this]
-                              (when (ed/->cm-ed (:ed @this))
-                                (ed/remove-line-widget (ed/->cm-ed (:ed @this)) (:widget @this)))i
-                              (object/raise this :clear)
-                              (object/raise this :cleared)))
+          :triggers #{:clear!}
+          :reaction (fn [this]
+                      (when (ed/->cm-ed (:ed @this))
+                        (ed/remove-line-widget (ed/->cm-ed (:ed @this)) (:widget @this)))i
+                      (object/raise this :clear)
+                      (object/raise this :cleared)))
 
 (behavior ::ex-menu!
-                  :triggers #{:menu!}
-                  :reaction (fn [this ev]
-                              (-> (menu/menu [{:label "Remove exception"
-                                               :click (fn [] (object/raise this :clear!))}])
-                                  (menu/show-menu (.-clientX ev) (.-clientY ev)))
-                              (dom/prevent ev)
-                              (dom/stop-propagation ev)))
+          :triggers #{:menu!}
+          :reaction (fn [this ev]
+                      (-> (menu/menu [{:label "Remove exception"
+                                       :click (fn [] (object/raise this :clear!))}])
+                          (menu/show-menu (.-clientX ev) (.-clientY ev)))
+                      (dom/prevent ev)
+                      (dom/stop-propagation ev)))
 
 (object/object* ::inline-exception
                 :triggers #{:click :double-click :clear!}
@@ -430,35 +436,35 @@
                           content)))
 
 (behavior ::inline-exceptions
-                  :triggers #{:editor.exception}
-                  :reaction (fn [this ex loc]
-                              (when (and ex loc (>= (:line loc) 0))
-                                (let [ed (:ed @this)
-                                      line (ed/line-handle ed (:line loc))
-                                      ex-obj (object/create ::inline-exception {:ed this
-                                                                                :ex ex
-                                                                                :loc loc
-                                                                                :line line})]
-                                  (doseq [prev [(get (@this :widgets) [line :inline])
-                                                (get (@this :widgets) [line :underline])]
-                                          :when prev]
-                                    (when (:open @prev)
-                                      (object/merge! ex-obj {:open true}))
-                                    (object/raise prev :clear!))
-                                  (when (:start-line loc)
-                                    (doseq [type [:inline :underline]
-                                            widget (map #(get (@this :widgets) [(ed/line-handle ed %) type]) (range (:start-line loc) (:line loc)))
-                                            :when widget]
-                                      (object/raise widget :clear!)))
-                                  (object/update! this [:widgets] assoc [line :inline] ex-obj)))))
+          :triggers #{:editor.exception}
+          :reaction (fn [this ex loc]
+                      (when (and ex loc (>= (:line loc) 0))
+                        (let [ed (:ed @this)
+                              line (ed/line-handle ed (:line loc))
+                              ex-obj (object/create ::inline-exception {:ed this
+                                                                        :ex ex
+                                                                        :loc loc
+                                                                        :line line})]
+                          (doseq [prev [(get (@this :widgets) [line :inline])
+                                        (get (@this :widgets) [line :underline])]
+                                  :when prev]
+                            (when (:open @prev)
+                              (object/merge! ex-obj {:open true}))
+                            (object/raise prev :clear!))
+                          (when (:start-line loc)
+                            (doseq [type [:inline :underline]
+                                    widget (map #(get (@this :widgets) [(ed/line-handle ed %) type]) (range (:start-line loc) (:line loc)))
+                                    :when widget]
+                              (object/raise widget :clear!)))
+                          (object/update! this [:widgets] assoc [line :inline] ex-obj)))))
 
 (behavior ::eval-on-change
-                  :triggers #{:change}
-                  :desc "Editor: Eval when the editor changes"
-                  :type :user
-                  :debounce 300
-                  :reaction (fn [this]
-                              (object/raise this :eval)))
+          :triggers #{:change}
+          :desc "Editor: Eval when the editor changes"
+          :type :user
+          :debounce 300
+          :reaction (fn [this]
+                      (object/raise this :eval)))
 
 (cmd/command {:command :clear-inline-results
               :desc "Eval: Clear inline results"
