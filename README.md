@@ -223,4 +223,4 @@ Commands can also be bound to key chords. Run the command `Settings: Default key
 
 # Plugins
 
-TODO
+See [LightTable-Declassifier](https://github.com/LightTable/LightTable-Declassifier) for an example clojurescript plugin.
