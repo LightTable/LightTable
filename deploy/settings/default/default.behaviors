@@ -399,6 +399,7 @@
                         :lt.plugins.doc/cur-from-last-editor
                         ]
   :sidebar.workspace [:lt.objs.sidebar.workspace/sidebar-menu
+                      :lt.objs.sidebar.workspace/on-drop
                       :lt.objs.sidebar.workspace/recent! :lt.objs.sidebar.workspace/tree!
                       :lt.objs.sidebar.workspace/recent.select!]
   :skin-selector [:lt.objs.style/set-skin-on-select]

@@ -163,6 +163,23 @@
                               (object/update! parent [:files] conj (object/create ::workspace.file path)))
                             )))))
 
+(behavior ::on-drop
+          :triggers #{:drop}
+          :reaction (fn [this e]
+                      (try
+                        (let [size (.-dataTransfer.files.length e)]
+                          (loop [i 0]
+                            (when (< i size)
+                              (let [path (-> (.-dataTransfer.files e)
+                                             (aget i)
+                                             (.-path))]
+                                (if (files/dir? path)
+                                  (object/raise workspace/current-ws :add.folder! path)
+                                  (object/raise workspace/current-ws :add.file! path)))
+                              (recur (inc i)))))
+                        (catch js/Error e
+                          (println e)))))
+
 (behavior ::on-menu
           :triggers #{:menu!}
           :reaction (fn [this e]
@@ -364,7 +381,9 @@
                  (object/raise this :menu! e)
                  (dom/prevent e)
                  (dom/stop-propagation e))
-  :click (fn []
+  :dblclick (fn [e]
+              (object/raise this :dblopen!))
+  :click (fn [e]
            (object/raise this :open!)))
 
 (defui folder-toggle [this]
@@ -526,6 +545,15 @@
    [:div.recent
     (bound this :recents)
     ]]
+  :dragover (fn [e]
+              (set! (.-dataTransfer.dropEffect e) "move")
+              (object/raise this :dragover e)
+              (dom/prevent e)
+              false)
+  :drop (fn [e]
+          (object/raise this :drop e)
+          (dom/stop-propagation e)
+          (dom/prevent e))
   :contextmenu (fn [e]
                  (object/raise this :menu! e)))
 
