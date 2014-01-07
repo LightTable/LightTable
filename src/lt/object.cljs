@@ -42,8 +42,12 @@
                    behs)]
     listeners))
 
-(defn specificity-sort [xs dir]
-  (sort-by #(do [(count (string/split (str %) ".")) (str %)]) (if dir < >) xs))
+(defn specificity-sort [xs]
+  (let [arr #js []]
+    (doseq [x xs]
+      (.push arr #js [(count (string/split (name x) ".")) (name x) x]))
+    (.sort arr)
+    (amap arr i _ (aget arr i 2))))
 
 (defn tags->behaviors [ts]
   (let [duped (apply concat (map @tags (specificity-sort ts)))
