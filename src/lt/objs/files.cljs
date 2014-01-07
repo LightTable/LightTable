@@ -11,6 +11,10 @@
 (def wrench (load/node-module "wrench"))
 (def os (js/require "os"))
 (def app (.-App (js/require "nw.gui")))
+(def data-path (let [path (.-dataPath app)]
+                 (if (array? path)
+                   (first path)
+                   path)))
 
 (defn typelist->index [cur types]
   (let [full (map (juxt :name identity) types)
@@ -269,10 +273,7 @@
     (catch js/global.Error e)))
 
 (defn join [& segs]
-  (when (filter (complement string?) segs)
-    (.trace js/console)
-    (println "Trying to join non-string: " segs))
-  (apply (.-join fpath) (filter string? segs)))
+  (apply (.-join fpath) (filter string? (map str segs))))
 
 (defn home [path]
   (let [h (if (= js/process.platform "win32")
@@ -286,7 +287,7 @@
 (defn lt-user-dir [path]
   (if js/process.env.LT_USER_DIR
     (join js/process.env.LT_USER_DIR (or path ""))
-    (join (.-dataPath app) path)))
+    (join data-path path)))
 
 (defn walk-up-find [start find]
   (let [roots (get-roots)]

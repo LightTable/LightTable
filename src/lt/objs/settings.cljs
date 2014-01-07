@@ -60,10 +60,11 @@
       (safe-read file)))
 
 (defn behavior-diffs-in [path]
-  (->>
-   (filter #(= (files/ext %) "behaviors")
-           (files/full-path-ls path))
-   (mapv parse-file)))
+  (when (files/exists? path)
+    (->>
+     (filter #(= (files/ext %) "behaviors")
+             (files/full-path-ls path))
+     (mapv parse-file))))
 
 (defn load-all []
   (let [final (reduce (fn [fin cur]
@@ -106,76 +107,76 @@
 ;;*********************************************************
 
 (behavior ::default-behavior-diffs
-                  :triggers #{:behaviors.diffs.default+}
-                  :reaction (fn [this diffs]
-                              (concat diffs (behavior-diffs-in (files/lt-home "settings/default/")))
-                              ))
+          :triggers #{:behaviors.diffs.default+}
+          :reaction (fn [this diffs]
+                      (concat diffs (behavior-diffs-in (files/lt-home "settings/default/")))
+                      ))
 
 (behavior ::user-behavior-diffs
-                  :triggers #{:behaviors.diffs.user+}
-                  :reaction (fn [this diffs]
-                              (concat diffs (behavior-diffs-in (files/lt-user-dir "settings/")))
-                              ))
+          :triggers #{:behaviors.diffs.user+}
+          :reaction (fn [this diffs]
+                      (concat diffs (behavior-diffs-in (files/lt-user-dir "settings/")))
+                      ))
 
 (behavior ::initial-behaviors
-                  :triggers #{:pre-init}
-                  :reaction (fn [this]
-                              (load-all)
-                              (doseq [inst (vals @object/instances)]
-                                (object/refresh! inst))))
+          :triggers #{:pre-init}
+          :reaction (fn [this]
+                      (when-not (files/exists? (files/lt-user-dir "settings"))
+                        (files/mkdir (files/lt-user-dir "settings")))
+                      (load-all)
+                      (doseq [inst (vals @object/instances)]
+                        (object/refresh! inst))))
 
 (behavior ::load-behaviors
-                  :triggers #{:behaviors.reload}
-                  :reaction (fn [this]
-                              (load-all)
-                              (notifos/working "loading behaviors...")
-                              (refresh-all (vals @object/instances))))
+          :triggers #{:behaviors.reload}
+          :reaction (fn [this]
+                      (load-all)
+                      (notifos/working "loading behaviors...")
+                      (refresh-all (vals @object/instances))))
 
 
 (behavior ::eval-settings
-                  :triggers #{:eval :eval.one}
-                  :reaction (fn [ed]
-                              (object/raise ed :save)))
+          :triggers #{:eval :eval.one}
+          :reaction (fn [ed]
+                      (object/raise ed :save)))
 
 (behavior ::grab-workspace-behaviors
-                  :triggers #{:set}
-                  :reaction (fn [workspace old]
-                              (let [old (:ws-behaviors old)
-                                    old (when-not (empty? old)
-                                          (reader/read-string old))
-                                    neue (:ws-behaviors @workspace)
-                                    neue (when-not (empty? neue)
-                                             (reader/read-string neue))]
-                                (when old
-                                  (apply-diff (reverse-diff old))
-                                  (refresh-diffed old))
-                                (when neue
-                                  (apply-diff neue)
-                                  (refresh-diffed neue)))))
+          :triggers #{:set}
+          :reaction (fn [workspace old]
+                      (let [old (:ws-behaviors old)
+                            old (when-not (empty? old)
+                                  (reader/read-string old))
+                            neue (:ws-behaviors @workspace)
+                            neue (when-not (empty? neue)
+                                   (reader/read-string neue))]
+                        (when old
+                          (apply-diff (reverse-diff old))
+                          (refresh-diffed old))
+                        (when neue
+                          (apply-diff neue)
+                          (refresh-diffed neue)))))
 
 (behavior ::workspace-save
-                  :triggers #{:save}
-                  :reaction (fn [editor]
-                              (let [{:keys [path]} (@editor :info)
-                                    final (object/raise-reduce editor :save+ (editor/->val editor))]
-                                (object/merge! workspace/current-ws {:ws-behaviors final})
-                                (object/merge! editor {:dirty false})
-                                (object/raise editor :saved)
-                                (object/raise editor :clean)
-                                (object/raise workspace/current-ws :serialize!))))
+          :triggers #{:save}
+          :reaction (fn [editor]
+                      (let [{:keys [path]} (@editor :info)
+                            final (object/raise-reduce editor :save+ (editor/->val editor))]
+                        (object/merge! workspace/current-ws {:ws-behaviors final})
+                        (object/merge! editor {:dirty false})
+                        (object/raise editor :saved)
+                        (object/raise editor :clean)
+                        (object/raise workspace/current-ws :serialize!))))
 
 (def user-behaviors-path (files/lt-user-dir "settings/user.behaviors"))
 (def user-keymap-path (files/lt-user-dir "settings/user.keymap"))
 
 (behavior ::create-user-settings
-                  :triggers #{:init}
-                  :reaction (fn [app]
-                              (when-not (files/exists? (files/lt-user-dir "settings"))
-                                (files/mkdir (files/lt-user-dir "settings")))
-                              (when-not (files/exists? user-behaviors-path)
-                                (files/copy (files/lt-home "/core/misc/example.behaviors") user-behaviors-path))
-                              (when-not (files/exists? user-keymap-path)
-                                (files/copy (files/lt-home "/core/misc/example.keymap") user-keymap-path))))
+          :triggers #{:init}
+          :reaction (fn [app]
+                      (when-not (files/exists? user-behaviors-path)
+                        (files/copy (files/lt-home "/core/misc/example.behaviors") user-behaviors-path))
+                      (when-not (files/exists? user-keymap-path)
+                        (files/copy (files/lt-home "/core/misc/example.keymap") user-keymap-path))))
 
 ;;*********************************************************
 ;; Commands
@@ -226,9 +227,9 @@
                       (cmd/exec! :open-path (files/lt-home "/settings/default/default.keymap")))})
 
 (behavior ::on-close-remove
-                  :triggers #{:close}
-                  :reaction (fn [this]
-                              (tabs/rem! this)))
+          :triggers #{:close}
+          :reaction (fn [this]
+                      (tabs/rem! this)))
 
 
 (defn ->ordered-keystr [k]
@@ -252,8 +253,8 @@
 (defn fix-keys [[k v]]
   (let [k (string/replace k "pmeta" kb/meta)
         keys (string/split k " ")]
-  ;;ctrl cmd alt altgr shift
-  [(reduce #(str % " " %2) (map ->ordered-keystr keys)) v]))
+    ;;ctrl cmd alt altgr shift
+    [(reduce #(str % " " %2) (map ->ordered-keystr keys)) v]))
 
 (defn +keys [cur m]
   (reduce (fn [res [k v]]
@@ -280,10 +281,11 @@
       (reader/read-string)))
 
 (defn keymap-diffs-in [path]
-  (->>
-   (filter #(= (files/ext %) "keymap")
-           (files/full-path-ls path))
-   (map parse-key-file)))
+  (when (files/exists? path)
+    (->>
+     (filter #(= (files/ext %) "keymap")
+             (files/full-path-ls path))
+     (map parse-key-file))))
 
 (defn load-all-keys []
   (let [final (reduce (fn [fin cur]
@@ -295,34 +297,34 @@
     (reset! kb/keys final)))
 
 (behavior ::default-keymap-diffs
-                  :triggers #{:keymap.diffs.default+}
-                  :reaction (fn [this diffs]
-                              (concat diffs (keymap-diffs-in (files/lt-home "/settings/default/")))
-                              ))
+          :triggers #{:keymap.diffs.default+}
+          :reaction (fn [this diffs]
+                      (concat diffs (keymap-diffs-in (files/lt-home "/settings/default/")))
+                      ))
 
 (behavior ::user-keymap-diffs
-                  :triggers #{:keymap.diffs.user+}
-                  :reaction (fn [this diffs]
-                              (concat diffs (keymap-diffs-in (files/lt-user-dir "/settings/")))
-                              ))
+          :triggers #{:keymap.diffs.user+}
+          :reaction (fn [this diffs]
+                      (concat diffs (keymap-diffs-in (files/lt-user-dir "/settings/")))
+                      ))
 
 (behavior ::load-keys
-                  :triggers #{:pre-init}
-                  :reaction (fn [this]
-                              (load-all-keys)
-                              (kb/refresh)
-                              (object/raise (first (object/by-tag :app)) :app.keys.load)))
+          :triggers #{:pre-init}
+          :reaction (fn [this]
+                      (load-all-keys)
+                      (kb/refresh)
+                      (object/raise (first (object/by-tag :app)) :app.keys.load)))
 
 
 (behavior ::on-behaviors-editor-save
-                  :triggers #{:saved}
-                  :reaction (fn [editor]
-                              (cmd/exec! :behaviors.reload)))
+          :triggers #{:saved}
+          :reaction (fn [editor]
+                      (cmd/exec! :behaviors.reload)))
 
 (behavior ::on-keymap-editor-save
-                  :triggers #{:saved}
-                  :reaction (fn [editor]
-                              (cmd/exec! :keymaps.reload)))
+          :triggers #{:saved}
+          :reaction (fn [editor]
+                      (cmd/exec! :keymaps.reload)))
 
 
 
