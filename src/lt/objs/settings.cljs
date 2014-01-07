@@ -124,9 +124,14 @@
                       (when-not (files/exists? (files/lt-user-dir "settings"))
                         (files/mkdir (files/lt-user-dir "settings")))
                       (object/raise this :pre-load)
+                      ;;Load all the behaviors
                       (load-all)
                       (doseq [inst (vals @object/instances)]
-                        (object/refresh! inst))))
+                        (object/refresh! inst))
+                      ;;Load all the keymaps
+                      (load-all-keys)
+                      (kb/refresh)
+                      ))
 
 (behavior ::load-behaviors
           :triggers #{:behaviors.reload}
@@ -309,14 +314,6 @@
                       (concat diffs (keymap-diffs-in (files/lt-user-dir "/settings/")))
                       ))
 
-(behavior ::load-keys
-          :triggers #{:pre-init}
-          :reaction (fn [this]
-                      (load-all-keys)
-                      (kb/refresh)
-                      (object/raise (first (object/by-tag :app)) :app.keys.load)))
-
-
 (behavior ::on-behaviors-editor-save
           :triggers #{:saved}
           :reaction (fn [editor]
@@ -331,4 +328,4 @@
 
 ;;This call to tag-behaviors is necessary as there are no behaviors loaded when the
 ;;app is first run.
-(object/tag-behaviors :app [::initial-behaviors ::load-behaviors ::default-behavior-diffs ::user-behavior-diffs ::load-keys ::default-keymap-diffs ::user-keymap-diffs])
+(object/tag-behaviors :app [::initial-behaviors ::load-behaviors ::default-behavior-diffs ::user-behavior-diffs ::default-keymap-diffs ::user-keymap-diffs])

@@ -3,7 +3,6 @@
  {:app [:lt.objs.clients.local/startup-with-local-client
         :lt.objs.cache/init
         :lt.objs.settings/load-behaviors
-        :lt.objs.settings/load-keys
         :lt.objs.settings/create-user-settings
         :lt.objs.proc/set-path-OSX
         :lt.objs.workspace/reconstitute-last-workspace
@@ -202,7 +201,6 @@
                        :lt.objs.editor.file/dirty-on-change :lt.objs.editor.file/file-save
                        :lt.objs.opener/save-as :lt.objs.editor.file/preserve-line-endings
                        :lt.objs.editor.file/last-char-newline]
-  :editor.html [:lt.objs.langs.html/eval-on-save :lt.objs.langs.html/on-eval (:lt.objs.editor/tab-settings false 4 4)]
   :editor.inline-result [:lt.objs.eval/underline-results :lt.objs.eval/inline-results
                          :lt.objs.eval/inline-exceptions]
   :editor.javascript [:lt.objs.langs.js/js-success :lt.objs.langs.js/js-result
@@ -296,7 +294,6 @@
   :hinter [:lt.plugins.auto-complete/select :lt.plugins.auto-complete/escape!
            :lt.plugins.auto-complete/select-unknown
            :lt.plugins.auto-complete/line-change]
-  :html.lang [:lt.objs.langs.html/eval!]
   :inline.doc [:lt.plugins.doc/clear]
   :inline.exception [:lt.objs.eval/ex-menu! :lt.objs.eval/ex-clear
                      :lt.objs.eval/destroy-on-clear

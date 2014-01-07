@@ -82,7 +82,8 @@
         trigs (if instants
                 trigs
                 (dissoc trigs :object.instant :object.instant-load))]
-    (assoc cur :listeners trigs)))
+    ;;deref again in case :object.instant-load made any updates
+    (assoc @obj :listeners trigs)))
 
 (defn make-object* [name & r]
   (let [obj (merge {:behaviors #{} :tags #{} :triggers [] :listeners {} ::type name :children {}}

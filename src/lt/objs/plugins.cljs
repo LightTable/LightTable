@@ -26,6 +26,7 @@
 (def plugins-dir (files/lt-home "plugins"))
 (def user-plugins-dir (files/lt-user-dir "plugins"))
 (def plugins-url "http://plugins.lighttable.com")
+(def ^:dynamic *plugin-dir* nil)
 
 (defn EOF-read [s]
   (when (and s
@@ -503,21 +504,22 @@
           :params [{:label "path"}]
           :type :user
           :reaction (fn [this path]
-                      (let [paths (if (coll? path)
-                                    path
-                                    [path])]
-                        (doseq [path paths]
-                          (let [path (adjust-path path)]
-                            (when-not (get (::loaded-files @this) path)
-                              (try
-                                (load/js path true)
-                                (object/update! this [::loaded-files] #(conj (or % #{}) path))
-                                (catch js/Error e
-                                  (.error js/console (str "Error loading JS file: " path " : " e))
-                                  (.error js/console (.-stack e)))
-                                (catch js/global.Error e
-                                  (.error js/console (str "Error loading JS file: " path " : " e))
-                                  (.error js/console (.-stack e))))))))))
+                      (binding [*plugin-dir* (::dir object/*behavior-meta*)]
+                        (let [paths (if (coll? path)
+                                      path
+                                      [path])]
+                          (doseq [path paths]
+                            (let [path (adjust-path path)]
+                              (when-not (get (::loaded-files @this) path)
+                                (try
+                                  (load/js path true)
+                                  (object/update! this [::loaded-files] #(conj (or % #{}) path))
+                                  (catch js/Error e
+                                    (.error js/console (str "Error loading JS file: " path " : " e))
+                                    (.error js/console (.-stack e)))
+                                  (catch js/global.Error e
+                                    (.error js/console (str "Error loading JS file: " path " : " e))
+                                    (.error js/console (.-stack e)))))))))))
 
 (behavior ::load-css
           :triggers #{:object.instant}
