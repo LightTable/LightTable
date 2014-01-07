@@ -269,7 +269,10 @@
     (catch js/global.Error e)))
 
 (defn join [& segs]
-  (apply (.-join fpath) (filter identity segs)))
+  (when (filter (complement string?) segs)
+    (.trace js/console)
+    (println "Trying to join non-string: " segs))
+  (apply (.-join fpath) (filter string? segs)))
 
 (defn home [path]
   (let [h (if (= js/process.platform "win32")
