@@ -47,7 +47,7 @@
     (doseq [x xs]
       (.push arr #js [(count (string/split (str x) ".")) (str x) x]))
     (.sort arr)
-    (.reverse arr)
+    (when-not dir (.reverse arr))
     (amap arr i _ (aget arr i 2))))
 
 (defn tags->behaviors [ts]
