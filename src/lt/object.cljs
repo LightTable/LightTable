@@ -31,18 +31,13 @@
   (@behaviors (->behavior-name beh)))
 
 (defn ->triggers [behs]
-  (let [listeners (reduce
-                   (fn [res beh]
-                     (merge-with concat
-                                 res
-                                 (into {}
-                                       (for [t (:triggers (->behavior beh))]
-                                         [t [beh]]))))
-                   {}
-                   behs)]
-    listeners))
+  (let [result (atom (transient {}))]
+    (doseq [beh behs
+            t (:triggers (->behavior beh))]
+      (swap! result assoc! t (conj (or (get @result t) []) beh)))
+    (persistent! @result)))
 
-(defn specificity-sort [xs]
+(defn specificity-sort [xs dir]
   (let [arr #js []]
     (doseq [x xs]
       (.push arr #js [(count (string/split (str x) ".")) (str x) x]))
