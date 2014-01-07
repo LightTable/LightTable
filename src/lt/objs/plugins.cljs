@@ -139,7 +139,7 @@
 
 (defn fetch-and-install [url name cb]
   (let [munged-name (munge-plugin-name name)
-        tmp-gz (str user-plugins-dir "/" munged-name "-tmp.tar.gz")
+        tmp-gz (str user-plugins-dir "/" munged-name "tmp.tar.gz")
         tmp-dir (str user-plugins-dir "/" munged-name "-tmp")]
     (notifos/working (str "Downloading plugin: " name))
     (deploy/download-file url tmp-gz (fn []
@@ -148,14 +148,17 @@
                                        (deploy/untar tmp-gz tmp-dir
                                                      (fn []
                                                        (let [munged-dir (first (files/full-path-ls tmp-dir))]
-                                                         (files/move! munged-dir (str user-plugins-dir "/" munged-name "/"))
+                                                         (when munged-dir
+                                                           (files/move! munged-dir (str user-plugins-dir "/" munged-name "/")))
                                                          (files/delete! tmp-dir)
                                                          (files/delete! tmp-gz)
-                                                         (notifos/done-working (str "Plugin fetched: " name))
-                                                         (object/raise manager :plugin.fetched)
-                                                         (when cb
-                                                           (cb))
-                                                         )))))))
+                                                         (if munged-dir
+                                                           (do
+                                                             (notifos/done-working (str "Plugin fetched: " name))
+                                                             (object/raise manager :plugin.fetched)
+                                                             (when cb
+                                                               (cb)))
+                                                           (notifos/done-working (str "Plugin install failed: " name))))))))))
 
 (defn install-version [plugin cb]
   (let [name (-> plugin :info :name)
