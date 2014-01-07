@@ -64,6 +64,21 @@ export LD_LIBRARY_PATH=$(pwd):$LD_LIBRARY_PATH
 ./ltbin
 ```
 
+On Windows:
+
+1. Clone the repo git@github.com:Kodowa/light-table-core.git
+2. download http://d35ac8ww5dfjyg.cloudfront.net/playground/bins/0.5.20/LightTableWin.zip
+3. unzip LightTableWin.zip
+4. copy the following files from the zip into the cloned repo at light-table-core/deploy/
+   - ffmpegsumo.dll
+   - icudt.dll
+   - libEGL.dll
+   - libGLESv2.dll
+   - LightTable.exe
+   - nw.pak
+5. You can also either copy the plugins/ folder over too or git clone the ones you want to modify down from github. You'll want at least the Clojure plugin and the Rainbow plugin.
+6. Double click LightTable.exe
+
 # Basics
 
 I'll assume you already know how to eval code (ctrl-enter), how to open the command bar (ctrl-space) and how to open files with the navigator (ctrl-o). If you don't, start with the [Light Table tutorial](http://docs.lighttable.com/tutorials/full/).
