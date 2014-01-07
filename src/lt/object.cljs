@@ -45,8 +45,9 @@
 (defn specificity-sort [xs]
   (let [arr #js []]
     (doseq [x xs]
-      (.push arr #js [(count (string/split (name x) ".")) (name x) x]))
+      (.push arr #js [(count (string/split (str x) ".")) (str x) x]))
     (.sort arr)
+    (.reverse arr)
     (amap arr i _ (aget arr i 2))))
 
 (defn tags->behaviors [ts]
