@@ -62,7 +62,7 @@ export LD_LIBRARY_PATH=$(pwd):$LD_LIBRARY_PATH
 
 I'll assume you already know how to eval code (ctrl-enter), how to open the command bar (ctrl-space) and how to open files with the navigator (ctrl-o). If you don't, start with the [Light Table tutorial](http://docs.lighttable.com/tutorials/full/).
 
-Add `light-table-core/src` to your Light Table workspace and open `jump_stack.cljs`. Hit eval (ctrl-enter) somewhere in the file to start a clojurescript compiler. When it's finished starting up it will ask you where to send the emitted javascript code - choose Light Table UI from the menu. Now you should be able to eval clojurescript code inside your current Light Table instance. Try something simple like `(js/alert "foo")` to make sure it works.
+Add `light-table-core/src` to your Light Table workspace and open `src/lt/objs/jump_stack.cljs`. Hit eval (ctrl-enter) somewhere in the file to start a clojurescript compiler. When it's finished starting up it will ask you where to send the emitted javascript code - choose Light Table UI from the menu. Now you should be able to eval clojurescript code inside your current Light Table instance. Try something simple like `(js/alert "foo")` to make sure it works.
 
 The new Light Table release supports auto-complete (tab), inline docs (ctrl-d) and jump-to-definition (ctrl-. to jump and ctrl-, to jump back) for clojurescript and clojure vars, all of which are very useful for exploring the codebase. In clojurescript these features are only aware of vars that have been evaled in the current compiler process, so be sure to eval the ns form at the top of the file to get the full effect.
 
