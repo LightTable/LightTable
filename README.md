@@ -21,7 +21,7 @@ cd plugins
 rm -rf clojure
 git clone https://github.com/LightTable/Clojure.git clojure
 
-#rm -rf light-table-core-2/deploy/LightTable.app/Contents/Resources/app.nw
+rm -rf light-table-core-2/deploy/LightTable.app/Contents/Resources/app.nw
 
 cd clojure
 ./build.sh
