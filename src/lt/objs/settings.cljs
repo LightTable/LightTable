@@ -75,7 +75,7 @@
                               (object/raise-reduce app/app :behaviors.diffs.user+ [])
                               ))
         ws-diff (:ws-behaviors @workspace/current-ws)
-        final (if (and false ws-diff (not (empty? ws-diff)))
+        final (if (and ws-diff (not (empty? ws-diff)))
                 (behavior-diff (safe-read ws-diff "workspace.behaviors") final)
                 final)]
     (reset! object/tags final)))
