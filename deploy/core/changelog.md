@@ -2,11 +2,46 @@
 
 ##0.6.0
 
-* FIX: \r\r\n at the end of files on windows #912
+* ADDED: Light Table is now open source
+* ADDED: Plugins!
+* ADDED: Plugin manager via `Plugins: Show plugin manager`
+* ADDED: `Plugins: Submit a plugin` command
+* ADDED: Split all the languages into separate plugins
+* ADDED: Beautiful new default theme
+* ADDED: Performance tweaks that should make everything faster
+* ADDED: `Editor: Jump to definition at cursor` command
+* ADDED: `Editor: Jump back to where you jumped from` command
+* ADDED: Jump to definition, and syntax aware autocomplete for Clojure and ClojureScript
 * ADDED: `Editor: On change execute command` behavior
 * ADDED: `Editor: Set CodeMirror flags` behavior
 * ADDED: `Editor: Disconnect clients attached to editor` command
-* ADDED: `Editor: Open current file in browser` command
+* ADDED: `Editor: Open current file in browser` command #956
+* ADDED: You can now drop folder/files onto the workspace tree
+* ADDED: a popup asking if you want to update when one is available
+* ADDED: All user settings/plugins are now stored in user data
+* ADDED: the statusbar is now in it's own container with find on top of it.
+* ADDED: more hints for the starting state of no workspace
+* ADDED: `Style: Provide editor theme` and `Style: Provide skin` behaviors so that theming can be done via plugin
+* ADDED: all editors are now backed by first class documents
+  - mac: ~/Library/Application Support/LightTable
+  - linux: ~/.config/LightTable
+  - windows: %APPDATALOCAL%/LightTable
+* FIX: better LT stacktraces
+* FIX: multiple popups won't drop focus as they're closed now
+* FIX: Highlight line is now much faster
+* FIX: scrolling in the command and navigate panes should be orders of magnitude faster.
+* FIX: Auto-complete is now *significantly* faster
+* FIX: \r\r\n at the end of files on windows #912
+* FIX: :searcher.replace/:searcher.replace-all are missing #949
+* FIX: Light Table won't open files if editor's for removed files remain #941
+* FIX: Console sized to zero #932
+* FIX: cljs connection broken with latest CLJS #932
+* FIX: html eval isn't refreshing the browser #929
+* FIX: Wrap resets after changing tab #905
+* FIX: can't connect to nrepl in android project #902
+* FIX: The mac .app is now fully self-contained
+* FIX: Tons of clean up to prepare to open source
+* UPDATED: Latest node-webkit
 * UPDATED: Latest CodeMirror
 * UPDATED: Latest vim/emacs mode
 
