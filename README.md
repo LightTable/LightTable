@@ -1,6 +1,6 @@
 # Building
 
-First install or update [leiningen](http://leiningen.org/). Then we have to do some juggling.
+First install or update [leiningen](http://leiningen.org/). Then we have to do some juggling (unless you fancy building node-webkit from source).
 
 On OS X:
 
@@ -18,14 +18,14 @@ cp -r LightTable/* light-table-core-2/
 cd light-table-core-2
 lein cljsbuild clean && lein cljsbuild once
 
-cd deploy/plugins
+cd LightTable.app/Contents/Resources/app.nw/plugins/
 rm -rf clojure
 git clone https://github.com/LightTable/Clojure.git clojure
 
 cd clojure
 ./build.sh
 
-cd ../../
+cd ../../../../../
 export LT_HOME=$(pwd)
 ./light
 ```
