@@ -11,7 +11,7 @@ mkdir light-table-core-2
 mv LightTable light-table-core-2/deploy
 rm -rf light-table-core-2/deploy/LightTable.app/Contents/Resources/app.nw
 
-git clone git@github.com:Kodowa/light-table-core.git
+git clone https://github.com/LightTable/LightTable.git
 cp -r light-table-core/* light-table-core-2/
 
 cd light-table-core-2
@@ -19,9 +19,9 @@ lein cljsbuild clean && lein cljsbuild once
 
 cd deploy/plugins
 rm -rf clojure paredit
-git clone git@github.com:Kodowa/LightTable-Clojure.git clojure
-git clone git@github.com:LightTable/LightTable-Paredit.git paredit
-git clone git@github.com:LightTable/LightTable-Rainbow.git rainbow
+git clone https://github.com/LightTable/Clojure.git clojure
+git clone https://github.com/LightTable/Paredit.git paredit
+git clone https://github.com/LightTable/Rainbow.git rainbow
 
 cd clojure
 ./build.sh
@@ -45,7 +45,7 @@ tar -xzf LightTableLinux32.tar.gz
 mkdir light-table-core-2
 mv LightTable light-table-core-2/deploy
 
-git clone git@github.com:Kodowa/light-table-core.git
+git clone https://github.com/LightTable/LightTable.git
 cp -ar light-table-core/* light-table-core-2/
 
 cd light-table-core-2
@@ -53,9 +53,9 @@ lein cljsbuild clean && lein cljsbuild once
 
 cd deploy/plugins
 rm -rf clojure paredit
-git clone git@github.com:Kodowa/LightTable-Clojure.git clojure
-git clone git@github.com:LightTable/LightTable-Paredit.git paredit
-git clone git@github.com:LightTable/LightTable-Rainbow.git rainbow
+git clone https://github.com/LightTable/Clojure.git clojure
+git clone https://github.com/LightTable/Paredit.git paredit
+git clone https://github.com/LightTable/Rainbow.git rainbow
 
 cd clojure
 ./build.sh
@@ -67,7 +67,7 @@ export LD_LIBRARY_PATH=$(pwd):$LD_LIBRARY_PATH
 
 On Windows:
 
-1. Clone the repo git@github.com:Kodowa/light-table-core.git
+1. Clone the repo https://github.com/LightTable/LightTable.git
 2. download http://d35ac8ww5dfjyg.cloudfront.net/playground/bins/0.5.20/LightTableWin.zip
 3. unzip LightTableWin.zip
 4. copy the following files from the zip into the cloned repo at light-table-core/deploy/
