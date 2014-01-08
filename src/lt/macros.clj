@@ -79,6 +79,13 @@
         (.unshift args# (.-obj msg#))
         (.apply ~func nil args#)))))
 
+(defmacro aloop [[var arr] & body]
+  `(let [arr# ~arr]
+     (loop [~var 0]
+       (when (< ~var (.-length arr#))
+         ~@body
+         (recur (+ ~var 1))))))
+
 (comment
 
   (worker (fn [v]
