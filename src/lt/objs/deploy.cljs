@@ -120,7 +120,6 @@
 (defn check-version [& [notify?]]
   (fetch/xhr (version-url) {}
              (fn [data]
-               (println (is-newer? (:version version) data))
                (when (re-seq version-regex data)
                  (if (and (not= data "")
                           (not= data (:version version))
