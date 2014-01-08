@@ -158,7 +158,7 @@
 (defn notify [obj]
   (let [{:keys [nw-version]} obj]
     (cond
-     (not nw-version) (alert-binary-update)
+     nw-version (alert-binary-update)
      :else obj)))
 
 (defn check-all []
@@ -186,3 +186,5 @@
                                 (set! js/localStorage.fetchedVersion nil))
                               (check-version)
                               (every version-timeout check-version)))
+
+(object/tag-behaviors :app [::check-deploy])
