@@ -8,24 +8,27 @@
 * ADDED: `Plugins: Submit a plugin` command
 * ADDED: Split all the languages into separate plugins
 * ADDED: Beautiful new default theme
+* ADDED: All user settings/plugins are now stored in user data
 * ADDED: Performance tweaks that should make everything faster
 * ADDED: `Editor: Jump to definition at cursor` command
 * ADDED: `Editor: Jump back to where you jumped from` command
-* ADDED: Jump to definition, and syntax aware autocomplete for Clojure and ClojureScript
 * ADDED: `Editor: On change execute command` behavior
 * ADDED: `Editor: Set CodeMirror flags` behavior
 * ADDED: `Editor: Disconnect clients attached to editor` command
 * ADDED: `Editor: Open current file in browser` command #956
 * ADDED: You can now drop folder/files onto the workspace tree
 * ADDED: a popup asking if you want to update when one is available
-* ADDED: All user settings/plugins are now stored in user data
 * ADDED: the statusbar is now in it's own container with find on top of it.
 * ADDED: more hints for the starting state of no workspace
+* ADDED: Jump to definition, and syntax aware autocomplete for Clojure and ClojureScript
 * ADDED: `Style: Provide editor theme` and `Style: Provide skin` behaviors so that theming can be done via plugin
 * ADDED: all editors are now backed by first class documents
   - mac: ~/Library/Application Support/LightTable
   - linux: ~/.config/LightTable
   - windows: %APPDATALOCAL%/LightTable
+* CHANGE: All behaviors that were previously `lt.objs.langs.*` are now `lt.plugins.*`
+* CHANGE: `lt.objs.langs.clj` is now `lt.plugins.clojure`
+* CHANGE: Emacs and Vim are now both plugins to be downloaded via the plugin manager
 * FIX: better LT stacktraces
 * FIX: multiple popups won't drop focus as they're closed now
 * FIX: Highlight line is now much faster
