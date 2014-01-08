@@ -35,11 +35,11 @@ On Linux:
 
 ``` bash
 # For 64 bit machines
-wget http://d35ac8ww5dfjyg.cloudfront.net/playground/bins/0.5.20/LightTableLinux64.tar.gz
+wget http://d35ac8ww5dfjyg.cloudfront.net/playground/bins/0.6.0/LightTableLinux64.tar.gz
 tar -xzf LightTableLinux64.tar.gz
 
 # For 32 bit machines
-wget http://d35ac8ww5dfjyg.cloudfront.net/playground/bins/0.5.20/LightTableLinux32.tar.gz
+wget http://d35ac8ww5dfjyg.cloudfront.net/playground/bins/0.6.0/LightTableLinux32.tar.gz
 tar -xzf LightTableLinux32.tar.gz
 
 mkdir light-table-core-2
