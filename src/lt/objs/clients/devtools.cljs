@@ -61,13 +61,13 @@
 
 (defn format-value [v]
   (let [val (:value v)]
-  (cond
-   (= val "undefined") "undefined"
-   (= (:type v) "string") (pr-str val)
-   (or (true? val) (false? val)) (pr-str val)
-   (or (nil? val)
-       (empty? val)) "null"
-   :else (:value v))))
+    (cond
+     (= val "undefined") "undefined"
+     (= (:type v) "string") (pr-str val)
+     (or (true? val) (false? val)) (pr-str val)
+     (or (nil? val)
+         (empty? val)) "null"
+     :else (:value v))))
 
 (defn msg->log [m]
   (let [params (:parameters m)]
@@ -90,16 +90,16 @@
    "ERROR: "(:text e) ": " (:url e) "\n"
    (reduce (fn [res f]
              (str res "       " (files/basename (:url f)) " [" (:lineNumber f) "]: " (if (empty? (:functionName f))
-                                                                             "anonymous"
-                                                                             (:functionName f))
+                                                                                       "anonymous"
+                                                                                       (:functionName f))
                   "\n"))
            ""
            (:stackTrace e))))
 
 (defui frame [f]
   [:tr [:td.url (files/basename (:url f)) " [" (:lineNumber f) "]"] [:td (if (empty? (:functionName f))
-                                                                          "anonymous"
-                                                                          (:functionName f))]])
+                                                                           "anonymous"
+                                                                           (:functionName f))]])
 
 (defmulti handle-log-msg :level)
 
@@ -203,75 +203,75 @@
 ;;*********************************************************
 
 (behavior ::connect!
-                  :triggers #{:connect!}
-                  :reaction (fn [this url]
-                              (object/merge! this {:socket (socket this url)})
-                              (send local {:id (next-id) :method "Console.enable"})
-                              (send local {:id (next-id) :method "Debugger.enable"})
-                              (send local {:id (next-id) :method "Network.setCacheDisabled" :params {:cacheDisabled true}})))
+          :triggers #{:connect!}
+          :reaction (fn [this url]
+                      (object/merge! this {:socket (socket this url)})
+                      (send local {:id (next-id) :method "Console.enable"})
+                      (send local {:id (next-id) :method "Debugger.enable"})
+                      (send local {:id (next-id) :method "Network.setCacheDisabled" :params {:cacheDisabled true}})))
 
 (behavior ::clear-queue-on-connect
-                  :triggers #{:connect}
-                  :reaction (fn [this]
-                              (doseq [msg (:queue @this)]
-                                (apply send msg))))
+          :triggers #{:connect}
+          :reaction (fn [this]
+                      (doseq [msg (:queue @this)]
+                        (apply send msg))))
 
 (behavior ::print-messages
-                  :triggers #{:message}
-                  :reaction (fn [this m]
-                             ;;(console/log (pr-str m))
-                              ))
+          :triggers #{:message}
+          :reaction (fn [this m]
+                      ;;(console/log (pr-str m))
+                      ))
 
 (behavior ::handle-message
-                  :triggers #{:message}
-                  :reaction (fn [this m]
-                              (if-let [cb (@cbs (:id m))]
-                                (do
-                                  (cb m)
-                                  (swap! cbs dissoc (:id m)))
-                                (when (:method m)
-                                  (object/raise this (keyword (:method m)) m)))))
+          :triggers #{:message}
+          :reaction (fn [this m]
+                      (if-let [cb (@cbs (:id m))]
+                        (do
+                          (cb m)
+                          (swap! cbs dissoc (:id m)))
+                        (when (:method m)
+                          (object/raise this (keyword (:method m)) m)))))
 
 (behavior ::script-parsed
-                  :triggers #{:Debugger.scriptParsed}
-                  :reaction (fn [this s]
-                              (let [url (-> s :params :url)]
-                                (object/update! this [:scripts] assoc-in [(files/basename url) url] (:params s))
-                              )))
+          :triggers #{:Debugger.scriptParsed}
+          :reaction (fn [this s]
+                      (let [url (-> s :params :url)]
+                        (object/update! this [:scripts] assoc-in [(files/basename url) url] (:params s))
+                        )))
 
 (behavior ::console-log
-                  :triggers #{:Console.messageAdded}
-                  :reaction (fn [this m]
-                              (let [msg (-> m :params :message)]
-                                (handle-log-msg msg))))
+          :triggers #{:Console.messageAdded}
+          :reaction (fn [this m]
+                      (let [msg (-> m :params :message)]
+                        (handle-log-msg msg))))
 
 (behavior ::clear-console
-                  :triggers #{:clear!}
-                  :reaction (fn [this]
-                              (send this {:id (next-id) :method "Console.clearMessages"})))
+          :triggers #{:clear!}
+          :reaction (fn [this]
+                      (send this {:id (next-id) :method "Console.clearMessages"})))
 
 (behavior ::disconnect
-                  :triggers #{:disconnect}
-                  :reaction (fn [this]
-                              (when (:socket @this)
-                                (close this))))
+          :triggers #{:disconnect}
+          :reaction (fn [this]
+                      (when (:socket @this)
+                        (close this))))
 
 (behavior ::reconnect
-                  :triggers #{:reconnect!}
-                  :reaction (fn [this]
-                              (object/raise this :disconnect)
-                              (fetch/xhr devtools-url {}
-                                         (fn [d]
-                                           (if-let [url (-> (js/JSON.parse d)
-                                                            (js->clj :keywordize-keys true)
-                                                            (find-debugger-url))]
-                                             (object/raise this :connect! url)
-                                             (wait 1000 #(object/raise this :reconnect!)))))))
+          :triggers #{:reconnect!}
+          :reaction (fn [this]
+                      (object/raise this :disconnect)
+                      (fetch/xhr devtools-url {}
+                                 (fn [d]
+                                   (if-let [url (-> (js/JSON.parse d)
+                                                    (js->clj :keywordize-keys true)
+                                                    (find-debugger-url))]
+                                     (object/raise this :connect! url)
+                                     (wait 1000 #(object/raise this :reconnect!)))))))
 
 (behavior ::connect-on-init
-                  :triggers #{:init}
-                  :reaction (fn [app]
-                              (object/raise local :reconnect!)))
+          :triggers #{:init}
+          :reaction (fn [app]
+                      (object/raise local :reconnect!)))
 
 ;;*********************************************************
 ;; Inspectors
@@ -280,14 +280,14 @@
 (defn i-compare [a b]
   (let [ia (.indexOf a "__")
         ib (.indexOf b "__")]
-  (if (and (= ia -1)
-           (= ib -1))
-    (compare a b)
-    (cond
-     (and (> ia -1)
-          (> ib -1)) (compare a b)
-     (> ia -1) 1
-     :else -1))))
+    (if (and (= ia -1)
+             (= ib -1))
+      (compare a b)
+      (cond
+       (and (> ia -1)
+            (> ib -1)) (compare a b)
+       (> ia -1) 1
+       :else -1))))
 
 (defn ->name [obj]
   (let [n (or (-> obj :name) (-> obj :value :description) (:description obj) "UnknownObject")]
@@ -311,10 +311,10 @@
   [:ul
    (for [c (sort-by :name i-compare children)]
      (do
-     (if (and (= (-> c :value :type) "object")
-              (-> c :value :objectId))
-       [:li (object/->content (object/create ::inspector-object (:client @this) c))]
-       [:li [:em (:name c)] ": " (or (-> c :value :description) (str (-> c :value format-value)))])))])
+       (if (and (= (-> c :value :type) "object")
+                (-> c :value :objectId))
+         [:li (object/->content (object/create ::inspector-object (:client @this) c))]
+         [:li [:em (:name c)] ": " (or (-> c :value :description) (str (-> c :value format-value)))])))])
 
 (defn ->open [this]
   (if (:open this)
@@ -338,18 +338,18 @@
     (object/destroy! obj)))
 
 (behavior ::clean-inspectors-timer
-                  :triggers #{:init}
-                  :reaction (fn [this]
-                              ;;Every minute clear extraneous inspectors
-                              (every 60000 clear-unused-inspectors)
-                              ))
+          :triggers #{:init}
+          :reaction (fn [this]
+                      ;;Every minute clear extraneous inspectors
+                      (every 60000 clear-unused-inspectors)
+                      ))
 
 (behavior ::clear-inspector-object
-                  :triggers #{:destroy}
-                  :reaction (fn [this]
-                              (when-let [id (or (-> @this :info :value :objectId)
-                                                (-> @this :info :objectId))]
-                                (send (:client @this) {:id (next-id) :method "Runtime.releaseObject" :params {:objectId id}}))))
+          :triggers #{:destroy}
+          :reaction (fn [this]
+                      (when-let [id (or (-> @this :info :value :objectId)
+                                        (-> @this :info :objectId))]
+                        (send (:client @this) {:id (next-id) :method "Runtime.releaseObject" :params {:objectId id}}))))
 
 (object/object* ::inspector-object
                 :tags #{:inspector.object}

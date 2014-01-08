@@ -346,12 +346,13 @@
                   :triggers #{:editor.eval.js.change-live!}
                   :reaction (fn [this msg]
                               (when-let [ed (clients/cb->obj (:cb msg))]
-                                 (devtools/changelive! ed (-> msg :data :path) (js/lt.plugins.watches.watched-range ed nil nil js/lt.objs.langs.js.src->watch)
-                                                       (fn [res]
-                                                         ;;TODO: check for exception, otherwise, assume success
-                                                         (object/raise ed :editor.eval.js.change-live.success)
-                                                         )
-                                                       identity))))
+                                (when (-> msg :data :path)
+                                  (devtools/changelive! ed (-> msg :data :path) (js/lt.plugins.watches.watched-range ed nil nil js/lt.objs.langs.js.src->watch)
+                                                        (fn [res]
+                                                          ;;TODO: check for exception, otherwise, assume success
+                                                          (object/raise ed :editor.eval.js.change-live.success)
+                                                          )
+                                                        identity)))))
 
 (behavior ::js-eval-file
                   :triggers #{:editor.eval.js.file!}
@@ -417,8 +418,9 @@
 
 (defn must-eval-file? [msg]
   ;;we eval the whole file if there's no meta, or this file isn't loaded in the current page
-  (or (not (-> msg :data :meta))
-      (not (devtools/find-script devtools/local (-> msg :data :path)))))
+  (when (-> msg :data :path)
+    (or (not (-> msg :data :meta))
+        (not (devtools/find-script devtools/local (-> msg :data :path))))))
 
 
 (behavior ::js-eval

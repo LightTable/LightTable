@@ -195,7 +195,6 @@
                   :lt.objs.langs.keymap/keymap-hint-pattern
                   :lt.plugins.auto-complete/auto-show-on-input]
   :editor.keymap.helper [:lt.objs.langs.keymap/helper.show!]
-  :editor.css [:lt.objs.langs.css/on-eval :lt.objs.langs.css/eval-on-save]
   :editor.file-backed [:lt.objs.opener/save-as-rename!
                        :lt.objs.editor.file/remove-trailing-whitespace
                        :lt.objs.editor.file/dirty-on-change :lt.objs.editor.file/file-save
@@ -203,12 +202,6 @@
                        :lt.objs.editor.file/last-char-newline]
   :editor.inline-result [:lt.objs.eval/underline-results :lt.objs.eval/inline-results
                          :lt.objs.eval/inline-exceptions]
-  :editor.javascript [:lt.objs.langs.js/js-success :lt.objs.langs.js/js-result
-                      :lt.objs.langs.js/js-exception :lt.objs.langs.js/on-eval
-                      :lt.objs.langs.js/on-eval.one
-                      :lt.objs.langs.js/watch-src
-                      :lt.objs.langs.js/js-watch
-                      [:lt.object/add-tag :watchable]]
   :editor.markdown [:lt.objs.editor/wrap]
   :editor.plaintext [:lt.objs.editor/wrap]
   :editor.pool [:lt.objs.editor.pool/add-tab-settings
@@ -221,11 +214,8 @@
                      :lt.objs.opener/transient-save
                      :lt.objs.opener/save-as]
   :evaler [:lt.objs.eval/alert-on-no-client]
-
-
   :files [:lt.objs.opener/save-failed
-          (:lt.objs.files/file-types [{:name "CSS" :exts [:css] :mime "text/css" :tags [:editor.css]}
-                                      {:name "C" :exts [:c] :mime "text/x-c" :tags [:editor.c]}
+          (:lt.objs.files/file-types [{:name "C" :exts [:c] :mime "text/x-c" :tags [:editor.c]}
                                       {:name "C++" :exts [:cpp :mm :cc] :mime "text/x-c++src" :tags [:editor.cpp]}
                                       {:name "C++ Header" :exts [:h] :mime "text/x-c++hdr" :tags [:editor.cpph]}
                                       {:name "C#" :exts [:cs] :mime "text/x-csharpr" :tags [:editor.csharp]}
@@ -243,8 +233,6 @@
                                       {:name "Haxe" :exts [:haxe] :mime "text/x-haxe" :tags [:editor.haxe]}
                                       {:name "HTML" :exts [:html :htm] :mime "htmlmixed" :tags [:editor.html]}
                                       {:name "INI" :exts [:ini] :mime "text/x-ini" :tags [:editor.ini]}
-                                      {:name "Javascript" :exts [:js] :mime "text/javascript" :tags [:editor.javascript]}
-                                      {:name "JSON" :exts [:json] :mime "application/json" :tags [:editor.javascript :editor.json]}
                                       {:name "Java" :exts [:java] :mime "text/x-java" :tags [:editor.java]}
                                       {:name "Julia" :exts [:jl] :mime "text/x-julia" :tags [:editor.julia]}
                                       {:name "LaTeX" :exts [:latex :tex] :mime "text/x-stex" :tags [:editor.latex]}
@@ -265,7 +253,6 @@
                                       {:name "Sass" :exts [:sass] :mime "text/x-sass" :tags [:editor.sass]}
                                       {:name "Scala" :exts [:scala] :mime "text/x-scala" :tags [:editor.scala]}
                                       {:name "Scheme" :exts [:ss :scm :sch] :mime "text/x-scheme" :tags [:editor.scheme]}
-                                      {:name "SCSS" :exts [:scss] :mime "text/x-scss" :tags [:editor.scss]}
                                       {:name "Shell" :exts [:sh :bash :profile :bash_profile :bashrc] :mime "text/x-sh" :tags [:editor.shell]}
                                       {:name "Smarty" :exts [:smarty] :mime "text/x-smarty" :tags [:editor.smarty]}
                                       {:name "SPARQL" :exts [:sparql] :mime "text/x-sparql-query" :tags [:editor.sparql]}
@@ -311,17 +298,6 @@
                       :lt.objs.sidebar.navigate/pop-transient-on-select
                       :lt.objs.sidebar.navigate/open-on-select]
   :navigator [:lt.objs.sidebar.navigate/focus! :lt.objs.sidebar.navigate/focus-on-show :lt.objs.sidebar.navigate/workspace-files]
-  :nodejs.client [:lt.objs.clients.tcp-client/init-debugger!
-                  :lt.objs.clients.tcp-client/start-debugger!
-                  :lt.objs.clients.tcp-client/connect-success
-                  :lt.objs.clients.tcp-client/send!
-                  :lt.objs.clients.tcp-client/debugger-evaluate
-                  :lt.objs.clients.tcp-client/debugger-changelive
-                  :lt.objs.clients.tcp-client/refresh-scripts!
-                  :lt.objs.clients.tcp-client/debugger-scripts
-                  :lt.objs.clients.tcp-client/changelive!
-                  :lt.objs.clients.tcp-client/connect-retry]
-  :nodejs.lang [:lt.objs.clients.tcp-client/connect!]
   :object [:lt.objs.clients/on-destroy-remove-cb]
   :opener [:lt.objs.opener/open-from-info :lt.objs.opener/open-transient-editor
            :lt.objs.opener/open-standard-editor
