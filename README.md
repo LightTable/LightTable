@@ -52,11 +52,8 @@ cd light-table-core-2
 lein cljsbuild clean && lein cljsbuild once
 
 cd deploy/plugins
-rm -rf clojure paredit
+rm -rf clojure
 git clone https://github.com/LightTable/Clojure.git clojure
-git clone https://github.com/LightTable/Paredit.git paredit
-git clone https://github.com/LightTable/Rainbow.git rainbow
-
 cd clojure
 ./build.sh
 
