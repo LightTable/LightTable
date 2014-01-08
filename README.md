@@ -5,8 +5,9 @@ First install or update [leiningen](http://leiningen.org/). Then we have to do s
 On OS X:
 
 ``` bash
-wget http://d35ac8ww5dfjyg.cloudfront.net/playground/bins/0.5.20/LightTableMac.zip
+wget http://d35ac8ww5dfjyg.cloudfront.net/playground/bins/0.6.0/LightTableMac.zip
 unzip LightTableMac.zip
+
 mkdir light-table-core-2
 mv LightTable light-table-core-2/deploy
 rm -rf light-table-core-2/deploy/LightTable.app/Contents/Resources/app.nw
@@ -18,10 +19,8 @@ cd light-table-core-2
 lein cljsbuild clean && lein cljsbuild once
 
 cd deploy/plugins
-rm -rf clojure paredit
+rm -rf clojure
 git clone https://github.com/LightTable/Clojure.git clojure
-git clone https://github.com/LightTable/Paredit.git paredit
-git clone https://github.com/LightTable/Rainbow.git rainbow
 
 cd clojure
 ./build.sh
@@ -54,6 +53,7 @@ lein cljsbuild clean && lein cljsbuild once
 cd deploy/plugins
 rm -rf clojure
 git clone https://github.com/LightTable/Clojure.git clojure
+
 cd clojure
 ./build.sh
 
@@ -65,7 +65,7 @@ export LD_LIBRARY_PATH=$(pwd):$LD_LIBRARY_PATH
 On Windows:
 
 1. Clone the repo https://github.com/LightTable/LightTable.git
-2. download http://d35ac8ww5dfjyg.cloudfront.net/playground/bins/0.5.20/LightTableWin.zip
+2. download http://d35ac8ww5dfjyg.cloudfront.net/playground/bins/0.6.0/LightTableWin.zip
 3. unzip LightTableWin.zip
 4. copy the following files from the zip into the cloned repo at light-table-core/deploy/
    - ffmpegsumo.dll
