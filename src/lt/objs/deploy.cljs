@@ -50,7 +50,12 @@
 (defn compare-versions [v1 v2]
   (if (= v1 v2)
     false
-    (every? identity (map #(>= % %2) (vals v2) (vals v1)))))
+    (not (or (< (:major v2) (:major v1))
+             (and (= (:major v2) (:major v1))
+                  (< (:minor v2) (:minor v1)))
+             (and (= (:major v2) (:major v1))
+                  (= (:minor v2) (:minor v1))
+                  (< (:patch v2) (:patch v1)))))))
 
 (defn is-newer? [v1 v2]
   (compare-versions (str->version v1) (str->version v2)))
@@ -115,6 +120,7 @@
 (defn check-version [& [notify?]]
   (fetch/xhr (version-url) {}
              (fn [data]
+               (println (is-newer? (:version version) data))
                (when (re-seq version-regex data)
                  (if (and (not= data "")
                           (not= data (:version version))
