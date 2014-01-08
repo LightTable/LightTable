@@ -54,12 +54,12 @@
   (count (.filter (js/Object.keys provided) #(> (.indexOf % parent) -1))))
 
 (defn only-ancestors? [cur s]
-  (= (.-length (js/Object.keys cur)) (provided-ancestors s)))
+  (<= (.-length (js/Object.keys cur)) (provided-ancestors s)))
 
 (defn provided? [s]
   (let [res (if (aget provided s)
               true
               (when-let [cur (obj-exists? s)]
-                (only-ancestors? cur s)))]
+                (not (only-ancestors? cur s))))]
     (aset provided s true)
     res))
