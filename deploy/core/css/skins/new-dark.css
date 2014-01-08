@@ -218,7 +218,7 @@ input { color: var(highlight-fg); background:var(highlight-bg); }
 .filter-list { color: var(fg); }
 .filter-list em { color:#C7E6FF; }
 .filter-list .selected, .filter-list li:hover { color:var(highlight-fg); background: var(highlight-bg);}
-.filter-list .selected em, .filter-list li:hover em { color:#C7E6FF; }
+.filter-list .selected em, .filter-list li:hover em { color:var(accent-foreground); }
 
 #side .content { background:var(bg); box-shadow: 0 0 10px var(shadow); }
 #side ::-webkit-scrollbar-thumb { background: var(scrollbar); border:1px solid var(scrollbar); }
