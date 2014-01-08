@@ -45,7 +45,7 @@ body { -webkit-user-select: none; }
 .inline-exception .spacer { display:inline-block; white-space:pre; vertical-align:top; }
 
 .underline-result{ box-sizing:border-box; padding:5px 0px; -webkit-user-select:text; white-space:nowrap; padding-left:10px; }
-.underline-result pre { display:inline-block; white-space:pre-wrap; padding:15px 10px !important; border-radius:2px; }
+.underline-result pre { display:inline-block; white-space:pre-wrap; padding:10px 10px !important; border-radius:2px; }
 .underline-result .spacer { display:inline-block; white-space:pre; vertical-align:top; }
 
 .dragimage { display:block; height:0; width:0; cursor:default; }
@@ -353,9 +353,9 @@ body { -webkit-user-select: none; }
 .jshintmarks { width:5px; }
 .jshinterror { height:1em; display:inline-block; width:5px; }
 
-.inline-doc { line-height:1.1em; margin-left:-10px; padding:5px 20px; border-radius:3px; }
+.inline-doc { line-height:1.1em; margin-left:-10px; padding:5px 20px; border-radius:0px; }
 .inline-doc h1 span { font-size:10pt; }
-.inline-doc h1 { font-size:120%; margin:0; }
+.inline-doc h1 { font-size:100%; margin:0; }
 .inline-doc h3 { margin:0; margin-top:8px;}
 .underline-result .inline-doc pre { padding:0 !important; margin:0; margin-top:8px; }
 
