@@ -7,7 +7,7 @@
             [lt.util.cljs :as cljs]
             [lt.util.dom :refer [replace-with] :as dom]
             [lt.util.js :refer [throttle debounce]])
-  (:require-macros [lt.macros :refer [behavior with-time]]))
+  (:require-macros [lt.macros :refer [behavior with-time aloop]]))
 
 (def obj-id (atom 0))
 (def instances (atom (sorted-map)))
@@ -40,10 +40,11 @@
 (defn specificity-sort [xs dir]
   (let [arr #js []]
     (doseq [x xs]
-      (.push arr #js [(count (string/split (str x) ".")) (str x) x]))
+      (.push arr #js [(.-length (.split (str x) ".")) (str x) x]))
     (.sort arr)
     (when-not dir (.reverse arr))
-    (amap arr i _ (aget arr i 2))))
+    (aloop [i arr] (aset arr i (aget arr i 2)))
+    arr))
 
 (defn tags->behaviors [ts]
   (let [duped (apply concat (map @tags (specificity-sort ts)))
