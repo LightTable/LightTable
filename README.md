@@ -5,7 +5,7 @@ First install or update [leiningen](http://leiningen.org/). Then we have to do s
 On OS X:
 
 ``` bash
-wget http://d35ac8ww5dfjyg.cloudfront.net/playground/bins/0.5.20/LightTableMac.zip
+wget http://d35ac8ww5dfjyg.cloudfront.net/playground/bins/0.6.0/LightTableMac.zip
 unzip LightTableMac.zip
 mkdir light-table-core-2
 mv LightTable light-table-core-2/deploy
