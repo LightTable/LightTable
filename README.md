@@ -15,19 +15,18 @@ git clone https://github.com/LightTable/LightTable.git
 cp -r LightTable/* light-table-core-2/
 
 cd light-table-core-2/deploy
+lein cljsbuild clean && lein cljsbuild once
 
 mv LightTable.app/Contents/Resources/app.nw/plugins plugins
 cd plugins
 rm -rf clojure
 git clone https://github.com/LightTable/Clojure.git clojure
 
-rm -rf light-table-core-2/deploy/LightTable.app/Contents/Resources/app.nw
-
 cd clojure
 ./build.sh
 
-cd ../../../
-lein cljsbuild clean && lein cljsbuild once
+cd ../../
+rm -rf LightTable.app/Contents/Resources/app.nw
 export LT_HOME=$(pwd)
 ./light
 ```
