@@ -12,7 +12,7 @@ mv LightTable light-table-core-2/deploy
 rm -rf light-table-core-2/deploy/LightTable.app/Contents/Resources/app.nw
 
 git clone https://github.com/LightTable/LightTable.git
-cp -r light-table-core/* light-table-core-2/
+cp -r LightTable/* light-table-core-2/
 
 cd light-table-core-2
 lein cljsbuild clean && lein cljsbuild once
@@ -46,7 +46,7 @@ mkdir light-table-core-2
 mv LightTable light-table-core-2/deploy
 
 git clone https://github.com/LightTable/LightTable.git
-cp -ar light-table-core/* light-table-core-2/
+cp -ar LightTable/* light-table-core-2/
 
 cd light-table-core-2
 lein cljsbuild clean && lein cljsbuild once
