@@ -9,6 +9,7 @@ wget http://d35ac8ww5dfjyg.cloudfront.net/playground/bins/0.5.20/LightTableMac.z
 unzip LightTableMac.zip
 mkdir light-table-core-2
 mv LightTable light-table-core-2/deploy
+rm -rf light-table-core-2/deploy/LightTable.app/Contents/Resources/app.nw
 
 git clone git@github.com:Kodowa/light-table-core.git
 cp -r light-table-core/* light-table-core-2/
