@@ -22,17 +22,13 @@
 (def targz (load/node-module "tar.gz"))
 (def request (load/node-module "request"))
 (def tar (load/node-module "tar"))
-(def cur-path (.pwd shell))
 (def home-path (files/lt-home ""))
 (def get-proxy (.-App.getProxyForURL (js/require "nw.gui")))
 
 (def version-regex #"^\d+\.\d+\.\d+(-.*)?$")
 
-(defn in-lt [path]
-  (str home-path "/" path))
-
 (defn get-versions []
-  (let [vstr (:content (files/open-sync (in-lt "core/version.json")))]
+  (let [vstr (:content (files/open-sync (files/lt-home "core/version.json")))]
     (js->clj (.parse js/JSON vstr) :keywordize-keys true)))
 
 (defn proxy? []
