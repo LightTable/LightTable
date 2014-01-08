@@ -219,8 +219,6 @@
                                       {:name "C++" :exts [:cpp :mm :cc] :mime "text/x-c++src" :tags [:editor.cpp]}
                                       {:name "C++ Header" :exts [:h] :mime "text/x-c++hdr" :tags [:editor.cpph]}
                                       {:name "C#" :exts [:cs] :mime "text/x-csharpr" :tags [:editor.csharp]}
-                                      {:name "Clojure" :exts [:clj] :mime "text/x-clojure" :tags [:editor.clj :editor.clojure]}
-                                      {:name "ClojureScript" :exts [:cljs] :mime "text/x-clojurescript" :tags [:editor.cljs :editor.clojurescript]}
                                       {:name "CoffeeScript" :exts [:coffee] :mime "text/x-coffeescript" :tags [:editor.coffee]}
                                       {:name "Common Lisp" :exts [:cl] :mime "text/x-common-lisp" :tags [:editor.common-lisp]}
                                       {:name "Diff" :exts [:diff :patch] :mime "text/x-diff" :tags [:editor.diff]}
