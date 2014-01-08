@@ -46,7 +46,8 @@
                      :dragDrop false
                      :onDragEvent (fn [] true)
                      :undoDepth 10000
-                     :matchBrackets true})]
+                     :matchBrackets true
+                     :showCursorWhenSelecting true})]
     (when-let [c (:content context)]
       (set-val e c)
       (clear-history e))
