@@ -194,7 +194,7 @@ input { color: var(highlight-fg); background:var(highlight-bg); }
 
 #instarepl .error { color:var(error-fg); background:var(error-bg); }
 #instarepl .livetoggler { background:var(accent-background); color:var(accent-foreground); }
-#instarepl .livetoggler.off {color:var(button-fg); background:var(dark-highlight-bg);}
+#instarepl .livetoggler.off {color:var(bright-fg); background:var(bg);}
 #instarepl .livetoggler.off:hover {color:var(button-active-fg); background:var(button-active-bg);}
 #instarepl .use-result { background:var(usage-bg); color:var(usage-fg); }
 #instarepl .result-result { background:var(result-bg); color:var(result-fg); }
@@ -252,7 +252,8 @@ input { color: var(highlight-fg); background:var(highlight-bg); }
 #right-bar .docs-search h2 { color:var(accent-foreground);  }
 #right-bar .docs-search h3 { color:var(placeholder-fg);  }
 #right-bar .docs-search .types > span { background: var(pane-border); color:var(blinding-fg); }
-#right-bar .docs-search .types li { background: var(pane-border); color:var(blinding-fg); }
+#right-bar .docs-search .types ul { background: var(bg); }
+#right-bar .docs-search .types li { background: var(highlight-bg); color:var(highlight-fg); }
 #right-bar .docs-search .types li:hover { background: var(medium-highlight-bg); color:var(blinding-fg); }
 
 #right-bar .clients td { color:var(dim-fg); }

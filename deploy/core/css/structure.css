@@ -116,7 +116,7 @@ body { -webkit-user-select: none; }
 #instarepl .main { height:100%; width:100%; float:left; border-radius:0; box-sizing:border-box;}
 #instarepl .error { z-index:1000; position:absolute; left:0; bottom:0px; padding:5px; border-radius:3px; }
 #instarepl .error:empty {padding:0;}
-#instarepl .livetoggler { position:absolute; cursor:default; border-radius:2px; right:0; margin-right:2px; float:left; z-index:10; padding:3px 8px; }
+#instarepl .livetoggler { position:absolute; cursor:default; border-radius:2px; right:15px; margin-right:2px; float:left; z-index:10; padding:3px 8px; }
 #instarepl .result-mark { border-radius:2px; display:inline-block; vertical-align:top; }
 #instarepl .result-mark .truncated { display:inline-block; overflow:hidden; }
 #instarepl .result-mark.open .truncated { display:none; overflow:hidden; vertical-align:top; }
@@ -255,10 +255,10 @@ body { -webkit-user-select: none; }
 #right-bar .docs-search input { width:100%; padding:10px; font-size:11pt; }
 #right-bar .docs-search > ul {display:block; }
 #right-bar .docs-search li { border:none; -webkit-user-select:text; padding:5px 5px; cursor:default; overflow:hidden; direction:ltr; width:100%; box-sizing:border-box; white-space:nowrap; }
-#right-bar .docs-search .types { position:absolute; top:2px; right:0px; display:block; z-index:100; text-align:right;}
-#right-bar .docs-search .types > span { padding:9px;  font-size:11pt; background:red; display:inline-block; border-radius:3px; position:static; }
-#right-bar .docs-search .types > ul { display:none; background:none; position:static; padding-top:2px; border-radius:3px; }
-#right-bar .docs-search .types > ul li { padding:5px 10px; font-size:10pt; }
+#right-bar .docs-search .types { position:absolute; top:0px; right:0px; display:block; z-index:100; text-align:right;}
+#right-bar .docs-search .types > span { padding:4px 10px;  font-size:10pt; background:red; display:inline-block; border-radius:0px; position:static; }
+#right-bar .docs-search .types > ul { display:none; background:none; position:static; padding-top:2px; border-radius:0px; }
+#right-bar .docs-search .types > ul li { padding:5px 10px; font-size:10pt; border-radius:0px; margin-bottom:1px; }
 #right-bar .docs-search .types:hover > ul { display:block; }
 #right-bar .docs-search .no-client { position:absolute; margin-top:20px; padding:5px; z-index:10; }
 #right-bar .docs-search .no-client p + p { margin-top:10px; }
