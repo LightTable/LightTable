@@ -5,7 +5,7 @@
                  [crate "0.2.5"]
                  [fetch "0.1.1" :exclusions [org.clojure/clojure]]
                  ;[core.async "0.1.0-SNAPSHOT"]
-                 [org.clojure/clojurescript "0.0-2127"
+                 [org.clojure/clojurescript "0.0-2138"
                   :exclusions [org.apache.ant/ant]]
                  ]
   :jvm-opts ["-Xmx4g" "-XX:+UseConcMarkSweepGC"] ; cljsbuild eats memory
