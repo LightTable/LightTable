@@ -20,8 +20,17 @@ bash linux_deps.sh
 ./deploy/LightTable
 ```
 
-On Windows:
+On Windows (using Cygwin):
 
+``` bash
+git clone https://github.com/LightTable/LightTable.git
+cd LightTable
+bash windows_deps.sh
+chmod -R u+rwx deploy/
+./deploy/LightTable
+```
+
+On Windows (manual):
 1. Clone the repo https://github.com/LightTable/LightTable.git
 2. download http://d35ac8ww5dfjyg.cloudfront.net/playground/bins/0.6.0/LightTableWin.zip
 3. unzip LightTableWin.zip
