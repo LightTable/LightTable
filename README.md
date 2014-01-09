@@ -25,7 +25,7 @@ On Windows:
 1. Clone the repo https://github.com/LightTable/LightTable.git
 2. download http://d35ac8ww5dfjyg.cloudfront.net/playground/bins/0.6.0/LightTableWin.zip
 3. unzip LightTableWin.zip
-4. copy the following files from the zip into the cloned repo at light-table-core/deploy/
+4. copy the following files from the zip into the cloned repo at LightTable/deploy/
    - ffmpegsumo.dll
    - icudt.dll
    - libEGL.dll
