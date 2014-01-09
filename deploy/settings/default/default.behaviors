@@ -171,6 +171,7 @@
            (:lt.objs.editor/tab-settings false 2 2)
            :lt.plugins.auto-complete/remove-on-move-line
            :lt.plugins.auto-complete/remove-on-scroll-inactive
+           :lt.plugins.auto-complete/auto-show-on-input
            ]
   :editor.active [:lt.objs.statusbar/report-cursor-location]
   :editor.behaviors [:lt.objs.settings/on-behaviors-editor-save
