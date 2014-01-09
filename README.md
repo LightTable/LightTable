@@ -5,29 +5,10 @@ First install or update [leiningen](http://leiningen.org/). Then we have to do s
 On OS X:
 
 ``` bash
-curl -O http://d35ac8ww5dfjyg.cloudfront.net/playground/bins/0.6.0/LightTableMac.zip
-unzip LightTableMac.zip
-
-mkdir light-table-core-2
-mv LightTable light-table-core-2/deploy
-
 git clone https://github.com/LightTable/LightTable.git
-cp -r LightTable/* light-table-core-2/
+cd LightTable
 
-cd light-table-core-2/deploy
-lein cljsbuild clean && lein cljsbuild once
-
-mv LightTable.app/Contents/Resources/app.nw/plugins plugins
-cd plugins
-rm -rf clojure
-git clone https://github.com/LightTable/Clojure.git clojure
-
-cd clojure
-./build.sh
-
-cd ../../
-rm -rf LightTable.app/Contents/Resources/app.nw
-export LT_HOME=$(pwd)
+sh osx_deps.sh
 ./light
 ```
 
