@@ -1,4 +1,4 @@
-(defproject lighttable "0.1.0"
+(defproject lighttable "0.6.0"
   :description "FIXME: write this!"
   :url "http://exampl.com/FIXME"
   :dependencies [[org.clojure/clojure "1.5.1"]
