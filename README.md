@@ -14,33 +14,10 @@ sh osx_deps.sh
 On Linux:
 
 ``` bash
-# For 64 bit machines
-wget http://d35ac8ww5dfjyg.cloudfront.net/playground/bins/0.6.0/LightTableLinux64.tar.gz
-tar -xzf LightTableLinux64.tar.gz
-
-# For 32 bit machines
-wget http://d35ac8ww5dfjyg.cloudfront.net/playground/bins/0.6.0/LightTableLinux32.tar.gz
-tar -xzf LightTableLinux32.tar.gz
-
-mkdir light-table-core-2
-mv LightTable light-table-core-2/deploy
-
 git clone https://github.com/LightTable/LightTable.git
-cp -ar LightTable/* light-table-core-2/
-
-cd light-table-core-2
-lein cljsbuild clean && lein cljsbuild once
-
-cd deploy/plugins
-rm -rf clojure
-git clone https://github.com/LightTable/Clojure.git clojure
-
-cd clojure
-./build.sh
-
-cd ../../
-export LD_LIBRARY_PATH=$(pwd):$LD_LIBRARY_PATH
-./ltbin
+cd LightTable
+bash linux_deps.sh
+./deploy/LightTable
 ```
 
 On Windows:
