@@ -237,6 +237,7 @@
                                       {:name "LESS" :exts [:less] :mime "text/x-less" :tags [:editor.less]}
                                       {:name "Light Table Behaviors" :exts [:behaviors] :mime "text/x-clojurescript" :tags [:editor.behaviors]}
                                       {:name "Light Table Keymap" :exts [:keymap] :mime "text/x-clojurescript" :tags [:editor.keymap]}
+                                      {:name "LiveScript" :exts [:ls] :mime "text/x-livescript" :tags [:editor.livescript]}
                                       {:name "Lua" :exts [:lua] :mime "text/x-lua" :tags [:editor.lua]}
                                       {:name "Markdown" :exts [:md :markdown] :mime "text/x-markdown" :tags [:editor.markdown]}
                                       {:name "OCaml" :exts [:ocaml :ml] :mime "text/x-ocaml" :tags [:editor.ocaml]}
