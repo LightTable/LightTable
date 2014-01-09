@@ -1,4 +1,4 @@
-# Building
+# Installing
 
 First install or update [leiningen](http://leiningen.org/). Then we have to do some juggling (unless you fancy building node-webkit from source).
 
