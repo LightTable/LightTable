@@ -311,7 +311,8 @@
 
 (defui installed-plugin-ui [plugin]
   (let [cached (-> @manager :version-cache (get (:name plugin)))
-        update? (deploy/is-newer? (:version plugin) cached)]
+        update? (when chached
+                  (deploy/is-newer? (:version plugin) cached))]
     [:li {:class (if update?
                    "has-update")}
      (if update?
