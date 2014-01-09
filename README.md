@@ -1,3 +1,5 @@
+[![Dependency Status](https://www.versioneye.com/user/projects/52ced532ec137536ab000078/badge.png)](https://www.versioneye.com/user/projects/52ced532ec137536ab000078)
+
 # Building
 
 First install or update [leiningen](http://leiningen.org/). Then we have to do some juggling (unless you fancy building node-webkit from source).
