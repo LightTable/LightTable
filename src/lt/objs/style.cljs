@@ -34,7 +34,8 @@
           :id "skin-style"
           :href (bound (subatom this [:skin])
                        #(-> (object/raise-reduce app/app :skins+ {})
-                            (get % "/core/css/skins/dark.css")))}])
+                            (get % "/core/css/skins/dark.css")
+                            (plugins/adjust-path)))}])
 
 (object/object* ::styles
                 :init (fn [this]
@@ -81,12 +82,10 @@
                   :desc "Style: Provide skin"
                   :triggers #{:skins+}
                   :type :user
-                  :params [{:label "name"} {:label "path"} {:label "native"}]
-                  :reaction (fn [this skins name path native]
-                              (let [adjusted-path (plugins/adjust-path path)]
-                              (assoc skins name (if (not native)
-                                                  (str "file://" adjusted-path)
-                                                  adjusted-path)))))
+                  :params [{:label "name"} {:label "path"}]
+                  :reaction (fn [this skins name path]
+                              (assoc skins name path)
+                              ))
 
 (defn get-skins []
   (sort-by #(.-text %)
@@ -124,7 +123,8 @@
           :type "text/css"
           :id (str "theme-" name)
           :href (-> (object/raise-reduce app/app :themes+ {})
-                    (get name "/core/css/themes/default.css"))}])
+                    (get name "/core/css/themes/default.css")
+                    (plugins/adjust-path))}])
 
 (defn load-theme [name]
   (when-not (empty? prev-theme)
@@ -138,12 +138,10 @@
                   :desc "Style: Provide editor theme"
                   :triggers #{:themes+}
                   :type :user
-                  :params [{:label "name"} {:label "path"} {:label "native"}]
-                  :reaction (fn [this themes name path native]
-                              (let [adjusted-path (plugins/adjust-path path)]
-                                (assoc themes name (if (not native)
-                                                    (str "file://" adjusted-path)
-                                                    adjusted-path)))))
+                  :params [{:label "name"} {:label "path"}]
+                  :reaction (fn [this themes name path]
+                              (assoc themes name path)
+                              ))
 
 (behavior ::remove-theme
           :triggers #{:deactivated :destroy}
