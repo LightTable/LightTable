@@ -1,3 +1,6 @@
+# Check if lein is installed
+lein version >/dev/null 2>&1 || { echo >&2 "Please install leiningen before running this script."; exit 1; }
+
 echo "### Fetching binaries ###"
 TARBALL=LightTableLinux$(getconf LONG_BIT).tar.gz
 curl -O http://d35ac8ww5dfjyg.cloudfront.net/playground/bins/0.6.0/$TARBALL
