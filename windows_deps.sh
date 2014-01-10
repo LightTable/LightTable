@@ -8,10 +8,8 @@ rm -rf deploy
 mv LightTable deploy
 chmod u+rwx deploy
 
-# echo "### Building cljs ###"
-# This fails on a windows 7(64bit) with lein 2.3.4, java 1.7.0_40
-# The failure is an infinite loop of compilations in src/lt/objs
-# lein cljsbuild clean && lein cljsbuild once
+echo "### Building cljs ###"
+lein cljsbuild clean && lein cljsbuild once
 
 echo "### Fetching clojure plugin ###"
 cd deploy/plugins

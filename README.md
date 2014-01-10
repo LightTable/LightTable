@@ -20,7 +20,7 @@ bash linux_deps.sh
 ./deploy/LightTable
 ```
 
-On Windows (using Cygwin):
+On Windows (using Cygwin) (note: this may trigger [issue 1025](https://github.com/LightTable/LightTable/issues/1025)):
 
 ``` bash
 git clone https://github.com/LightTable/LightTable.git
