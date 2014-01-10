@@ -77,8 +77,6 @@
 ;; Skins
 ;;**********************************************************
 
-
-
 (defn inject-skin [skin]
   (when (:skin @styles)
     (dom/remove-class (dom/$ :body) (str "skin-" (:skin @styles))))
