@@ -10,7 +10,7 @@
                  ]
   :jvm-opts ["-Xmx4g" "-XX:+UseConcMarkSweepGC"] ; cljsbuild eats memory
   :cljsbuild {:builds [{:source-paths ["src"]
-                        :compiler {:optimizations :none
+                        :compiler {:optimizations :simple
                                    :externs ["externs/jquery.js" "externs/throttle.js" "externs/codemirror.js"]
                                    :source-map "deploy/core/node_modules/lighttable/bootstrap.js.map"
                                    :output-to "deploy/core/node_modules/lighttable/bootstrap.js"
