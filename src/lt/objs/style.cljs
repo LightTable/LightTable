@@ -10,7 +10,8 @@
             [lt.objs.files :as files]
             [lt.objs.deploy :as deploy]
             [lt.util.dom :as dom]
-            [crate.binding :refer [bound subatom]])
+            [lt.util.load :as load]
+            [crate.binding :refer [bound -value subatom]])
   (:require-macros [lt.macros :refer [behavior defui]]))
 
 (defn css-expr [k v]
@@ -28,19 +29,16 @@
             (when (:font-size settings)
               (css-expr :font-size (str (:font-size settings) "pt")))))
 
-(defui skin-style [this]
-  [:link {:rel "stylesheet"
-          :type "text/css"
-          :id "skin-style"
-          :href (bound (subatom this [:skin])
-                       #(-> (object/raise-reduce app/app :skins+ {})
-                            (get % "/core/css/skins/dark.css")
-                            (plugins/adjust-path)))}])
+(defn load-skin [skin]
+  (let [skins (object/raise-reduce app/app :skins+ {})
+        path (get skins skin (plugins/adjust-path "css/skins/new-dark.css"))]
+    (load/css path)))
 
 (object/object* ::styles
                 :init (fn [this]
                         [:div
-                         (skin-style this)
+                         (bound (subatom this :skin)
+                                load-skin)
                          [:style {:type "text/css"}
                           (bound this ->css)
                           ]]))
@@ -84,7 +82,7 @@
                   :type :user
                   :params [{:label "name"} {:label "path"}]
                   :reaction (fn [this skins name path]
-                              (assoc skins name path)
+                              (assoc skins name (plugins/adjust-path path))
                               ))
 
 (defn get-skins []
