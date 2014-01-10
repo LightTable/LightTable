@@ -120,7 +120,7 @@
                                   (doc/open path
                                             (fn [doc]
                                               (let [type (files/path->type path)
-                                                    ed (pool/create (merge {:doc doc :line-ending (-> @doc :info :line-ending)} (path->info path)))]
+                                                    ed (pool/create (merge {:doc doc :line-ending (-> @doc :line-ending)} (path->info path)))]
                                                 (metrics/capture! :editor.open {:type (or (:name type) (files/ext path))
                                                                                 :lines (editor/last-line ed)})
                                                 (object/add-tags ed [:editor.file-backed])
