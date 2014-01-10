@@ -8,6 +8,7 @@ On OS X:
 git clone https://github.com/LightTable/LightTable.git
 cd LightTable
 sh osx_deps.sh
+export LT_HOME=$(pwd)/deploy
 ./deploy/light
 ```
 
