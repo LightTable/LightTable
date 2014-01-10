@@ -497,7 +497,7 @@
 (behavior ::plugin-keymap-diffs
           :triggers #{:keymap.diffs.plugin+}
           :reaction (fn [this diffs]
-                      (concat diffs (mapv settings/parse-key-file (::keymaps @this)))))
+                      (concat diffs (filter identity (mapv settings/parse-key-file (::keymaps @this))))))
 
 (behavior ::load-js
           :triggers #{:object.instant-load}
