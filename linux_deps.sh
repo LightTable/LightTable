@@ -3,7 +3,8 @@ lein version >/dev/null 2>&1 || { echo >&2 "Please install leiningen before runn
 
 echo "### Fetching binaries ###"
 TARBALL=LightTableLinux$(getconf LONG_BIT).tar.gz
-curl -O http://d35ac8ww5dfjyg.cloudfront.net/playground/bins/0.6.0/$TARBALL
+curl --fail -O http://d35ac8ww5dfjyg.cloudfront.net/playground/bins/0.6.0/$TARBALL
+if [ $? != 0 ] ; then echo ; echo "Cannot download binary package $TARBALL" ; echo ; fi
 tar -xzf $TARBALL
 rm $TARBALL
 cp -ar deploy/* LightTable
