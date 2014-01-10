@@ -1,0 +1,44 @@
+#!/bin/bash
+
+BIN=ltbin
+HERE=`dirname $(readlink -f $0)`
+
+LIBUDEV_0=libudev.so.0
+LIBUDEV_1=libudev.so.1
+
+add_udev_symlinks() {
+  # 64-bit specific; look for libudev.so.0, and if that can't be
+  # found link it to libudev.so.1
+  FOLDERS="/lib /lib64 /lib/x86_64-linux-gnu /usr/lib /usr/lib/x86_64-linux-gnu"
+
+  for folder in $FOLDERS; do
+    if [ -f "${folder}/${LIBUDEV_0}" ]; then
+      return 0
+    fi
+  done
+
+  for folder in $FOLDERS; do
+    if [ -f "${folder}/${LIBUDEV_1}" ]; then
+      ln -snf "${folder}/${LIBUDEV_1}" "${HERE}/${LIBUDEV_0}"
+      return 0
+    fi
+  done
+
+  echo "${LIBUDEV_0} or ${LIBUDEV_1} not found in any of ${FOLDERS}".
+  exit 1
+}
+
+add_udev_symlinks
+
+ARGS="$@"
+
+CORRECTED=${ARGS//-/<d>}
+CORRECTED=${CORRECTED// /<s>}
+
+if [ -t 0 ] && [ $# != 0 ]; then
+  #We're in a terminal...
+  LD_LIBRARY_PATH="$HERE:$LD_LIBRARY_PATH" $HERE/$BIN "<d><d>dir=`pwd`<s>$CORRECTED" &
+else
+  #We were double clicked
+  LD_LIBRARY_PATH="$HERE:$LD_LIBRARY_PATH" $HERE/$BIN &
+fi

@@ -1,0 +1,35 @@
+#!/bin/bash
+
+if [ -z "$LT_HOME" ]
+then
+	myDir="`dirname $(readlink -f $0)`"
+	myAppDir="$myDir/../Applications"
+	for i in ~/Applications ~/Applications/LightTable $myDir $myDir/LightTable $myAppDir $myAppDir/LightTable /Applications /Applications/LightTable /Applications/Utilities /Applications/Utilities/LightTable; do
+		if [ -x "$i/LightTable.app" ]; then
+			APP_DIR="$i"
+			break
+		fi
+	done
+else
+  APP_DIR=$LT_HOME
+fi
+if [ -z "$APP_DIR" ]
+then
+	echo "Sorry, cannot find LightTable.app.  Try setting the LT_HOME environment variable to the directory containing LightTable.app."
+	exit 1
+fi
+
+LTAPPCLI=$APP_DIR/LightTable.app/Contents/MacOS/node-webkit
+PWD=`pwd`
+ARGS="$@"
+
+CORRECTED=${ARGS//-/<d>}
+CORRECTED=${CORRECTED// /<s>}
+
+if [ $# != 0 ]; then
+    LTCLI=true $LTAPPCLI "<d><d>dir=$PWD<s>$CORRECTED" &
+else
+    LTCLI=true $LTAPPCLI &
+fi
+
+open -a LightTable
