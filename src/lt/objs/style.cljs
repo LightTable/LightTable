@@ -11,7 +11,8 @@
             [lt.objs.deploy :as deploy]
             [lt.util.dom :as dom]
             [lt.util.load :as load]
-            [crate.binding :refer [bound -value subatom]])
+            [crate.binding :refer [bound -value subatom]]
+            [crate.compiler :refer [dom-attr]])
   (:require-macros [lt.macros :refer [behavior defui]]))
 
 (defn css-expr [k v]
@@ -31,7 +32,7 @@
 
 (defn load-skin [skin]
   (let [skins (object/raise-reduce app/app :skins+ {})
-        path (get skins skin (plugins/adjust-path "css/skins/new-dark.css"))]
+        path (get skins skin (plugins/adjust-path "core/css/skins/new-dark.css"))]
     (load/css path)))
 
 (object/object* ::styles
@@ -76,14 +77,13 @@
 ;; Skins
 ;;**********************************************************
 
-(behavior ::provide-skin
-                  :desc "Style: Provide skin"
-                  :triggers #{:skins+}
-                  :type :user
-                  :params [{:label "name"} {:label "path"}]
-                  :reaction (fn [this skins name path]
-                              (assoc skins name (plugins/adjust-path path))
-                              ))
+
+
+(defn inject-skin [skin]
+  (when (:skin @styles)
+    (dom/remove-class (dom/$ :body) (str "skin-" (:skin @styles))))
+  (dom/add-class (dom/$ :body) (str "skin-" skin))
+  (object/merge! styles {:skin skin}))
 
 (defn get-skins []
   (sort-by #(.-text %)
@@ -100,10 +100,15 @@
                             :items get-skins}]
                   :type :user
                   :reaction (fn [this skin]
-                              (when (:skin @styles)
-                                (dom/remove-class (dom/$ :body) (str "skin-" (:skin @styles))))
-                              (dom/add-class (dom/$ :body) (str "skin-" skin))
-                              (object/merge! styles {:skin skin})))
+                              (inject-skin skin)))
+
+(behavior ::provide-skin
+                  :desc "Style: Provide skin"
+                  :triggers #{:skins+}
+                  :type :user
+                  :params [{:label "name"} {:label "path"}]
+                  :reaction (fn [this skins name path]
+                              (assoc skins name (plugins/adjust-path path))))
 
 ;;**********************************************************
 ;; themes
@@ -111,26 +116,27 @@
 
 (def prev-theme "")
 
-(defn get-themes []
-  (sort-by #(.-text %)
-           (for [[theme path] (object/raise-reduce app/app :themes+ {})]
-              #js {:text (pr-str theme) :completion (pr-str theme)})))
+(defn load-theme [theme]
+  (let [themes (object/raise-reduce app/app :themes+ {})
+        path (get themes theme (plugins/adjust-path "core/css/themes/default.css"))]
+    (let [elem (load/css path)]
+      (dom-attr elem {:id (str "theme-" theme)})
+      elem)))
 
-(defui stylesheet [name]
-  [:link {:rel "stylesheet"
-          :type "text/css"
-          :id (str "theme-" name)
-          :href (-> (object/raise-reduce app/app :themes+ {})
-                    (get name "/core/css/themes/default.css")
-                    (plugins/adjust-path))}])
-
-(defn load-theme [name]
+(defn inject-theme [name]
   (when-not (empty? prev-theme)
     (dom/remove-class (dom/$ :#multi) prev-theme))
   (set! prev-theme (str "theme-" name))
   (dom/add-class (dom/$ :#multi) (str "theme-" name))
   (when-not (dom/$ (str "#theme-" name))
-    (dom/append (dom/$ :head) (stylesheet name))))
+    (dom/append (dom/$ :head) (load-theme name))))
+
+(defn get-themes []
+  (sort-by #(.-text %)
+           (for [[theme path] (object/raise-reduce app/app :themes+ {})]
+              #js {:text (pr-str theme) :completion (pr-str theme)})))
+
+
 
 (behavior ::provide-theme
                   :desc "Style: Provide editor theme"
@@ -138,8 +144,7 @@
                   :type :user
                   :params [{:label "name"} {:label "path"}]
                   :reaction (fn [this themes name path]
-                              (assoc themes name path)
-                              ))
+                              (assoc themes name (plugins/adjust-path path))))
 
 (behavior ::remove-theme
           :triggers #{:deactivated :destroy}
@@ -158,5 +163,5 @@
                   :type :user
                   :exclusive true
                   :reaction (fn [this sel]
-                              (load-theme sel)
+                              (inject-theme sel)
                               (editor/set-options this {:theme sel})))
