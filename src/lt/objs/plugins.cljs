@@ -311,7 +311,8 @@
 
 (defui installed-plugin-ui [plugin]
   (let [cached (-> @manager :version-cache (get (:name plugin)))
-        update? (deploy/is-newer? (:version plugin) cached)]
+        update? (when chached
+                  (deploy/is-newer? (:version plugin) cached))]
     [:li {:class (if update?
                    "has-update")}
      (if update?
@@ -496,7 +497,7 @@
 (behavior ::plugin-keymap-diffs
           :triggers #{:keymap.diffs.plugin+}
           :reaction (fn [this diffs]
-                      (concat diffs (mapv settings/parse-key-file (::keymaps @this)))))
+                      (concat diffs (filter identity (mapv settings/parse-key-file (::keymaps @this))))))
 
 (behavior ::load-js
           :triggers #{:object.instant-load}

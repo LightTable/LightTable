@@ -284,7 +284,7 @@
 (defn parse-key-file [file final]
   (-> (files/open-sync file)
       :content
-      (reader/read-string)))
+      (safe-read file)))
 
 (defn keymap-diffs-in [path]
   (when (files/exists? path)
