@@ -227,8 +227,8 @@
                                       {:name "Erlang" :exts [:erl] :mime "text/x-erlang" :tags [:editor.erlang]}
                                       {:name "Go" :exts [:go] :mime "text/x-go" :tags [:editor.go]}
                                       {:name "Groovy" :exts [:groovy] :mime "text/x-groovy" :tags [:editor.groovy]}
-                                      {:name "Haskell" :exts [:hs] :mime "text/x-haskell" :tags [:editor.haskell]}
                                       {:name "HAML" :exts [:haml] :mime "text/x-haml" :tags [:editor.haml]}
+                                      {:name "Haskell" :exts [:hs] :mime "text/x-haskell" :tags [:editor.haskell]}
                                       {:name "Haxe" :exts [:haxe] :mime "text/x-haxe" :tags [:editor.haxe]}
                                       {:name "HTML" :exts [:html :htm] :mime "htmlmixed" :tags [:editor.html]}
                                       {:name "INI" :exts [:ini] :mime "text/x-ini" :tags [:editor.ini]}
@@ -236,19 +236,20 @@
                                       {:name "Julia" :exts [:jl] :mime "text/x-julia" :tags [:editor.julia]}
                                       {:name "LaTeX" :exts [:latex :tex] :mime "text/x-stex" :tags [:editor.latex]}
                                       {:name "LESS" :exts [:less] :mime "text/x-less" :tags [:editor.less]}
-                                      {:name "Lua" :exts [:lua] :mime "text/x-lua" :tags [:editor.lua]}
                                       {:name "Light Table Behaviors" :exts [:behaviors] :mime "text/x-clojurescript" :tags [:editor.behaviors]}
                                       {:name "Light Table Keymap" :exts [:keymap] :mime "text/x-clojurescript" :tags [:editor.keymap]}
+                                      {:name "LiveScript" :exts [:ls] :mime "text/x-livescript" :tags [:editor.livescript]}
+                                      {:name "Lua" :exts [:lua] :mime "text/x-lua" :tags [:editor.lua]}
                                       {:name "Markdown" :exts [:md :markdown] :mime "text/x-markdown" :tags [:editor.markdown]}
                                       {:name "OCaml" :exts [:ocaml :ml] :mime "text/x-ocaml" :tags [:editor.ocaml]}
                                       {:name "Pascal" :exts [:pas] :mime "text/x-pascal" :tags [:editor.pascal]}
                                       {:name "Perl" :exts [:pl] :mime "text/x-perl" :tags [:editor.perl]}
                                       {:name "PHP" :exts [:php] :mime "text/x-perl" :tags [:editor.perl]}
-                                      {:name "Python" :exts [:py :pyw] :mime "text/x-python" :tags [:editor.python]}
                                       {:name "Plain Text" :exts [:txt] :mime "plaintext" :tags [:editor.plaintext]}
+                                      {:name "Python" :exts [:py :pyw] :mime "text/x-python" :tags [:editor.python]}
                                       {:name "R" :exts [:r] :mime "text/x-rsrc" :tags [:editor.r]}
-                                      {:name "Rust" :exts [:rs] :mime "text/x-rustsrc" :tags [:editor.rust]}
                                       {:name "Ruby" :exts [:rb] :mime "text/x-ruby" :tags [:editor.ruby]}
+                                      {:name "Rust" :exts [:rs] :mime "text/x-rustsrc" :tags [:editor.rust]}
                                       {:name "Sass" :exts [:sass] :mime "text/x-sass" :tags [:editor.sass]}
                                       {:name "Scala" :exts [:scala] :mime "text/x-scala" :tags [:editor.scala]}
                                       {:name "Scheme" :exts [:ss :scm :sch] :mime "text/x-scheme" :tags [:editor.scheme]}
@@ -257,8 +258,8 @@
                                       {:name "SPARQL" :exts [:sparql] :mime "text/x-sparql-query" :tags [:editor.sparql]}
                                       {:name "TypeScript" :exts [:ts] :mime "text/x-typescript" :tags [:editor.typescript]}
                                       {:name "VB" :exts [:vb] :mime "text/x-vb" :tags [:editor.visualbasic]}
-                                      {:name "YAML" :exts [:yml :yaml] :mime "text/x-yaml" :tags [:editor.yaml]}
                                       {:name "XML" :exts [:xml] :mime "application/xml" :tags [:editor.xml]}
+                                      {:name "YAML" :exts [:yml :yaml] :mime "text/x-yaml" :tags [:editor.yaml]}
                                       ])]
   :filter-list [:lt.objs.sidebar.command/select!
                 :lt.objs.sidebar.command/filter-inactive
