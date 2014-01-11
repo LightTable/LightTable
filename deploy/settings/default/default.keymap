@@ -10,6 +10,7 @@
               "pmeta-shift-enter" [:eval-editor]
               "pmeta-s" [:save]
               "pmeta-shift-s" [:save-as]
+              "ctrl-r" [:editor.redo]
               "pmeta-l" [:goto-line]
               "ctrl-." [:editor.jump-to-definition-at-cursor]
               "ctrl-," [:editor.unjump]
