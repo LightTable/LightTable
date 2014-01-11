@@ -30,16 +30,11 @@
             (when (:font-size settings)
               (css-expr :font-size (str (:font-size settings) "pt")))))
 
-(defn load-skin [skin]
-  (let [skins (object/raise-reduce app/app :skins+ {})
-        path (get skins skin (plugins/adjust-path "core/css/skins/new-dark.css"))]
-    (load/css path)))
-
 (object/object* ::styles
                 :init (fn [this]
                         [:div
-                         (bound (subatom this :skin)
-                                load-skin)
+                         ;(bound (subatom this :skin)
+                         ;       load-skin)
                          [:style {:type "text/css"}
                           (bound this ->css)
                           ]]))
@@ -77,11 +72,20 @@
 ;; Skins
 ;;**********************************************************
 
+(defn load-skin [skin]
+  (let [skins (object/raise-reduce app/app :skins+ {})
+        path (get skins skin (plugins/adjust-path "core/css/skins/new-dark.css"))]
+    (let [elem (load/css path)]
+      (dom-attr elem {:id (str "skin-" skin)})
+      elem)))
+
 (defn inject-skin [skin]
   (when (:skin @styles)
     (dom/remove-class (dom/$ :body) (str "skin-" (:skin @styles))))
+  (object/merge! styles {:skin skin})
   (dom/add-class (dom/$ :body) (str "skin-" skin))
-  (object/merge! styles {:skin skin}))
+  (when-not (dom/$ (str "#skin-" skin))
+    (dom/append (dom/$ :head) (load-skin skin))))
 
 (defn get-skins []
   (sort-by #(.-text %)
@@ -112,8 +116,6 @@
 ;; themes
 ;;**********************************************************
 
-(def prev-theme "")
-
 (defn load-theme [theme]
   (let [themes (object/raise-reduce app/app :themes+ {})
         path (get themes theme (plugins/adjust-path "core/css/themes/default.css"))]
@@ -121,19 +123,18 @@
       (dom-attr elem {:id (str "theme-" theme)})
       elem)))
 
-(defn inject-theme [name]
-  (when-not (empty? prev-theme)
-    (dom/remove-class (dom/$ :#multi) prev-theme))
-  (set! prev-theme (str "theme-" name))
-  (dom/add-class (dom/$ :#multi) (str "theme-" name))
-  (when-not (dom/$ (str "#theme-" name))
-    (dom/append (dom/$ :head) (load-theme name))))
+(defn inject-theme [theme]
+  (when (:theme @styles)
+    (dom/remove-class (dom/$ :#multi) (:theme @styles)))
+  (object/merge! styles {:theme theme})
+  (dom/add-class (dom/$ :#multi) (str "theme-" theme))
+  (when-not (dom/$ (str "#theme-" theme))
+    (dom/append (dom/$ :head) (load-theme theme))))
 
 (defn get-themes []
   (sort-by #(.-text %)
            (for [[theme path] (object/raise-reduce app/app :themes+ {})]
               #js {:text (pr-str theme) :completion (pr-str theme)})))
-
 
 
 (behavior ::provide-theme
