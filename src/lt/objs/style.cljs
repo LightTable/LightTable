@@ -33,8 +33,6 @@
 (object/object* ::styles
                 :init (fn [this]
                         [:div
-                         ;(bound (subatom this :skin)
-                         ;       load-skin)
                          [:style {:type "text/css"}
                           (bound this ->css)
                           ]]))
