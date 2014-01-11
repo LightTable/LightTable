@@ -31,7 +31,7 @@
     [[] body]))
 
 (defmacro on [name & body]
-  `(lighttable.command/on ~name (fn ~@body)))
+  `(lighttable.command/on ~name (fn ~@body))) 
 
 (defmacro in [ctx & body]
   (let [[params body] (->params body)]
