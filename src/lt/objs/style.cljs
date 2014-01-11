@@ -81,7 +81,8 @@
 
 (defn inject-skin [skin]
   (when (:skin @styles)
-    (dom/remove-class (dom/$ :body) (str "skin-" (:skin @styles))))
+    (dom/remove-class (dom/$ :body) (str "skin-" (:skin @styles)))
+    (dom/remove (dom/$ (str "#skin-" (:skin @styles)))))
   (object/merge! styles {:skin skin})
   (dom/add-class (dom/$ :body) (str "skin-" skin))
   (when-not (dom/$ (str "#skin-" skin))
