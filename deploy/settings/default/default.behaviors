@@ -254,7 +254,7 @@
                                       {:name "Sass" :exts [:sass] :mime "text/x-sass" :tags [:editor.sass]}
                                       {:name "Scala" :exts [:scala] :mime "text/x-scala" :tags [:editor.scala]}
                                       {:name "Scheme" :exts [:ss :scm :sch] :mime "text/x-scheme" :tags [:editor.scheme]}
-                                      {:name "Shell" :exts [:sh :bash :profile :bash_profile :bashrc] :mime "text/x-sh" :tags [:editor.shell]}
+                                      {:name "Shell" :exts [:sh :bash :profile :bash_profile :bashrc :zsh :zshrc] :mime "text/x-sh" :tags [:editor.shell]}
                                       {:name "Smarty" :exts [:smarty] :mime "text/x-smarty" :tags [:editor.smarty]}
                                       {:name "SPARQL" :exts [:sparql] :mime "text/x-sparql-query" :tags [:editor.sparql]}
                                       {:name "TypeScript" :exts [:ts] :mime "text/x-typescript" :tags [:editor.typescript]}
