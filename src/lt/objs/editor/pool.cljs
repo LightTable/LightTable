@@ -130,7 +130,7 @@
                           (when-not (doc/check-mtime (doc/->stats f) stat)
                             (if (:dirty @ed)
                               (active-warn ed {:header "This file has been modified."
-                                               :body "This file seems to have been modified outside of Light Table. Do you want to load the latest and lose your changs?"
+                                               :body "This file seems to have been modified outside of Light Table. Do you want to load the latest and lose your changes?"
                                                :buttons [{:label "Reload from disk"
                                                           :action (fn []
                                                                     (reload ed))}
