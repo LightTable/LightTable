@@ -223,7 +223,8 @@
   (let [ts (object/create ::tabset)
         width (- 100 (reduce + (map (comp :width deref) (@multi :tabsets))))]
     (object/merge! ts {:width width})
-    (add-tabset ts)))
+    (add-tabset ts)
+    ts))
 
 (defn equalize-tabset-widths []
   (let [tss (:tabsets @multi)

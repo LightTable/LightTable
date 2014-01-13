@@ -35,8 +35,8 @@
 (cmd/command {:command :show-docs
               :desc "Docs: Open Light Table's documentation"
               :exec (fn []
-                      (let [docs (object/create ::docs)]
-                        (cmd/exec! :tabset.new)
-                        (tabs/add! docs)
-                        (tabs/active! docs)
-                        (cmd/exec! :tabs.move-next-tabset)))})
+                      (let [docs (object/create ::docs)
+                            ts (tabs/spawn-tabset)]
+                        (tabs/equalize-tabset-widths)
+                        (tabs/add! docs ts)
+                        (tabs/active! docs)))})
