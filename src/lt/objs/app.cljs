@@ -143,7 +143,7 @@
                   :triggers #{:show}
                   :reaction (fn [this]
                               ;(dom/focus (dom/$ :body))
-                              ;(.focus win)
+                              (.focus win)
                               ))
 
 (behavior ::run-on-init
