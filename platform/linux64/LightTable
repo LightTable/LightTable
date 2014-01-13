@@ -9,7 +9,7 @@ LIBUDEV_1=libudev.so.1
 add_udev_symlinks() {
   # 64-bit specific; look for libudev.so.0, and if that can't be
   # found link it to libudev.so.1
-  FOLDERS="/lib64 /lib/x86_64-linux-gnu /usr/lib/x86_64-linux-gnu /usr/lib /lib"
+  FOLDERS="/lib64 /lib/x86_64-linux-gnu /usr/lib/x86_64-linux-gnu /usr/lib64 /usr/lib /lib"
 
   for folder in $FOLDERS; do
     if [ -f "${folder}/${LIBUDEV_0}" ]; then
