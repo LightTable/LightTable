@@ -14,11 +14,14 @@
                                 (:command k)
                                 k))))
 
-(defn completions []
-  (map #(if-not (:desc %)
-          #js {:completion (str (:command %)) :text (str (:command %))}
-          #js {:completion (str (:command %)) :text (:desc %)})
-       (vals (:commands @manager))))
+(defn completions [token]
+  (if (and token
+           (= (subs token 0 1) ":"))
+    (map #(do #js {:completion (str (:command %)) :text (str (:command %))}) (vals (:commands @manager)))
+    (map #(if-not (:desc %)
+            #js {:completion (str (:command %)) :text (str (:command %))}
+            #js {:completion (str (:command %)) :text (:desc %)})
+         (vals (:commands @manager)))))
 
 (defn exec!
   "Execute a Light Table command with the given args"

@@ -74,12 +74,14 @@
     (aset cur "select" wrapped-replacement))
   cur)
 
-
-(defn user-behavior-completions []
-  (map #(if-not (:desc %)
-          (->wrapped-behavior % #js {:text (str (:name %))})
-          (->wrapped-behavior % #js {:text (:desc %)}))
-       (filter #(= (:type %) :user) (vals @object/behaviors))))
+(defn user-behavior-completions [_ _ token]
+  (if (and token
+           (= (subs token 0 1) ":"))
+    (map #(->wrapped-behavior % #js {:text (str (:name %))}) (vals @object/behaviors))
+    (map #(if-not (:desc %)
+            (->wrapped-behavior % #js {:text (str (:name %))})
+            (->wrapped-behavior % #js {:text (:desc %)}))
+         (filter #(= (:type %) :user) (vals @object/behaviors)))))
 
 (def completions {:root [#js {:completion ":+"}
                          #js {:completion ":-"}]
@@ -103,13 +105,13 @@
 
 (behavior ::behavior-hints
                   :triggers #{:hints+}
-                  :reaction (fn [this hints]
+                  :reaction (fn [this hints token]
                               (let [comps (completions (pos->state this))]
                                 (if-not comps
                                   hints
                                   (if (fn? comps)
                                     (let [idx (->index this)]
-                                      (comps (pos->behavior this (- idx 2)) (dec idx)))
+                                      (comps (pos->behavior this (- idx 2)) (dec idx) token))
                                     comps)))))
 
 (behavior ::show-info-on-move

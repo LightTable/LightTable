@@ -147,11 +147,12 @@
 
 (def hinter (-> (scmd/filter-list {:items (fn []
                                             (when-let [cur (pool/last-active)]
-                                              (distinct-completions
-                                               (if (:starting-token @hinter)
-                                                 (remove #(= (-> @hinter :starting-token :string) (.-completion %))
-                                                         (object/raise-reduce cur :hints+ []))
-                                                 (object/raise-reduce cur :hints+ [])))))
+                                              (let [token (-> @hinter :starting-token :string)]
+                                                (distinct-completions
+                                                 (if token
+                                                   (remove #(= token (.-completion %))
+                                                           (object/raise-reduce cur :hints+ [] token))
+                                                   (object/raise-reduce cur :hints+ []))))))
                                    :key text|completion})
                 (object/add-tags [:hinter])))
 

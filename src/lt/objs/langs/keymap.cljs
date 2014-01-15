@@ -70,12 +70,12 @@
 (behavior ::keymap-hints
                   :triggers #{:hints+}
                   :exclusive [:lt.plugins.auto-complete/textual-hints]
-                  :reaction (fn [this hints]
+                  :reaction (fn [this hints token]
                               (let [comps (completions (pos->state this))]
                                 (if-not comps
                                   hints
                                   (if (fn? comps)
-                                    (comps)
+                                    (comps token)
                                     comps)))))
 
 (behavior ::show-info-on-move
