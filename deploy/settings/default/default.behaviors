@@ -176,6 +176,8 @@
            :lt.plugins.auto-complete/auto-show-on-input
            ]
   :editor.active [:lt.objs.statusbar/report-cursor-location]
+  :editor.force.wrap [:lt.objs.editor/wrap]
+  :editor.force.unwrap [:lt.objs.editor/no-wrap]
   :editor.behaviors [:lt.objs.settings/on-behaviors-editor-save
                      :lt.objs.settings/eval-settings
                      :lt.objs.langs.behaviors/behavior-hints
