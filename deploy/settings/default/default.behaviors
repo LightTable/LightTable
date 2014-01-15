@@ -245,6 +245,7 @@
                                       {:name "LiveScript" :exts [:ls] :mime "text/x-livescript" :tags [:editor.livescript]}
                                       {:name "Lua" :exts [:lua] :mime "text/x-lua" :tags [:editor.lua]}
                                       {:name "Markdown" :exts [:md :markdown] :mime "text/x-markdown" :tags [:editor.markdown]}
+                                      {:name "MySQL" :exts [] :mime "text/x-mysql" :tags [:editor.sql :editor.mysql]}
                                       {:name "OCaml" :exts [:ocaml :ml] :mime "text/x-ocaml" :tags [:editor.ocaml]}
                                       {:name "Pascal" :exts [:pas] :mime "text/x-pascal" :tags [:editor.pascal]}
                                       {:name "Perl" :exts [:pl] :mime "text/x-perl" :tags [:editor.perl]}
@@ -260,6 +261,8 @@
                                       {:name "Shell" :exts [:sh :bash :profile :bash_profile :bashrc :zsh :zshrc] :mime "text/x-sh" :tags [:editor.shell]}
                                       {:name "Smarty" :exts [:smarty] :mime "text/x-smarty" :tags [:editor.smarty]}
                                       {:name "SPARQL" :exts [:sparql] :mime "text/x-sparql-query" :tags [:editor.sparql]}
+                                      {:name "SQL" :exts [:sql] :mime "text/x-sql" :tags [:editor.sql]}
+
                                       {:name "TypeScript" :exts [:ts] :mime "text/x-typescript" :tags [:editor.typescript]}
                                       {:name "VB" :exts [:vb] :mime "text/x-vb" :tags [:editor.visualbasic]}
                                       {:name "XML" :exts [:xml] :mime "application/xml" :tags [:editor.xml]}
