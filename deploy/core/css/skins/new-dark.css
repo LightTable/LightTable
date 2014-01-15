@@ -17,6 +17,7 @@
   var-hidden-fg: #bbb;
 
   var-hidden-bg: #404040;
+  var-inactive-bg: #2C2F30;
 
   var-highlight-bg: #616161;
   var-highlight-fg: #f4f4f4;
@@ -181,6 +182,9 @@ input { color: var(highlight-fg); background:var(highlight-bg); }
 #multi .list.dragging li { background:transparent !important; }
 #multi .dirty.ui-sortable-placeholder:after { content:"" !important; }
 #multi .tabset + .tabset { border-left:2px solid var(bg); }
+#multi .tabset .list .active { color:var(placeholder-fg); }
+#multi .tabset.active .list .active { color:var(highlight-fg); }
+#multi .tabset.active .list .dirty { color:var(accent-foreground); }
 
 #bottombar .content { background:var(bg); border-top:0px solid var(border); }
 .console > li, .console td { color:var(accent-foreground); }
