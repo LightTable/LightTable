@@ -52,6 +52,12 @@
      (files/exists? (files/join user-plugins-dir plugin-name)) (files/join user-plugins-dir plugin-name "node_modules" module-name)
      (files/exists? (files/join plugins-dir plugin-name)) (files/join plugins-dir plugin-name "node_modules" module-name))))
 
+(defn by-name [plugin-name]
+  (-> @app/app ::plugins (get plugin-name)))
+
+(defn installed? [plugin-name]
+  (boolean (by-name plugin-name)))
+
 (cmd/command {:command :build
               :desc "Editor: build file or project"
               :exec (fn []
@@ -138,6 +144,12 @@
 ;; Plugin install/uninstall
 ;;*********************************************************
 
+(defn install-failed [name]
+  (when (and (by-name name)
+             (not (:version (by-name name))))
+    (object/update! app/app [::plugins] dissoc name))
+  (notifos/done-working (str "Plugin install failed for: " name)))
+
 (defn fetch-and-install [url name cb]
   (let [munged-name (munge-plugin-name name)
         tmp-gz (str user-plugins-dir "/" munged-name "-tmp.tar.gz")
@@ -159,7 +171,7 @@
                                                              (object/raise manager :plugin.fetched)
                                                              (when cb
                                                                (cb)))
-                                                           (notifos/done-working (str "Plugin install failed: " name))))))))))
+                                                           (install-failed name)))))))))
 
 (defn install-version [plugin cb]
   (let [name (-> plugin :info :name)
@@ -204,10 +216,12 @@
 
 (defn discover-deps [plugin cb]
   (fetch/xhr [:post (str plugins-url "/install")] {:name (or (-> plugin :name) (-> plugin :info :name))
-                                                  :version (or (-> plugin :version)
-                                                               (-> plugin :info :version))}
+                                                   :version (or (-> plugin :version)
+                                                                (-> plugin :info :version))}
                                    (fn [data]
-                                     (transitive-install plugin (EOF-read data) cb))))
+                                     (if-not (and data (seq data))
+                                       (install-failed (or (-> plugin :name) (-> plugin :info :name)))
+                                       (transitive-install plugin (EOF-read data) cb)))))
 
 (defn uninstall [plugin]
   (files/delete! (:dir plugin))
@@ -275,6 +289,16 @@
            (dom/stop-propagation e)
            (discover-deps plugin nil)))
 
+(defui install-button [plugin]
+  [:span.install]
+  :click (fn [e]
+           (this-as me
+                    (discover-deps plugin (fn []
+                                            (dom/remove (dom/parent me))
+                                            )))
+           (dom/prevent e)
+           (dom/stop-propagation e)))
+
 (defui server-plugin-ui [plugin]
   (let [info (:info plugin)
         ver (:version info)
@@ -283,19 +307,15 @@
                      (deploy/is-newer? (:version installed) ver))]
     [:li {:class (if update?
                    "has-update")}
-     (when installed
+     (if-not installed
+       (install-button plugin)
        (if update?
          (update-button plugin)
          [:span.installed]))
      (source-button plugin)
      [:h1 (:name info) [:span.version ver]]
      [:h3 (:author info)]
-     [:p (:desc info)]])
-  :click (fn []
-           (this-as me
-                    (discover-deps plugin (fn []
-                                            (dom/append me (crate/html [:span.installed]))
-                                            )))))
+     [:p (:desc info)]]))
 
 
 (defui uninstall-button [plugin]
@@ -371,7 +391,10 @@
           :reaction (fn [this plugins]
                       (let [ul (dom/$ :.server-plugins (object/->content this))]
                         (dom/empty ul)
-                        (dom/append ul (dom/fragment (map server-plugin-ui plugins))))))
+                        (->> (remove #(installed? (-> % :info :name)) plugins)
+                             (map server-plugin-ui)
+                             (dom/fragment)
+                             (dom/append ul)))))
 
 (behavior ::submit-plugin
           :triggers #{:submit-plugin!}
@@ -414,7 +437,7 @@
                       (object/merge! app/app {::plugins (available-plugins)})
                       (let [ul (dom/$ :.plugins (object/->content this))]
                         (dom/empty ul)
-                        (dom/append ul (dom/fragment (map installed-plugin-ui (-> @app/app ::plugins vals)))))))
+                        (dom/append ul (dom/fragment (map installed-plugin-ui (->> @app/app ::plugins vals (sort-by :name))))))))
 
 (behavior ::on-close
           :triggers #{:close}
