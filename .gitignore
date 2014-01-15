@@ -9,3 +9,11 @@ deploy/core/cache
 deploy/logs
 .DS_Store
 deploy/core/node_modules/lighttable/bootstrap.js*
+.lein-deps-sum
+.lein-plugins/
+*.so
+lib
+deploy/LightTable
+deploy/credits.html
+deploy/ltbin
+deploy/nw.pak
