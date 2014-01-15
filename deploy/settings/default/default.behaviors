@@ -29,6 +29,7 @@
         :lt.objs.deploy/check-version
         :lt.objs.style/style-on-init
         :lt.objs.app/initial-focus
+        :lt.objs.app/track-focus
         :lt.objs.app/close!
         :lt.objs.menu/remove-menu-close
         :lt.objs.app/refresh

@@ -139,6 +139,12 @@
                                                                 (.Shell.openExternal gui href)
                                                                 (.focus win)))))))
 
+(behavior ::track-focus
+          :triggers #{:focus :show}
+          :reaction (fn [this]
+                      (store! :focusedWindow (window-number))))
+
+
 (behavior ::initial-focus
                   :triggers #{:show}
                   :reaction (fn [this]
