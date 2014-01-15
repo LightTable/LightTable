@@ -31,8 +31,8 @@
                      (when-not (empty? (dom/val me))
                        (object/raise this :open! (dom/val me))))))
 
-(defui save-input [this]
-  [:input {:type "file" :nwsaveas true}]
+(defui save-input [this path]
+  [:input {:type "file" :nwsaveas (or path true)}]
   :change (fn []
             (this-as me
                      (when-not (empty? (dom/val me))
@@ -59,14 +59,14 @@
 (behavior ::transient-save
                   :triggers #{:save :save-as-rename!}
                   :reaction (fn [this]
-                              (let [s (save-input this)]
+                              (let [s (save-input this (files/home))]
                                 (set! active-dialog s)
                                 (dom/trigger s :click))))
 
 (behavior ::save-as-rename!
                   :triggers #{:save-as-rename!}
                   :reaction (fn [this]
-                              (dom/trigger (save-input this) :click)))
+                              (dom/trigger (save-input this (-> @this :info :path)) :click)))
 
 (behavior ::save-as
                   :triggers #{:save-as!}
