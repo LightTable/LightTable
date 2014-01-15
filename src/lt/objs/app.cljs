@@ -144,6 +144,15 @@
           :reaction (fn [this]
                       (store! :focusedWindow (window-number))))
 
+(behavior ::focus-class
+          :triggers #{:focus :show}
+          :reaction (fn [this]
+                      (dom/add-class (dom/$ :body) :active)))
+
+(behavior ::blur-class
+          :triggers #{:blur}
+          :reaction (fn [this]
+                      (dom/remove-class (dom/$ :body) :active)))
 
 (behavior ::initial-focus
                   :triggers #{:show}
