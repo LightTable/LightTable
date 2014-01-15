@@ -491,6 +491,10 @@
    [:ul.files
     (for [f (:files r)]
       [:li (files/basename f)])]]
+  :contextmenu (fn [e]
+                 (object/raise this :recents.menu! r e)
+                 (dom/prevent e)
+                 (dom/stop-propagation e))
   :click (fn []
            (object/raise this :recent.select! r)))
 
@@ -524,6 +528,12 @@
                       (workspace/open workspace/current-ws (:path sel))
                       (object/raise this :tree!)
                       ))
+
+(behavior ::recent.remove!
+          :triggers #{:recent.remove!}
+          :reaction (fn [this sel]
+                      (files/delete! (:path sel))
+                      (object/raise this :recent!)))
 
 (defn ws-class [ws]
   (str "workspace" (when (:recents ws)
@@ -580,6 +590,13 @@
                                   :click (fn [] (object/raise tree :clear!))}])
                           (show-menu (.-clientX e) (.-clientY e)))
                       ))
+
+(behavior ::sidebar-recents-menu
+          :triggers #{:recents.menu!}
+          :reaction (fn [this r e]
+                      (-> (menu [{:label "Remove"
+                                  :click (fn [] (object/raise this :recent.remove! r))}])
+                          (show-menu (.-clientX e) (.-clientY e)))))
 
 (behavior ::workspace.open-on-start
           :triggers #{:init}
