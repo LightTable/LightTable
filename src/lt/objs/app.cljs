@@ -147,12 +147,14 @@
 (behavior ::focus-class
           :triggers #{:focus :show}
           :reaction (fn [this]
-                      (dom/add-class (dom/$ :body) :active)))
+                      (dom/add-class (dom/$ :body) :active)
+                      (dom/remove-class (dom/$ :body) :inactive)))
 
 (behavior ::blur-class
           :triggers #{:blur}
           :reaction (fn [this]
-                      (dom/remove-class (dom/$ :body) :active)))
+                      (dom/remove-class (dom/$ :body) :active)
+                      (dom/add-class (dom/$ :body) :inactive)))
 
 (behavior ::initial-focus
                   :triggers #{:show}
