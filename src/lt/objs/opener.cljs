@@ -32,7 +32,7 @@
                        (object/raise this :open! (dom/val me))))))
 
 (defui save-input [this path]
-  [:input {:type "file" :nwsaveas path}]
+  [:input {:type "file" :nwsaveas (or path true)}]
   :change (fn []
             (this-as me
                      (when-not (empty? (dom/val me))
