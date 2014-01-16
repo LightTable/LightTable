@@ -32,10 +32,10 @@
         data (if-not (:tags data)
                (assoc data :tags [:ws.client])
                (assoc data :tags (map keyword (:tags data))))]
-    (.on socket "close" (fn []
-                          (when-let [cur (clients/by-name (:name data))]
-                            (when (= socket (:socket @cur))
-                              (clients/rem! cur)))))
+    (.on socket "disconnect" (fn []
+                               (when-let [cur (clients/by-name (:name data))]
+                                 (when (= socket (:socket @cur))
+                                   (clients/rem! cur)))))
     (if (clients/available? client)
       (object/merge! client {:socket socket})
       (clients/handle-connection! (assoc data :socket socket :type :websocket)))))
@@ -48,9 +48,9 @@
   (.on socket "init" (partial store-client! socket)))
 
 (behavior ::send!
-                  :triggers #{:send!}
-                  :reaction (fn [this msg]
-                              (send-to (:socket @this) (array (:cb msg) (:command msg) (-> msg :data clj->js)))))
+          :triggers #{:send!}
+          :reaction (fn [this msg]
+                      (send-to (:socket @this) (array (:cb msg) (:command msg) (-> msg :data clj->js)))))
 
 (def server
   (try

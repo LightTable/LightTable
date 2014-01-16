@@ -25,5 +25,3 @@ cd clojure
 #Remove the app.nw so we use our local copy
 cd ../../
 rm -rf LightTable.app/Contents/Resources/app.nw
-#Set this as home and run
-export LT_HOME=$(pwd)

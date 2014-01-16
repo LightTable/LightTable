@@ -223,7 +223,8 @@
   (let [ts (object/create ::tabset)
         width (- 100 (reduce + (map (comp :width deref) (@multi :tabsets))))]
     (object/merge! ts {:width width})
-    (add-tabset ts)))
+    (add-tabset ts)
+    ts))
 
 (defn equalize-tabset-widths []
   (let [tss (:tabsets @multi)
@@ -326,16 +327,23 @@
                       (set! start (now))
                       ))
 
+(defn activate-tabset [ts]
+  (when-not (= (ctx/->obj :tabset) ts)
+    (when-let [old (ctx/->obj :tabset)]
+      (dom/remove-class (object/->content old) :active))
+    (ctx/in! :tabset ts)
+    (dom/add-class (object/->content ts) :active)
+    true))
+
 (behavior ::on-active-active-tabset
           :triggers #{:active}
           :reaction (fn [this]
-                      (ctx/in! :tabset (::tabset @this))))
+                      (activate-tabset (::tabset @this))))
 
 (behavior ::tabset-active
           :triggers #{:active}
           :reaction (fn [this]
-                      (when-not (= (ctx/->obj :tabset) this)
-                        (ctx/in! :tabset this)
+                      (when (activate-tabset this)
                         (when-let [active (:active-obj @this)]
                           (object/raise active :focus!)))))
 
@@ -459,15 +467,17 @@
           (active! active))
         ))))
 
-(defn add! [obj ts]
-  (when-let [cur-tabset (or ts (ctx/->obj :tabset))]
-    (object/add-tags obj [:tabset.tab])
-    (object/update! cur-tabset [:objs] conj obj)
-    (object/merge! obj {::tabset cur-tabset})
-    (add-watch (subatom obj [:dirty]) :tabs (fn [_ _ _ cur]
-                                              (object/raise cur-tabset :tab.updated)
-                                              ))
-    obj))
+(defn add!
+  ([obj] (add! obj nil))
+  ([obj ts]
+   (when-let [cur-tabset (or ts (ctx/->obj :tabset))]
+     (object/add-tags obj [:tabset.tab])
+     (object/update! cur-tabset [:objs] conj obj)
+     (object/merge! obj {::tabset cur-tabset})
+     (add-watch (subatom obj [:dirty]) :tabs (fn [_ _ _ cur]
+                                               (object/raise cur-tabset :tab.updated)
+                                               ))
+     obj)))
 
 (defn refresh! [obj]
   (when-let [ts (::tabset @obj)]

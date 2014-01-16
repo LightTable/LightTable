@@ -38,20 +38,25 @@
 (defn init []
   (when (cache/fetch :no-metrics)
     (set! active? false))
-  (letrem [uid (session)]
-          (when-not (cache/fetch :uid)
-            (cache/store! :uid uid))
-          (capture! :session-created)
-          (every metric-rate flush))
-  (every 60000 (fn []
-                 (when used?
-                   (set! used? false)
-                   (capture! :metrics.minute)))))
+  (when active?
+    (letrem [uid (session)]
+            (when-not (cache/fetch :uid)
+              (cache/store! :uid uid))
+            (capture! :session-created)
+            (every metric-rate flush))
+    (every 60000 (fn []
+                   (when used?
+                     (set! used? false)
+                     (capture! :metrics.minute))))))
 
 (behavior ::init-metrics
-                  :triggers #{:init}
-                  :reaction (fn []
-                              (init)
-                              ))
+          :triggers #{:init}
+          :reaction (fn []
+                      (init)))
 
-(object/add-behavior! app/app ::init-metrics)
+(behavior ::disable-metrics
+          :type :user
+          :desc "App: Disable metrics"
+          :triggers #{:object.instant}
+          :reaction (fn [this]
+                      (set! active? false)))

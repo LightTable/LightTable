@@ -130,7 +130,7 @@
                           (when-not (doc/check-mtime (doc/->stats f) stat)
                             (if (:dirty @ed)
                               (active-warn ed {:header "This file has been modified."
-                                               :body "This file seems to have been modified outside of Light Table. Do you want to load the latest and lose your changs?"
+                                               :body "This file seems to have been modified outside of Light Table. Do you want to load the latest and lose your changes?"
                                                :buttons [{:label "Reload from disk"
                                                           :action (fn []
                                                                     (reload ed))}
@@ -568,6 +568,14 @@
                               len (editor/line-length ed line)]
                           (editor/set-selection ed {:line line :ch 0} {:line line :ch len})
                           (editor/set-extending ed false))))})
+
+(cmd/command {:command :editor.force.wrap
+              :desc "Editor: Toggle line wrapping in current editor"
+              :exec (fn []
+                      (when-let [ed (last-active)]
+                        (if (editor/option ed "lineWrapping")
+                          (object/add-tags ed [:editor.force.unwrap])
+                          (object/add-tags ed [:editor.force.wrap]))))})
 
 (cmd/command {:command :editor.undo
               :desc "Editor: Undo"
