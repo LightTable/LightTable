@@ -256,23 +256,27 @@
            "shift-")
          char)))
 
-(defn fix-keys [[k v]]
+
+(defn fix-key [k]
   (let [k (string/replace k "pmeta" kb/meta)
         keys (string/split k " ")]
     ;;ctrl cmd alt altgr shift
-    [(reduce #(str % " " %2) (map ->ordered-keystr keys)) v]))
+    (reduce #(str % " " %2) (map ->ordered-keystr keys))))
+
+(defn fix-key-entry [[k v]]
+  [(fix-key k) v])
 
 (defn +keys [cur m]
   (reduce (fn [res [k v]]
-            (update-in res [k] #(into (or % {}) (map fix-keys v))))
+            (update-in res [k] #(into (or % {}) (map fix-key-entry v))))
           cur
           m))
 
 (defn -keys [cur m]
   (reduce (fn [res [k v]]
-            (update-in res [k] #(apply dissoc % (if (map? v)
-                                                  (keys v)
-                                                  v))))
+            (update-in res [k] #(apply dissoc % (map fix-key (if (map? v)
+                                                                (keys v)
+                                                                v)))))
           cur
           m))
 
