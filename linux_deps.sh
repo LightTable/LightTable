@@ -4,7 +4,7 @@ lein version >/dev/null 2>&1 || { echo >&2 "Please install leiningen before runn
 
 echo "### Fetching binaries ###"
 BITS=""
-if [ $(getconf LONG_BIT) == "32" ]; then BITS="64"; fi
+if [ $(getconf LONG_BIT) == "64" ]; then BITS="64"; fi
 TARBALL=LightTableLinux$BITS.tar.gz
 curl -O http://d35ac8ww5dfjyg.cloudfront.net/playground/bins/0.6.0/$TARBALL
 tar -xzf $TARBALL
