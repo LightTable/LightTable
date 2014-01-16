@@ -215,3 +215,9 @@
                                                                 (js/parseInt l)
                                                                 l))})
                           (editor/center-cursor cur))))})
+
+(cmd/command {:command :fold-code
+              :desc "Editor: Fold code"
+              :exec (fn []
+                      (when-let [ed (pool/last-active)]
+                        (editor/fold-code ed)))})
