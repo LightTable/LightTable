@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 # Check if lein is installed
 lein version >/dev/null 2>&1 || { echo >&2 "Please install leiningen before running this script."; exit 1; }
 
