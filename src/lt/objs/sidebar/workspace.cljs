@@ -483,27 +483,27 @@
 (defn recent [this]
   (object/raise this :recent!))
 
-(defui recents-item [this r]
+(defui recents-item [this]
   [:li
    [:ul.folders
-    (for [f (:folders r)]
+    (for [f (:folders @this)]
       [:li (files/basename f) files/separator])]
    [:ul.files
-    (for [f (:files r)]
+    (for [f (:files @this)]
       [:li (files/basename f)])]]
   :contextmenu (fn [e]
-                 (object/raise this :recents.menu! r e)
+                 (object/raise this :menu! e)
                  (dom/prevent e)
                  (dom/stop-propagation e))
   :click (fn []
-           (object/raise this :recent.select! r)))
+           (object/raise this :recent.select!)))
 
 (defui recents [this rs]
   [:div
    (back-button this)
    [:ul
     (for [r rs]
-      (recents-item this r))]])
+      (object/->content r))]])
 
 (defui back-button [this]
   [:h2 "Select a workspace"]
@@ -513,7 +513,7 @@
 (behavior ::recent!
           :triggers #{:recent!}
           :reaction (fn [this]
-                      (object/merge! this {:recents (recents this (workspace/all))})
+                      (object/merge! this {:recents (recents this (map #(object/create ::recent-workspace %) (workspace/all)))})
                       ))
 
 (behavior ::tree!
@@ -524,16 +524,25 @@
 
 (behavior ::recent.select!
           :triggers #{:recent.select!}
-          :reaction (fn [this sel]
-                      (workspace/open workspace/current-ws (:path sel))
-                      (object/raise this :tree!)
+          :reaction (fn [this]
+                      (workspace/open workspace/current-ws (:path @this))
+                      (object/raise sidebar-workspace :tree!)
                       ))
 
-(behavior ::recent.remove!
-          :triggers #{:recent.remove!}
-          :reaction (fn [this sel]
-                      (files/delete! (:path sel))
-                      (object/raise this :recent!)))
+(behavior ::recent.delete!
+          :triggers #{:delete!}
+          :reaction (fn [this]
+                      (when (= (:file @workspace/current-ws)
+                               (files/basename (:path @this)))
+                        (object/raise tree :clear!))
+                      (workspace/delete workspace/current-ws)
+                      (object/raise sidebar-workspace :recent!)))
+
+(object/object* ::recent-workspace
+                :tags #{:recent-workspace}
+                :init (fn [this r]
+                        (object/merge! this r)
+                        (recents-item this)))
 
 (defn ws-class [ws]
   (str "workspace" (when (:recents ws)
@@ -577,19 +586,25 @@
 
 ;(dom/trigger (input) :click)
 (behavior ::sidebar-menu
-          :triggers #{:menu!}
-          :reaction (fn [this e]
-                      (-> (menu [{:label "Add folder"
-                                  :click (fn [] (cmd/exec! :workspace.add-folder))}
-                                 {:label "Add file"
-                                  :click (fn [] (cmd/exec! :workspace.add-file))}
-                                 {:label "Open recent workspace"
-                                  :click (fn [] (cmd/exec! :workspace.show-recents))}
-                                 {:type "separator"}
-                                 {:label "Clear workspace"
-                                  :click (fn [] (object/raise tree :clear!))}])
-                          (show-menu (.-clientX e) (.-clientY e)))
-                      ))
+          :triggers #{:menu-items}
+          :reaction (fn [this items]
+                      (conj items
+                            {:label "Add folder"
+                             :click (fn [] (cmd/exec! :workspace.add-folder))}
+                            {:label "Add file"
+                             :click (fn [] (cmd/exec! :workspace.add-file))}
+                            {:label "Open recent workspace"
+                             :click (fn [] (cmd/exec! :workspace.show-recents))}
+                            {:type "separator"}
+                            {:label "Clear workspace"
+                             :click (fn [] (object/raise tree :clear!))})))
+
+(behavior ::recent-menu
+          :triggers #{:menu-items}
+          :reaction (fn [this items]
+                      (conj items
+                            {:label "Delete Workspace"
+                             :click (fn [] (object/raise this :delete!))})))
 
 (behavior ::sidebar-recents-menu
           :triggers #{:recents.menu!}

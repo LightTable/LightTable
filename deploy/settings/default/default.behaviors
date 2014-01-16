@@ -368,11 +368,13 @@
                         :lt.plugins.doc/cur-from-last-editor
                         ]
   :sidebar.workspace [:lt.objs.sidebar.workspace/sidebar-menu
+                      :lt.objs.sidebar.workspace/on-menu
                       :lt.objs.sidebar.workspace/on-drop
-                      :lt.objs.sidebar.workspace/recent! :lt.objs.sidebar.workspace/tree!
-                      :lt.objs.sidebar.workspace/recent.select!
-                      :lt.objs.sidebar.workspace/sidebar-recents-menu
-                      :lt.objs.sidebar.workspace/recent.remove!]
+                      :lt.objs.sidebar.workspace/recent! :lt.objs.sidebar.workspace/tree!]
+  :recent-workspace [:lt.objs.sidebar.workspace/on-menu
+                     :lt.objs.sidebar.workspace/recent-menu
+                     :lt.objs.sidebar.workspace/recent.delete!
+                     :lt.objs.sidebar.workspace/recent.select!]
   :skin-selector [:lt.objs.style/set-skin-on-select]
   :statusbar-container-item [:lt.objs.statusbar/on-show!
                              :lt.objs.statusbar/on-hide!
