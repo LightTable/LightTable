@@ -301,9 +301,12 @@
           (join cur find)
           (recur (parent cur) cur))))))
 
-(defn ->name|path [f & [relative]]
-  (let [path (if relative
-               (.relative fpath relative f)
+(defn relative [a b]
+  (.relative fpath a b))
+
+(defn ->name|path [f & [rel]]
+  (let [path (if rel
+               (relative rel f)
                f)]
     [(.basename fpath f) path]))
 
