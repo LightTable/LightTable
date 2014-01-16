@@ -329,9 +329,8 @@
 
 (defn activate-tabset [ts]
   (when-not (= (ctx/->obj :tabset) ts)
-    (dom/remove-class (-> (ctx/->obj :tabset)
-                          (object/->content))
-                      :active)
+    (when-let [old (ctx/->obj :tabset)]
+      (dom/remove-class (object/->content old) :active))
     (ctx/in! :tabset ts)
     (dom/add-class (object/->content ts) :active)
     true))
