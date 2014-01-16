@@ -365,14 +365,14 @@ input { color: var(highlight-fg); background:var(highlight-bg); }
 * Theme specific
 ***********************************************************/
 
-.cm-visible-space { background:url("/core/img/visible-space11.png"); background-size:100%; background-position:center;  background-repeat: no-repeat;}
-.cm-visible-tab { background:url("/core/img/visible-tab7.png"); background-size:100% 1em; background-position:center;  background-repeat: no-repeat;}
+.cm-visible-space { background:url("../../img/visible-space11.png"); background-size:100%; background-position:center;  background-repeat: no-repeat;}
+.cm-visible-tab { background:url("../../img/visible-tab7.png"); background-size:100% 1em; background-position:center;  background-repeat: no-repeat;}
 
-#right-bar .clients .load-wrapper .img { width:20px; height:20px; background:url("/core/img/connectingloader.gif") }
+#right-bar .clients .load-wrapper .img { width:20px; height:20px; background:url("../../img/connectingloader.gif") }
 
 #titlebar .button { color:var(fg); }
 
-.load-wrapper .img { background:url("/core/img/loaderdark.gif"); }
+.load-wrapper .img { background:url("../../img/loaderdark.gif"); }
 
 .timed { border-bottom:1px solid #fa5; }
 .timed-result { background: #741; color:#fb0; }
