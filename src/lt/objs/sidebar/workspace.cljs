@@ -496,7 +496,7 @@
                  (dom/prevent e)
                  (dom/stop-propagation e))
   :click (fn []
-           (object/raise this :recent.select!)))
+           (object/raise this :select!)))
 
 (defui recents [this rs]
   [:div
@@ -513,17 +513,22 @@
 (behavior ::recent!
           :triggers #{:recent!}
           :reaction (fn [this]
-                      (object/merge! this {:recents (recents this (map #(object/create ::recent-workspace %) (workspace/all)))})
-                      ))
+                      (doseq [r (:recents @this)]
+                        (object/destroy! r))
+                      (->> (workspace/all)
+                           (map #(object/create ::recent-workspace %))
+                           (hash-map :recents)
+                           (object/merge! this))))
 
 (behavior ::tree!
           :triggers #{:tree!}
           :reaction (fn [this]
-                      (object/merge! this {:recents nil})
-                      ))
+                      (doseq [r (:recents @this)]
+                        (object/destroy! r))
+                      (object/merge! this {:recents nil})))
 
 (behavior ::recent.select!
-          :triggers #{:recent.select!}
+          :triggers #{:select!}
           :reaction (fn [this]
                       (workspace/open workspace/current-ws (:path @this))
                       (object/raise sidebar-workspace :tree!)
@@ -562,7 +567,8 @@
     [:ul.root
      (object/->content tree)]]
    [:div.recent
-    (bound this :recents)
+    (bound this (fn [sw]
+                  (recents this (:recents sw))))
     ]]
   :dragover (fn [e]
               (set! (.-dataTransfer.dropEffect e) "move")
