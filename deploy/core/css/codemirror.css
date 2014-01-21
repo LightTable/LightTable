@@ -18,18 +18,19 @@
 }
 
 .CodeMirror-scrollbar-filler, .CodeMirror-gutter-filler {
-  background-color: transparent; /* The little square between H and V scrollbars */
+  background-color: white; /* The little square between H and V scrollbars */
 }
 
 /* GUTTER */
 
 .CodeMirror-gutters {
   border-right: 1px solid #ddd;
-  background-color: transparent;
+  background-color: #f7f7f7;
   white-space: nowrap;
 }
 .CodeMirror-linenumbers {}
 .CodeMirror-linenumber {
+  box-sizing:content-box;
   padding: 0 3px 0 5px;
   min-width: 20px;
   text-align: right;
@@ -66,7 +67,7 @@
   line-height: 1;
   position: relative;
   overflow: hidden;
-  background: transparent;
+  background: white;
   color: black;
 }
 
@@ -78,6 +79,8 @@
   height: 100%;
   outline: none; /* Prevent dragging from highlighting the element */
   position: relative;
+  -moz-box-sizing: content-box;
+  box-sizing: content-box;
 }
 .CodeMirror-sizer {
   position: relative;
@@ -116,6 +119,8 @@
 .CodeMirror-gutter {
   white-space: normal;
   height: 100%;
+  -moz-box-sizing: content-box;
+  box-sizing: content-box;
   padding-bottom: 30px;
   margin-bottom: -32px;
   display: inline-block;
@@ -153,16 +158,16 @@
   white-space: pre-wrap;
   word-break: normal;
 }
-
 .CodeMirror-code pre {
   border-right: 30px solid transparent;
   width: -webkit-fit-content;
+  width: -moz-fit-content;
+  width: fit-content;
 }
 .CodeMirror-wrap .CodeMirror-code pre {
   border-right: none;
   width: auto;
 }
-
 .CodeMirror-linebackground {
   position: absolute;
   left: 0; right: 0; top: 0; bottom: 0;
@@ -175,8 +180,7 @@
   overflow: auto;
 }
 
-.CodeMirror-widget {
-}
+.CodeMirror-widget {}
 
 .CodeMirror-wrap .CodeMirror-scroll {
   overflow-x: hidden;
@@ -184,7 +188,8 @@
 
 .CodeMirror-measure {
   position: absolute;
-  width: 100%; height: 0px;
+  width: 100%;
+  height: 0;
   overflow: hidden;
   visibility: hidden;
 }

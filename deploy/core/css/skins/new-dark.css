@@ -121,8 +121,8 @@
 .CodeMirror div.CodeMirror-secondarycursor { border-left: 1px solid silver; }
 .CodeMirror.cm-keymap-fat-cursor div.CodeMirror-cursor { width: auto; border: none !important; background: rgba(0, 200, 200, .4); }
 
-.CodeMirror-gutters { background: var(bg); }
-.cm-s-default .CodeMirror-activeline .CodeMirror-linenumber { background:#474a4f; color:#888; }
+.CodeMirror-gutters { background: var(multi); border-color:var(dark-highlight-bg); border:none; }
+.cm-s-default .CodeMirror-activeline .CodeMirror-linenumber { color:var(blinding-fg); }
 
 .CodeMirror-hints { position: absolute; z-index: 1000000000000000; overflow: hidden; list-style: none;  margin: 0; padding: 2px;  border-radius: 2px; border: 1px solid var(pane-bg);  background: var(pane-bg); font-size: 90%; font-family: inherit;  max-height: 20em; }
 .CodeMirror-hints ul { overflow-y:auto; max-height:20em; }
