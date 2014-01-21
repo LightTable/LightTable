@@ -380,8 +380,8 @@ body { -webkit-user-select: none; }
 
 .dragging .frame-shade { display:block !important; }
 
-.CodeMirror-linenumbers { padding-right:10px; text-align:right;}
-.CodeMirror-linenumber { text-align:right; }
+.CodeMirror-linenumbers { padding-right:0px; text-align:right;}
+.CodeMirror-linenumber { text-align:right; padding-right:10px; }
 .CodeMirror-lines { padding: 10px 0; /* Vertical padding around content */ }
 .CodeMirror pre { padding: 0 0 0 5px; /* Horizontal padding of content */ }
 .CodeMirror-hints.empty { display:none; }

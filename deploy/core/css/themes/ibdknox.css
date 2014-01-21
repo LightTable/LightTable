@@ -43,8 +43,8 @@
 
 .cm-s-ibdknox span.cm-SUBST { color:#FF1F69; }
 
-.cm-s-ibdknox .CodeMirror-activeline { background:343d46; }
-.cm-s-ibdknox .CodeMirror-activeline .CodeMirror-linenumber { background:#474a4f; color:#888; }
+.cm-s-ibdknox .CodeMirror-activeline { background:#343d46; }
+.cm-s-ibdknox .CodeMirror-activeline .CodeMirror-linenumber { background:#444d56; color:var(blinding-fg); }
 .cm-s-ibdknox span.CodeMirror-matchingbracket {box-sizing:border-box; background:transparent; border-bottom:1px solid #3FF; font-weight:normal;}
 .cm-s-ibdknox span.CodeMirror-nonmatchingbracket {color: #F33; border-bottom:1px solid #F33; background:none;}
 
