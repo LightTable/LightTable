@@ -1,6 +1,6 @@
 {
 	"name": "LightTable",
-  "main": "app://lighttable/core/LightTable.html",
+  "main": "core/LightTable.html",
 	"js-flags": "--harmony",
 	"single-instance": true,
 	"webkit": {
