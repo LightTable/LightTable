@@ -28,6 +28,14 @@
 (def plugins-url "http://plugins.lighttable.com")
 (def ^:dynamic *plugin-dir* nil)
 
+(defn plugin-dir [name]
+  (let [lt-plugin (files/join plugins-dir name)
+        user-plugin (files/join plugins-dir name)
+        try-dir (fn [path] (if (files/exists? path) path false))]
+    (or (try-dir lt-plugin)
+        (try-dir user-plugin))))
+
+
 (defn EOF-read [s]
   (when (and s
              (seq s))
