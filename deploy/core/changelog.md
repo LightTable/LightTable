@@ -1,5 +1,46 @@
 #Changes
 
+##0.6.1
+
+* FIX: build instructions for all platforms. Add in build scripts for each.
+* FIX: active line in solarized theme (Gozala)
+* FIX: re-enable workspace behavior diffs
+* FIX: Plugins should not say they need an update if there's no version available on the server
+* FIX: Read keymaps safely so that errors are reported.
+* FIX: remove readlink -f from the mac startup script
+* FIX: provide skin/theme shold work correctly now (joshuafcole)
+* FIX: Catch errors while walking the file system (zoranzaric)
+* FIX: look in 64bit dirs first in the linux64 run script and add other dirs to fix openSUSE (wesleywiser)
+* FIX: line-endings were not being added correctly to the ends of files.
+* FIX: set the default screen size to be smaller so that LT doesn't open off screen
+* FIX: type in plugin dialog (rmunn)
+* FIX: Add SQL file type back in
+* FIX: External browsers don't disconnect correctly
+* FIX: remove inconsistencies in the plugin manager
+* FIX: pmeta in :- keymaps didn't work
+* FIX: better error handling in the local client
+* FIX: make functions return correctly from external browser connections
+* FIX: add LightTable.app to .gitignore (DomKM)
+* FIX: dramatically better line numbering styles for the default theme
+* FIX: line numbers now correctly size and stay right-aligned.
+* FIX: remove use of rtl that causes very weird file name display behavior in navigator.
+* CHANGE: Auto-complete is now auto-show by default
+* ADDED: lt.objs.plugins/find-plugin for use in finding the current plugin dir
+* ADDED: `Console: set buffer size`
+* ADDED: Code folding with `Editor: fold code at cursor` command (efuquen)
+* ADDED: travis-ci (sieben)
+* ADDED: set the save dialog's first location to a sensible path (can3p and ndr-qef)
+* ADDED: .zsh and .zshrc file extensions
+* ADDED: `App: Disable metrics` behavior
+* ADDED: LiveScript file type
+* ADDED: platform specific startup scripts
+* ADDED: typing : in a keymap or behavior file will now complete based on the command/behavior id
+* ADDED: `Editor: Toggle line wrapping` command for one off wrapping
+* ADDED: Tabsets are now styled as active
+* ADDED: The body gets an "active" class when the window is focused
+* UPDATED: Latest codemirror
+* UPDATED: CLJS 2138
+
 ##0.6.0
 
 * ADDED: Light Table is now open source

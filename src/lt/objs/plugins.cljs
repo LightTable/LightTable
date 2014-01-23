@@ -45,12 +45,17 @@
     path
     (files/join (or (::dir object/*behavior-meta*) (files/lt-home)) path)))
 
-(defn local-module [plugin-name module-name]
+(defn find-plugin [plugin-name]
   (let [plugin-name (munge-plugin-name plugin-name)]
     (cond
-     (::dir object/*behavior-meta*) (files/join (::dir object/*behavior-meta*) "node_modules" module-name)
-     (files/exists? (files/join user-plugins-dir plugin-name)) (files/join user-plugins-dir plugin-name "node_modules" module-name)
-     (files/exists? (files/join plugins-dir plugin-name)) (files/join plugins-dir plugin-name "node_modules" module-name))))
+     (::dir object/*behavior-meta*) (::dir object/*behavior-meta*)
+     (files/exists? (files/join user-plugins-dir plugin-name)) (files/join user-plugins-dir plugin-name)
+     (files/exists? (files/join plugins-dir plugin-name)) (files/join plugins-dir plugin-name)
+     :else nil)))
+
+(defn local-module [plugin-name module-name]
+  (when-let [plugin-path (find-plugin plugin-name)]
+    (files/join plugin-path "node_modules" module-name)))
 
 (defn by-name [plugin-name]
   (-> @app/app ::plugins (get plugin-name)))
