@@ -51,6 +51,14 @@
                         (console-ui this)
                         ))
 
+(behavior ::set-console-limit
+          :triggers #{:object.instant}
+          :desc "Console: Set buffer size"
+          :type :user
+          :params [{:label "size"}]
+          :reaction (fn [this size]
+                      (set! console-limit size)))
+
 (defn inspect [thing]
   (util-inspect thing false 2))
 
@@ -61,7 +69,7 @@
   (object/->content c))
 
 (defn write [$console msg]
-  (when (> (count (dom/children $console)) console-limit)
+  (when (> (count (dom/children $console)) (dec console-limit))
     (dom/remove (aget (dom/children $console) 0)))
   (when-not (bottombar/active? console)
     (statusbar/dirty))
