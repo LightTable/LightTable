@@ -366,6 +366,9 @@
   (object/merge! e {:doc doc})
   (.swapDoc (->cm-ed e) (:doc @doc)))
 
+(defn fold-code [e]
+  (.foldCode (->cm-ed e) (cursor e)))
+
 ;;*********************************************************
 ;; Object
 ;;*********************************************************
@@ -424,6 +427,23 @@
           :type :user
           :reaction (fn [this]
                       (set-options this {:lineNumbers false})))
+
+(behavior ::fold-gutter
+          :triggers #{:object.instant :lt.object/tags-removed}
+          :desc "Editor: Show fold gutter"
+          :exclusive [::hide-fold-gutter]
+          :type :user
+          :reaction (fn [this]
+                      (set-options this {:foldGutter true
+                                         :gutters (clj->js ["CodeMirror-foldgutter"])})))
+
+(behavior ::hide-fold-gutter
+          :triggers #{:object.instant :lt.object/tags-removed}
+          :desc "Editor: Hide fold gutter"
+          :exclusive [::fold-gutter]
+          :type :user
+          :reaction (fn [this]
+                      (set-options this {:foldGutter false})))
 
 (behavior ::scroll-past-end
           :triggers #{:object.instant :lt.object/tags-removed}
@@ -613,6 +633,7 @@
                       (load/js "core/node_modules/codemirror/active-line.js" :sync)
                       (load/js "core/node_modules/codemirror/overlay.js" :sync)
                       (load/js "core/node_modules/codemirror/scrollpastend.js" :sync)
+                      (load/js "core/node_modules/codemirror/fold.js" :sync)
                       (doseq [mode (files/ls "core/node_modules/codemirror/modes")
                               :when (= (files/ext mode) "js")]
                         (load/js (str "core/node_modules/codemirror/modes/" mode) :sync))

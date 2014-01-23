@@ -13,7 +13,8 @@
               "pmeta-l" [:goto-line]
               "ctrl-." [:editor.jump-to-definition-at-cursor]
               "ctrl-," [:editor.unjump]
-              "ctrl-d" [:editor.doc.toggle]}
+              "ctrl-d" [:editor.doc.toggle]
+              "ctrl-=" [:editor.fold-code]}
      :editor.keys.normal {"\"" [(:editor.repeat-pair "\"")]
                           "(" [(:editor.open-pair "(")]
                           ")" [(:editor.close-pair ")")]

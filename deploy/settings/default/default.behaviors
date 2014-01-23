@@ -165,6 +165,7 @@
            :lt.objs.opener/untrack-closed
            :lt.objs.opener/unwatch-closed
            :lt.objs.editor/hide-line-numbers
+           :lt.objs.editor/hide-fold-gutter
            :lt.objs.editor/no-wrap
            :lt.objs.settings/default-keymap-diffs
            :lt.objs.settings/user-keymap-diffs
