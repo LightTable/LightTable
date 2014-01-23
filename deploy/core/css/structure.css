@@ -254,7 +254,7 @@ body { -webkit-user-select: none; }
 #right-bar .docs-search { width: 100%; }
 #right-bar .docs-search input { width:100%; padding:10px; font-size:11pt; }
 #right-bar .docs-search > ul {display:block; }
-#right-bar .docs-search li { border:none; -webkit-user-select:text; padding:5px 5px; cursor:default; overflow:hidden; direction:ltr; width:100%; box-sizing:border-box; white-space:nowrap; }
+#right-bar .docs-search li { border:none; -webkit-user-select:text; padding:5px 5px; cursor:default; overflow:hidden; width:100%; box-sizing:border-box; white-space:nowrap; }
 #right-bar .docs-search .types { position:absolute; top:0px; right:0px; display:block; z-index:100; text-align:right;}
 #right-bar .docs-search .types > span { padding:4px 10px;  font-size:10pt; background:red; display:inline-block; border-radius:0px; position:static; }
 #right-bar .docs-search .types > ul { display:none; background:none; position:static; padding-top:2px; border-radius:0px; }
