@@ -59,7 +59,8 @@
 (behavior ::transient-save
                   :triggers #{:save :save-as-rename!}
                   :reaction (fn [this]
-                              (let [s (save-input this (files/home))]
+                              (let [s (save-input this (or (first (:folders @workspace/current-ws))
+                                                           (files/home)))]
                                 (set! active-dialog s)
                                 (dom/trigger s :click))))
 
