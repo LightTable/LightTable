@@ -100,12 +100,21 @@
 
 (defn available-plugins []
   (let [ds (concat (files/dirs plugins-dir)
-                   (files/dirs user-plugins-dir))]
-    (into {}
-          (->> ds
-               (map plugin-info)
-               (filterv identity)
-               (map (juxt :name identity))))))
+                   (files/dirs user-plugins-dir))
+        plugins (->> ds
+                     (map plugin-info)
+                     (filterv identity))]
+    (-> (reduce (fn [final p]
+                  (if-let [cur (get final (:name p))]
+                    ;;check if it's newer
+                    (if (deploy/is-newer? (:version cur) (:version p))
+                      (assoc! final (:name p) p)
+                      final)
+                    (assoc! final (:name p) p)))
+                (transient {})
+                plugins)
+        (persistent!))))
+
 
 (defn plugin-behaviors [plug]
   (let [{:keys [behaviors dir]} plug
