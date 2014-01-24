@@ -1,5 +1,10 @@
 #Changes
 
+##0.6.3
+
+* FIX: plugins now load correctly when installed
+* FIX: when user-dir and core contain the same plugin version, choose user-dir first
+
 ##0.6.2
 
 * FIX: styling bug that caused light themes to be unusable

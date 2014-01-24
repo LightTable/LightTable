@@ -214,8 +214,9 @@
 (defn absolute? [path]
   (boolean (re-seq #"^[\\\/]|([\w]+:[\\\/])" path)))
 
-(defn basename [path]
-  (.basename fpath path))
+(defn basename
+  ([path] (.basename fpath path))
+  ([path ext] (.basename fpath path ext)))
 
 (defn writable? [path]
   (let [perm (-> (.statSync fs path)
