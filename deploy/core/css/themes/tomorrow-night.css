@@ -15,3 +15,4 @@
 .cm-s-tomorrow-night span.cm-builtin, .cm-s-tomorrow-night span.cm-minus { color: #cc6666 }
 .cm-s-tomorrow-night span.cm-variable,.cm-s-tomorrow-night span.cm-variable-2, .cm-s-tomorrow-night span.cm-variable-3, .cm-s-tomorrow-night span.cm-tag, .cm-s-tomorrow-night span.cm-rangeinfo { color: #81a2be }
 .cm-s-tomorrow-night span.cm-special { color: #f0c674; }
+.cm-s-tomorrow-night .CodeMirror-matchingbracket {outline:1px solid grey; color:white !important;}
