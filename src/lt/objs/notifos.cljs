@@ -21,7 +21,10 @@
    (statusbar/loader-dec)))
 
 (defn msg* [m opts]
-  (object/merge! statusbar/statusbar-loader (merge {:message m :class ""} opts)))
+  (let [m (if (string? m)
+            m
+            (pr-str m))]
+    (object/merge! statusbar/statusbar-loader (merge {:message m :class ""} opts))))
 
 (defn set-msg! [msg opts]
   (msg* msg opts)

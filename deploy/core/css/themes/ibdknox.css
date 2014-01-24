@@ -1,6 +1,9 @@
 #multi.theme-ibdknox .content { background: #202020; }
 #multi.theme-ibdknox .list .active, #multi.theme-ibdknox .list li:hover { background:#202020; color:#dfe1e8; }
 #multi.theme-ibdknox .list .dirty { color:#C7E6FF; }
+#multi.theme-ibdknox .tabset .list .active { color:var(placeholder-fg); }
+#multi.theme-ibdknox .tabset.active .list .active { color:var(highlight-fg); }
+#multi.theme-ibdknox .tabset.active .list .dirty { color:var(accent-foreground); }
 
 .cm-s-ibdknox { background: #202020; color:#ccc; }
 

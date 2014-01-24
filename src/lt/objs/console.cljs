@@ -62,6 +62,11 @@
 (defn inspect [thing]
   (util-inspect thing false 2))
 
+(defn dom-like? [thing]
+  (or (vector? thing)
+      (.-nodeType thing)
+      (string? thing)))
+
 (defpartial ->item [l & [class]]
   [:li {:class class} l])
 
@@ -114,7 +119,9 @@
       (when (or (string? l) str-content) (write-to-log (if (string? l)
                                                          l
                                                          str-content))
-        (write $console (->item [:pre l] class))
+        (write $console (->item [:pre (if-not (dom-like? l)
+                                        (pr-str l)
+                                        l)] class))
         (dom/scroll-top $console 10000000000)
         nil))))
 
