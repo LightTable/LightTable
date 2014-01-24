@@ -37,7 +37,8 @@
                           (bound this ->css)
                           ]]))
 
-(def styles (object/create ::styles))
+(def styles (object/create ::styles
+                           :theme "default"))
 
 (behavior ::style-on-init
                   :triggers #{:init}
@@ -125,7 +126,7 @@
 
 (defn inject-theme [theme]
   (when (:theme @styles)
-    (dom/remove-class (dom/$ :#multi) (:theme @styles)))
+    (dom/remove-class (dom/$ :#multi) (str "theme-" (:theme @styles))))
   (object/merge! styles {:theme theme})
   (dom/add-class (dom/$ :#multi) (str "theme-" theme))
   (when-not (dom/$ (str "#theme-" theme))
@@ -149,8 +150,8 @@
           :triggers #{:deactivated :destroy}
           :reaction (fn [this]
                       (when-not (object/has-tag? (tabs/active-tab) :editor)
-                        (when-not (empty? prev-theme)
-                          (dom/remove-class (dom/$ :#multi) prev-theme)))))
+                        (when-not (empty? (:theme @styles))
+                          (dom/remove-class (dom/$ :#multi) (str "theme-" (:theme @styles)))))))
 
 
 (behavior ::set-theme

@@ -600,3 +600,10 @@
                           (when (= js/CodeMirror.Pass
                                    (apply command (editor/->cm-ed ed) args))
                             (kb/passthrough)))))})
+
+(cmd/command {:command :editor.fold-code
+              :desc "Editor: Fold code at cursor"
+              :exec (fn []
+                      (when-let [ed (last-active)]
+                        (editor/fold-code ed)))})
+

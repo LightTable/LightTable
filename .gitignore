@@ -14,6 +14,8 @@ deploy/core/node_modules/lighttable/bootstrap.js*
 *.so
 lib
 deploy/LightTable
+deploy/LightTable.app
 deploy/credits.html
 deploy/ltbin
 deploy/nw.pak
+deploy/light

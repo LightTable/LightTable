@@ -45,12 +45,17 @@
     path
     (files/join (or (::dir object/*behavior-meta*) (files/lt-home)) path)))
 
-(defn local-module [plugin-name module-name]
+(defn find-plugin [plugin-name]
   (let [plugin-name (munge-plugin-name plugin-name)]
     (cond
-     (::dir object/*behavior-meta*) (files/join (::dir object/*behavior-meta*) "node_modules" module-name)
-     (files/exists? (files/join user-plugins-dir plugin-name)) (files/join user-plugins-dir plugin-name "node_modules" module-name)
-     (files/exists? (files/join plugins-dir plugin-name)) (files/join plugins-dir plugin-name "node_modules" module-name))))
+     (::dir object/*behavior-meta*) (::dir object/*behavior-meta*)
+     (files/exists? (files/join user-plugins-dir plugin-name)) (files/join user-plugins-dir plugin-name)
+     (files/exists? (files/join plugins-dir plugin-name)) (files/join plugins-dir plugin-name)
+     :else nil)))
+
+(defn local-module [plugin-name module-name]
+  (when-let [plugin-path (find-plugin plugin-name)]
+    (files/join plugin-path "node_modules" module-name)))
 
 (defn by-name [plugin-name]
   (-> @app/app ::plugins (get plugin-name)))
@@ -95,12 +100,21 @@
 
 (defn available-plugins []
   (let [ds (concat (files/dirs plugins-dir)
-                   (files/dirs user-plugins-dir))]
-    (into {}
-          (->> ds
-               (map plugin-info)
-               (filterv identity)
-               (map (juxt :name identity))))))
+                   (files/dirs user-plugins-dir))
+        plugins (->> ds
+                     (map plugin-info)
+                     (filterv identity))]
+    (-> (reduce (fn [final p]
+                  (if-let [cur (get final (:name p))]
+                    ;;check if it's newer
+                    (if (deploy/is-newer? (:version cur) (:version p))
+                      (assoc! final (:name p) p)
+                      final)
+                    (assoc! final (:name p) p)))
+                (transient {})
+                plugins)
+        (persistent!))))
+
 
 (defn plugin-behaviors [plug]
   (let [{:keys [behaviors dir]} plug
@@ -184,9 +198,9 @@
         (object/update! app/app [::plugins] assoc name {})
         (fetch-and-install (-> plugin :tar) name
                            (fn []
+                             (object/raise manager :refresh!)
                              (when cb
                                (cb true))
-                             (object/raise manager :refresh!)
                              )))
       (do
         (notifos/set-msg! (str name " is already installed"))
