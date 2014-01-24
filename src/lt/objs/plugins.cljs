@@ -99,8 +99,8 @@
   (or (plugin-json dir) (plugin-edn dir)))
 
 (defn available-plugins []
-  (let [ds (concat (files/dirs plugins-dir)
-                   (files/dirs user-plugins-dir))
+  (let [ds (concat (files/dirs user-plugins-dir)
+                   (files/dirs plugins-dir))
         plugins (->> ds
                      (map plugin-info)
                      (filterv identity))]
