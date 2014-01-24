@@ -2,7 +2,13 @@
 
 .CodeMirror {
   /* Set height, width, borders, and global font properties here */
+  height:auto;
 }
+
+.CodeMirror * {
+  box-sizing:content-box !important;
+}
+
 .CodeMirror-scroll {
   /* Set scrolling behaviour here */
   overflow: auto;
@@ -30,7 +36,6 @@
 }
 .CodeMirror-linenumbers {}
 .CodeMirror-linenumber {
-  box-sizing:content-box;
   padding: 0 3px 0 5px;
   min-width: 20px;
   text-align: right;
@@ -41,7 +46,6 @@
 
 .CodeMirror div.CodeMirror-cursor {
   border-left: 1px solid black;
-  z-index: 3;
 }
 /* Shown when moving in bi-directional text */
 .CodeMirror div.CodeMirror-secondarycursor {
@@ -51,14 +55,11 @@
   width: auto;
   border: 0;
   background: #7e7;
-  z-index: 1;
 }
 /* Can style cursor different in overwrite (non-insert) mode */
-.CodeMirror div.CodeMirror-cursor.CodeMirror-overwrite {}
+div.CodeMirror-overwrite div.CodeMirror-cursor {}
 
 .cm-tab { display: inline-block; }
-
-/* STOP */
 
 /* The rest of this file contains styles related to the mechanics of
    the editor. You probably shouldn't touch them. */
@@ -162,6 +163,7 @@
   border-right: 30px solid transparent;
   width: -webkit-fit-content;
   width: -moz-fit-content;
+  width: fit-content;
 }
 .CodeMirror-wrap .CodeMirror-code pre {
   border-right: none;
@@ -196,11 +198,15 @@
 
 .CodeMirror div.CodeMirror-cursor {
   position: absolute;
-  visibility: hidden;
   border-right: none;
   width: 0;
 }
-.CodeMirror-focused div.CodeMirror-cursor {
+
+div.CodeMirror-cursors {
+  visibility: hidden;
+  z-index: 3;
+}
+.CodeMirror-focused div.CodeMirror-cursors {
   visibility: visible;
 }
 
@@ -215,60 +221,12 @@
 /* IE7 hack to prevent it from returning funny offsetTops on the spans */
 .CodeMirror span { *vertical-align: text-bottom; }
 
+/* Used to force a border model for a node */
+.cm-force-border { padding-right: .1px; }
+
 @media print {
   /* Hide the cursor when printing */
-  .CodeMirror div.CodeMirror-cursor {
+  .CodeMirror div.CodeMirror-cursors {
     visibility: hidden;
   }
-}
-
-.CodeMirror-hints {
-  position: absolute;
-  z-index: 1000000000000000;
-  overflow: hidden;
-  list-style: none;
-
-  margin: 0;
-  padding: 2px;
-
-  font-size: 90%;
-  font-family: monospace;
-
-  max-height: 20em;
-  overflow-y: auto;
-}
-
-.CodeMirror-hint {
-  margin: 0;
-  padding: 0 4px;
-  border-radius: 2px;
-  overflow: hidden;
-  white-space: pre;
-  cursor: pointer;
-}
-
-.CodeMirror-hint-active {
-}
-
-/* foldgutter.css */
-.CodeMirror-foldmarker {
-  color: blue;
-  text-shadow: #b9f 1px 1px 2px, #b9f -1px -1px 2px, #b9f 1px -1px 2px, #b9f -1px 1px 2px;
-  font-family: arial;
-  line-height: .3;
-  cursor: pointer;
-}
-.CodeMirror-foldgutter {
-  width: .7em;
-}
-.CodeMirror-foldgutter-open,
-.CodeMirror-foldgutter-folded {
-  color: #555;
-  cursor: pointer;
-}
-.CodeMirror-foldgutter-open:after {
-  content: "\25BE";
-}
-.CodeMirror-foldgutter-folded:after {
-  content: "\25B8";
 }
