@@ -63,7 +63,7 @@
                                             (assoc final :font-size size)
                                             final)
                                     final (if (and line-height
-                                                   (< 0 line-height))
+                                                   (> line-height 0))
                                             (assoc final :line-height line-height)
                                             final)]
                                 (object/merge! styles final))))
