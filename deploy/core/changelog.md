@@ -1,5 +1,9 @@
 #Changes
 
+##0.6.2
+
+* FIX: styling bug that caused light themes to be unusable
+
 ##0.6.1
 
 * FIX: build instructions for all platforms. Add in build scripts for each.
