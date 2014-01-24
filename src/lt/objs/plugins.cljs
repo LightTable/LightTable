@@ -198,9 +198,9 @@
         (object/update! app/app [::plugins] assoc name {})
         (fetch-and-install (-> plugin :tar) name
                            (fn []
+                             (object/raise manager :refresh!)
                              (when cb
                                (cb true))
-                             (object/raise manager :refresh!)
                              )))
       (do
         (notifos/set-msg! (str name " is already installed"))
