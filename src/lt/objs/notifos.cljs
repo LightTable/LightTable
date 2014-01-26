@@ -26,10 +26,16 @@
             (pr-str m))]
     (object/merge! statusbar/statusbar-loader (merge {:message m :class ""} opts))))
 
-(defn set-msg! [msg opts]
-  (msg* msg opts)
-  (js/clearTimeout cur-timeout)
-  (set! cur-timeout (wait standard-timeout #(msg* ""))))
+(defn set-msg!
+  ([msg]
+   (msg* msg)
+   (js/clearTimeout cur-timeout)
+   (set! cur-timeout (wait standard-timeout #(msg* ""))))
+  ([msg opts]
+   (msg* msg opts)
+   (js/clearTimeout cur-timeout)
+   (set! cur-timeout (wait (or (:timeout opts)
+                               standard-timeout) #(msg* "")))))
 
 (cmd/command {:command :reset-working
               :desc "Statusbar: Reset working indicator"
