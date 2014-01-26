@@ -20,7 +20,7 @@
    (set-msg! msg)
    (statusbar/loader-dec)))
 
-(defn msg* [m opts]
+(defn msg* [m & [opts]]
   (let [m (if (string? m)
             m
             (pr-str m))]
