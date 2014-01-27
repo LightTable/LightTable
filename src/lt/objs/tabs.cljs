@@ -564,7 +564,7 @@
                             tabcount (count (:objs @ts))
                             idx (dec tabcount)]
                         (object/raise (ctx/->obj :tabset)
-                                      :tab (if (= x 8) idx x))))})
+                                      :tab (if (= x :last) idx x))))})
 
 (cmd/command {:command :tabset.next
               :desc "Tabset: Next tabset"
