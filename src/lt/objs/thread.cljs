@@ -4,7 +4,7 @@
             [lt.objs.platform :as platform]
             [lt.objs.console :as console]
             [cljs.reader :as reader])
-  (:require-macros [lt.macros :refer [behavior thread]]))
+  (:require-macros [lt.macros :refer [behavior background]]))
 
 (def cp (js/require "child_process"))
 
@@ -108,7 +108,7 @@
 (object/raise test :kill!)
 (object/destroy! test)
 
-(def t (thread (fn [m]
+(def t (background (fn [m]
           (.log js/console "this is a message! " m)
           )))
 
