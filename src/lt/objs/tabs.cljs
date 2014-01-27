@@ -558,9 +558,13 @@
 
 (cmd/command {:command :tabs.goto
               :hidden true
-              :desc "Tab: Goto tab #"
+              :desc "Tab: Goto tab #; 8 for last tab"
               :exec (fn [x]
-                      (object/raise (ctx/->obj :tabset) :tab x))})
+                      (let [ts (ctx/->obj :tabset)
+                            tabcount (count (:objs @ts))
+                            idx (dec tabcount)]
+                        (object/raise (ctx/->obj :tabset)
+                                      :tab (if (= x 8) idx x))))})
 
 (cmd/command {:command :tabset.next
               :desc "Tabset: Next tabset"
