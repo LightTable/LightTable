@@ -59,8 +59,13 @@
 (behavior ::transient-save
                   :triggers #{:save :save-as-rename!}
                   :reaction (fn [this]
-                              (let [s (save-input this (or (first (:folders @workspace/current-ws))
-                                                           (files/home)))]
+                              (let [path (or (first (:folders @workspace/current-ws))
+                                             (files/home))
+                                    info (:info @this)
+                                    fname (:name info)
+                                    ext (when-let [e (:exts info)]
+                                          (str "." (name (first e))))
+                                    s (save-input this (files/join path (str fname ext)))]
                                 (set! active-dialog s)
                                 (dom/trigger s :click))))
 
