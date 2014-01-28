@@ -29,16 +29,22 @@
         nil))))
 
 (defn +behaviors [cur m]
-  (reduce (fn [res [k v]]
-            (update-in res [k] #(apply conj (or % '()) v)))
-          cur
-          m))
+  (assoc cur :+
+    (reduce (fn [res [k v]]
+              (update-in res [k] #(apply conj (or % '()) v)))
+            (:+ cur)
+            m)))
 
 (defn -behaviors [cur m]
-  (reduce (fn [res [k v]]
-            (update-in res [k] #(remove (set v) %)))
-          cur
-          m))
+  (assoc cur
+    :+ (reduce (fn [res [k v]]
+              (update-in res [k] #(remove (set v) %)))
+            (:+ cur)
+            m)
+    :- (reduce (fn [res [k v]]
+              (update-in res [k] #(apply conj (or % '()) v)))
+            (:- cur)
+            m)))
 
 (defn behavior-diff [{add :+ rem :- :as diff} final]
   (if-not diff
@@ -78,7 +84,8 @@
         final (if (and ws-diff (not (empty? ws-diff)))
                 (behavior-diff (safe-read ws-diff "workspace.behaviors") final)
                 final)]
-    (reset! object/tags final)))
+    (reset! object/negated-tags (:- final))
+    (reset! object/tags (:+ final))))
 
 (defn refresh-diffed [diff]
   (->> (concat (keys (:+ diff))

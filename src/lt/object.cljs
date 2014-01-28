@@ -14,6 +14,7 @@
 (def behaviors (atom {}))
 (def object-defs (atom {}))
 (def tags (atom {}))
+(def negated-tags (atom {}))
 (def ^{:dynamic true} *behavior-meta* nil)
 
 (defn add [obj]
@@ -46,6 +47,12 @@
     (aloop [i arr] (aset arr i (aget arr i 2)))
     arr))
 
+(defn ts->negations [ts]
+  (let [seen (js-obj)]
+    (doseq [beh (apply concat (map @negated-tags ts))]
+      (aset seen (->behavior-name beh) true))
+    seen))
+
 (defn tags->behaviors [ts]
   (let [duped (apply concat (map @tags (specificity-sort ts)))
         de-duped (reduce
@@ -60,7 +67,7 @@
                            (aset (:seen res) (->behavior-name cur) true))
                          (conj! (:final res) cur)
                          res)))
-                   {:seen (js-obj)
+                   {:seen (ts->negations ts)
                     :final (transient [])}
                    duped)]
     (reverse (persistent! (:final de-duped)))))
