@@ -4,6 +4,7 @@
             [lt.objs.files :as files]
             [lt.objs.platform :as platform]
             [lt.objs.app :as app]
+            [lt.objs.notifos :as notifos]
             [lt.util.load :as load]
             [clojure.string :as string])
   (:require-macros [lt.macros :refer [behavior]]))
@@ -134,8 +135,12 @@
                                          (not (aget js/process.env "LTCLI")))
                                 (.exec (js/require "child_process") (str (etc-paths->PATH) (get-path-command))
                                        (fn [err out serr]
-                                         (when-not (empty? out)
-                                           (set! js/process.env.PATH out)))))))
+                                         (if-not (empty? err)
+                                           (do
+                                             (notifos/set-msg! "Failed to source PATH files. See console log for details." {:class "error"})
+                                             (.error js/console err))
+                                           (when-not (empty? out)
+                                             (set! js/process.env.PATH out))))))))
 
 (behavior ::global-path
                   :triggers #{:object.instant}
