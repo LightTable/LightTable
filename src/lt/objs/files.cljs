@@ -160,6 +160,20 @@
       (when cb (cb e))
       )))
 
+(defn append [path content & [cb]]
+  (try
+    (.appendFileSync fs path content)
+    (object/raise files-obj :files.save path)
+    (when cb (cb))
+    (catch js/global.Error e
+      (object/raise files-obj :files.save.error path e)
+      (when cb (cb e))
+      )
+    (catch js/Error e
+      (object/raise files-obj :files.save.error path e)
+      (when cb (cb e))
+      )))
+
 (defn delete! [path]
   (if (dir? path)
     (.rmdirSyncRecursive wrench path)
