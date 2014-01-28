@@ -10,6 +10,7 @@ deploy/logs
 .DS_Store
 deploy/core/node_modules/lighttable/bootstrap.js*
 .lein-deps-sum
+.lein-env
 .lein-plugins/
 *.so
 lib
