@@ -444,6 +444,7 @@
         (add! t to-ts))
       (object/update! multi [:tabsets] #(vec (remove #{ts} %)))
       (object/destroy! ts)
+      (equalize-tabset-widths)
       (object/raise to-ts :active))))
 
 (defn menu! [obj ev]
