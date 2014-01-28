@@ -561,8 +561,8 @@
               :desc "Tab: Goto tab # or :last"
               :exec (fn [x]
                       (let [ts (ctx/->obj :tabset)
-                            tabcount (count (:objs @ts))
-                            idx (dec tabcount)]
+                            tab-count (count (:objs @ts))
+                            idx (dec tab-count)]
                         (object/raise (ctx/->obj :tabset)
                                       :tab (if (= x :last) idx x))))})
 
