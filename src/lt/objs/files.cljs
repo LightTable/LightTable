@@ -81,8 +81,6 @@
         acc
         (recur (rest parts) (conj acc (string/join "." parts)))))))
 
-(get-file-parts "index.cljs.hl")
-
 (defn ext [path]
   (let [i (.lastIndexOf path ".")]
     (when (> i 0)
