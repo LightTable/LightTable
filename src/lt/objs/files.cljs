@@ -264,10 +264,6 @@
     (str f separator)
     (str f)))
 
-(defn ->type [path]
-  (let [e (ext path)]
-    (or (ext->mode path) e)))
-
 (defn ls [path cb]
   (try
     (let [fs (map (partial ->file|dir path) (.readdirSync fs path))]
