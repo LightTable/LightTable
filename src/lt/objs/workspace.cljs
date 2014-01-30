@@ -160,6 +160,11 @@
   (files/save (files/join workspace-cache-path file) (pr-str (serialize @ws)))
   (object/raise ws :save))
 
+(defn delete [ws]
+  (let [path (files/join workspace-cache-path
+                         (:file @ws))]
+    (files/delete! path)))
+
 (defn cached []
   (filter #(> (.indexOf % ".clj") -1) (files/full-path-ls workspace-cache-path)))
 
