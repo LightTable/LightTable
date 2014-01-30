@@ -540,7 +540,7 @@
                       (when (= (:file @workspace/current-ws)
                                (files/basename (:path @this)))
                         (object/raise tree :clear!))
-                      (workspace/delete workspace/current-ws)
+                      (workspace/delete (:path @this))
                       (object/raise sidebar-workspace :recent!)))
 
 (object/object* ::recent-workspace

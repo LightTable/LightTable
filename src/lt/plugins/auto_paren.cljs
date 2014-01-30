@@ -52,7 +52,7 @@
           :triggers #{:repeat-pair!}
           :reaction (fn [this ch]
                       (let [current-selection (editor/selection this)]
-                        (if-not (= something-selected "")
+                        (if-not (= current-selection "")
                           (editor/replace-selection this (str ch current-selection ch))
                           (cond
                            (= ch (get-char this 1)) (move-cursor this 1)

@@ -246,7 +246,8 @@
                                                             (object/raise this :inactive e)))
                               (.document.addEventListener window "contextmenu"
                                                           (fn [e]
-                                                            (object/raise this :menu! e)))
+                                                            (when-not (.-defaultPrevented e)
+                                                              (object/raise this :menu! e))))
                               (.document.addEventListener window "click"
                                                           (fn [e]
                                                             (object/raise this :active)
