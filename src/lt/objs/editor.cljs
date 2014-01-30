@@ -251,7 +251,7 @@
 
 (defn select-all [e]
   (set-selection e
-                 {:line (first-line e)}
+                 {:line (first-line e) :ch 0}
                  {:line (last-line e)}))
 
 (defn clear-history [e]
