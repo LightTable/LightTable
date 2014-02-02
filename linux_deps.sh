@@ -5,6 +5,12 @@ if [ "$(echo `lein version` | grep 'Leiningen 1.\|2.0')" ]; then
 	echo "lein version must be 2.1 or above. Do a lein upgrade first"; exit 1;
 fi
 
+which curl &> /dev/null
+if [ $? -ne 0 ]; then
+	echo "Please install curl before running this."
+	exit
+fi
+
 echo "### Fetching binaries ###"
 BITS=""
 if [ $(getconf LONG_BIT) == "64" ]; then BITS="64"; fi
