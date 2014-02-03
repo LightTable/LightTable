@@ -11,11 +11,13 @@ rm -rf deploy/LightTable.app
 rm deploy/light
 
 #get the LightTable.app binary
-curl -O http://d35ac8ww5dfjyg.cloudfront.net/playground/bins/0.6.0/LightTableMac.zip
+curl -O http://d35ac8ww5dfjyg.cloudfront.net/playground/bins/0.6.2/LightTableMac.zip
 unzip LightTableMac.zip
 mv LightTable/* deploy/
 rmdir LightTable/
 rm LightTableMac.zip
+
+cp -r platform/mac/* deploy/
 
 #build the core cljs of LightTable
 lein cljsbuild clean && lein cljsbuild once

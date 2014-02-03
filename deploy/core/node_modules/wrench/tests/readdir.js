@@ -46,6 +46,15 @@ module.exports = testCase({
                 checkResult(test, allFiles);
             }
         });
+    },
+
+    test_readdirRecursiveWithNonExistentDirectory: function(test) {
+        wrench.readdirRecursive('', function (e, files) {
+            test.ok(e);
+            test.equal(e.code, 'ENOENT');
+            test.equal(files, null);
+            test.done();
+        });
     }
 });
 
