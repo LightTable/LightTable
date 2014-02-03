@@ -129,7 +129,10 @@
   (statusbar/console-class "error")
   (log (str (if (.-stack e)
               (.-stack e)
-              (str e)))
+              (let [pr-e (pr-str e)]
+                (if (not= pr-e "[object Object]")
+                  pr-e
+                  (str e)))))
        "error"))
 
 (defn clear []
