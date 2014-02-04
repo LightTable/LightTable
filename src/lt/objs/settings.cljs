@@ -84,8 +84,8 @@
         final (if (and ws-diff (not (empty? ws-diff)))
                 (behavior-diff (safe-read ws-diff "workspace.behaviors") final)
                 final)]
-    (reset! object/negated-tags (:- final))
-    (reset! object/tags (:+ final))))
+    (reset! object/negated-tags (or (:- final) {}))
+    (reset! object/tags (or (:+ final) {}))))
 
 (defn refresh-diffed [diff]
   (->> (concat (keys (:+ diff))
