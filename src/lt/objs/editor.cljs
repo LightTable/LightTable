@@ -272,10 +272,6 @@
   (.operation (->cm-ed e) func)
   e)
 
-(defn compound [e fun]
-  (.compoundChange (->cm-ed e) fun)
-  e)
-
 (defn on-click [e func]
   (let [elem (->elem e)]
     (ev/capture elem :mousedown func)
