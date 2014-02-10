@@ -13,10 +13,12 @@
           :reaction (fn [editor]
                       (let [{:keys [path]} (@editor :info)
                             pos (ed/->cursor editor)
-                            final (object/raise-reduce editor :save+ (ed/->val editor))]
-                        (ed/set-val editor final)
-                        (ed/move-cursor editor pos)
-                        (ed/center-cursor editor)
+                            orig-val (ed/->val editor)
+                            final (object/raise-reduce editor :save+ orig-val)]
+                        (when-not (= orig-val final)
+                          (ed/set-val editor final)
+                          (ed/move-cursor editor pos)
+                          (ed/center-cursor editor))
                         (doc/save path final
                                   (fn []
                                     (object/merge! editor {:dirty false
