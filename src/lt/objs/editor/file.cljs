@@ -16,6 +16,7 @@
                             final (object/raise-reduce editor :save+ (ed/->val editor))]
                         (ed/set-val editor final)
                         (ed/move-cursor editor pos)
+                        (ed/center-cursor editor)
                         (doc/save path final
                                   (fn []
                                     (object/merge! editor {:dirty false
