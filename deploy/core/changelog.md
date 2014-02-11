@@ -2,8 +2,26 @@
 
 ##0.6.3
 
-* FIX: plugins now load correctly when installed
+* FIX: Remove use of the removed `thread` macro (MarcoPolo)
+* FIX: Tabsets don't properly resize after being removed (Morgawr)
+* FIX: handle non-dommable errors better (e.g. you throw an object)
+* FIX: Matching bracket highlighting for tomorrow-night theme (chmllr)
+* FIX: don't let line-height 0 destroy the editor (Morgawr)
+* FIX: plugins no longer require a restart
 * FIX: when user-dir and core contain the same plugin version, choose user-dir first
+* FIX: copy over platform specific dir for mac build (mark.fisher)
+* FIX: show an error of sourcing for the path fails on OSX (ndr-qef)
+* FIX: select-all now correctly includes the first line (mihneadb)
+* FIX: check for curl in the linux build script (mihneadb)
+* CHANGE: behaviors that have been removed with :- will guarantee that the behavior is not applied to anything with that tag.
+* ADDED: You can remove recent workspaces (mortalapeman)
+* ADDED: paths like foo.html.erb are now correctly interpreted as their file type
+* ADDED: notifications can now be set with custom timeouts (ndr-qef)
+* ADDED: pmeta-9 and alt-9 now go to the last tab (mihneadb)
+* ADDED: Using auto-pairing with a selection now wraps the selection in the pair (ThePawnBreak)
+* ADDED: Suggest an extension in the save-as dialog (ndr-qef)
+* ADDED: Support alt-# tab switching (mihneadb)
+* UPDATED: Move to wrench 1.5.6 (heyLu)
 
 ##0.6.2
 

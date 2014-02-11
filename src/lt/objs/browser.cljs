@@ -401,7 +401,7 @@
                                     ;;TODO: this is a hack for bad compiler output. We need to just move to the latest cljs
                                     (handle-cb (:cb msg) :editor.eval.cljs.result {:result (pr-str (.eval.call window window (string/replace (:code form) ")goog" ")\ngoog")))
                                                                                    :meta (merge (:meta msg) (:meta form))})
-                                    (catch (.-Error window) e
+                                    (catch :default e
                                       (handle-cb (:cb msg) :editor.eval.cljs.exception {:ex e
                                                                                         :meta (merge (:meta msg) (:meta form))})))))))
 
