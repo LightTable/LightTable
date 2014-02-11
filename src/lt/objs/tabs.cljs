@@ -33,6 +33,7 @@
           (set! (.-scrollLeft gp) (+ (- right pwidth) 50)))
         ))))
 
+
 (behavior ::on-destroy-remove
           :triggers #{:destroy :closed}
           :reaction (fn [this]
@@ -105,6 +106,10 @@
   (str c (when (:dirty @e)
            " dirty")))
 
+(defui close-tab [obj] ;; TODO: Create x button
+  [:button "x"]
+  :click (fn [] (object/raise obj :close)))
+
 (defui item [multi e pos]
   [:li {:class (-> " "
                    (active? e multi)
@@ -113,7 +118,8 @@
         :title (->path e)
         :obj-id (object/->id e)
         :pos pos}
-   (->name e)]
+   (close-tab e)
+   (->name e)]    ;; TODO: Add 'x' button next to file name
   :click (fn []
            (active! e))
   :contextmenu (fn [ev]
@@ -363,7 +369,7 @@
    [:div.list
     (bound this #(objs-list this (:objs %)))]
    [:div.items
-    (map-bound (partial tabbed-item (subatom this :active-obj)) this {:path [:objs]})]
+    (map-bound (partial tabbed-item (subatom this :active-obj)) this {:path [:objs]})]    ;; TODO: Try putting x here
    (vertical-grip this)]
   :click (fn []
            (object/raise this :active)))
