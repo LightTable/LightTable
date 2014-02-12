@@ -174,9 +174,12 @@
                                        (notifos/working "Extracting plugin...")
                                        (deploy/untar tmp-gz tmp-dir
                                                      (fn []
-                                                       (let [munged-dir (first (files/full-path-ls tmp-dir))]
+                                                       (let [munged-dir (first (files/full-path-ls tmp-dir))
+                                                             final-path (str user-plugins-dir "/" munged-name "/")]
                                                          (when munged-dir
-                                                           (files/move! munged-dir (str user-plugins-dir "/" munged-name "/")))
+                                                           (when (files/exists? final-path)
+                                                             (files/delete! final-path))
+                                                           (files/move! munged-dir final-path))
                                                          (files/delete! tmp-dir)
                                                          (files/delete! tmp-gz)
                                                          (if munged-dir
