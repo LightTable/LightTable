@@ -19,7 +19,6 @@
 (def shell (load/node-module "shelljs"))
 (def fs (js/require "fs"))
 (def fs-path (js/require "path"))
-(def targz (load/node-module "tar.gz"))
 (def zlib (js/require "zlib"))
 (def request (load/node-module "request"))
 (def tar (load/node-module "tar"))
