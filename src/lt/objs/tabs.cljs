@@ -33,7 +33,6 @@
           (set! (.-scrollLeft gp) (+ (- right pwidth) 50)))
         ))))
 
-
 (behavior ::on-destroy-remove
           :triggers #{:destroy :closed}
           :reaction (fn [this]
@@ -118,8 +117,8 @@
         :title (->path e)
         :obj-id (object/->id e)
         :pos pos}
-   (close-tab e)
-   (->name e)]    ;; TODO: Add 'x' button next to file name
+   (close-tab e)   ;; TODO: Add 'x' button next to file name
+   (->name e)]
   :click (fn []
            (active! e))
   :contextmenu (fn [ev]
@@ -369,7 +368,7 @@
    [:div.list
     (bound this #(objs-list this (:objs %)))]
    [:div.items
-    (map-bound (partial tabbed-item (subatom this :active-obj)) this {:path [:objs]})]    ;; TODO: Try putting x here
+    (map-bound (partial tabbed-item (subatom this :active-obj)) this {:path [:objs]})]
    (vertical-grip this)]
   :click (fn []
            (object/raise this :active)))
