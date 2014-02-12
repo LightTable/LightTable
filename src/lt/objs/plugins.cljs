@@ -352,9 +352,9 @@
                   (deploy/is-newer? (:version plugin) cached))]
     [:li {:class (if update?
                    "has-update")}
-     (if update?
-       (update-button (assoc plugin :version cached))
-       (uninstall-button plugin))
+     (when update?
+       (update-button (assoc plugin :version cached)))
+     (uninstall-button plugin)
      (source-button plugin)
      [:h1 (:name plugin) [:span.version (:version plugin)]]
      [:h3 (:author plugin)]
