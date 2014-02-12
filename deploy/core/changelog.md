@@ -1,5 +1,10 @@
 #Changes
 
+##0.6.4
+
+* FIX: plugins would sometimes fail to install due to bad tar headers
+* UPDATED: Move to npm-tar 0.1.19
+
 ##0.6.3
 
 * FIX: Remove use of the removed `thread` macro (MarcoPolo)
