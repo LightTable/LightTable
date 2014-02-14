@@ -15,3 +15,4 @@ excessFile=$dirLocation$fileToGo
 if [ -f $excessFile ]; then
 rm $excessFile
 fi
+
