@@ -13,6 +13,5 @@ chmod +x $newExecutablePath
 fileToGo='/icon_within.sh~'
 excessFile=$dirLocation$fileToGo
 if [ -f $excessFile ]; then
-rm $excessFile
+	rm $excessFile
 fi
-
