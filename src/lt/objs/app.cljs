@@ -10,6 +10,7 @@
 (def gui (js/require "nw.gui"))
 (def win (.Window.get gui))
 (def closing true)
+(def default-zoom 0)
 
 (defn window-number []
   (let [n (last (string/split js/window.location.search "="))]
@@ -180,8 +181,15 @@
                                       (apply cmd/exec! c)
                                       (cmd/exec! c)))))))
 
-
-
+(behavior ::set-default-zoom-level
+          :triggers #{:init}
+          :desc "App: Set the default zoom level"
+                  :params [{:label "default-zoom-level"
+                            :type :number}]
+                  :type :user
+                  :reaction (fn [this default]
+                              (set! default-zoom default)
+                              (set! (.-zoomLevel win) default)))
 
 ;;*********************************************************
 ;; Object
@@ -242,6 +250,7 @@
 (cmd/command {:command :window.zoom-reset
               :desc "Window: Zoom reset"
               :exec (fn []
-                      (set! (.-zoomLevel win) 0)
+                      (set! (.-zoomLevel win) default-zoom)
                       )})
+
 
