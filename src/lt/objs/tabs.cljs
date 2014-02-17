@@ -114,8 +114,10 @@
         :obj-id (object/->id e)
         :pos pos}
    (->name e)]
-  :click (fn []
-           (active! e))
+  :click (fn [ev]
+           (if (or (= 1 (.-button ev)) (.-metaKey ev))
+             (object/raise e :close)
+             (active! e)))
   :contextmenu (fn [ev]
                  (menu! e ev)
                  (dom/prevent ev)
