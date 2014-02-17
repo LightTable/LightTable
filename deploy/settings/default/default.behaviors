@@ -252,7 +252,7 @@
                                       {:name "OCaml" :exts [:ocaml :ml] :mime "text/x-ocaml" :tags [:editor.ocaml]}
                                       {:name "Pascal" :exts [:pas] :mime "text/x-pascal" :tags [:editor.pascal]}
                                       {:name "Perl" :exts [:pl] :mime "text/x-perl" :tags [:editor.perl]}
-                                      {:name "PHP" :exts [:php] :mime "text/x-perl" :tags [:editor.perl]}
+                                      {:name "PHP" :exts [:php] :mime "text/x-php" :tags [:editor.php]}
                                       {:name "Plain Text" :exts [:txt] :mime "plaintext" :tags [:editor.plaintext]}
                                       {:name "Python" :exts [:py :pyw] :mime "text/x-python" :tags [:editor.python]}
                                       {:name "R" :exts [:r] :mime "text/x-rsrc" :tags [:editor.r]}
