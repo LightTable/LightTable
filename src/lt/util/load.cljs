@@ -6,6 +6,8 @@
 
 (def pwd (.resolve fpath "."))
 
+(def ^:dynamic *force-reload* false)
+
 (defn absolute? [path]
   (boolean (re-seq #"^\s*[\\\/]|([\w]+:[\\\/])" path)))
 
@@ -57,9 +59,11 @@
   (<= (.-length (js/Object.keys cur)) (provided-ancestors s)))
 
 (defn provided? [s]
-  (let [res (if (aget provided s)
-              true
-              (when-let [cur (obj-exists? s)]
-                (not (only-ancestors? cur s))))]
-    (aset provided s true)
-    res))
+  (if *force-reload*
+    false
+    (let [res (if (aget provided s)
+                true
+                (when-let [cur (obj-exists? s)]
+                  (not (only-ancestors? cur s))))]
+      (aset provided s true)
+      res)))
