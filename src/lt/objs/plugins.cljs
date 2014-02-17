@@ -28,6 +28,8 @@
 (def plugins-url "http://plugins.lighttable.com")
 (def ^:dynamic *plugin-dir* nil)
 
+(declare manager)
+
 (defn EOF-read [s]
   (when (and s
              (seq s))
@@ -68,6 +70,14 @@
               :exec (fn []
                       (when-let [ed (pool/last-active)]
                         (object/raise ed :build)))})
+
+(cmd/command {:command :behaviors.force-reload
+              :desc "Plugins: Ignore cache and force reload the current behaviors file"
+              :exec (fn []
+                      (when-let [ed (pool/last-active)]
+                        (when (object/has-tag? ed :editor.behaviors)
+                          (swap! manager update-in [::force-reload] #(conj (or % #{}) (get-in @ed [:info :path])))
+                          (cmd/exec! :behaviors.reload))))})
 
 ;;*********************************************************
 ;; Plugin reading
@@ -119,13 +129,17 @@
 (defn plugin-behaviors [plug]
   (let [{:keys [behaviors dir]} plug
         file (files/join dir behaviors)
+        file (files/real-path file)
         behs (-> (files/open-sync file)
                  (:content)
-                 (settings/safe-read file))]
+                 (settings/safe-read file))
+        force? (get (::force-reload @manager) file)]
+    (when force?
+      (swap! manager update-in [::force-reload] disj file))
     (when behs
       (walk/prewalk (fn [x]
                       (when (list? x)
-                        (alter-meta! x assoc ::dir dir))
+                        (alter-meta! x assoc ::dir dir ::force-reload force?))
                       x)
                     behs)
       behs)))
@@ -545,13 +559,15 @@
           :params [{:label "path"}]
           :type :user
           :reaction (fn [this path]
-                      (binding [*plugin-dir* (::dir object/*behavior-meta*)]
+                      (binding [*plugin-dir* (::dir object/*behavior-meta*)
+                                load/*force-reload* (::force-reload object/*behavior-meta*)]
                         (let [paths (if (coll? path)
                                       path
                                       [path])]
                           (doseq [path paths]
                             (let [path (adjust-path path)]
-                              (when-not (get (::loaded-files @this) path)
+                              (when (or load/*force-reload*
+                                        (not (get (::loaded-files @this) path)))
                                 (try
                                   (load/js path true)
                                   (object/update! this [::loaded-files] #(conj (or % #{}) path))
@@ -569,7 +585,8 @@
           :type :user
           :reaction (fn [this path]
                       (let [path (adjust-path path)]
-                        (when-not (get (::loaded-files @this) path)
+                        (when (or load/*force-reload*
+                                  (not (get (::loaded-files @this) path)))
                           (object/update! this [::loaded-files] #(conj (or % #{}) path))
                           (load/css path)))))
 
