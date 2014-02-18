@@ -321,7 +321,7 @@ button { border-radius:0; }
 
 .CodeMirror pre { padding: 0 0 0 5px; /* Horizontal padding of content */ }
 
-.CodeMirror div.CodeMirror-cursor { border-left: 1px solid white; }
+.CodeMirror div.CodeMirror-cursor { border-left: 1px solid black; }
 /* Shown when moving in bi-directional text */
 .CodeMirror div.CodeMirror-secondarycursor { border-left: 1px solid silver; }
 .CodeMirror.cm-keymap-fat-cursor div.CodeMirror-cursor { width: auto; border: none !important; background: rgba(0, 200, 200, .4); }
