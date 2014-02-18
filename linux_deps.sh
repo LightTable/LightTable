@@ -11,17 +11,32 @@ if [ $? -ne 0 ]; then
 	exit
 fi
 
+NODEWEBKIT_VERSION="v0.7.5"
+NODEWEBKIT_BASENAME="node-webkit-$NODEWEBKIT_VERSION-linux-ia32"
+if [ $(getconf LONG_BIT) == "64" ]
+then
+  NODEWEBKIT_BASENAME="node-webkit-$NODEWEBKIT_VERSION-linux-x64"
+fi
+NODEWEBKIT_URL="https://s3.amazonaws.com/node-webkit/$NODEWEBKIT_VERSION/$NODEWEBKIT_BASENAME.tar.gz"
 
-echo "### Fetching binaries ###"
-BITS=""
-if [ $(getconf LONG_BIT) == "64" ]; then BITS="64"; fi
-TARBALL=LightTableLinux$BITS.tar.gz
-curl -O http://d35ac8ww5dfjyg.cloudfront.net/playground/bins/0.6.0/$TARBALL
-tar -xzf $TARBALL
-rm $TARBALL
-cp -ar deploy/* LightTable
-rm -rf deploy
-mv LightTable deploy
+echo "### Fetching node-webkit binaries ###"
+curl -O $NODE_WEBKIT_LOCATION
+tar -xzf $NODEWEBKIT_BASENAME.tar.gz
+mv $NODEWEBKIT_BASENAME/nw deploy/ltbin
+mv $NODEWEBKIT_BASENAME/* deploy
+rmdir $NODEWEBKIT_BASENAME
+
+echo "### Copying default plugin set ###"
+tar --directory=deploy -xzf resources/default-plugins.tar.gz
+
+echo "### copying LightTable script ###"
+if [ $(getconf LONG_BIT) == "64" ]
+then
+  cp platform/linux64/LightTable deploy
+else
+  cp platform/linux/LightTable deploy
+fi
+chmod +x deploy/LightTable
 
 echo "### Building cljs ###"
 lein cljsbuild clean && lein cljsbuild once
