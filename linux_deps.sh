@@ -20,7 +20,7 @@ fi
 NODEWEBKIT_URL="https://s3.amazonaws.com/node-webkit/$NODEWEBKIT_VERSION/$NODEWEBKIT_BASENAME.tar.gz"
 
 echo "### Fetching node-webkit binaries ###"
-curl -O $NODE_WEBKIT_LOCATION
+curl -O $NODEWEBKIT_URL
 tar -xzf $NODEWEBKIT_BASENAME.tar.gz
 mv $NODEWEBKIT_BASENAME/nw deploy/ltbin
 mv $NODEWEBKIT_BASENAME/* deploy
