@@ -26,12 +26,6 @@
   :click (fn []
            (cmd/exec! :show-docs)))
 
-(defui reports []                        ;; TODO: Added report button to click - TWM
-  [:button "GitHub"]
-  :click (fn []
-           (cmd/exec! :show-reports)))
-
-
 (defui changelog []
   [:button "changelog"]
   :click (fn []
@@ -47,7 +41,6 @@
                           [:img {:height 40 :src (bound style/styles ->lt-image)}]]
                          [:p "Welcome to the latest version of Light Table. To see the full list of what's been added/changed, checkout the " (changelog) ".
                           Some of the highlights include deeper Javascript support, inline browsers, and Python eval! If you're new, you might want to take a look at " (docs) "to get started."]
-                         [:p "If you run into any problems, report the issue on " (reports) "!"]    ;; TODO: Added button to click for reporting issue - TWM
                          ]))
 
 (behavior ::show-intro

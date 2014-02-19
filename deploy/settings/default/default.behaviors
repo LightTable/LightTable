@@ -137,7 +137,6 @@
   :document [:lt.objs.document/try-close-root-document :lt.objs.document/close-root-document]
   :document.linked [:lt.objs.document/close-linked-document]
   :docs [:lt.objs.docs/on-close-destroy]
-  :reports [:lt.objs.reports/on-close-destroy]   ;; TODO: Add close tab behavior to report - TWM
   :docable [:lt.plugins.doc/editor.doc.show!
             :lt.plugins.doc/doc-menu+]
   :editor [:lt.objs.document/close-document-on-editor-close
