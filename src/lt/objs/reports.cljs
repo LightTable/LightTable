@@ -16,7 +16,7 @@
                 :init (fn [this]
                         [:div.reports
                          [:div.frame-shade]
-                         [:iframe {:src "https://github.com/LightTable/LightTable/issues/new" :nwdisable "true" :nwfaketop "true"}]]))
+                         [:iframe {:src "https://github.com/LightTable/LightTable/issues?state=open" :nwdisable "true" :nwfaketop "true"}]]))
 
 ;;*********************************************************
 ;; Behaviors
