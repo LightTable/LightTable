@@ -8,14 +8,30 @@
 
 (def ^:dynamic *force-reload* false)
 
+(def fpath (js/require "path"))
+
+(def separator (.-sep fpath))
+
 (defn absolute? [path]
   (boolean (re-seq #"^\s*[\\\/]|([\w]+:[\\\/])" path)))
 
 (defn node-module [path]
   (js/require (str pwd "/core/node_modules/" path)))
 
+(defn- abs-source-mapping-url [code file]
+  (if-let [path-to-source-map (second (re-find #"\n//# sourceMappingURL=(.*)" code))]
+    (if-not (absolute? path-to-source-map)
+      (let [abs-path-to-source-map (->> path-to-source-map
+                          (string/replace-first file (re-pattern (str "[^" separator "]*$")))
+                          js/encodeURI)]
+        (string/replace-first code #"\n//# sourceMappingURL=.*" (str "\n//# sourceMappingURL=" abs-path-to-source-map)))
+      code)
+    code))
+
 (defn- prep [code file]
-  (str code "\n\n//# sourceURL=" file))
+  (-> code
+      (abs-source-mapping-url file)
+      (str "\n\n//# sourceURL=" file)))
 
 (defn js
   ([file] (js file false))
