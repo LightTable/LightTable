@@ -17,7 +17,6 @@
 
 (def fs (js/require "fs"))
 (def max-depth 10)
-(def watch-interval 1000)
 
 (defn unwatch [watches path recursive?]
   (when watches
@@ -31,7 +30,7 @@
       (apply dissoc watches removes))))
 
 (defn alert-file [path]
-  (fn [cur prev]
+  (fn [event filename]
     (if (.existsSync fs path)
       (do
         (object/raise current-ws :watched.update path cur))
@@ -40,7 +39,7 @@
         (object/raise current-ws :watched.delete path)))))
 
 (defn alert-folder [path]
-  (fn [cur prev]
+  (fn [event filename]
     (if (.existsSync fs path)
       (do
         (let [watches (:watches @current-ws)
@@ -84,18 +83,14 @@
                watch (folder->watch path)]
            (when-not (get (:watches @current-ws) path)
              (assoc! results path watch)
-             (.watchFile fs path (js-obj "interval" watch-interval
-                                         "persistent" false)
-                         (:alert watch)))
+             (.watch fs path #js {:persistent false} (:alert watch)))
            (when (> recursive? -1)
              (watch! results (files/full-path-ls path) recursive?)))
          (when (and (not (get (:watches @current-ws) path))
                     (not (get results path)))
            (let [watch (file->watch path)]
              (assoc! results path watch)
-             (.watchFile fs path (js-obj "interval" watch-interval
-                                         "persistent" false)
-                         (:alert watch)))))))
+             (.watch fs path #js {:persistent false} (:alert watch)))))))
      (when-not (number? recursive?)
        (object/update! current-ws [:watches] merge (persistent! results)))))
 
