@@ -10,11 +10,17 @@
   (:require-macros [lt.macros :refer [behavior]]))
 
 (defn rebuild-argv [argstr]
-  (-> (subs argstr (.indexOf argstr "<d><d>dir"))
-      (string/replace "<d>" "-")
-      (string/replace "<s>" " ")
-      (string/split " ")
-      (to-array)))
+  (let [likely-args (count (re-seq #"--" argstr))
+        threshold 4
+        dir-arg "<d><d>dir"
+        i (.indexOf argstr dir-arg)]
+    (if (or (>= i 0) (>= likely-args threshold))
+      (to-array (map #(string/replace % "<ps>" " ")
+                     (-> (subs argstr index)
+                         (string/replace "<d>" "-")
+                         (string/replace "<s>" " ")
+                         (string/split " "))))
+      (to-array [argstr]))))
 
 (defn parse-args [argv]
   (-> (.. (node-module "optimist")

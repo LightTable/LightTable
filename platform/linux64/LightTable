@@ -32,12 +32,17 @@ add_udev_symlinks
 
 ARGS="$@"
 
-CORRECTED=${ARGS//-/<d>}
-CORRECTED=${CORRECTED// /<s>}
+for arg in "$@"
+do
+    ESCAPED=${arg// /<ps>}
+    CORRECTED="$CORRECTED<s>$ESCAPED"
+done
+
+CORRECTED=${CORRECTED//-/<d>}
 
 if [ -t 0 ] && [ $# != 0 ]; then
   #We're in a terminal...
-  LD_LIBRARY_PATH="$HERE:$LD_LIBRARY_PATH" $HERE/$BIN "<d><d>dir=`pwd`<s>$CORRECTED" &
+  LD_LIBRARY_PATH="$HERE:$LD_LIBRARY_PATH" $HERE/$BIN "<d><d>dir=`pwd`$CORRECTED" &
 else
   #We were double clicked
   LD_LIBRARY_PATH="$HERE:$LD_LIBRARY_PATH" $HERE/$BIN &
