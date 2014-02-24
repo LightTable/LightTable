@@ -319,9 +319,12 @@
     (-> (js/CodeMirror.innerMode (.getMode (->cm-ed e)) state)
         (.-mode))))
 
-(defn adjust-loc [loc dir]
-  (when loc
-    (update-in loc [:ch] + dir)))
+(defn adjust-loc
+  ([loc dir]
+   (adjust-loc loc dir :ch))
+  ([loc dir axis]
+   (when loc
+     (update-in loc [axis] + dir))))
 
 (defn get-char [ed dir]
   (let [loc (->cursor ed)]
