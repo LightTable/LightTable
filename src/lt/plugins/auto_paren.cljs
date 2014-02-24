@@ -31,14 +31,16 @@
 (behavior ::open-pair
           :triggers #{:open-pair!}
           :reaction (fn [this ch]
-                      (let [current-selection (editor/selection this)]
-                        (if-not (= current-selection "")
-                          (editor/replace-selection this (str ch current-selection (pairs ch)))
-                          (if (re-seq word-char (get-char this 1))
-                            (editor/insert-at-cursor this ch)
-                            (do
-                              (editor/insert-at-cursor this (str ch (pairs ch)))
-                              (move-cursor this -1)))))))
+                      (editor/operation this
+                       (fn []
+                         (let [current-selection (editor/selection this)]
+                           (if-not (= current-selection "")
+                             (editor/replace-selection this (str ch current-selection (pairs ch)))
+                             (if (re-seq word-char (get-char this 1))
+                               (editor/insert-at-cursor this ch)
+                               (do
+                                 (editor/insert-at-cursor this (str ch (pairs ch)))
+                                 (move-cursor this -1)))))))))
 
 (behavior ::close-pair
           :triggers #{:close-pair!}
@@ -51,16 +53,18 @@
 (behavior ::repeat-pair
           :triggers #{:repeat-pair!}
           :reaction (fn [this ch]
-                      (let [current-selection (editor/selection this)]
-                        (if-not (= current-selection "")
-                          (editor/replace-selection this (str ch current-selection ch))
-                          (cond
-                           (= ch (get-char this 1)) (move-cursor this 1)
-                           (re-seq word-char (get-char this 1)) (editor/insert-at-cursor this ch)
-                           (re-seq word-char (get-char this -1)) (editor/insert-at-cursor this ch)
-                           :else (do
-                                   (editor/insert-at-cursor this (str ch ch))
-                                   (move-cursor this -1)))))))
+                      (editor/operation this
+                                        (fn []
+                                          (let [current-selection (editor/selection this)]
+                                            (if-not (= current-selection "")
+                                              (editor/replace-selection this (str ch current-selection ch))
+                                              (cond
+                                               (= ch (get-char this 1)) (move-cursor this 1)
+                                               (re-seq word-char (get-char this 1)) (editor/insert-at-cursor this ch)
+                                               (re-seq word-char (get-char this -1)) (editor/insert-at-cursor this ch)
+                                               :else (do
+                                                       (editor/insert-at-cursor this (str ch ch))
+                                                       (move-cursor this -1)))))))))
 
 (behavior ::try-remove-pair
           :triggers #{:backspace!}

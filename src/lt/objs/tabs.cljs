@@ -105,6 +105,10 @@
   (str c (when (:dirty @e)
            " dirty")))
 
+(defui close-tab [obj] ;; TODO: Create x button - TWM
+  [:button "x"]
+  :click (fn [] (object/raise obj :close)))
+
 (defui item [multi e pos]
   [:li {:class (-> " "
                    (active? e multi)
@@ -113,6 +117,7 @@
         :title (->path e)
         :obj-id (object/->id e)
         :pos pos}
+   (close-tab e)   ;; TODO: Add 'x' button next to file name - TWM
    (->name e)]
   :click (fn [ev]
            (if (or (= 1 (.-button ev)) (.-metaKey ev))
@@ -337,7 +342,7 @@
     (dom/add-class (object/->content ts) :active)
     true))
 
-(behavior ::on-active-active-tabset
+(behavior ::tab-active
           :triggers #{:active}
           :reaction (fn [this]
                       (activate-tabset (::tabset @this))))

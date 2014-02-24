@@ -34,9 +34,9 @@ chmod -R u+rwx deploy/
 On Windows (manual):
 
 1. Clone the repo https://github.com/LightTable/LightTable.git
-2. download http://d35ac8ww5dfjyg.cloudfront.net/playground/bins/0.6.0/LightTableWin.zip
-3. unzip LightTableWin.zip
-4. copy the following files from the zip into the cloned repo at LightTable/deploy/
+2. Download http://d35ac8ww5dfjyg.cloudfront.net/playground/bins/0.6.0/LightTableWin.zip
+3. Unzip LightTableWin.zip
+4. Copy the following files from the zip into the cloned repo at LightTable/deploy/
    - ffmpegsumo.dll
    - icudt.dll
    - libEGL.dll
@@ -48,15 +48,15 @@ On Windows (manual):
 
 # Building
 
-After the initial setup, you can compile the clojurescript source at any time with `lein cljsbuild once`.
+After the initial setup, you can compile the ClojureScript source at any time with `lein cljsbuild once`.
 
 # Workflow
 
 I'll assume you already know how to eval code (ctrl-enter), how to open the command bar (ctrl-space) and how to open files with the navigator (ctrl-o). If you don't, start with the [Light Table tutorial](http://docs.lighttable.com/tutorials/full/).
 
-Add `light-table-core/src` to your Light Table workspace and open `src/lt/objs/jump_stack.cljs`. Hit eval (ctrl-enter) somewhere in the file to start a clojurescript compiler. When it's finished starting up it will ask you where to send the emitted javascript code - choose Light Table UI from the menu. Now you should be able to eval clojurescript code inside your current Light Table instance. Try something simple like `(js/alert "foo")` to make sure it works. Generally, we eval code as we write it and only compile with `lein cljsbuild once` if we need to restart Light Table.
+Add `light-table-core/src` to your Light Table workspace and open `src/lt/objs/jump_stack.cljs`. Hit eval (ctrl-enter) somewhere in the file to start a ClojureScript compiler. When it's finished starting up it will ask you where to send the emitted JavaScript code - choose Light Table UI from the menu. Now you should be able to eval ClojureScript code inside your current Light Table instance. Try something simple like `(js/alert "foo")` to make sure it works. Generally, we eval code as we write it and only compile with `lein cljsbuild once` if we need to restart Light Table.
 
-The new Light Table release supports auto-complete (tab), inline docs (ctrl-d) and jump-to-definition (ctrl-. to jump and ctrl-, to jump back) for clojurescript and clojure vars, all of which are very useful for exploring the codebase. In clojurescript these features are only aware of vars that have been evaled in the current compiler process, so be sure to eval the ns form at the top of the file to get the full effect.
+The new Light Table release supports auto-complete (tab), inline docs (ctrl-d) and jump-to-definition (ctrl-. to jump and ctrl-, to jump back) for ClojureScript and Clojure vars, all of which are very useful for exploring the codebase. In ClojureScript these features are only aware of vars that have been eval'd in the current compiler process, so be sure to eval the ns form at the top of the file to get the full effect.
 
 For hunting down behaviors, objects and other things that don't live in vars use the searcher (ctrl-shift-f). If it isn't clear how to use a given function then using the searcher to find examples will also help.
 
@@ -68,7 +68,7 @@ Light Table is organised around behaviors, objects and tags.
 
 Objects are just plain data-structures stored in an atom with a globally unique id. Whenever possible, state in Light Table is stored in objects. Use `lt.object/object*` to create an object template and `lt.object/create` to instantiate a new object from a template.
 
-The jump-stack object here stores a stack of file/pos pairs. Every time you used jump-to-definition, your old file/pos is added to the stack. When you jump back the file/pos is popped from the stack.
+The jump-stack object here stores a stack of file/pos pairs. Every time you use jump-to-definition, your old file/pos is added to the stack. When you jump back the file/pos is popped from the stack.
 
 ``` clj
 (def jump-stack (object/create (object/object* ::jump-stack
@@ -90,7 +90,7 @@ Behaviors are defined with `lt.macros/behavior`. The required fields are `:trigg
                              (object/update! jump-stack [:stack] conj [old-file old-pos]))))))
 ```
 
-You can add documentation to behaviors eg
+You can add documentation to behaviors. E.g.,
 
 ``` clj
 (behavior ::run-on-init
@@ -103,7 +103,7 @@ You can add documentation to behaviors eg
                   :reaction (fn [this & commands] ...))
 ```
 
-You can also debounce (or similarly throttle) the reaction function eg
+You can also debounce (or similarly throttle) the reaction function. E.g.,
 
 ``` clj
 (behavior ::show-info-on-move
@@ -130,7 +130,7 @@ If you highlight `jump-stack` and hit eval you will see the current state of the
 
 The most interesting keys here are `:stack`, which was added in the template and is used to store the file/pos stack, and `:listeners`, which maps triggers to behaviors. If we were to eval something like `(lt.object/raise jump-stack :jump-stack.push! editor file pos)` then the behavior `lt.objs.jump-stack/jump-stack.push` would be called with arguments `[editor file pos]`.
 
-This is much like traditional event systems, the main difference being the object/behavior relationship is expressed as simple data-structures which can be easily introspected and modified at runtime. You can see the defaults for that data-structure by running the command `Settings: Default behaviors`. In that file there is a line that adds the `::jump-stack.push` and `::jump-stack.pop` behaviors to any object with the `:jump-stack` tag.
+This is much like traditional event systems, the main difference being the object/behavior relationship is expressed as simple data-structures which can be easily introspected and modified at runtime. You can see the defaults for that data-structure by running the command `Settings: Default behaviors`. In that file, there is a line that adds the `::jump-stack.push` and `::jump-stack.pop` behaviors to any object with the `:jump-stack` tag.
 
 ``` clj
 :jump-stack [:lt.objs.jump-stack/jump-stack.push :lt.objs.jump-stack/jump-stack.pop]
@@ -188,7 +188,7 @@ Commands are a simple way of exposing functions to the user.
           (object/raise jump-stack :jump-stack.pop!))})
 ```
 
-Commands can be executed from clojurescript and may take arguments.
+Commands can be executed from ClojureScript and may take arguments.
 
 ``` clj
 (cmd/exec! :editor.unjump)
@@ -215,4 +215,4 @@ Commands can also be bound to key chords. Run the command `Settings: Default key
 
 # Plugins
 
-See [LightTable-Declassifier](https://github.com/LightTable/LightTable-Declassifier) for an example clojurescript plugin.
+See [LightTable-Declassifier](https://github.com/LightTable/LightTable-Declassifier) for an example ClojureScript plugin.
