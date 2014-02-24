@@ -105,8 +105,8 @@
   (str c (when (:dirty @e)
            " dirty")))
 
-(defui close-tab [obj] ;; TODO: Create x button - TWM
-  [:button "x"]
+(defui close-tab [obj]
+  [:span.tab-close "x"]
   :click (fn [] (object/raise obj :close)))
 
 (defui item [multi e pos]
@@ -117,8 +117,9 @@
         :title (->path e)
         :obj-id (object/->id e)
         :pos pos}
-   (close-tab e)   ;; TODO: Add 'x' button next to file name - TWM
-   (->name e)]
+   [:span.file-name
+    (->name e)]
+   (close-tab e)]
   :click (fn [ev]
            (if (or (= 1 (.-button ev)) (.-metaKey ev))
              (object/raise e :close)

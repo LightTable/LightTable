@@ -108,12 +108,14 @@ input { color: var(highlight-fg); background:var(highlight-bg); }
 
 #multi-container { background: var(bg); }
 #multi .list { background:transparent; }
-#multi .list li { box-sizing:border-box; height:29px;}
+#multi .list li { box-sizing:border-box; height:29px; }
 #multi .list .active, #multi .list li:hover { background:var(multi); color:var(highlight-fg); }
 #multi .list .dirty { color:var(accent-foreground); }
-#multi .list .dirty:after { content: "*"; }
+#multi .list .dirty .file-name:after { content: "*"; }
 #multi .list.dragging li { background:transparent !important; }
 #multi .dirty.ui-sortable-placeholder:after { content:"" !important; }
+#multi .list .tab-close { background:rgba(125,125,125, 0.7); color:var(fg); }
+#multi .tab-close:hover { background:var(error-bg); color:var(error-fg); }
 #multi .tabset + .tabset { border-left:2px solid var(bg); }
 
 #bottombar .content { background:var(bg); border-top:0px solid var(border); }
