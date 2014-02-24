@@ -561,8 +561,8 @@
 (cmd/command {:command :tabs.close-all
               :desc "Tab: Close all tabs"
               :exec (fn []
-                      (let [objs (ctx/->obj :tabset)]
-                        (doseq [obj (@objs :objs)]
+                      (let [objs (object/by-tag :tabset.tab)]
+                        (doseq [obj objs]
                           (object/raise obj :close))))})
 
 (cmd/command {:command :tabs.goto
