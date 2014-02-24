@@ -1,6 +1,15 @@
 # Initial setup
 
-First install or update [leiningen](http://leiningen.org/). Then we have to do some juggling (unless you fancy building node-webkit from source).
+First install or update [leiningen](http://leiningen.org/).
+
+1. Download the lein script. For Windows, download lein.bat.
+2. Place it on your $PATH where your shell can find it (eg. ~/bin).
+3. Set it to be an executable (chmod a+x ~/bin/lein).
+4. Run the Lein script (eg. "./lein" or "sh lein") without quotes.
+
+You can check your package manager. However, be sure you get version 2.x. Windows users can use this [installer](https://raw.github.com/technomancy/leiningen/stable/bin/lein.bat).
+
+Then we have to do some juggling (unless you fancy building node-webkit from source).
 
 On OS X:
 
