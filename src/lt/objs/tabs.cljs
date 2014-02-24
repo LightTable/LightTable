@@ -337,7 +337,7 @@
     (dom/add-class (object/->content ts) :active)
     true))
 
-(behavior ::on-active-active-tabset
+(behavior ::tab-active
           :triggers #{:active}
           :reaction (fn [this]
                       (activate-tabset (::tabset @this))))
