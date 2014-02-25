@@ -155,7 +155,7 @@
                                            (cmd-item "Maximize" :window.maximize)
                                            (cmd-item "Fullscreen" :window.fullscreen)]}
                 {:label "Help" :submenu [(cmd-item "Documentation" :show-docs)
-                                         (cmd-item "Report an Issue" :show-reports)     ;; TODO: Add report an issue on GitHub menu item - TWM
+                                         (cmd-item "Report an Issue" :add-report-tab)     ;; TODO: Add report an issue on GitHub menu item - TWM
                                          (when-not (platform/mac?)
                                            (cmd-item "About Light Table" :version))]}
                 ]))

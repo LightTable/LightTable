@@ -29,7 +29,7 @@
 (defui reports []                        ;; TODO: Added report button to click - TWM
   [:button "GitHub"]
   :click (fn []
-           (cmd/exec! :show-reports)))
+           (cmd/exec! :add-report-tab)))
 
 
 (defui changelog []

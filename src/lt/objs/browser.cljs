@@ -97,6 +97,11 @@
     (tabs/active! browser)
     browser))
 
+(defn add-reports []     ;; TODO: Add add function for report browser - TWM
+  (let [browser (object/create ::browseReport)]
+    (tabs/add! browser)
+    (tabs/active! browser)
+    browser))
 
 ;;*********************************************************
 ;; Object
@@ -120,6 +125,26 @@
                           (url-bar this)
                           (refresh this)]
                          ]))
+
+(object/object* ::browseReport    ;; TODO: Create report browswer object - TWM
+                :name "Browser"
+                :tags #{:browseReport}
+                :history []
+                :history-pos -1
+                :url "https://github.com/LightTable/LightTable/issues?state=open"
+                :urlvalue "https://github.com/LightTable/LightTable/issues?state=open"
+                :init (fn [this]
+                        (object/merge! this {:client (connect-client this)})
+                        [:div#browseReport
+                         [:div.frame-shade]
+                         (iframe this)
+                         [:nav
+                          (backward this)
+                          (forward this)
+                          (url-bar this)
+                          (refresh this)]
+                         ]))
+
 
 ;;*********************************************************
 ;; Behaviors
@@ -485,6 +510,14 @@
                           (object/raise b :focus!)
                           (object/raise b :navigate! loc))))})
 
+(cmd/command {:command :add-report-tab     ;; TODO: add command to create browser tab - TWM
+              :desc "Browser: Report an Issue on GitHub"
+              :exec (fn [loc]
+                      (let [b (add-reports)]
+                        (if-not loc
+                          (object/raise b :focus!)
+                          (object/raise b :navigate! loc))))})
+
 (cmd/command {:command :refresh-connected-browser
               :desc "Browser: refresh active browser tab"
               :exec (fn []
@@ -501,6 +534,7 @@
                           (when-not b
                             (cmd/exec! :add-browser-tab))
                           (object/raise (ctx/->obj :global.browser) :navigate! (str "file://" (-> @ed :info :path))))))})
+
 
 ;;*********************************************************
 ;; Misc
