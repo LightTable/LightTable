@@ -279,9 +279,9 @@ input { color: var(highlight-fg); background:var(highlight-bg); }
 .plugin-manager .tabs { margin-bottom:15px; display:flex; -webkit-flex-direction:row; -webkit-align-items:stretch; height:30px; width:100%; }
 .plugin-manager input {background: var(highlight-bg); -webkit-flex:1; }
 .plugin-manager button {background: var(highlight-bg); }
-.plugin-manager .install { box-sizing:border-box; color:var(secondary-accent-bg); background:var(secondary-accent-fg); display:inline-block; height:25px; position:absolute; right:0; top:0; width:5px; -webkit-transition:width 0.1s ease-in-out; }
-.plugin-manager .uninstall { box-sizing:border-box; color:var(tertiary-accent-bg); background:var(tertiary-accent-fg); display:inline-block; height:25px; position:absolute; right:0; top:0; width:5px; -webkit-transition:width 0.1s ease-in-out; }
-.plugin-manager .update { box-sizing:border-box; background:var(error-fg); display:inline-block; height:25px; position:absolute; right:0; top:50px; width:5px; -webkit-transition:width 0.1s ease-in-out; }
+.plugin-manager .install { box-sizing:border-box; color:var(secondary-accent-bg); background:var(secondary-accent-fg); display:inline-block; height:25px; position:absolute; right:0; top:0; width:5px; -webkit-transition:width 0.1s ease-in-out; cursor:pointer;}
+.plugin-manager .uninstall { box-sizing:border-box; color:var(tertiary-accent-bg); background:var(tertiary-accent-fg); display:inline-block; height:25px; position:absolute; right:0; top:0; width:5px; -webkit-transition:width 0.1s ease-in-out; cursor:pointer;}
+.plugin-manager .update { box-sizing:border-box; background:var(error-fg); display:inline-block; height:25px; position:absolute; right:0; top:50px; width:5px; -webkit-transition:width 0.1s ease-in-out; cursor:pointer;}
 .plugin-manager li:hover .update { width:70px; overflow:hidden; }
 .plugin-manager li:hover .update:before { color:var(error-bg); padding:4px 8px; display:inline-block; content: "update";  }
 .plugin-manager li:hover .uninstall { width:70px; overflow:hidden; }
