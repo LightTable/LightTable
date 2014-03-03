@@ -182,9 +182,10 @@
 (cmd/command {:command :console-tab
               :desc "Console: Open the console in a tab"
               :exec (fn []
-                      (object/merge! console {:current-ui :tab})
-                      (tabs/add! console)
-                      )})
+                      (when (not= :tab (:current-ui @console)) ; Running the command when tab is already opened in a tab was creating another new tab each time.
+                        (object/merge! console {:current-ui :tab})
+                        (tabs/add! console)
+                      ))})
 
 (cmd/command {:command :toggle-console
               :desc "Console: Toggle console"
