@@ -179,7 +179,7 @@
       (binding [*behavior-meta* meta]
         (apply func obj args))
       (when-not (= trigger :object.behavior.time)
-        (raise obj :object.behavior.time r time)))
+        (raise obj :object.behavior.time r time trigger)))
       (catch js/Error e
         (safe-report-error (str "Invalid behavior: " (-> (->behavior r) :name)))
         (safe-report-error e)
@@ -376,6 +376,8 @@
 
 (behavior ::report-time
            :triggers #{:object.behavior.time}
-           :reaction (fn [this beh time]
+           :reaction (fn [this beh time trigger]
                        (when js/lt.objs.console
-                         (js/lt.objs.console.log (str beh " took " time "ms")))))
+                         (js/lt.objs.console.log (str beh " triggered by "
+                                                      trigger " took "
+                                                      time "ms")))))
