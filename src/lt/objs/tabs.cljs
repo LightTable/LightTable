@@ -456,7 +456,9 @@
       (object/raise to-ts :active))))
 
 (defn menu! [obj ev]
-  (-> (menu/menu [{:label "Close tab"
+  (-> (menu/menu [{:label "Move tab to new tabset"
+                   :click (fn [] (cmd/exec! :tabs.move-new-tabset))}
+                  {:label "Close tab"
                    :click (fn [] (object/raise obj :close))}])
       (menu/show-menu (.-clientX ev) (.-clientY ev))))
 
