@@ -582,6 +582,15 @@
                         (doseq [obj objs]
                           (object/raise obj :close))))})
 
+(cmd/command {:command :tabs.close-others
+              :desc "Tab: Close tabs except current tab"
+              :exec (fn []
+                      (let [cur (active-tab)
+                            objs (object/by-tag :tabset.tab)]
+                        (doseq [obj objs]
+                          (if-not (identical? cur obj)
+                            (object/raise obj :close)))))})
+
 (cmd/command {:command :tabs.goto
               :hidden true
               :desc "Tab: Goto tab # or :last"
