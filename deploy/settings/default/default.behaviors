@@ -228,7 +228,7 @@
                                       {:name "C++ Header" :exts [:h] :mime "text/x-c++hdr" :tags [:editor.cpph]}
                                       {:name "C#" :exts [:cs] :mime "text/x-csharpr" :tags [:editor.csharp]}
                                       {:name "CoffeeScript" :exts [:coffee] :mime "text/x-coffeescript" :tags [:editor.coffee]}
-                                      {:name "Common Lisp" :exts [:cl] :mime "text/x-common-lisp" :tags [:editor.common-lisp]}
+                                      {:name "Common Lisp" :exts [:cl :lisp] :mime "text/x-common-lisp" :tags [:editor.common-lisp]}
                                       {:name "Diff" :exts [:diff :patch] :mime "text/x-diff" :tags [:editor.diff]}
                                       {:name "EDN" :exts [:edn] :mime "text/x-clojure" :tags [:editor.clj :editor.edn]}
                                       {:name "Erlang" :exts [:erl] :mime "text/x-erlang" :tags [:editor.erlang]}
