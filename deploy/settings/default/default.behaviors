@@ -307,7 +307,8 @@
   :navigate.selector [:lt.objs.sidebar.navigate/escape!
                       :lt.objs.sidebar.navigate/pop-transient-on-select
                       :lt.objs.sidebar.navigate/open-on-select]
-  :navigator [:lt.objs.sidebar.navigate/focus! :lt.objs.sidebar.navigate/focus-on-show :lt.objs.sidebar.navigate/workspace-files]
+  :navigator [:lt.objs.sidebar.navigate/focus! :lt.objs.sidebar.navigate/focus-on-show :lt.objs.sidebar.navigate/workspace-files
+              (:lt.objs.sidebar.navigate/set-file-limit 8000)]
   :object [:lt.objs.clients/on-destroy-remove-cb]
   :opener [:lt.objs.opener/open-from-info :lt.objs.opener/open-transient-editor
            :lt.objs.opener/open-standard-editor
