@@ -220,6 +220,11 @@
 (defn update! [obj & r]
   (swap! obj #(apply update-in % r)))
 
+(defn assoc-in! [obj k v]
+  (when (and k (not (sequential? k)))
+    (throw (js/Error. (str "Associate requires a sequence of keys: " k))))
+  (swap! obj #(assoc-in % k v)))
+
 (defn ->id [obj]
   (if (deref? obj)
     (::id @obj)
