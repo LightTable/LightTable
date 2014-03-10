@@ -289,6 +289,9 @@
 (defn line [e l]
   (.getLine (->cm-ed e) l))
 
+(defn set-line [e l text]
+  (.setLine (->cm-ed e) l text))
+
 (defn first-line [e]
   (.firstLine (->cm-ed e)))
 
