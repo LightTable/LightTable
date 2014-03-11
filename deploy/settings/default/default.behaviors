@@ -97,6 +97,12 @@
         (:lt.objs.style/provide-theme "xq-light" "core/css/themes/xq-light.css")
         (:lt.objs.style/set-skin "dark")
         :lt.objs.editor/init-codemirror]
+  :bottombar [:lt.objs.bottombar/item-toggled
+              :lt.objs.bottombar/height!
+              :lt.objs.bottombar/no-anim-on-drag
+              :lt.objs.bottombar/reanim-on-drop
+              :lt.objs.bottombar/show-item
+              :lt.objs.bottombar/hide-item]
   :browser [:lt.objs.browser/forward! :lt.objs.browser/init!
             :lt.objs.browser/destroy-on-close :lt.objs.browser/focus!
             :lt.objs.browser/url-focus!
@@ -381,7 +387,9 @@
   :statusbar-container-item [:lt.objs.statusbar/on-show!
                              :lt.objs.statusbar/on-hide!
                              :lt.objs.statusbar/init-statusbar-container]
-  :statusbar.console-toggle [:lt.objs.console/statusbar-console-toggle]
+  :statusbar.console-toggle [:lt.objs.console/statusbar-console-toggle
+                             :lt.objs.console/statusbar-console-hide
+                             :lt.objs.console/statusbar-console-show]
   :tab-options [:lt.objs.editor.pool/focus-options]
   :tabs [:lt.objs.tabs/on-destroy-eds :lt.objs.tabs/active-tab-num :lt.objs.tabs/prev-tab :lt.objs.tabs/next-tab :lt.objs.tabs/tab-close :lt.objs.tabs/repaint-tab-updated
          :lt.objs.tabs/tabset-bottom!
