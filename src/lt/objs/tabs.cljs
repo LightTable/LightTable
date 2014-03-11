@@ -457,7 +457,7 @@
 
 (defn menu! [obj ev]
   (-> (menu/menu [{:label "Move tab to new tabset"
-                   :click (fn [] (cmd/exec! :tabs.move-new-tabset))}
+                   :click (fn [] (cmd/exec! :tabs.move-new-tabset obj))}
                   {:label "Close tab"
                    :click (fn [] (object/raise obj :close))}])
       (menu/show-menu (.-clientX ev) (.-clientY ev))))
@@ -530,9 +530,9 @@
 
 (cmd/command {:command :tabs.move-new-tabset
               :desc "Tab: Move tab to new tabset"
-              :exec (fn []
+              :exec (fn [tab]
                       (when-let [ts (ctx/->obj :tabset)]
-                        (when-let [cur (@ts :active-obj)]
+                        (when-let [cur (or tab (@ts :active-obj))]
                           (let [new (cmd/exec! :tabset.new)]
                             (move-tab-to-tabset cur new)))))})
 
