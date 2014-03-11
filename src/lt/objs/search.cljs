@@ -14,7 +14,9 @@
             [crate.binding :refer [computed bound]]
             [lt.util.js :refer [wait now]]
             [lt.util.load :as load]
-            [clojure.string :as string])
+            [clojure.string :as string]
+            [lt.objs.editor :as editor]
+            [lt.objs.editor.pool :as pool])
   (:require-macros [lt.macros :refer [behavior defui extract foreach background]]))
 
 (def search! (background (fn [obj-id opts]
@@ -246,6 +248,11 @@
 (cmd/command {:command :searcher.show
               :desc "Searcher: Show"
               :exec (fn []
+                      (when-let [e (pool/last-active)]
+                        (when-let [sel (editor/selection e)]
+                          (when-not (string/blank? sel)
+                            (let [search (dom/$ :.search (object/->content searcher))]
+                              (dom/val search sel)))))
                       (tabs/add-or-focus! searcher))})
 
 (cmd/command {:command :searcher.next
