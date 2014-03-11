@@ -173,6 +173,10 @@
                                           (install-missing missing?))}]}))
     final))
 
+(defn outdated? [plugin]
+  (let [cached (-> @manager :version-cache (get (:name plugin)))]
+    (if cached
+      (deploy/is-newer? (:version plugin) cached))))
 
 (defn plugin-behaviors [plug]
   (let [{:keys [behaviors dir]} plug
@@ -552,6 +556,26 @@
               :exec (fn []
                       (tabs/add-or-focus! manager)
                       (cmd/exec! :plugin-manager.refresh))})
+
+(cmd/command {:command :plugin-manager.update-outdated
+              :desc "Plugins: Update all outdated"
+              :exec (fn []
+                      (let [outdated (filter outdated? (->> @app/app ::plugins vals))
+                            names (atom #{})
+                            countdown (atom (count outdated))]
+                        (doseq [plugin outdated
+                                :when (seq outdated)
+                                :let [cached (-> @manager :version-cache (get (:name plugin)))]]
+                          (discover-deps (assoc plugin :version cached)
+                                         (fn []
+                                           (swap! names conj (:name plugin))
+                                           (swap! countdown dec)
+                                           (object/raise manager :refresh!)
+                                           (when (<= @countdown 0)
+                                             (cmd/exec! :behaviors.reload)
+                                             (notifos/set-msg! (apply str "Updated: "
+                                                                      (interpose ", " @names)))))))))})
+
 
 ;;*********************************************************
 ;; App-level plugin behaviors
