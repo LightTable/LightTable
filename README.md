@@ -63,7 +63,7 @@ After the initial setup, you can compile the ClojureScript source at any time wi
 
 I'll assume you already know how to eval code (ctrl-enter), how to open the command bar (ctrl-space) and how to open files with the navigator (ctrl-o). If you don't, start with the [Light Table tutorial](http://docs.lighttable.com/tutorials/full/).
 
-Add `light-table-core/src` to your Light Table workspace and open `src/lt/objs/jump_stack.cljs`. Hit eval (ctrl-enter) somewhere in the file to start a ClojureScript compiler. When it's finished starting up it will ask you where to send the emitted JavaScript code - choose Light Table UI from the menu. Now you should be able to eval ClojureScript code inside your current Light Table instance. Try something simple like `(js/alert "foo")` to make sure it works. Generally, we eval code as we write it and only compile with `lein cljsbuild once` if we need to restart Light Table.
+Add `LightTable/src` to your Light Table workspace and open `src/lt/objs/jump_stack.cljs`. Hit eval (ctrl-enter) somewhere in the file to start a ClojureScript compiler. When it's finished starting up it will ask you where to send the emitted JavaScript code - choose Light Table UI from the menu. Now you should be able to eval ClojureScript code inside your current Light Table instance. Try something simple like `(js/alert "foo")` to make sure it works. Generally, we eval code as we write it and only compile with `lein cljsbuild once` if we need to restart Light Table.
 
 The new Light Table release supports auto-complete (tab), inline docs (ctrl-d) and jump-to-definition (ctrl-. to jump and ctrl-, to jump back) for ClojureScript and Clojure vars, all of which are very useful for exploring the codebase. In ClojureScript these features are only aware of vars that have been eval'd in the current compiler process, so be sure to eval the ns form at the top of the file to get the full effect.
 
@@ -134,7 +134,7 @@ If you highlight `jump-stack` and hit eval you will see the current state of the
  :listeners {:jump-stack.push! [:lt.objs.jump-stack/jump-stack.push],
              :jump-stack.pop! [:lt.objs.jump-stack/jump-stack.pop],
              :destroy [:lt.objs.clients/on-destroy-remove-cb]},
- :stack [["/home/jamie/light-table-core/src/lt/objs/jump_stack.cljs" {:line 48, :ch 48}]]}
+ :stack [["/home/jamie/LightTable/src/lt/objs/jump_stack.cljs" {:line 48, :ch 48}]]}
 ```
 
 The most interesting keys here are `:stack`, which was added in the template and is used to store the file/pos stack, and `:listeners`, which maps triggers to behaviors. If we were to eval something like `(lt.object/raise jump-stack :jump-stack.push! editor file pos)` then the behavior `lt.objs.jump-stack/jump-stack.push` would be called with arguments `[editor file pos]`.
