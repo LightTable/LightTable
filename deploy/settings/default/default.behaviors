@@ -221,7 +221,8 @@
   :editor.pool [:lt.objs.editor.pool/add-tab-settings
                 :lt.objs.editor.pool/options-changed
                 :lt.objs.editor.pool/line-numbers-changed
-                :lt.objs.editor.pool/theme-changed]
+                :lt.objs.editor.pool/theme-changed
+                (:lt.objs.editor.pool/line-comment-options {})]
   :editor.read-only [:lt.objs.editor/read-only]
   :editor.structural [:lt.plugins.struct/rem-on-close]
   :editor.transient [:lt.objs.editor.file/dirty-on-change
