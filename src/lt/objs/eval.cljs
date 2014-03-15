@@ -146,7 +146,7 @@
     (reader/read-string r)
     (catch js/Error e
       r)
-    (catch js/globa.Error e
+    (catch js/global.Error e
       r)))
 
 ;;****************************************************
