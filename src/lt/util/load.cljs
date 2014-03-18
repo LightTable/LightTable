@@ -21,10 +21,11 @@
 (defn- abs-source-mapping-url [code file]
   (if-let [path-to-source-map (second (re-find #"\n//# sourceMappingURL=(.*)" code))]
     (if-not (absolute? path-to-source-map)
-      (let [abs-path-to-source-map (->> path-to-source-map
-                          (string/replace-first file (re-pattern (str "[^" separator "]*$")))
-                          js/encodeURI)]
-        (string/replace-first code #"\n//# sourceMappingURL=.*" (str "\n//# sourceMappingURL=" abs-path-to-source-map)))
+      (let [abs-path-to-source-map (string/replace (.join fpath (.dirname fpath file) path-to-source-map) "\\" "/")
+            abs-path-to-source-map (if (= separator "\\")
+                                     (str "/" abs-path-to-source-map)
+                                     abs-path-to-source-map)]
+        (string/replace-first code #"\n//# sourceMappingURL=.*" (str "\n//# sourceMappingURL=" (js/encodeURI abs-path-to-source-map))))
       code)
     code))
 
