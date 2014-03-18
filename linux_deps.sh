@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Check if lein is installed
 lein version >/dev/null 2>&1 || { echo >&2 "Please install leiningen before running this script."; exit 1; }
-if [ "$(echo `lein version` | grep 'Leiningen 1.\|2.0')" ]; then 
+if [ "$(echo `lein version` | grep 'Leiningen 1.\|2.0')" ]; then
 	echo "lein version must be 2.1 or above. Do a lein upgrade first"; exit 1;
 fi
 
@@ -11,16 +11,32 @@ if [ $? -ne 0 ]; then
 	exit
 fi
 
-echo "### Fetching binaries ###"
-BITS=""
-if [ $(getconf LONG_BIT) == "64" ]; then BITS="64"; fi
-TARBALL=LightTableLinux$BITS.tar.gz
-curl -O http://d35ac8ww5dfjyg.cloudfront.net/playground/bins/0.6.0/$TARBALL
-tar -xzf $TARBALL
-rm $TARBALL
-cp -ar deploy/* LightTable
-rm -rf deploy
-mv LightTable deploy
+NODEWEBKIT_VERSION="v0.7.5"
+NODEWEBKIT_BASENAME="node-webkit-$NODEWEBKIT_VERSION-linux-ia32"
+if [ $(getconf LONG_BIT) == "64" ]
+then
+  NODEWEBKIT_BASENAME="node-webkit-$NODEWEBKIT_VERSION-linux-x64"
+fi
+NODEWEBKIT_URL="https://s3.amazonaws.com/node-webkit/$NODEWEBKIT_VERSION/$NODEWEBKIT_BASENAME.tar.gz"
+
+echo "### Fetching node-webkit binaries ###"
+curl -O $NODEWEBKIT_URL
+tar -xzf $NODEWEBKIT_BASENAME.tar.gz
+mv $NODEWEBKIT_BASENAME/nw deploy/ltbin
+mv $NODEWEBKIT_BASENAME/* deploy
+rmdir $NODEWEBKIT_BASENAME
+
+echo "### Copying default plugin set ###"
+tar --directory=deploy -xzf resources/default-plugins.tar.gz
+
+echo "### copying LightTable script ###"
+if [ $(getconf LONG_BIT) == "64" ]
+then
+  cp platform/linux64/LightTable deploy
+else
+  cp platform/linux/LightTable deploy
+fi
+chmod +x deploy/LightTable
 
 echo "### Building cljs ###"
 lein cljsbuild clean && lein cljsbuild once
