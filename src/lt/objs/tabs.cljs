@@ -576,14 +576,14 @@
                       )})
 
 (cmd/command {:command :tabs.close-all
-              :desc "Tab: Close all tabs"
+              :desc "Tabs: Close all tabs"
               :exec (fn []
                       (let [objs (object/by-tag :tabset.tab)]
                         (doseq [obj objs]
                           (object/raise obj :close))))})
 
 (cmd/command {:command :tabs.close-others
-              :desc "Tab: Close tabs except current tab"
+              :desc "Tabs: Close tabs except current tab"
               :exec (fn []
                       (let [cur (active-tab)
                             objs (object/by-tag :tabset.tab)]
