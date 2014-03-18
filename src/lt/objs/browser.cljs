@@ -168,7 +168,9 @@
 (behavior ::url-focus!
                   :triggers #{:url.focus!}
                   :reaction (fn [this]
-                              (dom/focus (dom/$ :input (object/->content this)))))
+                              (let [url-input (dom/$ :input (object/->content this))]
+                                (dom/focus url-input)
+                                (.select url-input))))
 
 (behavior ::focus!
                   :triggers #{:focus!}
