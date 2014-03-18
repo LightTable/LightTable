@@ -249,8 +249,6 @@
 ;;****************************************************
 
 ;; See https://github.com/marijnh/CodeMirror/blob/master/addon/comment/comment.js for options
-(def line-comment-options {})
-
 (behavior ::line-comment-options
           :triggers #{:object.instant}
           :type :user
@@ -258,7 +256,7 @@
           :params [{:label "map"
                     :example "{:indent true}"}]
           :reaction (fn [this options]
-                      (set! line-comment-options options)))
+                      (object/merge! this {::comment-options options})))
 
 (cmd/command {:command :comment-selection
               :desc "Editor: Comment line(s)"
@@ -266,8 +264,8 @@
                       (when-let [cur (last-active)]
                         (let [cursor (editor/->cursor cur "start")]
                           (if (editor/selection? cur)
-                            (editor/line-comment cur cursor (editor/->cursor cur "end") line-comment-options)
-                            (editor/line-comment cur cursor cursor line-comment-options)))))})
+                            (editor/line-comment cur cursor (editor/->cursor cur "end") (::comment-options @cur))
+                            (editor/line-comment cur cursor cursor (::comment-options @cur))))))})
 
 (cmd/command {:command :uncomment-selection
               :desc "Editor: Uncomment line(s)"
@@ -287,7 +285,7 @@
                                             [cursor (editor/->cursor cur "end")]
                                             [cursor cursor])]
                           (when-not (editor/uncomment cur start end)
-                            (editor/line-comment cur cursor (editor/->cursor cur "end") line-comment-options)))))})
+                            (editor/line-comment cur cursor (editor/->cursor cur "end") (::comment-options @cur))))))})
 
 (cmd/command {:command :indent-selection
               :desc "Editor: Indent line(s)"
