@@ -144,9 +144,7 @@
 (defn try-read [r]
   (try
     (reader/read-string r)
-    (catch js/Error e
-      r)
-    (catch js/global.Error e
+    (catch :default e
       r)))
 
 ;;****************************************************
