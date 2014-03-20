@@ -3,12 +3,10 @@
             [lt.objs.app :as app]
             [lt.objs.files :as files]
             [lt.objs.bottombar :as bottombar]
-            [lt.objs.sidebar.command :as cmd]
+            [lt.objs.command :as cmd]
             [lt.objs.statusbar :as statusbar]
             [lt.objs.tabs :as tabs]
-            [crate.binding :refer [bound]]
             [clojure.string :as string]
-            [lt.util.js :refer [wait]]
             [lt.util.dom :refer [$ append empty] :as dom])
   (:require-macros [crate.def-macros :refer [defpartial]]
                    [lt.macros :refer [behavior defui]]))
@@ -177,14 +175,48 @@
                         (statusbar/clean))
                       ))
 
+(behavior ::statusbar-console-show
+          :triggers #{:show!}
+          :reaction (fn [this]
+                      (object/raise bottombar/bottombar :show! console)
+                      (when (bottombar/active? console)
+                        (dom/scroll-top (object/->content console) 10000000000)
+                        (statusbar/clean))
+                      ))
+
+(behavior ::statusbar-console-hide
+          :triggers #{:hide!}
+          :reaction (fn [this]
+                      (object/raise bottombar/bottombar :hide! console)))
+
+
 (bottombar/add-item console)
 
 (cmd/command {:command :console-tab
               :desc "Console: Open the console in a tab"
               :exec (fn []
-                      (object/merge! console {:current-ui :tab})
-                      (tabs/add! console)
-                      )})
+                      (when (not= :tab (:current-ui @console)) ; Running the command when tab is already opened in a tab was creating another new tab each time.
+                        (object/raise statusbar/console-toggle :hide!)
+                        (object/merge! console {:current-ui :tab})
+                        (tabs/add! console)
+                      ))})
+
+
+(cmd/command {:command :console.show
+              :desc "Console: Show console"
+              :hidden true
+              :exec (fn []
+                      (if (= (:current-ui @console) :tab)
+                        (do (tabs/active! console) (statusbar/clean))
+                        (object/raise statusbar/console-toggle :show!)))})
+
+(cmd/command {:command :console.hide
+              :desc "Console: Hide console"
+              :hidden true
+              :exec (fn []
+                      (if (= (:current-ui @console) :tab)
+                        (object/raise console :close)
+                        (object/raise statusbar/console-toggle :hide!)))})
 
 (cmd/command {:command :toggle-console
               :desc "Console: Toggle console"

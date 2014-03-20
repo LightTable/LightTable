@@ -42,15 +42,6 @@
             "pmeta-7" [(:tabs.goto 6)]
             "pmeta-8" [(:tabs.goto 7)]
             "pmeta-9" [(:tabs.goto :last)]
-            "alt-1" [(:tabs.goto 0)]
-            "alt-2" [(:tabs.goto 1)]
-            "alt-3" [(:tabs.goto 2)]
-            "alt-4" [(:tabs.goto 3)]
-            "alt-5" [(:tabs.goto 4)]
-            "alt-6" [(:tabs.goto 5)]
-            "alt-7" [(:tabs.goto 6)]
-            "alt-8" [(:tabs.goto 7)]
-            "alt-9" [(:tabs.goto :last)]
             }
      :popup {"left" [(:popup.move-active 1)],
              "shift-tab" [(:popup.move-active -1)],

@@ -43,7 +43,6 @@
 
 (object/object* ::bottombar
                 :tags #{:bottombar}
-                :behaviors [::item-toggled ::height! ::no-anim-on-drag ::reanim-on-drop]
                 :items (sorted-map-by >)
                 :height 0
                 :max-height default-height
@@ -86,17 +85,27 @@
                                                :max-height height})))
                       ))
 
+(behavior ::show-item
+          :triggers #{:show!}
+          :reaction (fn [this item]
+                      (when (or (not= item (:active @this)))
+                        (object/merge! this {:active item
+                                             :height (:max-height @this)})
+                        (object/raise tabs/multi :bottom! (:max-height @this)))))
+
+(behavior ::hide-item
+          :triggers #{:hide!}
+          :reaction (fn [this item force?]
+                      (when (or (= item (:active @this)) force?)
+                          (object/raise tabs/multi :bottom! (- (:max-height @this)))
+                          (object/merge! this {:active nil
+                                               :height 0}))))
+
 (behavior ::item-toggled
           :triggers #{:toggle}
           :reaction (fn [this item force?]
                       (if (or (not= item (:active @this))
                               force?)
-                        (do
-                          (object/merge! this {:active item
-                                               :height (:max-height @this)})
-                          (object/raise tabs/multi :bottom! (:max-height @this)))
-                        (do
-                          (object/raise tabs/multi :bottom! (- (:max-height @this)))
-                          (object/merge! this {:active nil
-                                               :height 0})))))
+                        (object/raise this :show! item)
+                        (object/raise this :hide! item))))
 

@@ -259,6 +259,9 @@
 (defn resolve [base cur]
   (.resolve fpath base cur))
 
+(defn real-path [c]
+  (.realpathSync fs c))
+
 (defn ->file|dir [path f]
   (if (dir? (str path separator f))
     (str f separator)

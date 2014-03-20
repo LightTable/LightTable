@@ -168,7 +168,7 @@
                 nl
                 (:trunc-length opts 50))]
       (if (> (count r) len)
-        (subs r 0 len)
+        (str (subs r 0 len)  " …")
         r))))
 
 (defui ->inline-res [this info]

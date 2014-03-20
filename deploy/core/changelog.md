@@ -1,5 +1,38 @@
 #Changes
 
+##0.6.5
+
+* FIX: Less syntax highlighting would cause errors
+* FIX: Show update button below uninstall button in the plugin manager (mark.fisher)
+* FIX: better cljs errors in external browser connections
+* FIX: php syntax highlighting was set incorrectly (flaviozantut)
+* FIX: Evaling CSS into LT UI fails
+* FIX: remove the alt-# keybindings as it screws up international keyboards
+* FIX: rewrite sourceMappingURL with full path (nickgieschen)
+* FIX: on OSX chorded shortcuts were being intercepted by the menus (e.g. ctrl-f)
+* FIX: change cursor to pointer in the plugin manager (seancaffrey)
+* FIX: prevent opening multiple console tabs  (spelufo)
+* FIX: add ellipsis to truncated inline results (ndr-qef)
+* FIX: remove last remaining refs to light-table-core (cldwalker)
+* FIX: add common lisp extension (patrickconnelly)
+* FIX: focusing the url bar in the internal browser selects the url (Curtis Rasmussen)
+* FIX: find/replace with '(' now works
+* ADDED: `Plugins: Update all outdated` command (ndr-qef)
+* ADDED: Searcher picks up your selection by default (snufkon)
+* ADDED: `Navigate: set maximum number of indexed files` behavior (ndr-qef)
+* ADDED: `Tab: Move tab to new tabset` command and context menu item (snufkon)
+* ADDED: `Tabs: Close tabs except current tab` command (snufkon)
+* ADDED: a close tab button on hover of tabs (Tyrieke Morton)
+* ADDED: `Tabs: Close all tabs` command (piyushi0101)
+* ADDED: Plugins now check for missing deps on startup allowing you to use the dependencies key of a personal plugin as your "dotfiles"
+* ADDED: `Plugins: Ignore cache and force reload the current behaviors file` command for plugin development
+* ADDED: close tab with middle/cmd+click (seancaffery)
+* ADDED: `App: Set the default zoom level` behavior for hidpi
+* ADDED: leiningen directions to readme (statesside)
+* API: allow editor/adjust-loc to specify line movement (ndr-qef)
+* API: added `trigger` to `:object.behavior.time` event for complete event introspection
+* API: added object/assoc-in! (ndr-qef)
+
 ##0.6.4
 
 * FIX: plugins would sometimes fail to install due to bad tar headers

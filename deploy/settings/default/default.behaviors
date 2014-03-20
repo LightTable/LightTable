@@ -97,6 +97,12 @@
         (:lt.objs.style/provide-theme "xq-light" "core/css/themes/xq-light.css")
         (:lt.objs.style/set-skin "dark")
         :lt.objs.editor/init-codemirror]
+  :bottombar [:lt.objs.bottombar/item-toggled
+              :lt.objs.bottombar/height!
+              :lt.objs.bottombar/no-anim-on-drag
+              :lt.objs.bottombar/reanim-on-drop
+              :lt.objs.bottombar/show-item
+              :lt.objs.bottombar/hide-item]
   :browser [:lt.objs.browser/forward! :lt.objs.browser/init!
             :lt.objs.browser/destroy-on-close :lt.objs.browser/focus!
             :lt.objs.browser/url-focus!
@@ -243,7 +249,7 @@
                                       {:name "C++ Header" :exts [:h] :mime "text/x-c++hdr" :tags [:editor.cpph]}
                                       {:name "C#" :exts [:cs] :mime "text/x-csharpr" :tags [:editor.csharp]}
                                       {:name "CoffeeScript" :exts [:coffee] :mime "text/x-coffeescript" :tags [:editor.coffee]}
-                                      {:name "Common Lisp" :exts [:cl] :mime "text/x-common-lisp" :tags [:editor.common-lisp]}
+                                      {:name "Common Lisp" :exts [:cl :lisp] :mime "text/x-common-lisp" :tags [:editor.common-lisp]}
                                       {:name "Diff" :exts [:diff :patch] :mime "text/x-diff" :tags [:editor.diff]}
                                       {:name "EDN" :exts [:edn] :mime "text/x-clojure" :tags [:editor.clj :editor.edn]}
                                       {:name "Erlang" :exts [:erl] :mime "text/x-erlang" :tags [:editor.erlang]}
@@ -267,7 +273,7 @@
                                       {:name "OCaml" :exts [:ocaml :ml] :mime "text/x-ocaml" :tags [:editor.ocaml]}
                                       {:name "Pascal" :exts [:pas] :mime "text/x-pascal" :tags [:editor.pascal]}
                                       {:name "Perl" :exts [:pl] :mime "text/x-perl" :tags [:editor.perl]}
-                                      {:name "PHP" :exts [:php] :mime "text/x-perl" :tags [:editor.perl]}
+                                      {:name "PHP" :exts [:php] :mime "text/x-php" :tags [:editor.php]}
                                       {:name "Plain Text" :exts [:txt] :mime "plaintext" :tags [:editor.plaintext]}
                                       {:name "Python" :exts [:py :pyw] :mime "text/x-python" :tags [:editor.python]}
                                       {:name "R" :exts [:r] :mime "text/x-rsrc" :tags [:editor.r]}
@@ -322,7 +328,8 @@
   :navigate.selector [:lt.objs.sidebar.navigate/escape!
                       :lt.objs.sidebar.navigate/pop-transient-on-select
                       :lt.objs.sidebar.navigate/open-on-select]
-  :navigator [:lt.objs.sidebar.navigate/focus! :lt.objs.sidebar.navigate/focus-on-show :lt.objs.sidebar.navigate/workspace-files]
+  :navigator [:lt.objs.sidebar.navigate/focus! :lt.objs.sidebar.navigate/focus-on-show :lt.objs.sidebar.navigate/workspace-files
+              (:lt.objs.sidebar.navigate/set-file-limit 8000)]
   :object [:lt.objs.clients/on-destroy-remove-cb]
   :opener [:lt.objs.opener/open-from-info :lt.objs.opener/open-transient-editor
            :lt.objs.opener/open-standard-editor
@@ -395,7 +402,9 @@
   :statusbar-container-item [:lt.objs.statusbar/on-show!
                              :lt.objs.statusbar/on-hide!
                              :lt.objs.statusbar/init-statusbar-container]
-  :statusbar.console-toggle [:lt.objs.console/statusbar-console-toggle]
+  :statusbar.console-toggle [:lt.objs.console/statusbar-console-toggle
+                             :lt.objs.console/statusbar-console-hide
+                             :lt.objs.console/statusbar-console-show]
   :tab-options [:lt.objs.editor.pool/focus-options]
   :tabs [:lt.objs.tabs/on-destroy-eds :lt.objs.tabs/active-tab-num :lt.objs.tabs/prev-tab :lt.objs.tabs/next-tab :lt.objs.tabs/tab-close :lt.objs.tabs/repaint-tab-updated
          :lt.objs.tabs/tabset-bottom!
@@ -409,7 +418,7 @@
            :lt.objs.tabs/no-anim-on-drag :lt.objs.tabs/active-tab-num
            :lt.objs.tabs/set-dragging]
   :tabset.tab [:lt.objs.tabs/on-destroy-remove
-               :lt.objs.tabs/on-active-active-tabset]
+               :lt.objs.tabs/tab-active]
   :tcp.client [:lt.objs.clients.tcp/send!]
   :theme-selector [:lt.objs.style/set-theme-on-select]
   :tree-item [:lt.objs.sidebar.workspace/rename-submit

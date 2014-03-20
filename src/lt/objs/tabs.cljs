@@ -105,6 +105,10 @@
   (str c (when (:dirty @e)
            " dirty")))
 
+(defui close-tab [obj]
+  [:span.tab-close "x"]
+  :click (fn [] (object/raise obj :close)))
+
 (defui item [multi e pos]
   [:li {:class (-> " "
                    (active? e multi)
@@ -113,9 +117,13 @@
         :title (->path e)
         :obj-id (object/->id e)
         :pos pos}
-   (->name e)]
-  :click (fn []
-           (active! e))
+   [:span.file-name
+    (->name e)]
+   (close-tab e)]
+  :click (fn [ev]
+           (if (or (= 1 (.-button ev)) (.-metaKey ev))
+             (object/raise e :close)
+             (active! e)))
   :contextmenu (fn [ev]
                  (menu! e ev)
                  (dom/prevent ev)
@@ -335,7 +343,7 @@
     (dom/add-class (object/->content ts) :active)
     true))
 
-(behavior ::on-active-active-tabset
+(behavior ::tab-active
           :triggers #{:active}
           :reaction (fn [this]
                       (activate-tabset (::tabset @this))))
@@ -448,7 +456,9 @@
       (object/raise to-ts :active))))
 
 (defn menu! [obj ev]
-  (-> (menu/menu [{:label "Close tab"
+  (-> (menu/menu [{:label "Move tab to new tabset"
+                   :click (fn [] (cmd/exec! :tabs.move-new-tabset obj))}
+                  {:label "Close tab"
                    :click (fn [] (object/raise obj :close))}])
       (menu/show-menu (.-clientX ev) (.-clientY ev))))
 
@@ -513,6 +523,19 @@
 
 (append (object/->content canvas/canvas) (:content @multi))
 
+(defn move-tab-to-tabset [obj ts]
+  (rem! obj)
+  (add! obj ts)
+  (active! obj))
+
+(cmd/command {:command :tabs.move-new-tabset
+              :desc "Tab: Move tab to new tabset"
+              :exec (fn [tab]
+                      (when-let [ts (ctx/->obj :tabset)]
+                        (when-let [cur (or tab (@ts :active-obj))]
+                          (let [new (cmd/exec! :tabset.new)]
+                            (move-tab-to-tabset cur new)))))})
+
 (cmd/command {:command :tabs.move-next-tabset
               :desc "Tab: Move tab to next tabset"
               :exec (fn []
@@ -520,9 +543,7 @@
                         (let [cur (@ts :active-obj)
                               next (or (next-tabset ts) (prev-tabset ts))]
                           (when (and cur next (not= next ts))
-                            (rem! cur)
-                            (add! cur next)
-                            (active! cur)))))})
+                            (move-tab-to-tabset cur next)))))})
 
 (cmd/command {:command :tabs.move-prev-tabset
               :desc "Tab: Move tab to previous tabset"
@@ -531,9 +552,7 @@
                         (let [cur (@ts :active-obj)
                               next (or (prev-tabset ts) (next-tabset ts))]
                           (when (and cur next (not= next ts))
-                            (rem! cur)
-                            (add! cur next)
-                            (active! cur)))))})
+                            (move-tab-to-tabset cur next)))))})
 
 (cmd/command {:command :tabs.next
               :desc "Tab: Next tab"
@@ -555,6 +574,22 @@
                                    @(:active-obj @ts))
                           (object/raise ts :tab.close)))
                       )})
+
+(cmd/command {:command :tabs.close-all
+              :desc "Tabs: Close all tabs"
+              :exec (fn []
+                      (let [objs (object/by-tag :tabset.tab)]
+                        (doseq [obj objs]
+                          (object/raise obj :close))))})
+
+(cmd/command {:command :tabs.close-others
+              :desc "Tabs: Close tabs except current tab"
+              :exec (fn []
+                      (let [cur (active-tab)
+                            objs (object/by-tag :tabset.tab)]
+                        (doseq [obj objs]
+                          (if-not (identical? cur obj)
+                            (object/raise obj :close)))))})
 
 (cmd/command {:command :tabs.goto
               :hidden true
@@ -590,8 +625,9 @@
 (cmd/command {:command :tabset.new
               :desc "Tabset: Add a tabset"
               :exec (fn []
-                      (spawn-tabset)
-                      (equalize-tabset-widths))})
+                      (let [ts (spawn-tabset)]
+                        (equalize-tabset-widths)
+                        ts))})
 
 (cmd/command {:command :tabs.focus-active
               :desc "Tab: focus active"
