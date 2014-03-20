@@ -63,11 +63,23 @@
              (set! available-drives (into #{} ds)))
            )))
 
+(defn basename
+  ([path] (.basename fpath path))
+  ([path ext] (.basename fpath path ext)))
 
 (defn get-roots []
   (if (= separator "\\")
     available-drives
     #{"/"}))
+
+(defn get-file-parts [path]
+  (let [filename (basename path)
+        file-parts (string/split filename #"\.")]
+    (loop [parts file-parts
+           acc []]
+      (if (empty? parts)
+        acc
+        (recur (rest parts) (conj acc (string/join "." parts)))))))
 
 (defn ext [path]
   (let [i (.lastIndexOf path ".")]
@@ -89,10 +101,18 @@
   (:mime (ext->type ext)))
 
 (defn path->type [path]
-  (ext->type (keyword (ext path))))
+  (->> path
+       get-file-parts
+       (map #(ext->type (keyword %)))
+       (remove nil?)
+       first))
 
 (defn path->mode [path]
-  (ext->mode (keyword (ext path))))
+  (->> path
+       get-file-parts
+       (map #(ext->mode (keyword %)))
+       (remove nil?)
+       first))
 
 (defn determine-line-ending [text]
   (let [text (subs text 0 1000)
@@ -116,7 +136,7 @@
         (let [e (ext path)]
           (cb {:content content
                :line-ending (determine-line-ending content)
-               :type (or (ext->mode (keyword e)) e)})
+               :type (or (path->mode path) e)})
           (object/raise files-obj :files.open content))
         ))
     (catch js/Error e
@@ -149,6 +169,20 @@
 (defn save [path content & [cb]]
   (try
     (.writeFileSync fs path content)
+    (object/raise files-obj :files.save path)
+    (when cb (cb))
+    (catch js/global.Error e
+      (object/raise files-obj :files.save.error path e)
+      (when cb (cb e))
+      )
+    (catch js/Error e
+      (object/raise files-obj :files.save.error path e)
+      (when cb (cb e))
+      )))
+
+(defn append [path content & [cb]]
+  (try
+    (.appendFileSync fs path content)
     (object/raise files-obj :files.save path)
     (when cb (cb))
     (catch js/global.Error e
@@ -214,10 +248,6 @@
 (defn absolute? [path]
   (boolean (re-seq #"^[\\\/]|([\w]+:[\\\/])" path)))
 
-(defn basename
-  ([path] (.basename fpath path))
-  ([path ext] (.basename fpath path ext)))
-
 (defn writable? [path]
   (let [perm (-> (.statSync fs path)
                  (.mode.toString 8)
@@ -229,14 +259,13 @@
 (defn resolve [base cur]
   (.resolve fpath base cur))
 
+(defn real-path [c]
+  (.realpathSync fs c))
+
 (defn ->file|dir [path f]
   (if (dir? (str path separator f))
     (str f separator)
     (str f)))
-
-(defn ->type [path]
-  (let [e (ext path)]
-    (or (ext->mode (keyword e) e))))
 
 (defn ls [path cb]
   (try

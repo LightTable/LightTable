@@ -63,7 +63,6 @@
 (defn init []
   (clients/handle-connection! {:name client-name
                                :tags [:client.local]
-                               :dir (files/lt-home)
                                :root-relative (files/lt-home "core")
                                :commands #{:editor.eval.cljs.exec
                                            :editor.eval.js

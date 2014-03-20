@@ -19,7 +19,7 @@
               (:lt.objs.style/set-theme "default")]
 
      ;; Here we can add behaviors to just clojure editors
-     :editor.clojure [(:lt.objs.langs.clj/print-length 1000)]}
+     :editor.clojure [(:lt.plugins.clojure/print-length 1000)]}
 
  ;; You can use the subtract key to remove behavior that may get added by
  ;; another diff

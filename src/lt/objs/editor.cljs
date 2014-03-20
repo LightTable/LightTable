@@ -251,7 +251,7 @@
 
 (defn select-all [e]
   (set-selection e
-                 {:line (first-line e)}
+                 {:line (first-line e) :ch 0}
                  {:line (last-line e)}))
 
 (defn clear-history [e]
@@ -272,10 +272,6 @@
   (.operation (->cm-ed e) func)
   e)
 
-(defn compound [e fun]
-  (.compoundChange (->cm-ed e) fun)
-  e)
-
 (defn on-click [e func]
   (let [elem (->elem e)]
     (ev/capture elem :mousedown func)
@@ -292,6 +288,9 @@
 
 (defn line [e l]
   (.getLine (->cm-ed e) l))
+
+(defn set-line [e l text]
+  (.setLine (->cm-ed e) l text))
 
 (defn first-line [e]
   (.firstLine (->cm-ed e)))
@@ -323,9 +322,12 @@
     (-> (js/CodeMirror.innerMode (.getMode (->cm-ed e)) state)
         (.-mode))))
 
-(defn adjust-loc [loc dir]
-  (when loc
-    (update-in loc [:ch] + dir)))
+(defn adjust-loc
+  ([loc dir]
+   (adjust-loc loc dir :ch))
+  ([loc dir axis]
+   (when loc
+     (update-in loc [axis] + dir))))
 
 (defn get-char [ed dir]
   (let [loc (->cursor ed)]

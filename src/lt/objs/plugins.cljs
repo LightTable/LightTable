@@ -18,6 +18,7 @@
             [lt.util.kahn :as kahn]
             [lt.util.load :as load]
             [lt.util.dom :as dom]
+            [clojure.set :as set]
             [clojure.string :as string]
             [clojure.walk :as walk])
   (:require-macros [lt.macros :refer [behavior defui]]))
@@ -27,6 +28,8 @@
 (def user-plugins-dir (files/lt-user-dir "plugins"))
 (def plugins-url "http://plugins.lighttable.com")
 (def ^:dynamic *plugin-dir* nil)
+
+(declare manager)
 
 (defn EOF-read [s]
   (when (and s
@@ -69,6 +72,14 @@
                       (when-let [ed (pool/last-active)]
                         (object/raise ed :build)))})
 
+(cmd/command {:command :behaviors.force-reload
+              :desc "Plugins: Ignore cache and force reload the current behaviors file"
+              :exec (fn []
+                      (when-let [ed (pool/last-active)]
+                        (when (object/has-tag? ed :editor.behaviors)
+                          (swap! manager update-in [::force-reload] #(conj (or % #{}) (get-in @ed [:info :path])))
+                          (cmd/exec! :behaviors.reload))))})
+
 ;;*********************************************************
 ;; Plugin reading
 ;;*********************************************************
@@ -98,34 +109,89 @@
 (defn plugin-info [dir]
   (or (plugin-json dir) (plugin-edn dir)))
 
+(defn missing-deps [all]
+  (let [deps (->> (vals all)
+                  (mapcat (comp seq :dependencies)))]
+    (-> (reduce (fn [final [name version]]
+                  (let [name (cljs.core/name name)]
+                    (if-let [cur (or (get all name) (get final name))]
+                      ;;check if it's newer
+                      (if (deploy/is-newer? (:version cur) version)
+                        (assoc! final name {:name name
+                                            :version version})
+                        final)
+                      (assoc! final name {:name name
+                                          :version version}))))
+                (transient {})
+                deps)
+        (persistent!)
+        (vals)
+        (seq))))
+
+(defn install-missing [missing]
+  (let [counter (atom (count missing))
+        count-down (fn []
+                     (swap! counter dec)
+                     ;;then install the actual plugin
+                     (when (<= @counter 0)
+                       (cmd/exec! :behaviors.reload)
+                       (object/raise manager :refresh!)
+                       (notifos/set-msg! "All missing dependencies installed.")
+                       ))]
+    ;;first get and install all the deps
+    ;;count them down and then install the real plugin and reload.
+    (doseq [dep missing]
+      (discover-deps dep count-down))))
+
 (defn available-plugins []
   (let [ds (concat (files/dirs user-plugins-dir)
                    (files/dirs plugins-dir))
         plugins (->> ds
                      (map plugin-info)
-                     (filterv identity))]
-    (-> (reduce (fn [final p]
-                  (if-let [cur (get final (:name p))]
-                    ;;check if it's newer
-                    (if (deploy/is-newer? (:version cur) (:version p))
-                      (assoc! final (:name p) p)
-                      final)
-                    (assoc! final (:name p) p)))
-                (transient {})
-                plugins)
-        (persistent!))))
+                     (filterv identity))
+        final (-> (reduce (fn [final p]
+                            (if-let [cur (get final (:name p))]
+                              ;;check if it's newer
+                              (if (deploy/is-newer? (:version cur) (:version p))
+                                (assoc! final (:name p) p)
+                                final)
+                              (assoc! final (:name p) p)))
+                          (transient {})
+                          plugins)
+                  (persistent!))
+        missing? (missing-deps final)]
+    (when missing?
+      (popup/popup! {:header "Some plugin dependencies are missing."
+                     :body [:div
+                            [:span "We found that the following plugin dependencies are missing: "]
+                             (for [{:keys [name version]} missing?]
+                               [:div name " " version " "])
+                            [:span "Would you like us to install them?"]]
+                     :buttons [{:label "Cancel"}
+                               {:label "Install all"
+                                :action (fn []
+                                          (install-missing missing?))}]}))
+    final))
 
+(defn outdated? [plugin]
+  (let [cached (-> @manager :version-cache (get (:name plugin)))]
+    (if cached
+      (deploy/is-newer? (:version plugin) cached))))
 
 (defn plugin-behaviors [plug]
   (let [{:keys [behaviors dir]} plug
         file (files/join dir behaviors)
+        file (files/real-path file)
         behs (-> (files/open-sync file)
                  (:content)
-                 (settings/safe-read file))]
+                 (settings/safe-read file))
+        force? (get (::force-reload @manager) file)]
+    (when force?
+      (swap! manager update-in [::force-reload] disj file))
     (when behs
       (walk/prewalk (fn [x]
                       (when (list? x)
-                        (alter-meta! x assoc ::dir dir))
+                        (alter-meta! x assoc ::dir dir ::force-reload force?))
                       x)
                     behs)
       behs)))
@@ -174,9 +240,12 @@
                                        (notifos/working "Extracting plugin...")
                                        (deploy/untar tmp-gz tmp-dir
                                                      (fn []
-                                                       (let [munged-dir (first (files/full-path-ls tmp-dir))]
+                                                       (let [munged-dir (first (files/full-path-ls tmp-dir))
+                                                             final-path (str user-plugins-dir "/" munged-name "/")]
                                                          (when munged-dir
-                                                           (files/move! munged-dir (str user-plugins-dir "/" munged-name "/")))
+                                                           (when (files/exists? final-path)
+                                                             (files/delete! final-path))
+                                                           (files/move! munged-dir final-path))
                                                          (files/delete! tmp-dir)
                                                          (files/delete! tmp-gz)
                                                          (if munged-dir
@@ -198,7 +267,6 @@
         (object/update! app/app [::plugins] assoc name {})
         (fetch-and-install (-> plugin :tar) name
                            (fn []
-                             (object/raise manager :refresh!)
                              (when cb
                                (cb true))
                              )))
@@ -217,10 +285,7 @@
                      (when (<= @counter 0)
                        (install-version (deps cur) (fn [installed?]
                                                      (when cb
-                                                       (cb installed?))
-                                                     (when installed?
-                                                       ;;a new plugin has been installed, we should reload everything
-                                                       (cmd/exec! :behaviors.reload))))))]
+                                                       (cb installed?))))))]
     ;;first get and install all the deps
     ;;count them down and then install the real plugin and reload.
     (if (seq others)
@@ -301,7 +366,9 @@
   :click (fn [e]
            (dom/prevent e)
            (dom/stop-propagation e)
-           (discover-deps plugin nil)))
+           (discover-deps plugin (fn []
+                                   (cmd/exec! :behaviors.reload)
+                                   (object/raise manager :refresh!)))))
 
 (defui install-button [plugin]
   [:span.install]
@@ -309,6 +376,8 @@
            (this-as me
                     (discover-deps plugin (fn []
                                             (dom/remove (dom/parent me))
+                                            (cmd/exec! :behaviors.reload)
+                                            (object/raise manager :refresh!)
                                             )))
            (dom/prevent e)
            (dom/stop-propagation e)))
@@ -349,9 +418,9 @@
                   (deploy/is-newer? (:version plugin) cached))]
     [:li {:class (if update?
                    "has-update")}
-     (if update?
-       (update-button (assoc plugin :version cached))
-       (uninstall-button plugin))
+     (when update?
+       (update-button (assoc plugin :version cached)))
+     (uninstall-button plugin)
      (source-button plugin)
      [:h1 (:name plugin) [:span.version (:version plugin)]]
      [:h3 (:author plugin)]
@@ -488,6 +557,26 @@
                       (tabs/add-or-focus! manager)
                       (cmd/exec! :plugin-manager.refresh))})
 
+(cmd/command {:command :plugin-manager.update-outdated
+              :desc "Plugins: Update all outdated"
+              :exec (fn []
+                      (let [outdated (filter outdated? (->> @app/app ::plugins vals))
+                            names (atom #{})
+                            countdown (atom (count outdated))]
+                        (doseq [plugin outdated
+                                :when (seq outdated)
+                                :let [cached (-> @manager :version-cache (get (:name plugin)))]]
+                          (discover-deps (assoc plugin :version cached)
+                                         (fn []
+                                           (swap! names conj (:name plugin))
+                                           (swap! countdown dec)
+                                           (object/raise manager :refresh!)
+                                           (when (<= @countdown 0)
+                                             (cmd/exec! :behaviors.reload)
+                                             (notifos/set-msg! (apply str "Updated: "
+                                                                      (interpose ", " @names)))))))))})
+
+
 ;;*********************************************************
 ;; App-level plugin behaviors
 ;;*********************************************************
@@ -542,13 +631,15 @@
           :params [{:label "path"}]
           :type :user
           :reaction (fn [this path]
-                      (binding [*plugin-dir* (::dir object/*behavior-meta*)]
+                      (binding [*plugin-dir* (::dir object/*behavior-meta*)
+                                load/*force-reload* (::force-reload object/*behavior-meta*)]
                         (let [paths (if (coll? path)
                                       path
                                       [path])]
                           (doseq [path paths]
                             (let [path (adjust-path path)]
-                              (when-not (get (::loaded-files @this) path)
+                              (when (or load/*force-reload*
+                                        (not (get (::loaded-files @this) path)))
                                 (try
                                   (load/js path true)
                                   (object/update! this [::loaded-files] #(conj (or % #{}) path))
@@ -566,7 +657,8 @@
           :type :user
           :reaction (fn [this path]
                       (let [path (adjust-path path)]
-                        (when-not (get (::loaded-files @this) path)
+                        (when (or load/*force-reload*
+                                  (not (get (::loaded-files @this) path)))
                           (object/update! this [::loaded-files] #(conj (or % #{}) path))
                           (load/css path)))))
 

@@ -14,6 +14,7 @@
 (def behaviors (atom {}))
 (def object-defs (atom {}))
 (def tags (atom {}))
+(def negated-tags (atom {}))
 (def ^{:dynamic true} *behavior-meta* nil)
 
 (defn add [obj]
@@ -46,6 +47,12 @@
     (aloop [i arr] (aset arr i (aget arr i 2)))
     arr))
 
+(defn ts->negations [ts]
+  (let [seen (js-obj)]
+    (doseq [beh (apply concat (map @negated-tags ts))]
+      (aset seen (->behavior-name beh) true))
+    seen))
+
 (defn tags->behaviors [ts]
   (let [duped (apply concat (map @tags (specificity-sort ts)))
         de-duped (reduce
@@ -60,7 +67,7 @@
                            (aset (:seen res) (->behavior-name cur) true))
                          (conj! (:final res) cur)
                          res)))
-                   {:seen (js-obj)
+                   {:seen (ts->negations ts)
                     :final (transient [])}
                    duped)]
     (reverse (persistent! (:final de-duped)))))
@@ -172,7 +179,7 @@
       (binding [*behavior-meta* meta]
         (apply func obj args))
       (when-not (= trigger :object.behavior.time)
-        (raise obj :object.behavior.time r time)))
+        (raise obj :object.behavior.time r time trigger)))
       (catch js/Error e
         (safe-report-error (str "Invalid behavior: " (-> (->behavior r) :name)))
         (safe-report-error e)
@@ -212,6 +219,11 @@
 
 (defn update! [obj & r]
   (swap! obj #(apply update-in % r)))
+
+(defn assoc-in! [obj k v]
+  (when (and k (not (sequential? k)))
+    (throw (js/Error. (str "Associate requires a sequence of keys: " k))))
+  (swap! obj #(assoc-in % k v)))
 
 (defn ->id [obj]
   (if (deref? obj)
@@ -369,6 +381,8 @@
 
 (behavior ::report-time
            :triggers #{:object.behavior.time}
-           :reaction (fn [this beh time]
+           :reaction (fn [this beh time trigger]
                        (when js/lt.objs.console
-                         (js/lt.objs.console.log (str beh " took " time "ms")))))
+                         (js/lt.objs.console.log (str beh " triggered by "
+                                                      trigger " took "
+                                                      time "ms")))))

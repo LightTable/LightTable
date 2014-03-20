@@ -168,7 +168,9 @@
 (behavior ::url-focus!
                   :triggers #{:url.focus!}
                   :reaction (fn [this]
-                              (dom/focus (dom/$ :input (object/->content this)))))
+                              (let [url-input (dom/$ :input (object/->content this))]
+                                (dom/focus url-input)
+                                (.select url-input))))
 
 (behavior ::focus!
                   :triggers #{:focus!}
@@ -246,7 +248,8 @@
                                                             (object/raise this :inactive e)))
                               (.document.addEventListener window "contextmenu"
                                                           (fn [e]
-                                                            (object/raise this :menu! e)))
+                                                            (when-not (.-defaultPrevented e)
+                                                              (object/raise this :menu! e))))
                               (.document.addEventListener window "click"
                                                           (fn [e]
                                                             (object/raise this :active)
@@ -398,9 +401,9 @@
                                 (doseq [form (:results info)]
                                   (try
                                     ;;TODO: this is a hack for bad compiler output. We need to just move to the latest cljs
-                                    (handle-cb (:cb msg) :editor.eval.cljs.result {:result (eval/cljs-result-format (.eval.call window window (string/replace (:code form) ")goog" ")\ngoog")))
+                                    (handle-cb (:cb msg) :editor.eval.cljs.result {:result (pr-str (.eval.call window window (string/replace (:code form) ")goog" ")\ngoog")))
                                                                                    :meta (merge (:meta msg) (:meta form))})
-                                    (catch (.-Error window) e
+                                    (catch :default e
                                       (handle-cb (:cb msg) :editor.eval.cljs.exception {:ex e
                                                                                         :meta (merge (:meta msg) (:meta form))})))))))
 

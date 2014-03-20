@@ -1,9 +1,65 @@
 #Changes
 
+##0.6.5
+
+* FIX: Less syntax highlighting would cause errors
+* FIX: Show update button below uninstall button in the plugin manager (mark.fisher)
+* FIX: better cljs errors in external browser connections
+* FIX: php syntax highlighting was set incorrectly (flaviozantut)
+* FIX: Evaling CSS into LT UI fails
+* FIX: remove the alt-# keybindings as it screws up international keyboards
+* FIX: rewrite sourceMappingURL with full path (nickgieschen)
+* FIX: on OSX chorded shortcuts were being intercepted by the menus (e.g. ctrl-f)
+* FIX: change cursor to pointer in the plugin manager (seancaffrey)
+* FIX: prevent opening multiple console tabs  (spelufo)
+* FIX: add ellipsis to truncated inline results (ndr-qef)
+* FIX: remove last remaining refs to light-table-core (cldwalker)
+* FIX: add common lisp extension (patrickconnelly)
+* FIX: focusing the url bar in the internal browser selects the url (Curtis Rasmussen)
+* FIX: find/replace with '(' now works
+* ADDED: `Plugins: Update all outdated` command (ndr-qef)
+* ADDED: Searcher picks up your selection by default (snufkon)
+* ADDED: `Navigate: set maximum number of indexed files` behavior (ndr-qef)
+* ADDED: `Tab: Move tab to new tabset` command and context menu item (snufkon)
+* ADDED: `Tabs: Close tabs except current tab` command (snufkon)
+* ADDED: a close tab button on hover of tabs (Tyrieke Morton)
+* ADDED: `Tabs: Close all tabs` command (piyushi0101)
+* ADDED: Plugins now check for missing deps on startup allowing you to use the dependencies key of a personal plugin as your "dotfiles"
+* ADDED: `Plugins: Ignore cache and force reload the current behaviors file` command for plugin development
+* ADDED: close tab with middle/cmd+click (seancaffery)
+* ADDED: `App: Set the default zoom level` behavior for hidpi
+* ADDED: leiningen directions to readme (statesside)
+* API: allow editor/adjust-loc to specify line movement (ndr-qef)
+* API: added `trigger` to `:object.behavior.time` event for complete event introspection
+* API: added object/assoc-in! (ndr-qef)
+
+##0.6.4
+
+* FIX: plugins would sometimes fail to install due to bad tar headers
+* UPDATED: Move to npm-tar 0.1.19
+
 ##0.6.3
 
-* FIX: plugins now load correctly when installed
+* FIX: Remove use of the removed `thread` macro (MarcoPolo)
+* FIX: Tabsets don't properly resize after being removed (Morgawr)
+* FIX: handle non-dommable errors better (e.g. you throw an object)
+* FIX: Matching bracket highlighting for tomorrow-night theme (chmllr)
+* FIX: don't let line-height 0 destroy the editor (Morgawr)
+* FIX: plugins no longer require a restart
 * FIX: when user-dir and core contain the same plugin version, choose user-dir first
+* FIX: copy over platform specific dir for mac build (mark.fisher)
+* FIX: show an error of sourcing for the path fails on OSX (ndr-qef)
+* FIX: select-all now correctly includes the first line (mihneadb)
+* FIX: check for curl in the linux build script (mihneadb)
+* CHANGE: behaviors that have been removed with :- will guarantee that the behavior is not applied to anything with that tag.
+* ADDED: You can remove recent workspaces (mortalapeman)
+* ADDED: paths like foo.html.erb are now correctly interpreted as their file type
+* ADDED: notifications can now be set with custom timeouts (ndr-qef)
+* ADDED: pmeta-9 and alt-9 now go to the last tab (mihneadb)
+* ADDED: Using auto-pairing with a selection now wraps the selection in the pair (ThePawnBreak)
+* ADDED: Suggest an extension in the save-as dialog (ndr-qef)
+* ADDED: Support alt-# tab switching (mihneadb)
+* UPDATED: Move to wrench 1.5.6 (heyLu)
 
 ##0.6.2
 

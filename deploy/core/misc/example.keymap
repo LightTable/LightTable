@@ -1,8 +1,8 @@
 ;; User keymap
 ;; -----------------------------
-;; Keymaps are stored as a set of diffs that are merged together together
-;; to create the final set of keys. You can modify these diffs to either add
-;; or subtract bindings.
+;; Keymaps are stored as a set of diffs that are merged together to create
+;; the final set of keys. You can modify these diffs to either add or
+;; subtract bindings.
 ;;
 ;; Like behaviors, keys are bound by tag. When objects with those tags are active
 ;; the key bindings are live. Keys can be bound to any number of Light Table commands,

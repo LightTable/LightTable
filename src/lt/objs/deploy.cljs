@@ -19,7 +19,7 @@
 (def shell (load/node-module "shelljs"))
 (def fs (js/require "fs"))
 (def fs-path (js/require "path"))
-(def targz (load/node-module "tar.gz"))
+(def zlib (js/require "zlib"))
 (def request (load/node-module "request"))
 (def tar (load/node-module "tar"))
 (def home-path (files/lt-home ""))
@@ -84,8 +84,11 @@
                                                                (cb e r body)))))
 
 (defn untar [from to cb]
-  (let [t (targz.)]
-    (.extract t from to cb)))
+  (let [t (.createReadStream fs from)]
+    (.. t
+        (pipe (.createGunzip zlib))
+        (pipe (.Extract tar (js-obj "path" to)))
+        (on "end" cb))))
 
 (defn move-tmp []
   (doseq [file (files/full-path-ls (str home-path "/tmp/"))]

@@ -10,6 +10,7 @@
 (def gui (js/require "nw.gui"))
 (def win (.Window.get gui))
 (def closing true)
+(def default-zoom 0)
 
 (defn window-number []
   (let [n (last (string/split js/window.location.search "="))]
@@ -163,25 +164,52 @@
                               (.focus win)
                               ))
 
+(defn run-commands [this & commands]
+  (when (seq commands)
+    (let [commands (if (-> commands first vector?)
+                     (first commands)
+                     commands)]
+      (doseq [c commands]
+        (if (coll? c)
+          (apply cmd/exec! c)
+          (cmd/exec! c))))))
+
+(behavior ::run-pre-init
+          :triggers #{:pre-init}
+          :desc "App: Run commands before init"
+          :params [{:label "commands"
+                    :type :list
+                    :items cmd/completions}]
+          :type :user
+          :reaction run-commands)
+
 (behavior ::run-on-init
                   :triggers #{:init}
-                  :desc "App: Run commands on start"
+                  :desc "App: Run commands on init"
                   :params [{:label "commands"
                             :type :list
                             :items cmd/completions}]
                   :type :user
-                  :reaction (fn [this & commands]
-                              (when (seq commands)
-                                (let [commands (if (-> commands first vector?)
-                                                 (first commands)
-                                                 commands)]
-                                  (doseq [c commands]
-                                    (if (coll? c)
-                                      (apply cmd/exec! c)
-                                      (cmd/exec! c)))))))
+                  :reaction run-commands)
 
+(behavior ::run-post-init
+                  :triggers #{:post-init}
+                  :desc "App: Run commands after init"
+                  :params [{:label "commands"
+                            :type :list
+                            :items cmd/completions}]
+                  :type :user
+                  :reaction run-commands)
 
-
+(behavior ::set-default-zoom-level
+          :triggers #{:init}
+          :desc "App: Set the default zoom level"
+                  :params [{:label "default-zoom-level"
+                            :type :number}]
+                  :type :user
+                  :reaction (fn [this default]
+                              (set! default-zoom default)
+                              (set! (.-zoomLevel win) default)))
 
 ;;*********************************************************
 ;; Object
@@ -242,6 +270,7 @@
 (cmd/command {:command :window.zoom-reset
               :desc "Window: Zoom reset"
               :exec (fn []
-                      (set! (.-zoomLevel win) 0)
+                      (set! (.-zoomLevel win) default-zoom)
                       )})
+
 

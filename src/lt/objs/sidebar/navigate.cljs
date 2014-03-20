@@ -24,14 +24,14 @@
         fs (map #(do {:full % :rel (files/basename %)}) (:files ws))]
     (vec (filter #(files/file? (:full %)) (remove #(-> % :rel file-filters) (concat files fs))))))
 
-(def populate-bg (background (fn [obj-id {:keys [ws pattern]}]
+(def populate-bg (background (fn [obj-id {:keys [lim pattern ws]}]
                                (let [fs (js/require "fs")
                                      fpath (js/require "path")
                                      walkdir (js/require (str js/ltpath "/core/node_modules/lighttable/background/walkdir2.js"))
                                      grab-files (fn [all-files folder]
                                                   (let [root-length (inc (count (.dirname fpath folder)))
                                                         walked (walkdir folder (js-obj "filter" (js/RegExp. pattern)
-                                                                                        "limit" 8000))]
+                                                                                        "limit" lim))]
                                                     (.concat all-files (.map (.-paths walked)
                                                                              #(js-obj "full" %
                                                                                       "rel" (subs % root-length))))))
@@ -52,7 +52,8 @@
                   :triggers #{:updated :refresh}
                   :debounce 150
                   :reaction (fn [ws]
-                              (populate-bg sidebar-navigate {:pattern (.-source files/ignore-pattern)
+                              (populate-bg sidebar-navigate {:lim (dec (:file-limit @sidebar-navigate))
+                                                             :pattern (.-source files/ignore-pattern)
                                                              :ws (workspace/serialize @ws)})))
 
 (behavior ::watched.create
@@ -98,12 +99,22 @@
                   :reaction (fn [this]
                               (object/raise sidebar/rightbar :close!)))
 
+(behavior ::set-file-limit
+          :triggers #{:object.instant}
+          :type :user
+          :desc "Navigate: set maximum number of indexed files"
+          :params [{:label "Number"
+                    :example 8000}]
+          :reaction (fn [this n]
+                      (object/merge! this {:file-limit n})))
+
 (object/object* ::sidebar.navigate
                 :tags #{:navigator}
                 :label "navigate"
                 :order -3
                 :selected 0
                 :files []
+                :file-limit 8000
                 :search ""
                 :init (fn [this]
                         (let [list (cmd/filter-list {:key :rel

@@ -83,8 +83,9 @@
 
 (defn command->menu-binding [cmd]
   (let [ks (first (keyboard/cmd->current-binding cmd))
+        multi-part? (next (string/split ks " "))
         ks (string/split ks "-")]
-    (when (seq ks)
+    (when (and (seq ks) (not multi-part?))
       {:key (if (= "space" (last ks))
               " "
               (last ks))
