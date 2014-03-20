@@ -118,21 +118,6 @@
             :lt.objs.browser/menu!
             :lt.objs.browser/menu+
             :lt.objs.browser/back!]
-   :browseReport [:lt.objs.browser/forward! :lt.objs.browser/init!
-            :lt.objs.browser/destroy-on-close :lt.objs.browser/focus!
-            :lt.objs.browser/url-focus!
-            :lt.objs.browser/focus-on-show
-            :lt.objs.browser/set-client-name :lt.objs.browser/rem-client
-            :lt.objs.browser/store-history :lt.objs.browser/refresh!
-            :lt.objs.browser/set-active :lt.objs.browser/navigate!
-            :lt.objs.browser/active-context
-            :lt.objs.browser/inactive-context
-            :lt.objs.browser/window-load-click-handler
-            :lt.objs.browser/window-load-key-handler
-            :lt.objs.browser/window-load-lttools
-            :lt.objs.browser/menu!
-            :lt.objs.browser/menu+
-            :lt.objs.browser/back!]
   :client [:lt.objs.clients/on-connect-drain :lt.objs.clients/queue!
            :lt.objs.clients/try-send]
   :client.local [:lt.objs.clients.local/send!]

@@ -29,7 +29,7 @@
 (defui reports []                        ;; TODO: Added report button to click - TWM
   [:button "GitHub"]
   :click (fn []
-           (cmd/exec! :add-report-tab)))
+           (cmd/exec! :add-browser-tab "https://github.com/LightTable/LightTable/issues?state=open")))
 
 
 (defui changelog []

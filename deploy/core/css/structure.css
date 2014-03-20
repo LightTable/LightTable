@@ -306,11 +306,6 @@ body { -webkit-user-select: none; }
 #browser input { font-size:10pt; padding-left:10px; background:#444; width:-webkit-calc(100% - 60px); padding:5px 12px; vertical-align:middle;}
 #browser button { width:20px; height:26px; padding:4px 5px; box-sizing:border-box; border-radius:0px; vertical-align:middle; }
 
-#browseReport iframe { height:-webkit-calc(100% - 35px); width:100%; }
-#browseReport .frame-shade { height:-webkit-calc(100% - 35px); width:100%; background:transparent; position:absolute; display:none; }
-#browseReport input { font-size:10pt; padding-left:10px; background:#444; width:-webkit-calc(100% - 60px); padding:5px 12px; vertical-align:middle;}
-#browseReport button { width:20px; height:26px; padding:4px 5px; box-sizing:border-box; border-radius:0px; vertical-align:middle; }
-
 #side .tab-settings .filter-list { position:relative; }
 #side .tab-settings .filter-list ul {height: 100px; overflow:auto; display:none; position:absolute; top:35px; width:100%; z-index:10; border-radius:2px; padding:5px 0px; box-sizing:border-box;}
 #side .tab-settings .filter-list li { padding:0 10px; border-radius:2px; }
