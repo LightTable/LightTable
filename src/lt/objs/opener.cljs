@@ -113,6 +113,19 @@
                                 (tabs/add! ed)
                                 (tabs/active! ed))))
 
+(defn open-path
+  "Always open a path given an ::opener object and path"
+  [obj path]
+  (doc/open path
+            (fn [doc]
+              (let [type (files/path->type path)
+                    ed (pool/create (merge {:doc doc :line-ending (-> @doc :line-ending)} (lt.objs.opener/path->info path)))]
+                (metrics/capture! :editor.open {:type (or (:name type) (files/ext path))
+                                                :lines (editor/last-line ed)})
+                (object/add-tags ed [:editor.file-backed])
+                (object/raise obj :open ed)
+                (lt.objs.tabs/add! ed)
+                (lt.objs.tabs/active! ed)))))
 
 (behavior ::open-standard-editor
                   :triggers #{:open!}
@@ -123,16 +136,7 @@
                                   (notifos/set-msg! (str "No such file: " path)))
                                 (if-let [ed (first (pool/by-path path))]
                                   (tabs/active! ed)
-                                  (doc/open path
-                                            (fn [doc]
-                                              (let [type (files/path->type path)
-                                                    ed (pool/create (merge {:doc doc :line-ending (-> @doc :line-ending)} (path->info path)))]
-                                                (metrics/capture! :editor.open {:type (or (:name type) (files/ext path))
-                                                                                :lines (editor/last-line ed)})
-                                                (object/add-tags ed [:editor.file-backed])
-                                                (object/raise obj :open ed)
-                                                (tabs/add! ed)
-                                                (tabs/active! ed))))))))
+                                  (open-path obj path)))))
 
 (behavior ::track-open-files
                   :triggers #{:open}
