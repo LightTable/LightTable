@@ -87,10 +87,10 @@
                       (conj items
                             {:label "Move tab to new tabset"
                              :order 1
-                             :click (fn [] (cmd/exec! :tabs.move-new-tabset obj))}
+                             :click (fn [] (cmd/exec! :tabs.move-new-tabset this))}
                             {:label "Close tab"
                              :order 2
-                             :click (fn [] (object/raise obj :close))})))
+                             :click (fn [] (object/raise this :close))})))
 
 (defn ->index [obj]
   (when (and obj @obj (::tabset @obj))
