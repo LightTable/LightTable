@@ -401,9 +401,10 @@
            :lt.objs.tabs/tab-close :lt.objs.tabs/prev-tab
            :lt.objs.tabs/reanim-on-drop :lt.objs.tabs/tabset-menu
            :lt.objs.tabs/no-anim-on-drag :lt.objs.tabs/active-tab-num
-           :lt.objs.tabs/set-dragging]
+           :lt.objs.tabs/tabset-menu-items :lt.objs.tabs/set-dragging]
   :tabset.tab [:lt.objs.tabs/on-destroy-remove
-               :lt.objs.tabs/tab-active]
+               :lt.objs.tabs/tab-active
+               :lt.objs.tabs/tab-menu-items]
   :tcp.client [:lt.objs.clients.tcp/send!]
   :theme-selector [:lt.objs.style/set-theme-on-select]
   :tree-item [:lt.objs.sidebar.workspace/rename-submit

@@ -81,6 +81,17 @@
                         (catch js/global.Error e
                           (js/lt.objs.console.error e)))))
 
+(behavior ::tab-menu-items
+          :triggers #{:tab-menu-items}
+          :reaction (fn [this items]
+                      (conj items
+                            {:label "Move tab to new tabset"
+                             :order 1
+                             :click (fn [] (cmd/exec! :tabs.move-new-tabset obj))}
+                            {:label "Close tab"
+                             :order 2
+                             :click (fn [] (object/raise obj :close))})))
+
 (defn ->index [obj]
   (when (and obj @obj (::tabset @obj))
     (first (first (filter #(= obj (second %)) (map-indexed vector (:objs @(::tabset @obj))))))))
@@ -125,7 +136,8 @@
              (object/raise e :close)
              (active! e)))
   :contextmenu (fn [ev]
-                 (menu! e ev)
+                 (-> (menu/menu (sort-by :order (object/raise-reduce e :tab-menu-items [])))
+                     (menu/show-menu (.-clientX ev) (.-clientY ev)))
                  (dom/prevent ev)
                  (dom/stop-propagation ev))
   )
@@ -358,13 +370,20 @@
 (behavior ::tabset-menu
           :triggers #{:menu!}
           :reaction (fn [this ev]
-                      (-> (menu/menu [{:label "New tabset"
-                                       :click (fn [] (cmd/exec! :tabset.new))}
-                                      {:label "Close tabset"
-                                       :click (fn [] (rem-tabset this))}
-                                      ])
-                          (menu/show-menu (.-clientX ev) (.-clientY ev)))
-                      ))
+                      (-> (menu/menu (sort-by :order (object/raise-reduce this :tabset-menu-items [])))
+                          (menu/show-menu (.-clientX ev) (.-clientY ev)))))
+
+(behavior ::tabset-menu-items
+          :triggers #{:tabset-menu-items}
+          :reaction (fn [this items]
+                      (conj items
+                            {:label "New tabset"
+                             :order 1
+                             :click (fn [] (cmd/exec! :tabset.new))}
+                            {:label "Close tabset"
+                             :order 2
+                             :click (fn [] (rem-tabset this))})))
+
 
 (defui tabset-ui [this]
   [:div.tabset {:style {:width (bound (subatom this :width) ->perc)}}
