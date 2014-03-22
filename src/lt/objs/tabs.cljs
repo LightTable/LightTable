@@ -460,26 +460,21 @@
   ;(object/raise ts :active)
   )
 
-(defn rem-tabset [ts prev?]
-  (let [to-ts (if prev?
-                (or (prev-tabset ts) (next-tabset ts))
-                (or (next-tabset ts) (prev-tabset ts)))]
-    (when to-ts
-      (object/merge! to-ts {:width (floored (+ (:width @to-ts) (:width @ts)))})
-      (dom/remove (object/->content ts))
-      (doseq [t (:objs @ts)]
-        (add! t to-ts))
-      (object/update! multi [:tabsets] #(vec (remove #{ts} %)))
-      (object/destroy! ts)
-      (equalize-tabset-widths)
-      (object/raise to-ts :active))))
-
-(defn menu! [obj ev]
-  (-> (menu/menu [{:label "Move tab to new tabset"
-                   :click (fn [] (cmd/exec! :tabs.move-new-tabset obj))}
-                  {:label "Close tab"
-                   :click (fn [] (object/raise obj :close))}])
-      (menu/show-menu (.-clientX ev) (.-clientY ev))))
+(defn rem-tabset
+  ([ts] (rem-tabset ts false))
+  ([ts prev?]
+   (let [to-ts (if prev?
+                 (or (prev-tabset ts) (next-tabset ts))
+                 (or (next-tabset ts) (prev-tabset ts)))]
+     (when to-ts
+       (object/merge! to-ts {:width (floored (+ (:width @to-ts) (:width @ts)))})
+       (dom/remove (object/->content ts))
+       (doseq [t (:objs @ts)]
+         (add! t to-ts))
+       (object/update! multi [:tabsets] #(vec (remove #{ts} %)))
+       (object/destroy! ts)
+       (equalize-tabset-widths)
+       (object/raise to-ts :active)))))
 
 (defn rem! [obj]
   (when (and obj @obj (::tabset @obj))
