@@ -12,6 +12,7 @@ deploy/core/node_modules/lighttable/bootstrap.js*
 .lein-deps-sum
 .lein-env
 .lein-plugins/
+.nrepl-port
 *.so
 lib
 deploy/LightTable
