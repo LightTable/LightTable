@@ -140,6 +140,7 @@
   :console [:lt.objs.console/on-close
             :lt.objs.menu/menu!
             :lt.objs.console/menu+]
+  :context [:lt.objs.context/log]
   :document [:lt.objs.document/try-close-root-document :lt.objs.document/close-root-document]
   :document.linked [:lt.objs.document/close-linked-document]
   :docs [:lt.objs.docs/on-close-destroy]
