@@ -1,7 +1,7 @@
 /* structure */
 
 :root {
-  var-top-offset: 4px;
+  var-top-offset: 0px;
 }
 
 html { overflow:hidden; height:100vh; }
