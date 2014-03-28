@@ -32,7 +32,7 @@
 (defn- prep [code file]
   (-> code
       (abs-source-mapping-url file)
-      (str "\n\n//# sourceURL=" file)))
+      (str "\n\n//# sourceURL="  (js/encodeURI file))))
 
 (defn js
   ([file] (js file false))
