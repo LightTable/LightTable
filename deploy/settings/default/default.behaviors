@@ -256,6 +256,7 @@
                                       {:name "Markdown" :exts [:md :markdown] :mime "text/x-markdown" :tags [:editor.markdown]}
                                       {:name "MySQL" :exts [] :mime "text/x-mysql" :tags [:editor.sql :editor.mysql]}
                                       {:name "OCaml" :exts [:ocaml :ml] :mime "text/x-ocaml" :tags [:editor.ocaml]}
+                                      {:name "Octave" :exts [:m] :mime "text/x-octave" :tags [:editor.octave]}
                                       {:name "Pascal" :exts [:pas] :mime "text/x-pascal" :tags [:editor.pascal]}
                                       {:name "Perl" :exts [:pl] :mime "text/x-perl" :tags [:editor.perl]}
                                       {:name "PHP" :exts [:php] :mime "text/x-php" :tags [:editor.php]}

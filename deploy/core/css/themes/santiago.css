@@ -1,0 +1,32 @@
+#multi.theme-santiago .content { background: #26292C; }
+#multi.theme-santiago .list .active { background:#26292C; color:#f8f8f2; }
+#multi.theme-santiago .list li:hover { background:#66696C; color:#f8f8f2; }
+#multi.theme-santiago .list .dirty { color:#f92672; }
+
+.cm-s-santiago.CodeMirror {background: #26292C; color: #f8f8f2;}
+.cm-s-santiago div.CodeMirror-selected {background: #49483E !important;}
+.cm-s-santiago .CodeMirror-gutters {background: #26292C; border-right: 0px;}
+.cm-s-santiago .CodeMirror-linenumber {color: #d0d0d0;}
+.cm-s-santiago .CodeMirror-cursor {border-left: 1px solid #f8f8f0 !important;}
+
+.cm-s-santiago span.cm-comment {color: #75715e;}
+.cm-s-santiago span.cm-atom {color: #ae81ff;}
+.cm-s-santiago span.cm-number {color: #ae81ff;}
+
+.cm-s-santiago span.cm-property, .cm-s-santiago span.cm-attribute {color: #a6e22e;}
+.cm-s-santiago span.cm-keyword {color: #f92672;}
+.cm-s-santiago span.cm-string {color: #e6db74;}
+
+.cm-s-santiago span.cm-variable {color: #a6e22e;}
+.cm-s-santiago span.cm-variable-2 {color: #9effff;}
+.cm-s-santiago span.cm-def {color: #fd971f;}
+.cm-s-santiago span.cm-error {background: rgba(30,0,0,0.2)}
+.cm-s-santiago span.cm-bracket {color: #f8f8f2;}
+.cm-s-santiago span.cm-tag {color: #f92672;}
+.cm-s-santiago span.cm-link {color: #ae81ff;}
+
+.cm-s-santiago .CodeMirror-activeline-background {background: #373831 !important;}
+.cm-s-santiago .CodeMirror-matchingbracket {
+  text-decoration: underline;
+  color: white !important;
+}
