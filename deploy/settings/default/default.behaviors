@@ -404,7 +404,8 @@
            :lt.objs.tabs/no-anim-on-drag :lt.objs.tabs/active-tab-num
            :lt.objs.tabs/set-dragging]
   :tabset.tab [:lt.objs.tabs/on-destroy-remove
-               :lt.objs.tabs/tab-active]
+               :lt.objs.tabs/tab-active
+               :lt.objs.tabs/show-close-button]
   :tcp.client [:lt.objs.clients.tcp/send!]
   :theme-selector [:lt.objs.style/set-theme-on-select]
   :tree-item [:lt.objs.sidebar.workspace/rename-submit
