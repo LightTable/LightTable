@@ -3,7 +3,11 @@
 
 (declare manager)
 
+(def required-keys #{:command :desc :exec})
+
 (defn command [cmd]
+  (assert (every? cmd required-keys)
+          (str "Command doesn't have required keys: " required-keys))
   (object/update! manager [:commands] assoc (:command cmd) cmd)
   (when (:options cmd)
     (object/add-tags (:options cmd) [:command.options]))
