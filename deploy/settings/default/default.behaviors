@@ -140,6 +140,7 @@
   :console [:lt.objs.console/on-close
             :lt.objs.menu/menu!
             :lt.objs.console/menu+]
+  :context [:lt.objs.context/log]
   :document [:lt.objs.document/try-close-root-document :lt.objs.document/close-root-document]
   :document.linked [:lt.objs.document/close-linked-document]
   :docs [:lt.objs.docs/on-close-destroy]
@@ -404,7 +405,8 @@
            :lt.objs.tabs/tabset-menu-items :lt.objs.tabs/set-dragging]
   :tabset.tab [:lt.objs.tabs/on-destroy-remove
                :lt.objs.tabs/tab-active
-               :lt.objs.tabs/tab-menu-items]
+               :lt.objs.tabs/tab-menu-items
+               :lt.objs.tabs/show-close-button]
   :tcp.client [:lt.objs.clients.tcp/send!]
   :theme-selector [:lt.objs.style/set-theme-on-select]
   :tree-item [:lt.objs.sidebar.workspace/rename-submit

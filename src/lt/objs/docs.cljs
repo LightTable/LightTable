@@ -35,8 +35,11 @@
 (cmd/command {:command :show-docs
               :desc "Docs: Open Light Table's documentation"
               :exec (fn []
-                      (let [docs (object/create ::docs)
-                            ts (tabs/spawn-tabset)]
-                        (tabs/equalize-tabset-widths)
-                        (tabs/add! docs ts)
-                        (tabs/active! docs)))})
+                      (if (empty? (object/by-tag :docs))
+                        (let [docs (object/create ::docs)
+                              ts (tabs/spawn-tabset)]
+                          (tabs/equalize-tabset-widths)
+                          (tabs/add! docs ts)
+                          (tabs/active! docs))
+                        (let [docs (first (object/by-tag :docs))]
+                          (tabs/add-or-focus! docs))))})

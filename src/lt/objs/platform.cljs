@@ -13,6 +13,16 @@
 (defn open [path]
   (.Shell.openExternal (js/require "nw.gui") path))
 
+(defn copy
+  "Copies given text to platform's clipboard"
+  [text]
+  (.set (.Clipboard.get (js/require "nw.gui")) text "text"))
+
+(defn paste
+  "Returns text of last copy to platform's clipboard"
+  []
+  (.get (.Clipboard.get (js/require "nw.gui")) "text"))
+
 (def platform (normalize (.-platform js/process)))
 
 (defn mac? []
