@@ -37,15 +37,13 @@
 (defn text-node [text]
   (js/document.createTextNode text))
 
-(defn $$ [query elem]
-  (let [elem (or elem js/document)
-        res (.querySelectorAll elem (name query))]
-    res))
+(defn $$
+  ([query] ($$ query js/document))
+  ([query elem] (.querySelectorAll elem (name query))))
 
-(defn $ [query elem]
-  (let [elem (or elem js/document)
-        res (.querySelector elem (name query))]
-    res))
+(defn $
+  ([query]  ($ query js/document))
+  ([query elem] (.querySelector elem (name query))))
 
 (defn append [parent child]
   (.appendChild parent child)
