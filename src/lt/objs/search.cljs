@@ -116,9 +116,9 @@
 
 (behavior ::search!
           :triggers #{:search!}
-          :reaction (fn [this]
+          :reaction (fn [this search-info]
                       (object/raise this :clear!)
-                      (let [info (->search-info this)]
+                      (let [info (or search-info (->search-info this))]
                         (when-not (empty? (:search info))
                           (object/merge! this info)
                           (notifos/working "Searching workspace...")
