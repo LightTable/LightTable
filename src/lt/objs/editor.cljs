@@ -8,14 +8,14 @@
             [lt.objs.menu :as menu]
             [lt.util.events :as ev]
             [lt.util.dom :as dom]
-            [lt.util.load :as load])
+            [lt.util.load :as load]
+            [lt.objs.platform :as platform])
   (:use [lt.util.dom :only [remove-class add-class]]
         [lt.object :only [object* behavior*]]
         [lt.util.cljs :only [js->clj]])
   (:require-macros [lt.macros :refer [behavior]]))
 
 (def gui (js/require "nw.gui"))
-(def clipboard (.Clipboard.get gui))
 
 ;;*********************************************************
 ;; commands
@@ -240,14 +240,14 @@
   (.redo (->cm-ed e)))
 
 (defn copy [e]
-  (.set clipboard (selection e) "text"))
+  (platform/copy (selection e)))
 
 (defn cut [e]
   (copy e)
   (replace-selection e ""))
 
 (defn paste [e]
-  (replace-selection e (.get clipboard "text")))
+  (replace-selection e (platform/paste)))
 
 (defn select-all [e]
   (set-selection e
@@ -617,7 +617,7 @@
                                       (cut this))}
                             {:label "Paste"
                              :order 3
-                             :enabled (boolean (not (empty? (.get clipboard "text"))))
+                             :enabled (boolean (not (empty? (platform/paste))))
                              :click (fn []
                                       (paste this))}
                             {:type "separator"
