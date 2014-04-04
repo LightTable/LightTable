@@ -371,6 +371,20 @@
 (defn fold-code [e]
   (.foldCode (->cm-ed e) (cursor e)))
 
+(defn add-gutter [e class-name width]
+  (let [gutter-classes (set (conj (js->clj (option e "gutters")) class-name))
+        gutter-div (dom/$ :div.CodeMirror-gutters (object/->content e))
+        gutter-divs (dom/$$ :div.CodeMirror-gutter gutter-div)
+        current-widths (reduce (fn [res gutter]
+                                 (let [gutter-class (clojure.string/replace-first (dom/attr gutter "class") "CodeMirror-gutter " "")]
+                                   (assoc res gutter-class (dom/width gutter)))
+                                 ) {} gutter-divs)
+        new-gutter-widths (assoc current-widths class-name width)]
+    (operation e (fn[]
+                   (set-options e {:gutters (clj->js gutter-classes)})
+                   (doseq [[k v] new-gutter-widths]
+                     (dom/set-css (dom/$ (str "div." k) gutter-div) {"width" (str v "px")}))))))
+
 ;;*********************************************************
 ;; Object
 ;;*********************************************************
