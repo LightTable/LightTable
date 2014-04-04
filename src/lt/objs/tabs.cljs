@@ -502,11 +502,11 @@
 (behavior ::tabset-menu
           :triggers #{:menu!}
           :reaction (fn [this ev]
-                      (-> (menu/menu (sort-by :order (object/raise-reduce this :tabset-menu-items [])))
+                      (-> (menu/menu (sort-by :order (object/raise-reduce this :menu+ [])))
                           (menu/show-menu (.-clientX ev) (.-clientY ev)))))
 
 (behavior ::tabset-menu-items
-          :triggers #{:tabset-menu-items}
+          :triggers #{:menu+}
           :reaction (fn [this items]
                       (conj items
                             {:label "New tabset"
