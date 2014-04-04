@@ -40,14 +40,14 @@
 
 (defn ->name [e]
   (or
-   (-> @e :info :name)
-   (@e :name)
+   (get-in @e [:info :name])
+   (:name @e)
    "unknown"))
 
 (defn ->path [e]
   (or
-   (-> @e :info :path)
-   (@e :path)
+   (get-in @e [:info :path])
+   (:path @e)
    ""))
 
 (defn active? [c e multi]
@@ -62,7 +62,7 @@
   [:span.tab-close "x"]
   :click (fn [] (object/raise obj :close)))
 
-(defui item [multi e pos]
+(defui item [label multi e pos]
   [:li {:class (-> " "
                    (active? e multi)
                    (dirty? e))
@@ -73,17 +73,20 @@
    [:span.file-name
     (->name e)]
    (when (object/raise-reduce e :close-button+ false)
-     (close-tab e))]
+     (close-tab label))]
   :click (fn [ev]
            (if (or (= 1 (.-button ev)) (.-metaKey ev))
-             (object/raise e :close)
+             (object/raise label :close)
              (active! e)))
   :contextmenu (fn [ev]
-                 (-> (menu/menu (sort-by :order (object/raise-reduce e :tab-menu-items [])))
-                     (menu/show-menu (.-clientX ev) (.-clientY ev)))
-                 (dom/prevent ev)
-                 (dom/stop-propagation ev))
-  )
+                 (object/raise label :menu! ev)))
+
+(object/object* ::tab-label
+                :tags #{:tab-label}
+                :init (fn [this multi e pos]
+                        (object/merge! this {::tab-object e})
+                        (item this multi e pos)))
+
 
 (defn update-tab-order [multi children]
   (let [ser (if (vector? children)
@@ -111,12 +114,10 @@
               [:ul
                (for [[idx o] (map vector (range) objs)
                      :when @o]
-                 (item multi o idx))])]
+                 (object/->content (object/create ::tab-label multi o idx)))])]
     (js/sortable item (js-obj "axis" "x" "distance" 10  "scroll" false "opacity" 0.9 "connectWith" ".list"))
     (dom/on item "contextmenu" (fn [e]
-                                 (object/raise multi :menu! e)
-                                 (dom/prevent e)
-                                 (dom/stop-propagation e)))
+                                 (object/raise multi :menu! e)))
     (dom/on item "moved" (fn [e] (move-tab multi (.-opts e)) ))
     (dom/on item "sortupdate" (fn [e] (update-tab-order multi (.-opts e))))
     item))
@@ -492,6 +493,24 @@
           :reaction (fn [this]
                       (activate-tabset (::tabset @this))))
 
+(behavior ::tab-label-menu+
+          :triggers #{:menu+}
+          :reaction (fn [this items]
+                      (conj items
+                            {:label "Move tab to new tabset"
+                             :order 1
+                             :click (fn [] (cmd/exec! :tabs.move-new-tabset (::tab-object this)))}
+                            {:label "Close tab"
+                             :order 2
+                             :click (fn [] (object/raise this :close))})))
+
+(behavior ::on-close-tab-label
+          :triggers #{:close}
+          :reaction (fn [this]
+                      (when-let [e (::tab-object @this)]
+                        (object/raise e :close))
+                      (object/destroy! this)))
+
 (behavior ::tabset-active
           :triggers #{:active}
           :reaction (fn [this]
@@ -499,13 +518,7 @@
                         (when-let [active (:active-obj @this)]
                           (object/raise active :focus!)))))
 
-(behavior ::tabset-menu
-          :triggers #{:menu!}
-          :reaction (fn [this ev]
-                      (-> (menu/menu (sort-by :order (object/raise-reduce this :menu+ [])))
-                          (menu/show-menu (.-clientX ev) (.-clientY ev)))))
-
-(behavior ::tabset-menu-items
+(behavior ::tabset-menu+
           :triggers #{:menu+}
           :reaction (fn [this items]
                       (conj items
@@ -515,18 +528,6 @@
                             {:label "Close tabset"
                              :order 2
                              :click (fn [] (rem-tabset this))})))
-
-
-(behavior ::tab-menu-items
-          :triggers #{:tab-menu-items}
-          :reaction (fn [this items]
-                      (conj items
-                            {:label "Move tab to new tabset"
-                             :order 1
-                             :click (fn [] (cmd/exec! :tabs.move-new-tabset this))}
-                            {:label "Close tab"
-                             :order 2
-                             :click (fn [] (object/raise this :close))})))
 
 (behavior ::left!
           :triggers #{:left!}

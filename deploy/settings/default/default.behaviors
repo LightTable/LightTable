@@ -391,6 +391,9 @@
   :statusbar.console-toggle [:lt.objs.console/statusbar-console-toggle
                              :lt.objs.console/statusbar-console-hide
                              :lt.objs.console/statusbar-console-show]
+  :tab-label [:lt.objs.menu/menu!
+              :lt.objs.tabs/tab-label-menu+
+              :lt.objs.tabs/on-close-tab-label]
   :tab-options [:lt.objs.editor.pool/focus-options]
   :tabs [:lt.objs.tabs/on-destroy-eds :lt.objs.tabs/active-tab-num :lt.objs.tabs/prev-tab :lt.objs.tabs/next-tab :lt.objs.tabs/tab-close :lt.objs.tabs/repaint-tab-updated
          :lt.objs.tabs/tabset-bottom!
@@ -400,12 +403,11 @@
            :lt.objs.tabs/next-tab :lt.objs.tabs/unset-dragging
            :lt.objs.tabs/repaint-tab-updated :lt.objs.tabs/width!
            :lt.objs.tabs/tab-close :lt.objs.tabs/prev-tab
-           :lt.objs.tabs/reanim-on-drop :lt.objs.tabs/tabset-menu
-           :lt.objs.tabs/no-anim-on-drag :lt.objs.tabs/active-tab-num
-           :lt.objs.tabs/tabset-menu-items :lt.objs.tabs/set-dragging]
+           :lt.objs.tabs/reanim-on-drop :lt.objs.tabs/no-anim-on-drag
+           :lt.objs.tabs/active-tab-num :lt.objs.tabs/tabset-menu+
+           :lt.objs.tabs/set-dragging :lt.objs.menu/menu!]
   :tabset.tab [:lt.objs.tabs/on-destroy-remove
                :lt.objs.tabs/tab-active
-               :lt.objs.tabs/tab-menu-items
                :lt.objs.tabs/show-close-button]
   :tcp.client [:lt.objs.clients.tcp/send!]
   :theme-selector [:lt.objs.style/set-theme-on-select]
