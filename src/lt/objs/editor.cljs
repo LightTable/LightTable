@@ -385,6 +385,20 @@
                    (doseq [[k v] new-gutter-widths]
                      (dom/set-css (dom/$ (str "div." k) gutter-div) {"width" (str v "px")}))))))
 
+(defn remove-gutter [e class-name]
+  (let [gutter-classes (remove #{class-name} (js->clj (option e "gutters")))
+        gutter-div (dom/$ :div.CodeMirror-gutters (object/->content e))
+        gutter-divs (dom/$$ :div.CodeMirror-gutter gutter-div)
+        current-widths (reduce (fn [res gutter]
+                                 (let [gutter-class (clojure.string/replace-first (dom/attr gutter "class") "CodeMirror-gutter " "")]
+                                   (assoc res gutter-class (dom/width gutter)))
+                                 ) {} gutter-divs)]
+    (operation e (fn[]
+                   (set-options e {:gutters (clj->js gutter-classes)})
+                   (doseq [[k v] new-gutter-widths]
+                     (if-let [gutter (dom/$ (str "div." k) gutter-div)]
+                       (dom/set-css gutter {"width" (str v "px")})))))))
+
 ;;*********************************************************
 ;; Object
 ;;*********************************************************
