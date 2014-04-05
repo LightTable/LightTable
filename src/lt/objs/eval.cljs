@@ -14,7 +14,8 @@
             [crate.binding :refer [bound]]
             [lt.objs.console :as console]
             [lt.util.dom :as dom]
-            [clojure.string :as string])
+            [clojure.string :as string]
+            [lt.objs.platform :as platform])
   (:require-macros [lt.macros :refer [behavior defui]]))
 
 (defui button [label & [cb]]
@@ -194,7 +195,9 @@
           :triggers #{:menu!}
           :reaction (fn [this ev]
                       (-> (menu/menu [{:label "Remove result"
-                                       :click (fn [] (object/raise this :clear!))}])
+                                       :click (fn [] (object/raise this :clear!))}
+                                      {:label "Copy result"
+                                       :click (fn [] (object/raise this :copy))}])
                           (menu/show-menu (.-clientX ev) (.-clientY ev)))
                       (dom/prevent ev)
                       (dom/stop-propagation ev)))
@@ -227,6 +230,11 @@
                         (.clear (:mark @this))
                         (object/raise this :clear)
                         (object/raise this :cleared))))
+
+(behavior ::copy-result
+          :triggers #{:copy}
+          :reaction (fn [this]
+                      (platform/copy (:result @this))))
 
 (behavior ::changed
           :triggers #{:changed}
