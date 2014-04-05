@@ -373,29 +373,29 @@
 
 (defn add-gutter [e class-name width]
   (let [gutter-classes (set (conj (js->clj (option e "gutters")) class-name))
-        gutter-div (dom/$ :div.CodeMirror-gutters (object/->content e))
-        gutter-divs (dom/$$ :div.CodeMirror-gutter gutter-div)
-        current-widths (reduce (fn [res gutter]
-                                 (let [gutter-class (clojure.string/replace-first (dom/attr gutter "class") "CodeMirror-gutter " "")]
-                                   (assoc res gutter-class (dom/width gutter)))
-                                 ) {} gutter-divs)
+        current-widths (gutter-widths e)
         new-gutter-widths (assoc current-widths class-name width)]
-    (operation e (fn[]
-                   (set-options e {:gutters (clj->js gutter-classes)})
-                   (doseq [[k v] new-gutter-widths]
-                     (dom/set-css (dom/$ (str "div." k) gutter-div) {"width" (str v "px")}))))))
+    (update-gutters e gutter-classes new-gutter-widths)))
 
 (defn remove-gutter [e class-name]
   (let [gutter-classes (remove #{class-name} (js->clj (option e "gutters")))
-        gutter-div (dom/$ :div.CodeMirror-gutters (object/->content e))
+        current-widths (gutter-widths e)]
+    (update-gutters e gutter-classes current-widths)))
+
+(defn gutter-widths [e]
+  (let [gutter-div (dom/$ :div.CodeMirror-gutters (object/->content e))
         gutter-divs (dom/$$ :div.CodeMirror-gutter gutter-div)
         current-widths (reduce (fn [res gutter]
                                  (let [gutter-class (clojure.string/replace-first (dom/attr gutter "class") "CodeMirror-gutter " "")]
                                    (assoc res gutter-class (dom/width gutter)))
                                  ) {} gutter-divs)]
+    current-widths))
+
+(defn update-gutters [e class-names class-widths]
+  (let [gutter-div (dom/$ :div.CodeMirror-gutters (object/->content e))]
     (operation e (fn[]
-                   (set-options e {:gutters (clj->js gutter-classes)})
-                   (doseq [[k v] new-gutter-widths]
+                   (set-options e {:gutters (clj->js class-names)})
+                   (doseq [[k v] class-widths]
                      (if-let [gutter (dom/$ (str "div." k) gutter-div)]
                        (dom/set-css gutter {"width" (str v "px")})))))))
 
