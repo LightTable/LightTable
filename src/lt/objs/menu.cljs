@@ -48,7 +48,7 @@
       (.removeAt m 0))))
 
 (defn menu [items]
-  (clear!)
+  (clear! menu-instance)
   (doseq [i items]
     (.append menu-instance (menu-item i)))
   menu-instance)
