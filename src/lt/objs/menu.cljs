@@ -43,8 +43,9 @@
     (mi. (clj->js opts))))
 
 (defn clear! [menu]
-  (dotimes [i (.-items.length (or menu menu-instance))]
-    (.removeAt (or menu menu-instance) 0)))
+  (let [m (or menu menu-instance)]
+    (dotimes [i (.-items.length m)]
+      (.removeAt m 0))))
 
 (defn menu [items]
   (clear!)
