@@ -109,7 +109,7 @@ input { color: var(highlight-fg); background:var(highlight-bg); }
 #multi-container { background: var(bg); }
 #multi .list { background:transparent; }
 #multi .list li { box-sizing:border-box; height:29px; }
-#multi .list .active, #multi .list li:hover { background:var(multi); color:var(highlight-fg); }
+#multi .list .active, #multi .list li:hover { background:var(multi); color:var(highlight-fg); border-radius:5px 5px 0px 0px; }
 #multi .list .dirty { color:var(accent-foreground); }
 #multi .list .dirty .file-name:after { content: "*"; }
 #multi .list.dragging li { background:transparent !important; }
