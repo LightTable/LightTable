@@ -202,7 +202,7 @@
   ed)
 
 (defn move-cursor [ed pos]
-  (.setCursor (->cm-ed ed) (clj->js pos)))
+  (.setCursor (->cm-ed ed) (clj->js (or pos {:line 0 :ch 0}))))
 
 (defn scroll-to [ed x y]
   (.scrollTo (->cm-ed ed) x y))
