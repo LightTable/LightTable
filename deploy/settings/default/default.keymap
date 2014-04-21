@@ -5,7 +5,9 @@
            "pmeta-shift-f" [:searcher.show]
            "ctrl-shift-d" [:docs.search.show]
            "pmeta-n" [:new-file]
-           "ctrl-space" [:show-commandbar-transient]}
+           "ctrl-space" [:show-commandbar-transient]
+           "pmeta-shift-=" [:window.zoom-in]
+           "pmeta--" [:window.zoom-out]}
      :editor {"pmeta-enter" [:eval-editor-form]
               "pmeta-shift-enter" [:eval-editor]
               "pmeta-s" [:save]
