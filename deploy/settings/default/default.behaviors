@@ -162,6 +162,7 @@
            :lt.plugins.auto-paren/close-pair :lt.objs.editor.pool/track-active
            :lt.objs.editor.pool/ed-close :lt.objs.editor/menu!
            :lt.objs.editor.pool/warn-on-active :lt.objs.editor/refresh!
+           (:lt.objs.editor.pool/line-comment-options {})
            :lt.plugins.auto-paren/repeat-pair
            :lt.plugins.auto-complete/async-hint-tokens
            :lt.objs.editor/copy-paste-menu+
