@@ -371,17 +371,6 @@
 (defn fold-code [e]
   (.foldCode (->cm-ed e) (cursor e)))
 
-(defn add-gutter [e class-name width]
-  (let [gutter-classes (set (conj (js->clj (option e "gutters")) class-name))
-        current-widths (gutter-widths e)
-        new-gutter-widths (assoc current-widths class-name width)]
-    (update-gutters e gutter-classes new-gutter-widths)))
-
-(defn remove-gutter [e class-name]
-  (let [gutter-classes (remove #{class-name} (js->clj (option e "gutters")))
-        current-widths (gutter-widths e)]
-    (update-gutters e gutter-classes current-widths)))
-
 (defn gutter-widths [e]
   (let [gutter-div (dom/$ :div.CodeMirror-gutters (object/->content e))
         gutter-divs (dom/$$ :div.CodeMirror-gutter gutter-div)
@@ -398,6 +387,17 @@
                    (doseq [[k v] class-widths]
                      (if-let [gutter (dom/$ (str "div." k) gutter-div)]
                        (dom/set-css gutter {"width" (str v "px")})))))))
+
+(defn add-gutter [e class-name width]
+  (let [gutter-classes (set (conj (js->clj (option e "gutters")) class-name))
+        current-widths (gutter-widths e)
+        new-gutter-widths (assoc current-widths class-name width)]
+    (update-gutters e gutter-classes new-gutter-widths)))
+
+(defn remove-gutter [e class-name]
+  (let [gutter-classes (remove #{class-name} (js->clj (option e "gutters")))
+        current-widths (gutter-widths e)]
+    (update-gutters e gutter-classes current-widths)))
 
 ;;*********************************************************
 ;; Object
