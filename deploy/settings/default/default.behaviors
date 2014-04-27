@@ -162,6 +162,7 @@
            :lt.plugins.auto-paren/close-pair :lt.objs.editor.pool/track-active
            :lt.objs.editor.pool/ed-close :lt.objs.editor/menu!
            :lt.objs.editor.pool/warn-on-active :lt.objs.editor/refresh!
+           (:lt.objs.editor.pool/line-comment-options {})
            :lt.plugins.auto-paren/repeat-pair
            :lt.plugins.auto-complete/async-hint-tokens
            :lt.objs.editor/copy-paste-menu+
@@ -306,7 +307,8 @@
                   :lt.objs.eval/expand-on-click :lt.objs.eval/clear-mark
                   :lt.objs.eval/move-mark :lt.objs.eval/changed
                   :lt.objs.eval/update!
-                  :lt.objs.eval/destroy-on-cleared]
+                  :lt.objs.eval/destroy-on-cleared
+                  :lt.objs.eval/copy-result]
   :inline.underline-result [:lt.objs.eval/result-menu! :lt.objs.eval/ex-clear :lt.objs.eval/destroy-on-clear]
   :inline.watch [:lt.plugins.watches/clear!]
   :inspector.object [:lt.objs.clients.devtools/clear-inspector-object]

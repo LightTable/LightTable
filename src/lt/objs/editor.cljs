@@ -202,7 +202,7 @@
   ed)
 
 (defn move-cursor [ed pos]
-  (.setCursor (->cm-ed ed) (clj->js pos)))
+  (.setCursor (->cm-ed ed) (clj->js (or pos {:line 0 :ch 0}))))
 
 (defn scroll-to [ed x y]
   (.scrollTo (->cm-ed ed) x y))
@@ -370,6 +370,34 @@
 
 (defn fold-code [e]
   (.foldCode (->cm-ed e) (cursor e)))
+
+(defn gutter-widths [e]
+  (let [gutter-div (dom/$ :div.CodeMirror-gutters (object/->content e))
+        gutter-divs (dom/$$ :div.CodeMirror-gutter gutter-div)
+        current-widths (reduce (fn [res gutter]
+                                 (let [gutter-class (clojure.string/replace-first (dom/attr gutter "class") "CodeMirror-gutter " "")]
+                                   (assoc res gutter-class (dom/width gutter)))
+                                 ) {} gutter-divs)]
+    current-widths))
+
+(defn update-gutters [e class-names class-widths]
+  (let [gutter-div (dom/$ :div.CodeMirror-gutters (object/->content e))]
+    (operation e (fn[]
+                   (set-options e {:gutters (clj->js class-names)})
+                   (doseq [[k v] class-widths]
+                     (if-let [gutter (dom/$ (str "div." k) gutter-div)]
+                       (dom/set-css gutter {"width" (str v "px")})))))))
+
+(defn add-gutter [e class-name width]
+  (let [gutter-classes (set (conj (js->clj (option e "gutters")) class-name))
+        current-widths (gutter-widths e)
+        new-gutter-widths (assoc current-widths class-name width)]
+    (update-gutters e gutter-classes new-gutter-widths)))
+
+(defn remove-gutter [e class-name]
+  (let [gutter-classes (remove #{class-name} (js->clj (option e "gutters")))
+        current-widths (gutter-widths e)]
+    (update-gutters e gutter-classes current-widths)))
 
 ;;*********************************************************
 ;; Object

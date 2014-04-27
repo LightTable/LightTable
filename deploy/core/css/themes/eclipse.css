@@ -1,6 +1,6 @@
 #multi.theme-eclipse .content { background:#f6f6f6; }
 #multi.theme-eclipse .list .active, #multi.theme-eclipse .list li:hover { background:#f6f6f6; color:#333; }
-#multi.theme-eclipse .list .dirty { color:#red; }
+#multi.theme-eclipse .list .dirty { color:red; }
 
 .cm-s-eclipse { background: #f6f6f6; }
 

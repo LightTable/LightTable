@@ -19,7 +19,7 @@
   (js/require (str pwd "/core/node_modules/" path)))
 
 (defn- abs-source-mapping-url [code file]
-  (if-let [path-to-source-map (second (re-find #"\n//# sourceMappingURL=(.*)" code))]
+  (if-let [path-to-source-map (second (re-find #"\n//# sourceMappingURL=(.*\.map)" code))]
     (if-not (absolute? path-to-source-map)
       (let [abs-path-to-source-map (string/replace (.join fpath (.dirname fpath file) path-to-source-map) "\\" "/")
             abs-path-to-source-map (if (= separator "\\")

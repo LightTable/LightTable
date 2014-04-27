@@ -71,7 +71,9 @@
 (defui search-box [this]
   [:input.search {:type "text" :placeholder "Search"}]
   :focus (fn []
-           (ctx/in! :searcher.search this))
+           (ctx/in! :searcher.search this)
+           ; select the text automatically pasted to input line for some UI conveniece
+           (.select (dom/$ :input.search (object/->content this))))
   :blur (fn []
           (ctx/out! :searcher.search)))
 

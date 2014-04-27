@@ -59,4 +59,6 @@
   :desc "Editor: Jump to file/pos"
   :hidden true
   :exec (fn [file pos]
+          (when-let [ed (lt.objs.editor.pool/last-active)]
+            (object/raise jump-stack :jump-stack.push! ed file pos))
           (jump-to file pos))})
