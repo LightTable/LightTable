@@ -58,7 +58,8 @@
    :- add})
 
 (defn apply-diff [diff]
-  (reset! object/tags (behavior-diff diff @object/tags)))
+  (let [final (behavior-diff diff {:+ @object/tags })]
+    (reset! object/tags (:+ final))))
 
 (defn parse-file [file final]
   (-> (files/open-sync file)
