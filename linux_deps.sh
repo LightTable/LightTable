@@ -7,9 +7,10 @@ if [ "$(echo `lein version` | grep 'Leiningen 1.\|2.0')" ]; then
 fi
 
 which curl &> /dev/null
-if [ $? -ne 0 ]; then
-	echo "Please install curl before running this."
-	exit
+retCode=$?
+if [ $retCode -ne 0 ]; then
+    echo "ERROR: curl not found. Please install curl before running this script."
+    exit $retCode
 fi
 
 echo "### Fetching binaries ###"
