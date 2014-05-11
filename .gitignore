@@ -1,5 +1,6 @@
 cljs/
 target/
+binaries/node-webkit/LightTableLinux*.tar.gz
 deploy/settings/user/*
 deploy/settings/default.clj
 deploy/plugins/

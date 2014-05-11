@@ -1,0 +1,3 @@
+[submodule "binaries/clojure"]
+	path = binaries/clojure
+	url = https://github.com/LightTable/Clojure.git
