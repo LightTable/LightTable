@@ -1,3 +1,5 @@
+See [docs.lighttable.com](http://docs.lighttable.com/) for user documentation and tutorials.
+
 # Initial setup
 
 First install or update [leiningen](http://leiningen.org/).
@@ -225,3 +227,9 @@ Commands can also be bound to key chords. Run the command `Settings: Default key
 # Plugins
 
 See [LightTable-Declassifier](https://github.com/LightTable/LightTable-Declassifier) for an example ClojureScript plugin.
+
+# Other documentation
+
+* [Clojurescript for Light Table users](https://github.com/swannodette/lt-cljs-tutorial) by David Nolen
+* [Getting started programming Light Table](http://devblog.reverb.com/post/85325435561/getting-started-programming-light-table) by Joshua Emmons.
+* [Light Table plugin tutorial](http://blog.jakubarnold.cz/2014/01/13/light-table-plugin-tutorial.html) by Jakub Arnold
