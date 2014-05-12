@@ -43,11 +43,12 @@
     (mi. (clj->js opts))))
 
 (defn clear! [menu]
-  (dotimes [i (.-items.length (or menu menu-instance))]
-    (.removeAt (or menu menu-instance) 0)))
+  (let [m (or menu menu-instance)]
+    (dotimes [i (.-items.length m)]
+      (.removeAt m 0))))
 
 (defn menu [items]
-  (clear!)
+  (clear! menu-instance)
   (doseq [i items]
     (.append menu-instance (menu-item i)))
   menu-instance)
@@ -156,6 +157,8 @@
                                            (cmd-item "Maximize" :window.maximize)
                                            (cmd-item "Fullscreen" :window.fullscreen)]}
                 {:label "Help" :submenu [(cmd-item "Documentation" :show-docs)
+                                         {:label "Report an Issue" :click #(do
+                                                                             (cmd/exec! :add-browser-tab "https://github.com/LightTable/LightTable/issues?state=open"))}  ;; TODO: Add report an issue on GitHub menu item - TWM
                                          (when-not (platform/mac?)
                                            (cmd-item "About Light Table" :version))]}
                 ]))

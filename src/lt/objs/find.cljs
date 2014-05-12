@@ -63,6 +63,12 @@
 (defn set-val [this v]
   (dom/val (dom/$ :input.find (object/->content this)) v))
 
+(behavior ::show!
+          :triggers #{:show!}
+          :reaction (fn [this]
+                      (object/merge! this {:pos (when-let [ed (pool/last-active)]
+                                                  (editor/->cursor ed))})))
+
 (behavior ::hide!
           :triggers #{:hide!}
           :reaction (fn [this]
@@ -120,6 +126,8 @@
                       (if (empty? v)
                         (object/raise this :clear!)
                         (when-let [e (pool/last-active)]
+                          (when-let [pos (:pos @this)]
+                            (editor/move-cursor e pos))
                           (object/merge! this {:searching? true})
                           (object/merge! e {:searching.for v})
                           (let [ed (editor/->cm-ed e)]
@@ -132,6 +140,7 @@
                 :searching? false
                 :reverse? false
                 :shown false
+                :pos nil
                 :init (fn [this]
                         [:div#find-bar
                          (input this)

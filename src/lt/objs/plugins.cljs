@@ -520,7 +520,7 @@
                       (object/merge! app/app {::plugins (available-plugins)})
                       (let [ul (dom/$ :.plugins (object/->content this))]
                         (dom/empty ul)
-                        (dom/append ul (dom/fragment (map installed-plugin-ui (->> @app/app ::plugins vals (sort-by :name))))))))
+                        (dom/append ul (dom/fragment (map installed-plugin-ui (->> @app/app ::plugins vals (sort-by #(.toUpperCase (:name %))))))))))
 
 (behavior ::on-close
           :triggers #{:close}

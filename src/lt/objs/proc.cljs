@@ -48,8 +48,7 @@
   (let [proc (spawn command
                     (when (seq args) (clj->js args))
                     (js-obj "cwd" cwd?
-                            "env" (merge-env env)
-                            "windowsVerbatimArguments" (when (= js/process.platform "win32") true)))]
+                            "env" (merge-env env)))]
     (add! proc)
     (.on proc "exit" (partial rem! proc))
     (.on proc "error" #(when @obj

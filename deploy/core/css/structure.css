@@ -73,8 +73,8 @@ body { -webkit-user-select: none; }
 
 #multi .list span { display:inline-block; vertical-align:middle; }
 
-#multi .list .tab-close { width:0; overflow:hidden; box-sizing:border-box; margin-left:5px; border-radius:2px; }
-#multi li:hover .tab-close { width:17px; padding:0 5px; }
+#multi .list .tab-close { width:17px; padding:0 5px; visibility:hidden; margin-left:10px; overflow:hidden; box-sizing:border-box; border-radius:2px; }
+#multi li:hover .tab-close { width:17px; padding:0 5px; visibility:visible; margin-left:10px; }
 
 #multi .content { left:0px; right:10px; position:absolute; top:36px; bottom:0; padding-left:10px; white-space:normal;}
 #multi .content > * { width:100%; height:100%; box-sizing:border-box; }

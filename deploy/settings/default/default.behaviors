@@ -140,6 +140,7 @@
   :console [:lt.objs.console/on-close
             :lt.objs.menu/menu!
             :lt.objs.console/menu+]
+  :context [:lt.objs.context/log]
   :document [:lt.objs.document/try-close-root-document :lt.objs.document/close-root-document]
   :document.linked [:lt.objs.document/close-linked-document]
   :docs [:lt.objs.docs/on-close-destroy]
@@ -161,6 +162,7 @@
            :lt.plugins.auto-paren/close-pair :lt.objs.editor.pool/track-active
            :lt.objs.editor.pool/ed-close :lt.objs.editor/menu!
            :lt.objs.editor.pool/warn-on-active :lt.objs.editor/refresh!
+           (:lt.objs.editor.pool/line-comment-options {})
            :lt.plugins.auto-paren/repeat-pair
            :lt.plugins.auto-complete/async-hint-tokens
            :lt.objs.editor/copy-paste-menu+
@@ -285,7 +287,7 @@
                 :lt.objs.sidebar.command/move-selection
                 :lt.objs.sidebar.command/set-selection!
                 :lt.objs.sidebar.command/filter-active]
-  :find-bar [:lt.objs.find/clear! :lt.objs.find/next!
+  :find-bar [:lt.objs.find/clear! :lt.objs.find/next! :lt.objs.find/show!
              :lt.objs.find/focus! :lt.objs.find/hide! :lt.objs.find/prev!
              :lt.objs.find/replace!
              :lt.objs.find/search!]
@@ -305,7 +307,8 @@
                   :lt.objs.eval/expand-on-click :lt.objs.eval/clear-mark
                   :lt.objs.eval/move-mark :lt.objs.eval/changed
                   :lt.objs.eval/update!
-                  :lt.objs.eval/destroy-on-cleared]
+                  :lt.objs.eval/destroy-on-cleared
+                  :lt.objs.eval/copy-result]
   :inline.underline-result [:lt.objs.eval/result-menu! :lt.objs.eval/ex-clear :lt.objs.eval/destroy-on-clear]
   :inline.watch [:lt.plugins.watches/clear!]
   :inspector.object [:lt.objs.clients.devtools/clear-inspector-object]
@@ -390,6 +393,9 @@
   :statusbar.console-toggle [:lt.objs.console/statusbar-console-toggle
                              :lt.objs.console/statusbar-console-hide
                              :lt.objs.console/statusbar-console-show]
+  :tab-label [:lt.objs.menu/menu!
+              :lt.objs.tabs/tab-label-menu+
+              :lt.objs.tabs/on-close-tab-label]
   :tab-options [:lt.objs.editor.pool/focus-options]
   :tabs [:lt.objs.tabs/on-destroy-eds :lt.objs.tabs/active-tab-num :lt.objs.tabs/prev-tab :lt.objs.tabs/next-tab :lt.objs.tabs/tab-close :lt.objs.tabs/repaint-tab-updated
          :lt.objs.tabs/tabset-bottom!
@@ -399,11 +405,12 @@
            :lt.objs.tabs/next-tab :lt.objs.tabs/unset-dragging
            :lt.objs.tabs/repaint-tab-updated :lt.objs.tabs/width!
            :lt.objs.tabs/tab-close :lt.objs.tabs/prev-tab
-           :lt.objs.tabs/reanim-on-drop :lt.objs.tabs/tabset-menu
-           :lt.objs.tabs/no-anim-on-drag :lt.objs.tabs/active-tab-num
-           :lt.objs.tabs/set-dragging]
+           :lt.objs.tabs/reanim-on-drop :lt.objs.tabs/no-anim-on-drag
+           :lt.objs.tabs/active-tab-num :lt.objs.tabs/tabset-menu+
+           :lt.objs.tabs/set-dragging :lt.objs.menu/menu!]
   :tabset.tab [:lt.objs.tabs/on-destroy-remove
-               :lt.objs.tabs/tab-active]
+               :lt.objs.tabs/tab-active
+               :lt.objs.tabs/show-close-button]
   :tcp.client [:lt.objs.clients.tcp/send!]
   :theme-selector [:lt.objs.style/set-theme-on-select]
   :tree-item [:lt.objs.sidebar.workspace/rename-submit

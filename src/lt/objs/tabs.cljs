@@ -33,53 +33,6 @@
           (set! (.-scrollLeft gp) (+ (- right pwidth) 50)))
         ))))
 
-(behavior ::on-destroy-remove
-          :triggers #{:destroy :closed}
-          :reaction (fn [this]
-                      (rem! this)
-                      ))
-
-(behavior ::active-tab-num
-          :triggers #{:tab}
-          :reaction (fn [this num]
-                      (let [objs (@this :objs)]
-                        (if (< num (count objs))
-                          (active! (get objs num))
-                          (active! (get objs (dec (count objs))))))
-                      ))
-
-(behavior ::prev-tab
-          :triggers #{:tab.prev}
-          :throttle 100
-          :reaction (fn [this]
-                      (let [objs (@this :objs)
-                            idx (->index (:active-obj @this))]
-                        (if (> idx 0)
-                          (active! (get objs (dec idx)))
-                          (active! (get objs (dec (count objs))))))
-                      ))
-
-(behavior ::next-tab
-          :triggers #{:tab.next}
-          :throttle 100
-          :reaction (fn [this]
-                      (let [objs (@this :objs)
-                            idx (inc (->index (:active-obj @this)))]
-                        (if (< idx (count objs))
-                          (active! (get objs idx))
-                          (active! (get objs 0))))
-                      ))
-
-(behavior ::tab-close
-          :triggers #{:tab.close}
-          :reaction (fn [this]
-                      (try
-                        (let [orig (:active-obj @this)]
-                          (object/raise orig :close))
-                        (catch js/Error e
-                          (js/lt.objs.console.error e))
-                        (catch js/global.Error e
-                          (js/lt.objs.console.error e)))))
 
 (defn ->index [obj]
   (when (and obj @obj (::tabset @obj))
@@ -87,14 +40,14 @@
 
 (defn ->name [e]
   (or
-   (-> @e :info :name)
-   (@e :name)
+   (get-in @e [:info :name])
+   (:name @e)
    "unknown"))
 
 (defn ->path [e]
   (or
-   (-> @e :info :path)
-   (@e :path)
+   (get-in @e [:info :path])
+   (:path @e)
    ""))
 
 (defn active? [c e multi]
@@ -109,7 +62,7 @@
   [:span.tab-close "x"]
   :click (fn [] (object/raise obj :close)))
 
-(defui item [multi e pos]
+(defui item [label multi e pos]
   [:li {:class (-> " "
                    (active? e multi)
                    (dirty? e))
@@ -119,16 +72,21 @@
         :pos pos}
    [:span.file-name
     (->name e)]
-   (close-tab e)]
+   (when (object/raise-reduce e :close-button+ false)
+     (close-tab label))]
   :click (fn [ev]
            (if (or (= 1 (.-button ev)) (.-metaKey ev))
-             (object/raise e :close)
+             (object/raise label :close)
              (active! e)))
   :contextmenu (fn [ev]
-                 (menu! e ev)
-                 (dom/prevent ev)
-                 (dom/stop-propagation ev))
-  )
+                 (object/raise label :menu! ev)))
+
+(object/object* ::tab-label
+                :tags #{:tab-label}
+                :init (fn [this multi e pos]
+                        (object/merge! this {::tab-object e})
+                        (item this multi e pos)))
+
 
 (defn update-tab-order [multi children]
   (let [ser (if (vector? children)
@@ -156,27 +114,13 @@
               [:ul
                (for [[idx o] (map vector (range) objs)
                      :when @o]
-                 (item multi o idx))])]
+                 (object/->content (object/create ::tab-label multi o idx)))])]
     (js/sortable item (js-obj "axis" "x" "distance" 10  "scroll" false "opacity" 0.9 "connectWith" ".list"))
     (dom/on item "contextmenu" (fn [e]
-                                 (object/raise multi :menu! e)
-                                 (dom/prevent e)
-                                 (dom/stop-propagation e)))
+                                 (object/raise multi :menu! e)))
     (dom/on item "moved" (fn [e] (move-tab multi (.-opts e)) ))
     (dom/on item "sortupdate" (fn [e] (update-tab-order multi (.-opts e))))
     item))
-
-(behavior ::on-destroy-objs
-          :triggers #{:destroy}
-          :reaction (fn [this]
-                      (doseq [e (:objs @this)]
-                        (object/destroy! e))
-                      ))
-
-(behavior ::repaint-tab-updated
-          :triggers #{:tab.updated}
-          :reaction (fn [this]
-                      (object/update! this [:count] inc)))
 
 (defui tabbed-item [active item]
   [:div.content {:style {:display (bound active #(if (= % @item)
@@ -240,61 +184,6 @@
     (doseq [ts tss]
       (object/merge! ts {:width width}))))
 
-(behavior ::no-anim-on-drag
-          :triggers #{:start-drag}
-          :reaction (fn [this]
-                      (anim/off)))
-
-(behavior ::reanim-on-drop
-          :triggers #{:end-drag}
-          :reaction (fn [this]
-                      (anim/on)))
-
-(behavior ::set-dragging
-          :triggers #{:start-drag}
-          :reaction (fn [this]
-                      (dom/add-class (dom/$ :body) :dragging)
-                      ))
-
-(behavior ::unset-dragging
-          :triggers #{:end-drag}
-          :reaction (fn [this]
-                      (dom/remove-class (dom/$ :body) :dragging)
-                      ))
-
-(behavior ::set-width-final!
-          :triggers #{:end-drag}
-          :reaction (fn [this e]
-                      (when-let [ts (next-tabset this)]
-                        (let [width (dom/width (object/->content multi))
-                              left (:left @multi)
-                              cx (.-clientX e)
-                              new-loc (- (+ width left) cx)
-                              new-perc (floored (int (- 100 (previous-tabset-width this) (to-perc width new-loc))))
-                              prev-width (:width @this)
-                              new-perc (if (>= new-perc (+ (:width @ts) prev-width))
-                                         (+ (:width @ts) prev-width)
-                                         new-perc)
-                              next-width (floored
-                                          (if-not ts
-                                            1
-                                            (+ (:width @ts) (- prev-width new-perc))))]
-                          (cond
-                           (= new-perc 0) (rem-tabset this)
-                           (= next-width 0) (rem-tabset ts :prev)
-                           :else
-                           (when-not (= cx 0)
-                             (if (or (< new-perc 0) )
-                               (object/merge! this {:width 100})
-                               (when (and (not= cx 0)
-                                          ts
-                                          (>= new-perc 0)
-                                          (>= next-width 0))
-                                 (object/merge! this {:width new-perc})
-                                 (if ts
-                                   (object/merge! ts {:width next-width})
-                                   (spawn-tabset)
-                                   )))))))))
 
 (defn temp-width [ts w]
   (dom/css (object/->content ts) {:width (->perc w)
@@ -302,38 +191,6 @@
                                                   0
                                                   "")}))
 
-(behavior ::width!
-          :triggers #{:width!}
-          :reaction (fn [this e]
-                      (let [width (dom/width (object/->content multi))
-                            left (:left @multi)
-                            cx (.-clientX e)
-                            new-loc (- (+ width left) cx)
-                            new-perc (floored (int (- 100 (previous-tabset-width this) (to-perc width new-loc))))
-                            prev-width (:width @this)
-                            ts (next-tabset this)
-                            new-perc (if (and ts
-                                              (>= new-perc (+ (:width @ts) prev-width)))
-                                       (+ (:width @ts) prev-width)
-                                       new-perc)
-                            next-width (floored
-                                        (if-not ts
-                                          1
-                                          (+ (:width @ts) (- prev-width new-perc))))]
-                        ;(println (.-clientX e) (.-clientY e) (.-screenX e) (.-screenY e) (js->clj (js/Object.keys e)))
-                        (when-not (= cx 0)
-                          (if (or (< new-perc 0) )
-                            (temp-width this 100)
-                            (when (and (not= cx 0)
-                                       ts
-                                       (>= new-perc 0)
-                                       (>= next-width 0))
-                              (temp-width this new-perc)
-                              (if ts
-                                (temp-width ts next-width)
-                                (spawn-tabset))))))
-                      (set! start (now))
-                      ))
 
 (defn activate-tabset [ts]
   (when-not (= (ctx/->obj :tabset) ts)
@@ -343,28 +200,7 @@
     (dom/add-class (object/->content ts) :active)
     true))
 
-(behavior ::tab-active
-          :triggers #{:active}
-          :reaction (fn [this]
-                      (activate-tabset (::tabset @this))))
 
-(behavior ::tabset-active
-          :triggers #{:active}
-          :reaction (fn [this]
-                      (when (activate-tabset this)
-                        (when-let [active (:active-obj @this)]
-                          (object/raise active :focus!)))))
-
-(behavior ::tabset-menu
-          :triggers #{:menu!}
-          :reaction (fn [this ev]
-                      (-> (menu/menu [{:label "New tabset"
-                                       :click (fn [] (cmd/exec! :tabset.new))}
-                                      {:label "Close tabset"
-                                       :click (fn [] (rem-tabset this))}
-                                      ])
-                          (menu/show-menu (.-clientX ev) (.-clientY ev)))
-                      ))
 
 (defui tabset-ui [this]
   [:div.tabset {:style {:width (bound (subatom this :width) ->perc)}}
@@ -390,29 +226,6 @@
   (for [k tabs]
     (object/->content k)))
 
-(behavior ::left!
-          :triggers #{:left!}
-          :reaction (fn [this v]
-                      (object/update! this [:left] + v)
-                      (object/raise this :resize)))
-
-(behavior ::right!
-          :triggers #{:right!}
-          :reaction (fn [this v]
-                      (object/update! this [:right] + v)
-                      (object/raise this :resize)))
-
-(behavior ::bottom!
-          :triggers #{:bottom!}
-          :reaction (fn [this v]
-                      (object/update! this [:bottom] + v)
-                      (object/raise this :resize)))
-
-(behavior ::tabset-bottom!
-          :triggers #{:tabset-bottom!}
-          :reaction (fn [this v]
-                      (object/update! this [:tabset-bottom] + v)
-                      (object/raise this :resize)))
 
 (def multi-def (object* ::multi-editor2
                         :tags #{:tabs}
@@ -438,29 +251,23 @@
 (defn add-tabset [ts]
   (object/update! multi [:tabsets] conj ts)
   (dom/append (:tabsets-elem @multi) (object/->content ts))
-  ;(object/raise ts :active)
   )
 
-(defn rem-tabset [ts prev?]
-  (let [to-ts (if prev?
-                (or (prev-tabset ts) (next-tabset ts))
-                (or (next-tabset ts) (prev-tabset ts)))]
-    (when to-ts
-      (object/merge! to-ts {:width (floored (+ (:width @to-ts) (:width @ts)))})
-      (dom/remove (object/->content ts))
-      (doseq [t (:objs @ts)]
-        (add! t to-ts))
-      (object/update! multi [:tabsets] #(vec (remove #{ts} %)))
-      (object/destroy! ts)
-      (equalize-tabset-widths)
-      (object/raise to-ts :active))))
-
-(defn menu! [obj ev]
-  (-> (menu/menu [{:label "Move tab to new tabset"
-                   :click (fn [] (cmd/exec! :tabs.move-new-tabset obj))}
-                  {:label "Close tab"
-                   :click (fn [] (object/raise obj :close))}])
-      (menu/show-menu (.-clientX ev) (.-clientY ev))))
+(defn rem-tabset
+  ([ts] (rem-tabset ts false))
+  ([ts prev?]
+   (let [to-ts (if prev?
+                 (or (prev-tabset ts) (next-tabset ts))
+                 (or (next-tabset ts) (prev-tabset ts)))]
+     (when to-ts
+       (object/merge! to-ts {:width (floored (+ (:width @to-ts) (:width @ts)))})
+       (dom/remove (object/->content ts))
+       (doseq [t (:objs @ts)]
+         (add! t to-ts))
+       (object/update! multi [:tabsets] #(vec (remove #{ts} %)))
+       (object/destroy! ts)
+       (equalize-tabset-widths)
+       (object/raise to-ts :active)))))
 
 (defn rem! [obj]
   (when (and obj @obj (::tabset @obj))
@@ -521,12 +328,255 @@
   (when-let [cur-tabset (ctx/->obj :tabset)]
     (:active-obj @cur-tabset)))
 
-(append (object/->content canvas/canvas) (:content @multi))
 
 (defn move-tab-to-tabset [obj ts]
   (rem! obj)
   (add! obj ts)
   (active! obj))
+
+;;*********************************************************
+;; Behaviors
+;;*********************************************************
+
+(behavior ::on-destroy-remove
+          :triggers #{:destroy :closed}
+          :reaction (fn [this]
+                      (rem! this)
+                      ))
+
+(behavior ::active-tab-num
+          :triggers #{:tab}
+          :reaction (fn [this num]
+                      (let [objs (@this :objs)]
+                        (if (< num (count objs))
+                          (active! (get objs num))
+                          (active! (get objs (dec (count objs))))))
+                      ))
+
+(behavior ::prev-tab
+          :triggers #{:tab.prev}
+          :throttle 100
+          :reaction (fn [this]
+                      (let [objs (@this :objs)
+                            idx (->index (:active-obj @this))]
+                        (if (> idx 0)
+                          (active! (get objs (dec idx)))
+                          (active! (get objs (dec (count objs))))))
+                      ))
+
+(behavior ::next-tab
+          :triggers #{:tab.next}
+          :throttle 100
+          :reaction (fn [this]
+                      (let [objs (@this :objs)
+                            idx (inc (->index (:active-obj @this)))]
+                        (if (< idx (count objs))
+                          (active! (get objs idx))
+                          (active! (get objs 0))))
+                      ))
+
+(behavior ::tab-close
+          :triggers #{:tab.close}
+          :reaction (fn [this]
+                      (try
+                        (let [orig (:active-obj @this)]
+                          (object/raise orig :close))
+                        (catch js/Error e
+                          (js/lt.objs.console.error e))
+                        (catch js/global.Error e
+                          (js/lt.objs.console.error e)))))
+
+(behavior ::on-destroy-objs
+          :triggers #{:destroy}
+          :reaction (fn [this]
+                      (doseq [e (:objs @this)]
+                        (object/destroy! e))
+                      ))
+
+(behavior ::repaint-tab-updated
+          :triggers #{:tab.updated}
+          :reaction (fn [this]
+                      (object/update! this [:count] inc)))
+
+(behavior ::no-anim-on-drag
+          :triggers #{:start-drag}
+          :reaction (fn [this]
+                      (anim/off)))
+
+(behavior ::reanim-on-drop
+          :triggers #{:end-drag}
+          :reaction (fn [this]
+                      (anim/on)))
+
+(behavior ::set-dragging
+          :triggers #{:start-drag}
+          :reaction (fn [this]
+                      (dom/add-class (dom/$ :body) :dragging)
+                      ))
+
+(behavior ::unset-dragging
+          :triggers #{:end-drag}
+          :reaction (fn [this]
+                      (dom/remove-class (dom/$ :body) :dragging)
+                      ))
+
+(behavior ::set-width-final!
+          :triggers #{:end-drag}
+          :reaction (fn [this e]
+                      (when-let [ts (next-tabset this)]
+                        (let [width (dom/width (object/->content multi))
+                              left (:left @multi)
+                              cx (.-clientX e)
+                              new-loc (- (+ width left) cx)
+                              new-perc (floored (int (- 100 (previous-tabset-width this) (to-perc width new-loc))))
+                              prev-width (:width @this)
+                              new-perc (if (>= new-perc (+ (:width @ts) prev-width))
+                                         (+ (:width @ts) prev-width)
+                                         new-perc)
+                              next-width (floored
+                                          (if-not ts
+                                            1
+                                            (+ (:width @ts) (- prev-width new-perc))))]
+                          (cond
+                           (= new-perc 0) (rem-tabset this)
+                           (= next-width 0) (rem-tabset ts :prev)
+                           :else
+                           (when-not (= cx 0)
+                             (if (or (< new-perc 0) )
+                               (object/merge! this {:width 100})
+                               (when (and (not= cx 0)
+                                          ts
+                                          (>= new-perc 0)
+                                          (>= next-width 0))
+                                 (object/merge! this {:width new-perc})
+                                 (if ts
+                                   (object/merge! ts {:width next-width})
+                                   (spawn-tabset)
+                                   )))))))))
+
+(behavior ::width!
+          :triggers #{:width!}
+          :reaction (fn [this e]
+                      (let [width (dom/width (object/->content multi))
+                            left (:left @multi)
+                            cx (.-clientX e)
+                            new-loc (- (+ width left) cx)
+                            new-perc (floored (int (- 100 (previous-tabset-width this) (to-perc width new-loc))))
+                            prev-width (:width @this)
+                            ts (next-tabset this)
+                            new-perc (if (and ts
+                                              (>= new-perc (+ (:width @ts) prev-width)))
+                                       (+ (:width @ts) prev-width)
+                                       new-perc)
+                            next-width (floored
+                                        (if-not ts
+                                          1
+                                          (+ (:width @ts) (- prev-width new-perc))))]
+                        ;(println (.-clientX e) (.-clientY e) (.-screenX e) (.-screenY e) (js->clj (js/Object.keys e)))
+                        (when-not (= cx 0)
+                          (if (or (< new-perc 0) )
+                            (temp-width this 100)
+                            (when (and (not= cx 0)
+                                       ts
+                                       (>= new-perc 0)
+                                       (>= next-width 0))
+                              (temp-width this new-perc)
+                              (if ts
+                                (temp-width ts next-width)
+                                (spawn-tabset))))))
+                      (set! start (now))
+                      ))
+
+
+(behavior ::tab-active
+          :triggers #{:active}
+          :reaction (fn [this]
+                      (activate-tabset (::tabset @this))))
+
+(behavior ::tab-label-menu+
+          :triggers #{:menu+}
+          :reaction (fn [this items]
+                      (conj items
+                            {:label "Move tab to new tabset"
+                             :order 1
+                             :click (fn [] (cmd/exec! :tabs.move-new-tabset (::tab-object this)))}
+                            {:label "Close tab"
+                             :order 2
+                             :click (fn [] (object/raise this :close))})))
+
+(behavior ::on-close-tab-label
+          :triggers #{:close}
+          :reaction (fn [this]
+                      (when-let [e (::tab-object @this)]
+                        (object/raise e :close))
+                      (object/destroy! this)))
+
+(behavior ::tabset-active
+          :triggers #{:active}
+          :reaction (fn [this]
+                      (when (activate-tabset this)
+                        (when-let [active (:active-obj @this)]
+                          (object/raise active :focus!)))))
+
+(behavior ::tabset-menu+
+          :triggers #{:menu+}
+          :reaction (fn [this items]
+                      (conj items
+                            {:label "New tabset"
+                             :order 1
+                             :click (fn [] (cmd/exec! :tabset.new))}
+                            {:label "Close tabset"
+                             :order 2
+                             :click (fn [] (rem-tabset this))})))
+
+(behavior ::left!
+          :triggers #{:left!}
+          :reaction (fn [this v]
+                      (object/update! this [:left] + v)
+                      (object/raise this :resize)))
+
+(behavior ::right!
+          :triggers #{:right!}
+          :reaction (fn [this v]
+                      (object/update! this [:right] + v)
+                      (object/raise this :resize)))
+
+(behavior ::bottom!
+          :triggers #{:bottom!}
+          :reaction (fn [this v]
+                      (object/update! this [:bottom] + v)
+                      (object/raise this :resize)))
+
+(behavior ::tabset-bottom!
+          :triggers #{:tabset-bottom!}
+          :reaction (fn [this v]
+                      (object/update! this [:tabset-bottom] + v)
+                      (object/raise this :resize)))
+
+
+(behavior ::init-sortable
+          :triggers #{:init}
+          :reaction (fn [app]
+                      (js/initSortable js/window)))
+
+(behavior ::init
+          :triggers #{:init}
+          :reaction (fn [this]
+                      (add-tabset tabset)
+                      (object/raise tabset :active)
+                      ))
+
+(behavior ::show-close-button
+          :desc "Tab: Show close button on tabs"
+          :type :user
+          :triggers #{:close-button+}
+          :reaction (fn [this]
+                      true))
+
+
+;;*********************************************************
+;; Commands
+;;*********************************************************
 
 (cmd/command {:command :tabs.move-new-tabset
               :desc "Tab: Move tab to new tabset"
@@ -636,14 +686,4 @@
                       (when-let [active (:active-obj @(ctx/->obj :tabset))]
                         (object/raise active :focus!)))})
 
-(behavior ::init-sortable
-          :triggers #{:init}
-          :reaction (fn [app]
-                      (js/initSortable js/window)))
-
-(behavior ::init
-          :triggers #{:init}
-          :reaction (fn [this]
-                      (add-tabset tabset)
-                      (object/raise tabset :active)
-                      ))
+(append (object/->content canvas/canvas) (:content @multi))

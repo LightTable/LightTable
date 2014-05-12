@@ -12,7 +12,8 @@
             [lt.util.dom :as dom]
             [lt.util.load :as load]
             [crate.binding :refer [bound -value subatom]]
-            [crate.compiler :refer [dom-attr]])
+            [crate.compiler :refer [dom-attr]]
+            [clojure.string :as string])
   (:require-macros [lt.macros :refer [behavior defui]]))
 
 (defn css-expr [k v]
@@ -21,12 +22,17 @@
 (defn selector [sel & body]
   (str sel " { " (apply str body) " }"))
 
+(defn str-font-family [x]
+  (if (vector? x)
+    (string/join ", " (map pr-str x))
+    (pr-str x)))
+
 (defn ->css [settings]
   (selector ".CodeMirror"
             (when (:line-height settings)
               (css-expr :line-height (str (:line-height settings) "em")))
             (when (:font-family settings)
-              (css-expr :font-family (pr-str (:font-family settings))))
+              (css-expr :font-family (str-font-family (:font-family settings))))
             (when (:font-size settings)
               (css-expr :font-size (str (:font-size settings) "pt")))))
 
