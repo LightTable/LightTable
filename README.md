@@ -233,3 +233,4 @@ See [LightTable-Declassifier](https://github.com/LightTable/LightTable-Declassif
 * [Clojurescript for Light Table users](https://github.com/swannodette/lt-cljs-tutorial) by David Nolen
 * [Getting started programming Light Table](http://devblog.reverb.com/post/85325435561/getting-started-programming-light-table) by Joshua Emmons.
 * [Light Table plugin tutorial](http://blog.jakubarnold.cz/2014/01/13/light-table-plugin-tutorial.html) by Jakub Arnold
+* [How to programmatically manage a Light Table-aware nREPL server](http://manuelp.herokuapp.com/posts/14) by Manuel Paccagnella
