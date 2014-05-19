@@ -90,17 +90,17 @@ http://ethanschoonover.com/solarized/img/solarized-palette.png
 .cm-s-solarized .cm-strong { color: #eee; }
 
 .cm-s-solarized .CodeMirror-focused .CodeMirror-selected {
-  background: #386774;
+  background: #073642;
   color: inherit;
 }
 
 .cm-s-solarized ::selection {
-  background: #386774;
+  background: #073642;
   color: inherit;
 }
 
 .cm-s-solarized .CodeMirror-selected {
-  background: #586e75;
+  background: #073642;
 }
 
 /* Editor styling */
@@ -154,7 +154,7 @@ view-port
 */
 .cm-s-solarized .CodeMirror-activeline,
 .cm-s-solarized .activeline {
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.02);
 }
 /*
 View-port and gutter both get little noise background to give it a real feel.
