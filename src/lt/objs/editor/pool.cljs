@@ -637,7 +637,7 @@
                       (cmd/exec! :editor.codemirror.command "insertLineBefore"))})
 
 (cmd/command {:command :editor.sublime.selectNextOccurrence
-              :desc "Editor: Select next occurence of word"
+              :desc "Editor: Select next occurrence of word"
               :exec (fn []
                       (cmd/exec! :editor.codemirror.command "selectNextOccurrence"))})
 
@@ -657,7 +657,7 @@
                       (cmd/exec! :editor.codemirror.command "goToBracket"))})
 
 (cmd/command {:command :editor.sublime.swapLineUp
-              :desc "Editor: swap line up"
+              :desc "Editor: Swap line up"
               :exec (fn []
                       (cmd/exec! :editor.codemirror.command "swapLineUp"))})
 
