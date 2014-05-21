@@ -290,7 +290,11 @@
   (.getLine (->cm-ed e) l))
 
 (defn set-line [e l text]
-  (.setLine (->cm-ed e) l text))
+  (let [length (line-length e l)]
+    (replace e
+             {:line l :ch 0}
+             {:line l :ch length}
+             text)))
 
 (defn first-line [e]
   (.firstLine (->cm-ed e)))
