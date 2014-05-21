@@ -573,11 +573,8 @@
 (cmd/command {:command :editor.select-line
               :desc "Editor: Select line"
               :exec (fn []
-                      (when-let [ed (last-active)]
-                        (let [line (-> (editor/->cursor ed) :line)
-                              len (editor/line-length ed line)]
-                          (editor/set-selection ed {:line line :ch 0} {:line line :ch len})
-                          (editor/set-extending ed false))))})
+                      (cmd/exec! :editor.codemirror.command "selectLine")
+                      )})
 
 (cmd/command {:command :editor.force.wrap
               :desc "Editor: Toggle line wrapping in current editor"
@@ -616,4 +613,92 @@
               :exec (fn []
                       (when-let [ed (last-active)]
                         (editor/fold-code ed)))})
+
+;;;sublime commands
+
+(cmd/command {:command :editor.sublime.singleSelectionTop
+              :desc "Editor: Set selection to top most cursor"
+              :exec (fn []
+                      (cmd/exec! :editor.codemirror.command "singleSelectionTop"))})
+
+(cmd/command {:command :editor.sublime.singleSelectionTop
+              :desc "Editor: Clear multiple cursors"
+              :exec (fn []
+                      (cmd/exec! :editor.codemirror.command "singleSelectionTop"))})
+
+(cmd/command {:command :editor.sublime.insertLineAfter
+              :desc "Editor: Insert line after"
+              :exec (fn []
+                      (cmd/exec! :editor.codemirror.command "insertLineAfter"))})
+
+(cmd/command {:command :editor.sublime.insertLineBefore
+              :desc "Editor: Insert line before"
+              :exec (fn []
+                      (cmd/exec! :editor.codemirror.command "insertLineBefore"))})
+
+(cmd/command {:command :editor.sublime.selectNextOccurrence
+              :desc "Editor: Select next occurence of word"
+              :exec (fn []
+                      (cmd/exec! :editor.codemirror.command "selectNextOccurrence"))})
+
+(cmd/command {:command :editor.sublime.selectBetweenBrackets
+              :desc "Editor: Select between brackets"
+              :exec (fn []
+                      (cmd/exec! :editor.codemirror.command "selectBetweenBrackets"))})
+
+(cmd/command {:command :editor.sublime.selectScope
+              :desc "Editor: Select scope"
+              :exec (fn []
+                      (cmd/exec! :editor.codemirror.command "selectScope"))})
+
+(cmd/command {:command :editor.sublime.goToBracket
+              :desc "Editor: Go to bracket"
+              :exec (fn []
+                      (cmd/exec! :editor.codemirror.command "goToBracket"))})
+
+(cmd/command {:command :editor.sublime.swapLineUp
+              :desc "Editor: swap line up"
+              :exec (fn []
+                      (cmd/exec! :editor.codemirror.command "swapLineUp"))})
+
+(cmd/command {:command :editor.sublime.swapLineDown
+              :desc "Editor: Swap line down"
+              :exec (fn []
+                      (cmd/exec! :editor.codemirror.command "swapLineDown"))})
+
+(cmd/command {:command :editor.sublime.joinLines
+              :desc "Editor: Join lines"
+              :exec (fn []
+                      (cmd/exec! :editor.codemirror.command "joinLines"))})
+
+(cmd/command {:command :editor.sublime.duplicateLine
+              :desc "Editor: Duplicate line"
+              :exec (fn []
+                      (cmd/exec! :editor.codemirror.command "duplicateLine"))})
+
+
+(cmd/command {:command :editor.sublime.sortLines
+              :desc "Editor: Sort lines"
+              :exec (fn []
+                      (cmd/exec! :editor.codemirror.command "sortLines"))})
+
+(cmd/command {:command :editor.sublime.sortLinesInsensitive
+              :desc "Editor: Sort lines insensitive"
+              :exec (fn []
+                      (cmd/exec! :editor.codemirror.command "sortLinesInsensitive"))})
+
+(cmd/command {:command :editor.sublime.selectLinesUpward
+              :desc "Editor: Select lines upward with multiple cursors"
+              :exec (fn []
+                      (cmd/exec! :editor.codemirror.command "selectLinesUpward"))})
+
+(cmd/command {:command :editor.sublime.selectLinesDownward
+              :desc "Editor: Select lines downward with multiple cursors"
+              :exec (fn []
+                      (cmd/exec! :editor.codemirror.command "selectLinesDownward"))})
+
+(cmd/command {:command :editor.sublime.splitSelectionByLine
+              :desc "Editor: Split selection into cursors per line"
+              :exec (fn []
+                      (cmd/exec! :editor.codemirror.command "splitSelectionByLine"))})
 

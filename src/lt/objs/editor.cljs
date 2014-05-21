@@ -664,6 +664,7 @@
                       (load/js "core/node_modules/codemirror/overlay.js" :sync)
                       (load/js "core/node_modules/codemirror/scrollpastend.js" :sync)
                       (load/js "core/node_modules/codemirror/fold.js" :sync)
+                      (load/js "core/node_modules/codemirror/sublime.js" :sync)
                       (doseq [mode (files/ls "core/node_modules/codemirror/modes")
                               :when (= (files/ext mode) "js")]
                         (load/js (str "core/node_modules/codemirror/modes/" mode) :sync))
