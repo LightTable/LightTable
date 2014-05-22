@@ -195,7 +195,7 @@
   (.getRange (->cm-ed e) (clj->js from) (clj->js to)))
 
 (defn line-count [e]
-  (.lineCount e))
+  (.lineCount (->cm-ed e)))
 
 (defn insert-at-cursor [ed s]
   (replace (->cm-ed ed) (->cursor ed) s)
