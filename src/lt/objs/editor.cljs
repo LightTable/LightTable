@@ -290,7 +290,11 @@
   (.getLine (->cm-ed e) l))
 
 (defn set-line [e l text]
-  (.setLine (->cm-ed e) l text))
+  (let [length (line-length e l)]
+    (replace e
+             {:line l :ch 0}
+             {:line l :ch length}
+             text)))
 
 (defn first-line [e]
   (.firstLine (->cm-ed e)))
@@ -664,6 +668,7 @@
                       (load/js "core/node_modules/codemirror/overlay.js" :sync)
                       (load/js "core/node_modules/codemirror/scrollpastend.js" :sync)
                       (load/js "core/node_modules/codemirror/fold.js" :sync)
+                      (load/js "core/node_modules/codemirror/sublime.js" :sync)
                       (doseq [mode (files/ls "core/node_modules/codemirror/modes")
                               :when (= (files/ext mode) "js")]
                         (load/js (str "core/node_modules/codemirror/modes/" mode) :sync))
