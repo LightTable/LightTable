@@ -47,6 +47,7 @@
                      :onDragEvent (fn [] true)
                      :undoDepth 10000
                      :matchBrackets true
+                     :singleCursorHeightPerLine false
                      :showCursorWhenSelecting true})]
     (when-let [c (:content context)]
       (set-val e c)
