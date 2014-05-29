@@ -33,6 +33,7 @@ body { -webkit-user-select: none; }
 #loader p { display:table-cell; vertical-align:middle; text-align:center; }
 
 .CodeMirror { font-size:11pt; font-family: "Inconsolata", "Ubuntu Mono", "Consolas", monospace; }
+.Codemirror-widget::after  { content: ""; }
 
 .result-mark {-webkit-user-select: text; margin-left:6px; max-width:700px; max-height:50%; overflow-y:auto; overflow-x:hidden; padding:0 5px; display:inline-block; border-radius:2px; width:-webkit-fit-content; vertical-align:top; }
 .result-mark .truncated { display:inline-block; white-space:nowrap; cursor:pointer; padding:0; box-sizing:border-box; vertical-align:top; overflow:hidden;}
