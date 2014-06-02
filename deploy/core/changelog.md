@@ -1,5 +1,34 @@
 #Changes
 
+##0.6.6
+
+* FIX: combine try-read catches now that :default is available in cljs (cldwalker)
+* FIX: tweak show-docs command to open only one doc (snufkon)
+* FIX: update solarized (ccspell and gozala)
+* FIX: source map urls were not correctly encoded (nickgieschen)
+* FIX: Ignore case when sorting plugins (seancaffery)
+* FIX: Remove windowVerbatimArguments to fix pathing issues for processes on windows
+* FIX: Push the initial position onto the stack when jumping (joshuafcole)
+* FIX: remove warning from eclipse theme (Bost)
+* FIX: don't move the search forward after every keypress (jamii)
+* FIX: Prevent font settings from being unnecessarily updated (ibdknox)
+* ADDED: Multiple cursor commands from CM4
+* ADDED: Multiple fonts support (ykomatsu)
+* ADDED: reasonable default keybindings for zoom (cldwalker)
+* ADDED: select the previous search text when bringing up the searcher (Bost)
+* ADDED: Report bug button on welcome screen (Tyrieke Morton)
+* ADDED: `Editor: Set options for line commenting` behavior (cldwalker)
+* ADDED: you can right click to copy an inline result (cldwalker)
+* API: make tab and tabset menus extensible (mortalapeman)
+* API: log context changes (ndr-qef)
+* API: checks for required keys in commands (cldwalker)
+* API: add copy and paste platform functions (cldwalker)
+* API: open-path function (cldwalker)
+* API: Make $ and $$ multi-arity (mortalapeman)
+* API: editor.add-gutter and remove-gutter functions (seancaffery)
+* UPDATED: CodeMirror 4!
+* UPDATED: CodeMirror modes
+
 ##0.6.5
 
 * FIX: Less syntax highlighting would cause errors
