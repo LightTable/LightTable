@@ -43,7 +43,7 @@
 .cm-s-default .CodeMirror-selected { background: #555; }
 .cm-s-default .CodeMirror-focused .CodeMirror-selected { background: #444; }
 
-.cm-s-default .CodeMirror-activeline { background:#303030; }
+.cm-s-default .CodeMirror-activeline-background { background:#303030; }
 .cm-s-default span.CodeMirror-matchingbracket {box-sizing:border-box; background:transparent; border-bottom:1px solid #3FF; font-weight:normal;}
 .cm-s-default span.CodeMirror-nonmatchingbracket {color: #F33; border-bottom:1px solid #F33; background:none;}
 
