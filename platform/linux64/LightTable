@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 BIN=ltbin
 HERE=`dirname $(readlink -f $0)`
