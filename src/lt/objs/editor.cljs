@@ -44,7 +44,6 @@
                              "plaintext")
                      :autoClearEmptyLines true
                      :dragDrop false
-                     :onDragEvent (fn [] true)
                      :undoDepth 10000
                      :matchBrackets true
                      :singleCursorHeightPerLine false
@@ -69,6 +68,10 @@
 
 (defn wrap-object-events [ed obj]
   (dom/on (->elem ed) :contextmenu #(object/raise obj :menu! %))
+  (on ed :dragstart #(.preventDefault %2))
+  (on ed :dragstenter #(.preventDefault %2))
+  (on ed :dragover #(.preventDefault %2))
+  (on ed :drop #(.preventDefault %2))
   (on ed :scroll #(object/raise obj :scroll %))
   (on ed :update #(object/raise obj :update % %2))
   (on ed :change #(object/raise obj :change % %2))
