@@ -69,7 +69,7 @@
 (defn wrap-object-events [ed obj]
   (dom/on (->elem ed) :contextmenu #(object/raise obj :menu! %))
   (on ed :dragstart #(.preventDefault %2))
-  (on ed :dragstenter #(.preventDefault %2))
+  (on ed :dragenter #(.preventDefault %2))
   (on ed :dragover #(.preventDefault %2))
   (on ed :drop #(.preventDefault %2))
   (on ed :scroll #(object/raise obj :scroll %))
