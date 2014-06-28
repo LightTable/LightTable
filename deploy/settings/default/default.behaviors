@@ -244,7 +244,7 @@
                                       {:name "Groovy" :exts [:groovy] :mime "text/x-groovy" :tags [:editor.groovy]}
                                       {:name "HAML" :exts [:haml] :mime "text/x-haml" :tags [:editor.haml]}
                                       {:name "Haskell" :exts [:hs] :mime "text/x-haskell" :tags [:editor.haskell]}
-                                      {:name "Haxe" :exts [:haxe] :mime "text/x-haxe" :tags [:editor.haxe]}
+                                      {:name "Haxe" :exts [:hx] :mime "text/x-haxe" :tags [:editor.haxe]}
                                       {:name "HTML" :exts [:html :htm] :mime "htmlmixed" :tags [:editor.html]}
                                       {:name "INI" :exts [:ini] :mime "text/x-ini" :tags [:editor.ini]}
                                       {:name "Java" :exts [:java] :mime "text/x-java" :tags [:editor.java]}
