@@ -75,6 +75,8 @@
   (let [options (js-obj "url" from
                         "headers" (js-obj "User-Agent" "Light Table"))
         out (.createWriteStream fs to)]
+    (when-let [proxy (or js/process.env.http_proxy js/process.env.https_proxy)]
+      (set! (.-proxy options) proxy))
     (.pipe (request options cb) out)))
 
 (defn download-zip [ver cb]
