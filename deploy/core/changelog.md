@@ -1,5 +1,17 @@
 #Changes
 
+##0.6.7
+
+* FIX: Workspace behaviors do not correctly take effect on startup (mortalapeman)
+* FIX: Focus issues that cause weird save/eval behavior. (ibdknox)
+* FIX: fix default theme issues (ibdknox & skrat)
+* FIX: Ignore drag events so that "null" doesn't get input into the editor
+* FIX: line ending preservation was broken #359 (ibdknox)
+* FIX: Clojure client couldn't be created from the add connection menu ibdknox
+* FIX: CSS save issue (ibdknox)
+* ADDED: proxy support via http_proxy and https_proxy env vars (sethyuan)
+* README FIX: default keybinding for the searcher on OSX (gekkie808)
+
 ##0.6.6
 
 * FIX: combine try-read catches now that :default is available in cljs (cldwalker)
