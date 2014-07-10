@@ -40,7 +40,7 @@
           :triggers #{:save+}
           :reaction (fn [editor content]
                       (if (= "\r\n" (or (-> @editor :info :line-ending) files/line-ending))
-                        (string/replace content "(\r\n|\n)" "\r\n")
+                        (string/replace content (js/RegExp. "(\r?\n|\n)" "gm") "\r\n")
                         content)))
 
 
