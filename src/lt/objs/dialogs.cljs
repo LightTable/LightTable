@@ -10,7 +10,7 @@
   :change (fn []
             (this-as me
                      (when-not (empty? (dom/val me))
-                       (object/raise obj event (dom/val me)))))) 
+                       (object/raise obj event (dom/val me))))))
 
 (defn trigger []
   (dom/trigger active-input :click))

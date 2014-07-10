@@ -168,8 +168,6 @@
                         (when (:line @this)
                           (js/CodeMirror.off (:line @this) "change" on-line-change))
                         (ctx/out! [:editor.keys.hinting.active])
-                        (when (or force? (= 0 (count (:cur @this))))
-                          (keyboard/passthrough))
                         (object/merge! this {:active false
                                              :selected 0
                                              :ed nil
