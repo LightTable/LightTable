@@ -19,7 +19,9 @@
               "ctrl-=" [:editor.fold-code]}
      :editor.keys.normal {"\"" [(:editor.repeat-pair "\"")]
                           "(" [(:editor.open-pair "(")]
+                          "'" [(:editor.open-pair "'")]
                           ")" [(:editor.close-pair ")")]
+                          "'" [(:editor.close-pair "'")]
                           "pmeta-f" [:find.fill-selection
                                      :find.show]
                           "tab" [:auto-complete]
