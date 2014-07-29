@@ -279,7 +279,7 @@ body { -webkit-user-select: none; }
 #bottombar.closed { padding:0; }
 #bottombar.closed .horizontal-grip { display:none; }
 
-#statusbar-container { position:absolute; bottom:0; left:0; right:0; }
+#status-bar { position:absolute; bottom:0; left:0; right:0; }
 
 #statusbar { position:relative; box-sizing:border-box; padding:7px 10px; vertical-align:middle;}
 #statusbar li { float:right; display:inline; margin-left:15px;}
