@@ -103,7 +103,7 @@
                 :transients '()
                 :max-width default-width
                 :init (fn [this]
-                        [:div#side {:style {:width (bound (subatom this :width) ->width)}}
+                        [:div#left-bar {:style {:width (bound (subatom this :width) ->width)}}
                          [:div.content
                           (bound (subatom this :active) active-content)]
                          (vertical-grip this)]))
