@@ -118,7 +118,7 @@ input { color: var(highlight-fg); background:var(highlight-bg); }
 #multi .tab-close:hover { background:var(error-bg); color:var(error-fg); }
 #multi .tabset + .tabset { border-left:2px solid var(bg); }
 
-#bottombar .content { background:var(bg); border-top:0px solid var(border); }
+#bottom-bar .content { background:var(bg); border-top:0px solid var(border); }
 .console > li, .console td { color:var(accent-foreground); }
 .console > li + li { border-top:2px solid var(bg); }
 .console > li.error + li { border-color:var(bg);}

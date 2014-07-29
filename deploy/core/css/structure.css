@@ -273,11 +273,11 @@ body { -webkit-user-select: none; }
 #right-bar .docs-search button { pointer-events:auto; }
 #right-bar .docs-search pre { white-space:pre-wrap; margin:5px 0;}
 
-#bottombar {  z-index:100000; position:fixed; bottom:0; right:0; background:transparent; padding-top:0px; padding-bottom:0px; box-sizing:border-box; }
-#bottombar .content { padding:10px 0px; padding-right:10px; box-sizing:border-box; height:100%; }
-#bottombar .horizontal-grip {position:absolute; top:0px; width:100%; height:10px; z-index:10000; cursor:row-resize; }
-#bottombar.closed { padding:0; }
-#bottombar.closed .horizontal-grip { display:none; }
+#bottom-bar {  z-index:100000; position:fixed; bottom:0; right:0; background:transparent; padding-top:0px; padding-bottom:0px; box-sizing:border-box; }
+#bottom-bar .content { padding:10px 0px; padding-right:10px; box-sizing:border-box; height:100%; }
+#bottom-bar .horizontal-grip {position:absolute; top:0px; width:100%; height:10px; z-index:10000; cursor:row-resize; }
+#bottom-bar.closed { padding:0; }
+#bottom-bar.closed .horizontal-grip { display:none; }
 
 #status-bar { position:absolute; bottom:0; left:0; right:0; }
 
@@ -379,7 +379,7 @@ body { -webkit-user-select: none; }
 
 .animated #multi {  -webkit-transition:bottom 0.1s ease-in-out, left 0.1s ease-in-out, right 0.10s ease-in-out; }
 .animated #multi .tabsets {  -webkit-transition:bottom 0.1s ease-in-out; }
-.animated #bottombar { -webkit-transition:height 0.1s ease-in-out, left 0.1s ease-in-out, right 0.1s ease-in-out; }
+.animated #bottom-bar { -webkit-transition:height 0.1s ease-in-out, left 0.1s ease-in-out, right 0.1s ease-in-out; }
 .animated #left-bar { -webkit-transition:width 0.1s ease-in-out; }
 .animated #right-bar { -webkit-transition:width 0.10s ease-in-out; }
 .animated #find-bar {  -webkit-transition:height 0.1s ease-in-out;}
