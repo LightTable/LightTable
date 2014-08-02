@@ -16,7 +16,7 @@ echo "### Fetching binaries ###"
 BITS=""
 if [ $(getconf LONG_BIT) == "64" ]; then BITS="64"; fi
 TARBALL=LightTableLinux$BITS.tar.gz
-curl -O http://d35ac8ww5dfjyg.cloudfront.net/playground/bins/0.6.0/$TARBALL
+curl -O https://d35ac8ww5dfjyg.cloudfront.net/playground/bins/0.6.0/$TARBALL
 tar -xzf $TARBALL
 rm $TARBALL
 cp -ar deploy/* LightTable
