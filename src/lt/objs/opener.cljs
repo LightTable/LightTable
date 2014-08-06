@@ -113,19 +113,28 @@
                                 (tabs/add! ed)
                                 (tabs/active! ed))))
 
-(defn open-path
-  "Always open a path given an ::opener object and path"
-  [obj path]
-  (doc/open path
-            (fn [doc]
-              (let [type (files/path->type path)
-                    ed (pool/create (merge {:doc doc :line-ending (-> @doc :line-ending)} (lt.objs.opener/path->info path)))]
-                (metrics/capture! :editor.open {:type (or (:name type) (files/ext path))
-                                                :lines (editor/last-line ed)})
-                (object/add-tags ed [:editor.file-backed])
-                (object/raise obj :open ed)
-                (lt.objs.tabs/add! ed)
-                (lt.objs.tabs/active! ed)))))
+(defn open-path*
+  [doc-fn obj path]
+  (doc-fn path
+          (fn [doc]
+            (let [type (files/path->type path)
+                  ed (pool/create (merge {:doc doc :line-ending (-> @doc :line-ending)} (path->info path)))]
+              (metrics/capture! :editor.open {:type (or (:name type) (files/ext path))
+                                              :lines (editor/last-line ed)})
+              (object/add-tags ed [:editor.file-backed])
+              (object/raise obj :open ed)
+              (lt.objs.tabs/add! ed)
+              (lt.objs.tabs/active! ed)))))
+
+(def open-path
+  "Open a path given an ::opener object and path"
+  (partial open-path* doc/open))
+
+(defn open-linked-path
+  "Open a path as a linked doc given the editor with the document to be linked to."
+  [ed obj path ldoc-options]
+  (open-path* (partial doc/linked-open ed ldoc-options) obj path))
+
 
 (behavior ::open-standard-editor
                   :triggers #{:open!}
@@ -135,7 +144,7 @@
                                   (notifos/set-msg! (str "Cannot open a directory: " path))
                                   (notifos/set-msg! (str "No such file: " path)))
                                 (if-let [ed (first (pool/by-path path))]
-                                  (tabs/active! ed)
+                                  (open-linked-path ed obj path {})
                                   (open-path obj path)))))
 
 (behavior ::track-open-files

@@ -67,7 +67,7 @@
 (defn create-sub
   ([doc] (create-sub doc nil))
   ([doc info]
-   (let [neue (create (merge (select-keys @doc doc-keys) info {:doc (linked* (:doc doc) info)
+   (let [neue (create (merge (select-keys @doc doc-keys) info {:doc (linked* doc info)
                                                                :root doc}))]
      (object/add-tags neue [:document.linked])
      (object/update! doc [:sub-docs] conj neue))))
@@ -133,7 +133,6 @@
   (object/update! manager [:files] assoc path doc))
 
 (defn open [path cb]
-  ;;TODO: check if the file is already open?
   (files/open path (fn [data]
                      (let [d (create {:content (:content data)
                                       :line-ending (:line-ending data)
@@ -143,6 +142,13 @@
                        (when cb
                          (cb d)))))
   )
+
+(defn linked-open [ed ldoc-options path cb]
+  (create-sub (:doc @ed) ldoc-options)
+  (files/open path (fn [data]
+                     (let [d (-> @ed :doc deref :sub-docs last)]
+                       (when cb
+                         (cb d))))))
 
 (defn check-mtime [prev updated]
   (if prev
