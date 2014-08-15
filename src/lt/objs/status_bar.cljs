@@ -1,4 +1,4 @@
-(ns lt.objs.statusbar
+(ns lt.objs.status-bar
   (:require [lt.object :as object]
             [lt.objs.tabs :as tabs]
             [lt.objs.canvas :as canvas]
@@ -11,24 +11,24 @@
   (:require-macros [lt.macros :refer [behavior defui]]))
 
 ;;**********************************************************
-;; statusbar container
+;; status-bar container
 ;;**********************************************************
 
-(object/object* ::statusbar
-                :tags #{:statusbar}
+(object/object* ::status-bar
+                :tags #{:status-bar}
                 :items (sorted-set-by #(-> % deref :order))
                 :init (fn [this]
                         [:div#status-bar
                          ]))
 
-(def container (object/create ::statusbar))
+(def container (object/create ::status-bar))
 
 (defn add-container
-  "Add an object to the statusbar container. When you wish the object to be displayed or hidden,
+  "Add an object to the status-bar container. When you wish the object to be displayed or hidden,
   raise :show! or :hide! respectively. Objects must have :order and :height keys in order to determine
   the space required for the object."
   [obj]
-  (object/add-tags obj [:statusbar-item])
+  (object/add-tags obj [:status-bar-item])
   (object/update! container [:items] conj obj)
   (let [i (cljs/index-of obj (:items @container))]
     (if (= i 0)
@@ -57,7 +57,7 @@
                       (dom/append (object/->content tabs/multi) (object/->content container))))
 
 ;;**********************************************************
-;; statusbar
+;; status
 ;;**********************************************************
 
 (defui status-item [content class]

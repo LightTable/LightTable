@@ -1,7 +1,7 @@
 (ns lt.objs.find
   (:require [lt.object :as object]
             [lt.objs.context :as ctx]
-            [lt.objs.statusbar :as statusbar]
+            [lt.objs.status-bar :as status-bar]
             [lt.util.load :as load]
             [lt.objs.canvas :as canvas]
             [lt.objs.sidebar.command :as cmd]
@@ -156,7 +156,7 @@
                       ))
 
 (def bar (object/create ::find-bar))
-(statusbar/add-container bar)
+(status-bar/add-container bar)
 
 (cmd/command {:command :find.show
               :desc "Find: In current editor"

@@ -56,8 +56,8 @@
         :lt.objs.plugins/plugin-behavior-diffs
         :lt.objs.plugins/plugin-keymap-diffs
         :lt.objs.plugins/behaviors.refreshed-load-keys
-        :lt.objs.statusbar/init-statusbar
-        :lt.objs.statusbar/show-statusbar
+        :lt.objs.status-bar/init-statusbar
+        :lt.objs.status-bar/show-statusbar
         :lt.objs.workspace/init-workspace-cache-dir
         :lt.objs.metrics/init-metrics
         (:lt.objs.keyboard/chord-timeout 1000)
@@ -186,7 +186,7 @@
            :lt.plugins.auto-complete/remove-on-scroll-inactive
            :lt.plugins.auto-complete/auto-show-on-input
            ]
-  :editor.active [:lt.objs.statusbar/report-cursor-location]
+  :editor.active [:lt.objs.status-bar/report-cursor-location]
   :editor.force.wrap [:lt.objs.editor/wrap]
   :editor.force.unwrap [:lt.objs.editor/no-wrap]
   :editor.behaviors [:lt.objs.settings/on-behaviors-editor-save
@@ -387,9 +387,9 @@
                      :lt.objs.sidebar.workspace/recent.delete!
                      :lt.objs.sidebar.workspace/recent.select!]
   :skin-selector [:lt.objs.style/set-skin-on-select]
-  :statusbar-item [:lt.objs.statusbar/on-show!
-                             :lt.objs.statusbar/on-hide!
-                             :lt.objs.statusbar/init-statusbar]
+  :status-bar-item [:lt.objs.status-bar/on-show!
+                             :lt.objs.status-bar/on-hide!
+                             :lt.objs.status-bar/init-statusbar]
   :status.console-toggle [:lt.objs.console/statusbar-console-toggle
                              :lt.objs.console/statusbar-console-hide
                              :lt.objs.console/statusbar-console-show]
