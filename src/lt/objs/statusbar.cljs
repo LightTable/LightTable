@@ -14,21 +14,21 @@
 ;; statusbar container
 ;;**********************************************************
 
-(object/object* ::statusbar-container
-                :tags #{:statusbar-container}
+(object/object* ::statusbar
+                :tags #{:statusbar}
                 :items (sorted-set-by #(-> % deref :order))
                 :init (fn [this]
                         [:div#status-bar
                          ]))
 
-(def container (object/create ::statusbar-container))
+(def container (object/create ::statusbar))
 
 (defn add-container
   "Add an object to the statusbar container. When you wish the object to be displayed or hidden,
   raise :show! or :hide! respectively. Objects must have :order and :height keys in order to determine
   the space required for the object."
   [obj]
-  (object/add-tags obj [:statusbar-container-item])
+  (object/add-tags obj [:statusbar-item])
   (object/update! container [:items] conj obj)
   (let [i (cljs/index-of obj (:items @container))]
     (if (= i 0)
@@ -51,7 +51,7 @@
                         (object/merge! this {::shown false})
                         (object/raise tabs/multi :tabset-bottom! (- (:height @this))))))
 
-(behavior ::init-statusbar-container
+(behavior ::init-statusbar
           :triggers #{:init}
           :reaction (fn [app]
                       (dom/append (object/->content tabs/multi) (object/->content container))))
