@@ -390,7 +390,7 @@
   :statusbar-container-item [:lt.objs.statusbar/on-show!
                              :lt.objs.statusbar/on-hide!
                              :lt.objs.statusbar/init-statusbar-container]
-  :statusbar.console-toggle [:lt.objs.console/statusbar-console-toggle
+  :status.console-toggle [:lt.objs.console/statusbar-console-toggle
                              :lt.objs.console/statusbar-console-hide
                              :lt.objs.console/statusbar-console-show]
   :tab-label [:lt.objs.menu/menu!

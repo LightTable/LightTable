@@ -212,13 +212,13 @@ input { color: var(highlight-fg); background:var(highlight-bg); }
 #right-bar .clients .connector li:hover h2 {color: var(highlight-fg); }
 #right-bar .clients .connector li:hover {background: var(highlight-bg); color: var(fg); border-color: var(pane-border); }
 
-#statusbar { color: var(hidden-fg); }
-#statusbar .console-toggle { cursor:default; background:var(hidden-bg); color:var(fg); min-width:12px; padding:0 4px; width:auto; display:none; text-align:center; margin-left:0px; border-radius:2px; }
-#statusbar .console-toggle:hover { background:var(dark-highlight-bg); color:var(highlight-fg); }
-#statusbar .console-toggle.dirty { background:var(accent-background); color:var(accent-foreground); display: inline-block; }
-#statusbar .console-toggle.error { color:var(error-fg); background:var(error-bg); }
-#statusbar .log .error { color:var(error-fg); background:var(error-bg); }
-#statusbar .log .tip { color: var(accent-foreground); }
+#status { color: var(hidden-fg); }
+#status .console-toggle { cursor:default; background:var(hidden-bg); color:var(fg); min-width:12px; padding:0 4px; width:auto; display:none; text-align:center; margin-left:0px; border-radius:2px; }
+#status .console-toggle:hover { background:var(dark-highlight-bg); color:var(highlight-fg); }
+#status .console-toggle.dirty { background:var(accent-background); color:var(accent-foreground); display: inline-block; }
+#status .console-toggle.error { color:var(error-fg); background:var(error-bg); }
+#status .log .error { color:var(error-fg); background:var(error-bg); }
+#status .log .tip { color: var(accent-foreground); }
 
 #find-bar input { border-top:2px solid var(bg); background:var(multi); }
 #find-bar input + input { border-left:2px solid var(bg); }
