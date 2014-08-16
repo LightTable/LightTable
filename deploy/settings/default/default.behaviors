@@ -56,8 +56,8 @@
         :lt.objs.plugins/plugin-behavior-diffs
         :lt.objs.plugins/plugin-keymap-diffs
         :lt.objs.plugins/behaviors.refreshed-load-keys
-        :lt.objs.status-bar/init-statusbar
-        :lt.objs.status-bar/show-statusbar
+        :lt.objs.status-bar/init-status-bar
+        :lt.objs.status-bar/show-status-bar
         :lt.objs.workspace/init-workspace-cache-dir
         :lt.objs.metrics/init-metrics
         (:lt.objs.keyboard/chord-timeout 1000)
@@ -389,10 +389,10 @@
   :skin-selector [:lt.objs.style/set-skin-on-select]
   :status-bar-item [:lt.objs.status-bar/on-show!
                              :lt.objs.status-bar/on-hide!
-                             :lt.objs.status-bar/init-statusbar]
-  :status.console-toggle [:lt.objs.console/statusbar-console-toggle
-                             :lt.objs.console/statusbar-console-hide
-                             :lt.objs.console/statusbar-console-show]
+                             :lt.objs.status-bar/init-status-bar]
+  :status.console-toggle [:lt.objs.console/status-bar-console-toggle
+                             :lt.objs.console/status-bar-console-hide
+                             :lt.objs.console/status-bar-console-show]
   :tab-label [:lt.objs.menu/menu!
               :lt.objs.tabs/tab-label-menu+
               :lt.objs.tabs/on-close-tab-label]

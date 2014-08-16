@@ -51,7 +51,7 @@
                         (object/merge! this {::shown false})
                         (object/raise tabs/multi :tabset-bottom! (- (:height @this))))))
 
-(behavior ::init-statusbar
+(behavior ::init-status-bar
           :triggers #{:init}
           :reaction (fn [app]
                       (dom/append (object/->content tabs/multi) (object/->content container))))
@@ -77,7 +77,7 @@
 (add-container status)
 
 ;; @FIXME: Should we rename to `::show-status` ?
-(behavior ::show-statusbar
+(behavior ::show-status-bar
           :desc "App: Show status at the bottom of the editor"
           :type :user
           :triggers #{:init}
