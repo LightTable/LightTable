@@ -331,14 +331,14 @@
 
 (defn tag-behaviors [tag behs]
   (swap! tags update-in [tag] #(reduce conj
-                                       (or % [])
+                                       (or % '())
                                        behs))
   (doseq [cur (by-tag tag)]
     (refresh! cur))
   (@tags tag))
 
 (defn remove-tag-behaviors [tag behs]
-  (swap! tags update-in [tag] #(remove (set behs) (or % [])))
+  (swap! tags update-in [tag] #(remove (set behs) (or % '())))
   (doseq [cur (by-tag tag)
           b behs]
     (rem-behavior! cur b)))
