@@ -8,19 +8,19 @@
 .cm-s-ibdknox { background: #202020; color:#ccc; }
 
 .cm-s-ibdknox span.cm-bracket {color: #999;}
-.cm-s-ibdknox span.cm-bracket1 {color: #999;}
-.cm-s-ibdknox span.cm-bracket2 {color: #0f0;}
-.cm-s-ibdknox span.cm-bracket3 {color: #00ffff;}
-.cm-s-ibdknox span.cm-bracket4 {color: #00bfff;}
-.cm-s-ibdknox span.cm-bracket5 {color: #836FFF;}
-.cm-s-ibdknox span.cm-bracket6 {color: #FF00FF;}
-.cm-s-ibdknox span.cm-bracket7 {color: #9B30FF;}
-.cm-s-ibdknox span.cm-bracket8 {color: #00ff7f;}
-.cm-s-ibdknox span.cm-bracket9 {color: #00ffff;}
-.cm-s-ibdknox span.cm-bracket10 {color: #836FFF;}
-.cm-s-ibdknox span.cm-bracket11 {color: #FF00FF;}
-.cm-s-ibdknox span.cm-bracket12 {color: #9B30FF;}
-.cm-s-ibdknox span.cm-bracket0, .cm-s-ibdknox span.cm-bracket-mismatched { color:#f88; background:#733; }
+.cm-s-ibdknox span.cm-bracket.cm-bracket1 {color: #999;}
+.cm-s-ibdknox span.cm-bracket.cm-bracket2 {color: #0f0;}
+.cm-s-ibdknox span.cm-bracket.cm-bracket3 {color: #00ffff;}
+.cm-s-ibdknox span.cm-bracket.cm-bracket4 {color: #00bfff;}
+.cm-s-ibdknox span.cm-bracket.cm-bracket5 {color: #836FFF;}
+.cm-s-ibdknox span.cm-bracket.cm-bracket6 {color: #FF00FF;}
+.cm-s-ibdknox span.cm-bracket.cm-bracket7 {color: #9B30FF;}
+.cm-s-ibdknox span.cm-bracket.cm-bracket8 {color: #00ff7f;}
+.cm-s-ibdknox span.cm-bracket.cm-bracket9 {color: #00ffff;}
+.cm-s-ibdknox span.cm-bracket.cm-bracket10 {color: #836FFF;}
+.cm-s-ibdknox span.cm-bracket.cm-bracket11 {color: #FF00FF;}
+.cm-s-ibdknox span.cm-bracket.cm-bracket12 {color: #9B30FF;}
+.cm-s-ibdknox span.cm-bracket.cm-bracket0, .cm-s-ibdknox span.cm-bracket-mismatched { color:#f88; background:#733; }
 
 .cm-s-ibdknox span.cm-symbol {color: #bbb;}
 .cm-s-ibdknox span.cm-variable {color: #ccc;}
