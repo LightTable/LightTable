@@ -316,10 +316,10 @@
   (count (line e l)))
 
 (defn +line-class [e lh plane class]
-  (.addLineClass e lh (name plane) (name class)))
+  (.addLineClass (->cm-ed e) lh (name plane) (name class)))
 
 (defn -line-class [e lh plane class]
-  (.removeLineClass e lh (name plane) (name class)))
+  (.removeLineClass (->cm-ed e) lh (name plane) (name class)))
 
 (defn show-hints [e hint-fn options]
   (js/CodeMirror.showHint (->cm-ed e) hint-fn (clj->js options))
