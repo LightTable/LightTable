@@ -18,7 +18,7 @@
            :triggers #{:jump-stack.push!}
            :reaction (fn [jump-stack editor file pos]
                        (let [old-file (:path (:info @editor))
-                             old-pos (editor/->cursor (lt.objs.editor.pool/last-active))]
+                             old-pos (editor/->cursor editor)]
                          (if-not (files/exists? file)
                            (notifos/set-msg! (str "Could not find file: " file) {:class "error"})
                            (do (jump-to file pos)
@@ -60,5 +60,4 @@
   :hidden true
   :exec (fn [file pos]
           (when-let [ed (lt.objs.editor.pool/last-active)]
-            (object/raise jump-stack :jump-stack.push! ed file pos))
-          (jump-to file pos))})
+            (object/raise jump-stack :jump-stack.push! ed file pos)))})
