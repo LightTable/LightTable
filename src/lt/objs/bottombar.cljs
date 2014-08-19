@@ -47,7 +47,7 @@
                 :height 0
                 :max-height default-height
                 :init (fn [this]
-                        [:div#bottombar {:class (bound this ->active-class)
+                        [:div#bottom-bar {:class (bound this ->active-class)
                                          :style {:left (bound (subatom tabs/multi :left) ->px)
                                                  :right (bound (subatom tabs/multi :right) ->px)
                                                  :height (bound (subatom this :height) ->px)}}

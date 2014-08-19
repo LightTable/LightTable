@@ -1,4 +1,4 @@
-(ns lt.objs.statusbar
+(ns lt.objs.status-bar
   (:require [lt.object :as object]
             [lt.objs.tabs :as tabs]
             [lt.objs.canvas :as canvas]
@@ -11,24 +11,24 @@
   (:require-macros [lt.macros :refer [behavior defui]]))
 
 ;;**********************************************************
-;; statusbar container
+;; status-bar container
 ;;**********************************************************
 
-(object/object* ::statusbar-container
-                :tags #{:statusbar-container}
+(object/object* ::status-bar
+                :tags #{:status-bar}
                 :items (sorted-set-by #(-> % deref :order))
                 :init (fn [this]
-                        [:div#statusbar-container
+                        [:div#status-bar
                          ]))
 
-(def container (object/create ::statusbar-container))
+(def container (object/create ::status-bar))
 
 (defn add-container
-  "Add an object to the statusbar container. When you wish the object to be displayed or hidden,
+  "Add an object to the status-bar container. When you wish the object to be displayed or hidden,
   raise :show! or :hide! respectively. Objects must have :order and :height keys in order to determine
   the space required for the object."
   [obj]
-  (object/add-tags obj [:statusbar-container-item])
+  (object/add-tags obj [:status-bar-item])
   (object/update! container [:items] conj obj)
   (let [i (cljs/index-of obj (:items @container))]
     (if (= i 0)
@@ -51,40 +51,41 @@
                         (object/merge! this {::shown false})
                         (object/raise tabs/multi :tabset-bottom! (- (:height @this))))))
 
-(behavior ::init-statusbar-container
+(behavior ::init-status-bar
           :triggers #{:init}
           :reaction (fn [app]
                       (dom/append (object/->content tabs/multi) (object/->content container))))
 
 ;;**********************************************************
-;; statusbar
+;; status
 ;;**********************************************************
 
-(defui statusbar-item [content class]
+(defui status-item [content class]
   [:li {:class class} content])
 
-(object/object* ::statusbar
+(object/object* ::status
                 :items []
                 :height 34
                 :order 0
                 :init (fn [this]
-                        [:ul#statusbar
+                        [:ul#status
                          (map-bound #(object/->content (deref %)) this {:path [:items]})]
                         ))
 
-(def statusbar (object/create ::statusbar))
+(def status (object/create ::status))
 
-(add-container statusbar)
+(add-container status)
 
-(behavior ::show-statusbar
-          :desc "App: Show statusbar at the bottom of the editor"
+;; @FIXME: Should we rename to `::show-status` ?
+(behavior ::show-status-bar
+          :desc "App: Show status at the bottom of the editor"
           :type :user
           :triggers #{:init}
           :reaction (fn [this]
-                      (object/raise statusbar :show!)))
+                      (object/raise status :show!)))
 
-(defn add-statusbar-item [item]
-  (object/update! statusbar [:items] conj item))
+(defn add-status-item [item]
+  (object/update! status [:items] conj item))
 
 ;;**********************************************************
 ;; cursor
@@ -98,21 +99,21 @@
                   :reaction (fn [this pos]
                               (object/merge! this {:pos pos})))
 
-(object/object* ::statusbar.cursor
+(object/object* ::status.cursor
                 :triggers #{}
                 :behaviors #{::update-cursor-location}
                 :pos {:line 0 :ch 0}
                 :init (fn [this]
-                        (statusbar-item (bound this ->cursor-str) "")
+                        (status-item (bound this ->cursor-str) "")
                         ))
 
 (behavior ::report-cursor-location
                   :triggers #{:move :active}
                   :reaction (fn [this]
-                              (object/raise statusbar-cursor :update! (ed/->cursor this))))
+                              (object/raise status-cursor :update! (ed/->cursor this))))
 
-(def statusbar-cursor (object/create ::statusbar.cursor))
-(add-statusbar-item statusbar-cursor)
+(def status-cursor (object/create ::status.cursor))
+(add-status-item status-cursor)
 
 ;;**********************************************************
 ;; loader
@@ -147,26 +148,26 @@
    [:span {:class (bound this #(-> % :class ->message-class))} (bound this :message)]
    ])
 
-(object/object* ::statusbar.loader
-                :tags #{:statusbar.console}
+(object/object* ::status.loader
+                :tags #{:status.console}
                 :loaders 0
                 :message ""
                 :init (fn [this]
-                        (statusbar-item (log this) "left")
+                        (status-item (log this) "left")
                         ))
 
 (defn loader-set []
-  (object/merge! statusbar-loader {:loaders 0}))
+  (object/merge! status-loader {:loaders 0}))
 
 (defn loader-inc []
-  (object/update! statusbar-loader [:loaders] inc))
+  (object/update! status-loader [:loaders] inc))
 
 (defn loader-dec []
-  (if (> (:loaders @statusbar-loader) 0)
-    (object/update! statusbar-loader [:loaders] dec)))
+  (if (> (:loaders @status-loader) 0)
+    (object/update! status-loader [:loaders] dec)))
 
-(def statusbar-loader (object/create ::statusbar.loader))
-(add-statusbar-item statusbar-loader)
+(def status-loader (object/create ::status.loader))
+(add-status-item status-loader)
 
 ;;**********************************************************
 ;; console list
@@ -191,11 +192,11 @@
 (defn console-class [class]
   (object/merge! console-toggle {:class class}))
 
-(object/object* ::statusbar.console-toggle
+(object/object* ::status.console-toggle
                 :dirty 0
-                :tags [:statusbar.console-toggle]
+                :tags [:status.console-toggle]
                 :init (fn [this]
-                        (statusbar-item (toggle-span this))))
+                        (status-item (toggle-span this))))
 
-(def console-toggle (object/create ::statusbar.console-toggle))
-(add-statusbar-item console-toggle)
+(def console-toggle (object/create ::status.console-toggle))
+(add-status-item console-toggle)

@@ -118,7 +118,7 @@ input { color: var(highlight-fg); background:var(highlight-bg); }
 #multi .tab-close:hover { background:var(error-bg); color:var(error-fg); }
 #multi .tabset + .tabset { border-left:2px solid var(bg); }
 
-#bottombar .content { background:var(bg); border-top:0px solid var(border); }
+#bottom-bar .content { background:var(bg); border-top:0px solid var(border); }
 .console > li, .console td { color:var(accent-foreground); }
 .console > li + li { border-top:2px solid var(bg); }
 .console > li.error + li { border-color:var(bg);}
@@ -156,16 +156,16 @@ input { color: var(highlight-fg); background:var(highlight-bg); }
 .filter-list .selected, .filter-list li:hover { color:var(highlight-fg); background: var(highlight-bg);}
 .filter-list .selected em, .filter-list li:hover em { color:var(accent-foreground); }
 
-#side .content { background:var(bg); box-shadow: 0 0 10px var(shadow); }
-#side ::-webkit-scrollbar-thumb { background: var(scrollbar); border:1px solid var(scrollbar); }
+#left-bar .content { background:var(bg); box-shadow: 0 0 10px var(shadow); }
+#left-bar ::-webkit-scrollbar-thumb { background: var(scrollbar); border:1px solid var(scrollbar); }
 
-#side .workspace ul.buttons li:hover:not(.sep) { color:var(highlight-fg); background:var(highlight-bg); }
-#side .workspace li:hover > div > p { color: var(highlight-fg); }
-#side .workspace li p:hover { background: var(highlight-bg); color:var(highlight-fg); }
-#side .workspace .recent > div > ul > li + li { border-top:0px solid var(pane-border); }
-#side .workspace .recent > div > ul > li:hover { border-color: var(pane-border); background:var(highlight-bg); color: var(highlight-fg); }
-#side .workspace .recent > div > ul > li:hover + li { border-top-color: var(pane-border); }
-#side .workspace .recent h2:hover { background: var(highlight-bg); color:var(highlight-fg); }
+#left-bar .workspace ul.buttons li:hover:not(.sep) { color:var(highlight-fg); background:var(highlight-bg); }
+#left-bar .workspace li:hover > div > p { color: var(highlight-fg); }
+#left-bar .workspace li p:hover { background: var(highlight-bg); color:var(highlight-fg); }
+#left-bar .workspace .recent > div > ul > li + li { border-top:0px solid var(pane-border); }
+#left-bar .workspace .recent > div > ul > li:hover { border-color: var(pane-border); background:var(highlight-bg); color: var(highlight-fg); }
+#left-bar .workspace .recent > div > ul > li:hover + li { border-top-color: var(pane-border); }
+#left-bar .workspace .recent h2:hover { background: var(highlight-bg); color:var(highlight-fg); }
 
 #right-bar .content { background:var(bg); }
 #right-bar .command h2:hover { background:var(highlight-bg); color:var(highlight-fg); }
@@ -212,13 +212,13 @@ input { color: var(highlight-fg); background:var(highlight-bg); }
 #right-bar .clients .connector li:hover h2 {color: var(highlight-fg); }
 #right-bar .clients .connector li:hover {background: var(highlight-bg); color: var(fg); border-color: var(pane-border); }
 
-#statusbar { color: var(hidden-fg); }
-#statusbar .console-toggle { cursor:default; background:var(hidden-bg); color:var(fg); min-width:12px; padding:0 4px; width:auto; display:none; text-align:center; margin-left:0px; border-radius:2px; }
-#statusbar .console-toggle:hover { background:var(dark-highlight-bg); color:var(highlight-fg); }
-#statusbar .console-toggle.dirty { background:var(accent-background); color:var(accent-foreground); display: inline-block; }
-#statusbar .console-toggle.error { color:var(error-fg); background:var(error-bg); }
-#statusbar .log .error { color:var(error-fg); background:var(error-bg); }
-#statusbar .log .tip { color: var(accent-foreground); }
+#status { color: var(hidden-fg); }
+#status .console-toggle { cursor:default; background:var(hidden-bg); color:var(fg); min-width:12px; padding:0 4px; width:auto; display:none; text-align:center; margin-left:0px; border-radius:2px; }
+#status .console-toggle:hover { background:var(dark-highlight-bg); color:var(highlight-fg); }
+#status .console-toggle.dirty { background:var(accent-background); color:var(accent-foreground); display: inline-block; }
+#status .console-toggle.error { color:var(error-fg); background:var(error-bg); }
+#status .log .error { color:var(error-fg); background:var(error-bg); }
+#status .log .tip { color: var(accent-foreground); }
 
 #find-bar input { border-top:2px solid var(bg); background:var(multi); }
 #find-bar input + input { border-left:2px solid var(bg); }
@@ -313,7 +313,7 @@ input { color: var(highlight-fg); background:var(highlight-bg); }
 #multi .list li { height:29px; padding:6px 10px; font-size: 9pt; text-align:left; }
 #multi .content { background:var(multi); margin:0; top:29px; left:0; right:0; padding:5px; padding-bottom:5px; }
 
-#side .workspace ul.root { top:0px; }
+#left-bar .workspace ul.root { top:0px; }
 #right-bar .filter-list input { padding:6px 10px; font-size:10pt; margin-top:0; border-radius:0px; }
 #right-bar .filter-list ul { top:35px; bottom:10px; }
 #right-bar .content { padding:0 15px; padding-bottom:10px; }

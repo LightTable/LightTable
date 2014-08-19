@@ -1,6 +1,6 @@
 (ns lt.objs.notifos
   (:require [lt.object :as object]
-            [lt.objs.statusbar :as statusbar]
+            [lt.objs.status-bar :as status-bar]
             [lt.objs.command :as cmd]
             [lt.util.js :refer [wait]]
             [crate.binding :refer [map-bound bound deref?]])
@@ -11,20 +11,20 @@
 (defn working [msg]
   (when msg
     (set-msg! msg))
-  (statusbar/loader-inc))
+  (status-bar/loader-inc))
 
 (defn done-working
   ([]
-   (statusbar/loader-dec))
+   (status-bar/loader-dec))
   ([msg]
    (set-msg! msg)
-   (statusbar/loader-dec)))
+   (status-bar/loader-dec)))
 
 (defn msg* [m & [opts]]
   (let [m (if (string? m)
             m
             (pr-str m))]
-    (object/merge! statusbar/statusbar-loader (merge {:message m :class ""} opts))))
+    (object/merge! status-bar/status-bar-loader (merge {:message m :class ""} opts))))
 
 (defn set-msg!
   ([msg]
@@ -38,7 +38,7 @@
                                standard-timeout) #(msg* "")))))
 
 (cmd/command {:command :reset-working
-              :desc "Statusbar: Reset working indicator"
+              :desc "Status Bar: Reset working indicator"
               :exec (fn []
-                      (statusbar/loader-set 0)
+                      (status-bar/loader-set 0)
                       )})
