@@ -24,7 +24,7 @@
   (let [m (if (string? m)
             m
             (pr-str m))]
-    (object/merge! status-bar/status-bar-loader (merge {:message m :class ""} opts))))
+    (object/merge! status-bar/status-loader (merge {:message m :class ""} opts))))
 
 (defn set-msg!
   ([msg]
