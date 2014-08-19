@@ -35,7 +35,7 @@
   (let [result (atom (transient {}))]
     (doseq [beh behs
             t (:triggers (->behavior beh))]
-      (swap! result assoc! t (conj (or (get @result t) []) beh)))
+      (swap! result assoc! t (conj (or (get @result t) '()) beh)))
     (persistent! @result)))
 
 (defn specificity-sort [xs dir]
