@@ -31,7 +31,7 @@
 (defn +behaviors [cur m]
   (assoc cur :+
     (reduce (fn [res [k v]]
-              (update-in res [k] #(apply conj (or % '()) v)))
+              (update-in res [k] #(apply conj (or % []) v)))
             (:+ cur)
             m)))
 
@@ -42,7 +42,7 @@
             (:+ cur)
             m)
     :- (reduce (fn [res [k v]]
-              (update-in res [k] #(apply conj (or % '()) v)))
+              (update-in res [k] #(apply conj (or % []) v)))
             (:- cur)
             m)))
 
