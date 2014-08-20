@@ -433,13 +433,14 @@
                 :triggers #{:click :double-click :clear!}
                 :tags #{:inline :inline.exception}
                 :init (fn [this info]
-                        (let [content (->inline-exception this info)]
-                          (object/merge! this (assoc info
-                                                :widget (ed/line-widget (ed/->cm-ed (:ed info))
-                                                                        (-> info :loc :line)
-                                                                        content
-                                                                        {:coverGutter false})))
-                          content)))
+                        (when (-> info :loc :line)
+                          (let [content (->inline-exception this info)]
+                            (object/merge! this (assoc info
+                                                  :widget (ed/line-widget (ed/->cm-ed (:ed info))
+                                                                          (-> info :loc :line)
+                                                                          content
+                                                                          {:coverGutter false})))
+                            content))))
 
 (behavior ::inline-exceptions
           :triggers #{:editor.exception}
