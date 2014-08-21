@@ -416,6 +416,7 @@
   :tree-item [:lt.objs.sidebar.workspace/rename-submit
               :lt.objs.sidebar.workspace/rename-focus
               :lt.objs.sidebar.workspace/start-rename
+              :lt.objs.sidebar.workspace/duplicate
               :lt.objs.sidebar.workspace/rename-cancel
               :lt.objs.sidebar.workspace/rename-blur]
   :version [:lt.objs.version/destroy-on-close

@@ -201,11 +201,15 @@
 (behavior ::subfile-menu
           :triggers #{:menu-items}
           :reaction (fn [this items]
-                      (conj items {:label "Rename"
-                                   :order 1
-                                   :click (fn [] (object/raise this :start-rename!))}
-                            {:label "Delete"
+                      (conj items
+                            {:label "Duplicate"
+                             :order 1
+                             :click (fn [] (object/raise this :duplicate!))}
+                            {:label "Rename"
                              :order 2
+                             :click (fn [] (object/raise this :start-rename!))}
+                            {:label "Delete"
+                             :order 3
                              :click (fn [] (object/raise this :delete!))})))
 
 (behavior ::subfolder-menu
@@ -368,6 +372,14 @@
           :reaction (fn [this]
                       (object/merge! this {:renaming? false})
                       ))
+
+(behavior ::duplicate
+          :triggers #{:duplicate!}
+          :reaction (fn [this]
+                      (let [base-name (files/without-ext (files/basename (:path @this)))
+                            new-name (str base-name " copy." (files/ext (:path @this)))
+                            new-path (files/join (files/parent (:path @this)) new-name)]
+                        (files/copy (:path @this) new-path))))
 
 (behavior ::destroy-sub-tree
           :trigger #{:destroy}
