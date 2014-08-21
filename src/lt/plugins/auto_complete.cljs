@@ -4,7 +4,7 @@
             [lt.objs.command :as cmd]
             [lt.util.load :as load]
             [lt.objs.thread :as thread]
-            [lt.objs.sidebar.command :as scmd]
+            [lt.objs.side-bar.command :as scmd]
             [lt.objs.editor.pool :as pool]
             [lt.objs.editor :as editor]
             [lt.objs.context :as ctx]

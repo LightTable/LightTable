@@ -7,7 +7,7 @@
             [lt.objs.editor.pool :as pool]
             [lt.objs.clients :as clients]
             [lt.util.cljs :refer [->dottedkw]]
-            [lt.objs.sidebar.command :as cmd]
+            [lt.objs.side-bar.command :as cmd]
             [lt.objs.notifos :as notifos]
             [lt.objs.popup :as popup]
             [crate.core :as crate]

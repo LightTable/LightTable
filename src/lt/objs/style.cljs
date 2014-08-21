@@ -1,6 +1,6 @@
 (ns lt.objs.style
   (:require [lt.object :as object]
-            [lt.objs.sidebar.command :as cmd]
+            [lt.objs.side-bar.command :as cmd]
             [lt.objs.app :as app]
             [lt.objs.tabs :as tabs]
             [lt.objs.context :as ctx]

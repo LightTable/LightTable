@@ -1,7 +1,7 @@
-(ns lt.objs.sidebar.clients
+(ns lt.objs.side-bar.clients
   (:require [lt.object :as object]
             [lt.objs.clients :as clients]
-            [lt.objs.sidebar :as sidebar]
+            [lt.objs.side-bar :as side-bar]
             [lt.objs.command :as cmd]
             [lt.objs.context :as ctx]
             [lt.objs.clients.tcp :as tcp]
@@ -97,9 +97,9 @@
      (bound (subatom this [:connectors]) (partial connectors this))
      ]]]
   :focus (fn []
-           (ctx/in! :sidebar.clients this))
+           (ctx/in! :side-bar.clients this))
   :blur (fn []
-          (ctx/out! :sidebar.clients this))
+          (ctx/out! :side-bar.clients this))
   )
 
 (behavior ::track-active-client
@@ -131,7 +131,7 @@
 (behavior ::hide-on-select
                   :triggers #{:selected}
                   :reaction (fn [this]
-                              (object/raise sidebar/rightbar :close!)))
+                              (object/raise side-bar/right-bar :close!)))
 
 (behavior ::focus!
                   :triggers #{:focus!}
@@ -143,8 +143,8 @@
     (connection-type this c)
     ))
 
-(object/object* ::sidebar.clients
-                :tags #{:sidebar.clients}
+(object/object* ::side-bar.clients
+                :tags #{:side-bar.clients}
                 :label "connect"
                 :connectors (sorted-map)
                 :order 2
@@ -152,9 +152,9 @@
                         (connect-ui this)
                         ))
 
-(def clients (object/create ::sidebar.clients))
+(def clients (object/create ::side-bar.clients))
 
-(sidebar/add-item sidebar/rightbar clients)
+(side-bar/add-item side-bar/right-bar clients)
 
 (defn add-connector [c]
   (object/update! clients [:connectors] assoc (:name c) c))
@@ -162,7 +162,7 @@
 (cmd/command {:command :show-connect
               :desc "Connect: Show connect bar"
               :exec (fn []
-                      (object/raise sidebar/rightbar :toggle clients)
+                      (object/raise side-bar/right-bar :toggle clients)
                       (object/raise clients :focus!)
                       )})
 
@@ -170,13 +170,13 @@
 (cmd/command {:command :hide-connect
               :desc "Connect: hide connect bar"
               :exec (fn []
-                      (object/raise sidebar/rightbar :close!)
+                      (object/raise side-bar/right-bar :close!)
                       )})
 
 (cmd/command {:command :show-add-connection
               :desc "Connect: Add Connection"
               :exec (fn []
-                      (object/raise sidebar/rightbar :toggle clients {:force? true
+                      (object/raise side-bar/right-bar :toggle clients {:force? true
                                                                      :transient? false})
                       (object/raise clients :selecting!)
                       )})

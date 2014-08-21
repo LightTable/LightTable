@@ -136,7 +136,7 @@
 (defn clear []
   (dom/empty (->ui console)))
 
-(object/object* ::sidebar.console
+(object/object* ::side-bar.console
                 :tags #{:console}
                 :label "console"
                 :order 4

@@ -54,8 +54,8 @@
      :popup.input {"left" [:passthrough],
                    "right" [:passthrough]}
      :plugin-manager.search {"enter" [:plugin-manager.search]}
-     :sidebar.clients {"esc" [:hide-connect]}
-     :sidebar.doc.search.input {"enter" [:docs.search.exec]
+     :side-bar.clients {"esc" [:hide-connect]}
+     :side-bar.doc.search.input {"enter" [:docs.search.exec]
                                 "esc" [:docs.search.hide]}
      :searcher.search {"enter" [:searcher.search]}
      :searcher.replace {"pmeta-enter" [:searcher.replace-all]}

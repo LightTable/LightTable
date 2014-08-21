@@ -1,4 +1,4 @@
-(ns lt.objs.sidebar
+(ns lt.objs.side-bar
   (:require [lt.object :as object]
             [lt.objs.tabs :as tabs]
             [lt.objs.command :as cmd]
@@ -95,8 +95,8 @@
 (defn ->width [width]
   (str (or width 0) "px"))
 
-(object/object* ::sidebar
-                :tags #{:sidebar}
+(object/object* ::left-bar
+                :tags #{:side-bar}
                 :items {}
                 :width 0
                 :side :left
@@ -110,7 +110,7 @@
 
 (object/object* ::right-bar
                 :items {}
-                :tags #{:sidebar}
+                :tags #{:side-bar}
                 :width 0
                 :side :right
                 :max-width 300
@@ -120,18 +120,18 @@
                          [:div.content
                           ]]))
 
-(def sidebar (object/create ::sidebar))
-(def rightbar (object/create ::right-bar))
+(def left-bar (object/create ::left-bar))
+(def right-bar (object/create ::right-bar))
 
-(canvas/add! sidebar)
-(canvas/add! rightbar)
+(canvas/add! left-bar)
+(canvas/add! right-bar)
 
 (defn add-item [bar item]
   (object/update! bar [:items] assoc (:order @item) item)
   (dom/append (dom/$ :.content (object/->content bar)) (object/->content item)))
 
-(cmd/command {:command :close-sidebar
-              :desc "Sidebar: close"
+(cmd/command {:command :close-side-bar
+              :desc "Side Bar: close"
               :hidden true
               :exec (fn []
-                      (object/raise rightbar :close!))})
+                      (object/raise right-bar :close!))})

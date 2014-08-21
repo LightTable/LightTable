@@ -6,7 +6,7 @@
             [lt.objs.files :as files]
             [lt.objs.eval :as eval]
             [lt.objs.clients :as clients]
-            [lt.objs.sidebar.clients :as scl]
+            [lt.objs.side-bar.clients :as scl]
             [lt.objs.menu :as menu]
             [lt.objs.platform :as platform]
             [lt.objs.context :as ctx]

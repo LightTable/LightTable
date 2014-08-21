@@ -6,7 +6,7 @@
         :lt.objs.settings/create-user-settings
         :lt.objs.proc/set-path-OSX
         :lt.objs.workspace/reconstitute-last-workspace
-        :lt.objs.sidebar.command/init-commands
+        :lt.objs.side-bar.command/init-commands
         :lt.objs.clients.ws/kill-on-closed
         :lt.objs.keyboard/load-keys-on-init
         :lt.objs.workspace/stop-watch-on-close
@@ -25,7 +25,7 @@
         :lt.objs.animations/animate-on-init
         :lt.objs.app/store-position-on-close :lt.objs.canvas/append-canvas
         :lt.objs.tabs/init-sortable
-        :lt.objs.sidebar.navigate/set-exclude-on-init
+        :lt.objs.side-bar.navigate/set-exclude-on-init
         :lt.objs.deploy/check-version
         :lt.objs.style/style-on-init
         :lt.objs.app/initial-focus
@@ -133,10 +133,10 @@
                      :lt.objs.clients.devtools/disconnect
                      :lt.objs.clients.devtools/print-messages]
   :codex [:lt.objs.codex/close :lt.objs.codex/add! :lt.objs.codex/clear!]
-  :command.options [:lt.objs.sidebar.command/options-escape!]
-  :command.selector [:lt.objs.sidebar.command/escape!
-                     :lt.objs.sidebar.command/select-hidden
-                     :lt.objs.sidebar.command/select-command]
+  :command.options [:lt.objs.side-bar.command/options-escape!]
+  :command.selector [:lt.objs.side-bar.command/escape!
+                     :lt.objs.side-bar.command/select-hidden
+                     :lt.objs.side-bar.command/select-command]
   :console [:lt.objs.console/on-close
             :lt.objs.menu/menu!
             :lt.objs.console/menu+]
@@ -156,7 +156,7 @@
            :lt.objs.editor/context-on-inactive
            :lt.objs.editor/refresh-on-show
            :lt.objs.editor/destroy-on-close
-           :lt.objs.sidebar.clients/track-active-client
+           :lt.objs.side-bar.clients/track-active-client
            :lt.plugins.auto-complete/intra-buffer-string-hints
            :lt.plugins.auto-complete/textual-hints
            :lt.plugins.auto-paren/close-pair :lt.objs.editor.pool/track-active
@@ -279,14 +279,14 @@
                                       {:name "XML" :exts [:xml] :mime "application/xml" :tags [:editor.xml]}
                                       {:name "YAML" :exts [:yml :yaml] :mime "text/x-yaml" :tags [:editor.yaml]}
                                       ])]
-  :filter-list [:lt.objs.sidebar.command/select!
-                :lt.objs.sidebar.command/filter-inactive
-                :lt.objs.sidebar.command/filter-list.focus! :lt.objs.sidebar.command/change!
-                :lt.objs.sidebar.command/clear! :lt.objs.sidebar.command/update-lis
-                :lt.objs.sidebar.command/set-on-select
-                :lt.objs.sidebar.command/move-selection
-                :lt.objs.sidebar.command/set-selection!
-                :lt.objs.sidebar.command/filter-active]
+  :filter-list [:lt.objs.side-bar.command/select!
+                :lt.objs.side-bar.command/filter-inactive
+                :lt.objs.side-bar.command/filter-list.focus! :lt.objs.side-bar.command/change!
+                :lt.objs.side-bar.command/clear! :lt.objs.side-bar.command/update-lis
+                :lt.objs.side-bar.command/set-on-select
+                :lt.objs.side-bar.command/move-selection
+                :lt.objs.side-bar.command/set-selection!
+                :lt.objs.side-bar.command/filter-active]
   :find-bar [:lt.objs.find/clear! :lt.objs.find/next! :lt.objs.find/show!
              :lt.objs.find/focus! :lt.objs.find/hide! :lt.objs.find/prev!
              :lt.objs.find/replace!
@@ -313,21 +313,21 @@
   :inline.watch [:lt.plugins.watches/clear!]
   :inspector.object [:lt.objs.clients.devtools/clear-inspector-object]
   :jump-stack [:lt.objs.jump-stack/jump-stack.push :lt.objs.jump-stack/jump-stack.pop]
-  :navigate.selector [:lt.objs.sidebar.navigate/escape!
-                      :lt.objs.sidebar.navigate/pop-transient-on-select
-                      :lt.objs.sidebar.navigate/open-on-select]
-  :navigator [:lt.objs.sidebar.navigate/focus! :lt.objs.sidebar.navigate/focus-on-show :lt.objs.sidebar.navigate/workspace-files
-              (:lt.objs.sidebar.navigate/set-file-limit 8000)]
+  :navigate.selector [:lt.objs.side-bar.navigate/escape!
+                      :lt.objs.side-bar.navigate/pop-transient-on-select
+                      :lt.objs.side-bar.navigate/open-on-select]
+  :navigator [:lt.objs.side-bar.navigate/focus! :lt.objs.side-bar.navigate/focus-on-show :lt.objs.side-bar.navigate/workspace-files
+              (:lt.objs.side-bar.navigate/set-file-limit 8000)]
   :object [:lt.objs.clients/on-destroy-remove-cb]
   :opener [:lt.objs.opener/open-from-info :lt.objs.opener/open-transient-editor
            :lt.objs.opener/open-standard-editor
            :lt.objs.opener/track-open-files
            :lt.objs.opener/watch-on-open
            :lt.objs.opener/check-read-only]
-  :options-input [:lt.objs.sidebar.command/op-select!
-                  :lt.objs.sidebar.command/options-escape!
-                  :lt.objs.sidebar.command/op-clear!
-                  :lt.objs.sidebar.command/op-focus!]
+  :options-input [:lt.objs.side-bar.command/op-select!
+                  :lt.objs.side-bar.command/options-escape!
+                  :lt.objs.side-bar.command/op-clear!
+                  :lt.objs.side-bar.command/op-focus!]
   :plugin.file [(:lt.objs.editor.file/on-save :build)]
   :plugin-manager [:lt.objs.plugins/on-close
                    :lt.objs.plugins/search-server-plugins
@@ -351,26 +351,26 @@
              :lt.objs.search/on-result
              :lt.objs.search/focus
              :lt.objs.search/on-close]
-  :sidebar [:lt.objs.sidebar/item-toggled
-            :lt.objs.sidebar/width!
-            :lt.objs.sidebar/open!
-            :lt.objs.sidebar/close!
-            :lt.objs.sidebar/no-anim-on-drag
-            :lt.objs.sidebar/reanim-on-drop
-            :lt.objs.sidebar/pop-transient]
-  :sidebar.clients [:lt.objs.sidebar.clients/unset-client
-                    :lt.objs.sidebar.clients/selecting!
-                    :lt.objs.sidebar.clients/focus!
-                    :lt.objs.sidebar.clients/hide-on-select
-                    :lt.objs.sidebar.clients/done-selecting]
-  :sidebar.command [:lt.objs.sidebar.command/refresh! :lt.objs.sidebar.command/focus!
-                    :lt.objs.sidebar.command/exec-active!
-                    :lt.objs.sidebar.command/post-select-pop
-                    :lt.objs.sidebar.command/soft-focus!
-                    :lt.objs.sidebar.command/cancel!
-                    :lt.objs.sidebar.command/focus-on-show
-                    :lt.objs.sidebar.command/exec-command]
-  :sidebar.docs.search [:lt.plugins.doc/sidebar.doc.search.exec
+  :side-bar [:lt.objs.side-bar/item-toggled
+            :lt.objs.side-bar/width!
+            :lt.objs.side-bar/open!
+            :lt.objs.side-bar/close!
+            :lt.objs.side-bar/no-anim-on-drag
+            :lt.objs.side-bar/reanim-on-drop
+            :lt.objs.side-bar/pop-transient]
+  :side-bar.clients [:lt.objs.side-bar.clients/unset-client
+                    :lt.objs.side-bar.clients/selecting!
+                    :lt.objs.side-bar.clients/focus!
+                    :lt.objs.side-bar.clients/hide-on-select
+                    :lt.objs.side-bar.clients/done-selecting]
+  :side-bar.command [:lt.objs.side-bar.command/refresh! :lt.objs.side-bar.command/focus!
+                    :lt.objs.side-bar.command/exec-active!
+                    :lt.objs.side-bar.command/post-select-pop
+                    :lt.objs.side-bar.command/soft-focus!
+                    :lt.objs.side-bar.command/cancel!
+                    :lt.objs.side-bar.command/focus-on-show
+                    :lt.objs.side-bar.command/exec-command]
+  :side-bar.docs.search [:lt.plugins.doc/side-bar.doc.search.exec
                         :lt.plugins.doc/doc.search.results
                         :lt.plugins.doc/focus!
                         :lt.plugins.doc/set-item
@@ -378,14 +378,14 @@
                         :lt.plugins.doc/no-client
                         :lt.plugins.doc/cur-from-last-editor
                         ]
-  :sidebar.workspace [:lt.objs.sidebar.workspace/sidebar-menu
-                      :lt.objs.sidebar.workspace/on-menu
-                      :lt.objs.sidebar.workspace/on-drop
-                      :lt.objs.sidebar.workspace/recent! :lt.objs.sidebar.workspace/tree!]
-  :recent-workspace [:lt.objs.sidebar.workspace/on-menu
-                     :lt.objs.sidebar.workspace/recent-menu
-                     :lt.objs.sidebar.workspace/recent.delete!
-                     :lt.objs.sidebar.workspace/recent.select!]
+  :side-bar.workspace [:lt.objs.side-bar.workspace/side-bar-menu
+                      :lt.objs.side-bar.workspace/on-menu
+                      :lt.objs.side-bar.workspace/on-drop
+                      :lt.objs.side-bar.workspace/recent! :lt.objs.side-bar.workspace/tree!]
+  :recent-workspace [:lt.objs.side-bar.workspace/on-menu
+                     :lt.objs.side-bar.workspace/recent-menu
+                     :lt.objs.side-bar.workspace/recent.delete!
+                     :lt.objs.side-bar.workspace/recent.select!]
   :skin-selector [:lt.objs.style/set-skin-on-select]
   :statusbar-container-item [:lt.objs.statusbar/on-show!
                              :lt.objs.statusbar/on-hide!
@@ -413,11 +413,11 @@
                :lt.objs.tabs/show-close-button]
   :tcp.client [:lt.objs.clients.tcp/send!]
   :theme-selector [:lt.objs.style/set-theme-on-select]
-  :tree-item [:lt.objs.sidebar.workspace/rename-submit
-              :lt.objs.sidebar.workspace/rename-focus
-              :lt.objs.sidebar.workspace/start-rename
-              :lt.objs.sidebar.workspace/rename-cancel
-              :lt.objs.sidebar.workspace/rename-blur]
+  :tree-item [:lt.objs.side-bar.workspace/rename-submit
+              :lt.objs.side-bar.workspace/rename-focus
+              :lt.objs.side-bar.workspace/start-rename
+              :lt.objs.side-bar.workspace/rename-cancel
+              :lt.objs.side-bar.workspace/rename-blur]
   :version [:lt.objs.version/destroy-on-close
             :lt.objs.version/on-show-refresh-eds]
   :watchable [:lt.plugins.watches/watch!
@@ -436,48 +436,48 @@
                   :lt.objs.thread/connect
                   :lt.objs.thread/try-send
                   :lt.objs.thread/message]
-  :workspace [:lt.objs.sidebar.workspace/on-ws-set
-              :lt.objs.sidebar.navigate/watched.delete :lt.objs.workspace/rename!
-              :lt.objs.workspace/clear! :lt.objs.sidebar.navigate/watched.create
-              :lt.objs.sidebar.navigate/populate-on-ws-update
+  :workspace [:lt.objs.side-bar.workspace/on-ws-set
+              :lt.objs.side-bar.navigate/watched.delete :lt.objs.workspace/rename!
+              :lt.objs.workspace/clear! :lt.objs.side-bar.navigate/watched.create
+              :lt.objs.side-bar.navigate/populate-on-ws-update
               :lt.objs.editor.pool/watched.delete :lt.objs.workspace/add-folder!
               :lt.objs.workspace/serialize-workspace
               :lt.objs.workspace/remove-file! :lt.objs.editor.pool/watched.rename
-              :lt.objs.workspace/add-file! :lt.objs.sidebar.workspace/on-ws-add
+              :lt.objs.workspace/add-file! :lt.objs.side-bar.workspace/on-ws-add
               :lt.objs.workspace/watch-on-set
-              :lt.objs.sidebar.workspace/on-ws-remove :lt.objs.workspace/set!
-              :lt.objs.sidebar.workspace/watched.delete :lt.objs.workspace/new!
-              :lt.objs.sidebar.workspace/watched.create
+              :lt.objs.side-bar.workspace/on-ws-remove :lt.objs.workspace/set!
+              :lt.objs.side-bar.workspace/watched.delete :lt.objs.workspace/new!
+              :lt.objs.side-bar.workspace/watched.create
               :lt.objs.editor.pool/watched.update
               :lt.objs.settings/grab-workspace-behaviors
               :lt.objs.opener/watch-open-files
-              :lt.objs.sidebar.workspace/watch-open-dirs-paths
+              :lt.objs.side-bar.workspace/watch-open-dirs-paths
               :lt.objs.workspace/remove-folder!]
-  :workspace.file [:lt.objs.sidebar.workspace/on-open-file
-                   :lt.objs.sidebar.workspace/rename-file
-                   :lt.objs.sidebar.workspace/subfile-menu
-                   :lt.objs.sidebar.workspace/delete-file
-                   :lt.objs.sidebar.workspace/force-delete-file
-                   :lt.objs.sidebar.workspace/on-menu]
-  :workspace.file.root [:lt.objs.sidebar.workspace/on-root-menu]
-  :workspace.folder [:lt.objs.sidebar.workspace/new-folder!
-                     :lt.objs.sidebar.workspace/subfolder-menu
-                     :lt.objs.sidebar.workspace/destroy-sub-tree
-                     :lt.objs.sidebar.workspace/on-open-ls
-                     :lt.objs.sidebar.workspace/delete-folder
-                     :lt.objs.sidebar.workspace/on-close
-                     :lt.objs.sidebar.workspace/rename-folder
-                     :lt.objs.sidebar.workspace/refresh
-                     :lt.objs.sidebar.workspace/on-menu
-                     :lt.objs.sidebar.workspace/force-delete-folder
-                     :lt.objs.sidebar.workspace/track-and-watch-open-dirs
-                     :lt.objs.sidebar.workspace/untrack-closed-dirs
-                     :lt.objs.sidebar.workspace/new-file!]
-  :workspace.folder.root [:lt.objs.sidebar.workspace/on-root-menu
-                          :lt.objs.sidebar.workspace/on-menu]
-  :workspace.root [:lt.objs.sidebar.workspace/on-remove
-                   :lt.objs.sidebar.workspace/add-ws-folder
-                   :lt.objs.sidebar.workspace/on-clear
-                   :lt.objs.sidebar.workspace/add-ws-file]
+  :workspace.file [:lt.objs.side-bar.workspace/on-open-file
+                   :lt.objs.side-bar.workspace/rename-file
+                   :lt.objs.side-bar.workspace/subfile-menu
+                   :lt.objs.side-bar.workspace/delete-file
+                   :lt.objs.side-bar.workspace/force-delete-file
+                   :lt.objs.side-bar.workspace/on-menu]
+  :workspace.file.root [:lt.objs.side-bar.workspace/on-root-menu]
+  :workspace.folder [:lt.objs.side-bar.workspace/new-folder!
+                     :lt.objs.side-bar.workspace/subfolder-menu
+                     :lt.objs.side-bar.workspace/destroy-sub-tree
+                     :lt.objs.side-bar.workspace/on-open-ls
+                     :lt.objs.side-bar.workspace/delete-folder
+                     :lt.objs.side-bar.workspace/on-close
+                     :lt.objs.side-bar.workspace/rename-folder
+                     :lt.objs.side-bar.workspace/refresh
+                     :lt.objs.side-bar.workspace/on-menu
+                     :lt.objs.side-bar.workspace/force-delete-folder
+                     :lt.objs.side-bar.workspace/track-and-watch-open-dirs
+                     :lt.objs.side-bar.workspace/untrack-closed-dirs
+                     :lt.objs.side-bar.workspace/new-file!]
+  :workspace.folder.root [:lt.objs.side-bar.workspace/on-root-menu
+                          :lt.objs.side-bar.workspace/on-menu]
+  :workspace.root [:lt.objs.side-bar.workspace/on-remove
+                   :lt.objs.side-bar.workspace/add-ws-folder
+                   :lt.objs.side-bar.workspace/on-clear
+                   :lt.objs.side-bar.workspace/add-ws-file]
   :ws.client [:lt.objs.clients.ws/send!]}}
 
