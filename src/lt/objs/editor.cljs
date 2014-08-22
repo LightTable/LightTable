@@ -234,8 +234,8 @@
 (defn set-extending [e ext?]
   (.setExtending (->cm-ed e) ext?))
 
-(defn replace-selection [e neue]
-  (.replaceSelection (->cm-ed e) neue "end" "+input"))
+(defn replace-selection [e neue & [after]]
+  (.replaceSelection (->cm-ed e) neue (name (or after :end)) "+input"))
 
 (defn undo [e]
   (.undo (->cm-ed e)))
