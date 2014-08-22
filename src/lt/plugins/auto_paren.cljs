@@ -35,7 +35,7 @@
                        (fn []
                          (let [current-selection (editor/selection this)]
                            (if-not (= current-selection "")
-                             (editor/replace-selection this (str ch current-selection (pairs ch)))
+                             (editor/replace-selection this (str ch current-selection (pairs ch)) :around)
                              (if (re-seq word-char (get-char this 1))
                                (editor/insert-at-cursor this ch)
                                (do
