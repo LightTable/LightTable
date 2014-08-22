@@ -69,12 +69,14 @@
 (behavior ::try-remove-pair
           :triggers #{:backspace!}
           :reaction (fn [this]
-                      (let [ch (get-char this -1)]
-                        (if (and (pairs ch)
-                                 (= (get-char this 1) (pairs ch)))
-                          (let [loc (editor/->cursor this)]
-                            (editor/replace this (adjust-loc loc -1) (adjust-loc loc 1) ""))
-                          (passthrough)))))
+                      (if-not (editor/selection? this)
+                        (let [ch (get-char this -1)]
+                          (if (and (pairs ch)
+                                   (= (get-char this 1) (pairs ch)))
+                            (let [loc (editor/->cursor this)]
+                              (editor/replace this (adjust-loc loc -1) (adjust-loc loc 1) ""))
+                            (passthrough)))
+                        (passthrough))))
 
 
 (cmd/command {:command :editor.close-pair
