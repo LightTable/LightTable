@@ -4,7 +4,7 @@
             [lt.objs.editor :as editor]
             [lt.objs.editor.pool :as pool]
             [lt.objs.context :as ctx]
-            [lt.objs.keyboard :refer [passthrough]])
+            [lt.objs.keyboard :as keyboard :refer [passthrough]])
   (:require-macros [lt.macros :refer [behavior]]))
 
 (def pairs {\( \)
@@ -118,8 +118,8 @@
               :exec (fn [c]
                       (object/raise (ctx/->obj :editor.keys.normal) :repeat-pair! c))})
 
-(cmd/command {:command :editor.backspace-pair
+(cmd/command {:command :editor.backspace
               :hidden true
-              :desc "Editor: Pair aware backspace"
+              :desc "Editor: Pair and indent aware backspace"
               :exec (fn [c]
-                      (object/raise (ctx/->obj :editor.keys.normal) :backspace! c))})
+                      (keyboard/raise (ctx/->obj :editor.keys.normal) :backspace! c))})
