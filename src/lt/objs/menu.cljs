@@ -191,7 +191,7 @@
 (behavior ::menu!
                   :triggers #{:menu!}
                   :reaction (fn [this e]
-                              (let [items (sort-by :order (filter identity (object/raise-reduce this :menu+ [])))]
+                              (let [items (sort-by :order (filter identity (object/raise-reduce this :menu+ [] e)))]
                                 (-> (menu items)
                                     (show-menu (.-clientX e) (.-clientY e))))
                               (dom/prevent e)

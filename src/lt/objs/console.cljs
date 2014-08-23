@@ -7,7 +7,8 @@
             [lt.objs.status-bar :as status-bar]
             [lt.objs.tabs :as tabs]
             [clojure.string :as string]
-            [lt.util.dom :refer [$ append empty] :as dom])
+            [lt.util.dom :refer [$ append empty parents] :as dom]
+            [lt.objs.platform :as platform])
   (:require-macros [crate.def-macros :refer [defpartial]]
                    [lt.macros :refer [behavior defui]]))
 
@@ -32,6 +33,7 @@
 (defui console-ui [this]
   [:ul.console]
   :contextmenu (fn [e]
+                 (object/assoc-in! this [:current-event] e)
                  (object/raise this :menu! e)))
 
 (behavior ::on-close
@@ -148,20 +150,29 @@
 
 (behavior ::menu+
           :triggers #{:menu+}
-          :reaction (fn [this]
+          :reaction (fn [this items event]
+
                       (conj items
                             {:label "Clear"
                              :order 1
                              :click (fn []
                                       (cmd/exec! :clear-console))}
+                            {:label "Copy"
+                             :order 2
+                             :click (fn []
+                                      (let [target (.-target event)
+                                            item (if (= (.toLowerCase (.-tagName target)) "li")
+                                                   target
+                                                   (dom/parents target "ul.console li"))]
+                                        (platform/copy (.-textContent target))))}
                             (when (not= :tab (:current-ui @console))
                               {:label "Hide console"
-                               :order 2
+                               :order 3
                                :click (fn []
                                         (cmd/exec! :toggle-console))})
                             (when (not= :tab (:current-ui @console))
                               {:label "Open console tab"
-                               :order 3
+                               :order 4
                                :click (fn []
                                         (cmd/exec! :toggle-console)
                                         (cmd/exec! :console-tab))}))))
