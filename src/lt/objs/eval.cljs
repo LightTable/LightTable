@@ -424,10 +424,17 @@
           :triggers #{:menu!}
           :reaction (fn [this ev]
                       (-> (menu/menu [{:label "Remove exception"
-                                       :click (fn [] (object/raise this :clear!))}])
+                                       :click (fn [] (object/raise this :clear!))}
+                                      {:label "Copy exception"
+                                       :click (fn [] (object/raise this :copy))}])
                           (menu/show-menu (.-clientX ev) (.-clientY ev)))
                       (dom/prevent ev)
                       (dom/stop-propagation ev)))
+
+(behavior ::copy-exception
+          :triggers #{:copy}
+          :reaction (fn [this]
+                      (platform/copy (:ex @this))))
 
 (object/object* ::inline-exception
                 :triggers #{:click :double-click :clear!}
