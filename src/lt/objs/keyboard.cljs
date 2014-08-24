@@ -159,10 +159,3 @@
                   :type :user
                   :reaction (fn [this timeout]
                               (set! chord-timeout timeout)))
-
-(defn raise [obj k & args]
-  (loop [reactions (-> @obj :listeners k)]
-    (when (seq reactions)
-      (set! *capture* true)
-      (object/raise* obj [(first reactions)] args k)
-      (when-not *capture* (recur (rest reactions))))))

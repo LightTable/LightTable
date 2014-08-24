@@ -170,7 +170,6 @@
            :lt.plugins.auto-complete/async-hint-tokens
            :lt.objs.editor/copy-paste-menu+
            :lt.plugins.auto-paren/try-remove-pair
-           :lt.plugins.auto-paren/backspace-indent
            :lt.plugins.auto-paren/open-pair
            :lt.plugins.auto-complete/show-hint
            :lt.objs.editor/not-read-only

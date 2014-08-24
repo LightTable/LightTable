@@ -78,28 +78,6 @@
                             (passthrough)))
                         (passthrough))))
 
-(defn pre-cursor-indent [ed {:keys [line ch]}]
-  (let [tabs (editor/option ed :indentWithTabs)
-        unit (editor/option ed :indentUnit)
-        precursor (.substring (editor/line ed line) 0 ch)
-        whitespace (count (re-find (if tabs #"^\t*$" #"^ *$") precursor))]
-    [(quot whitespace unit) (mod whitespace unit)]))
-
-(behavior ::backspace-indent
-          :triggers #{:backspace!}
-          :reaction (fn [ed]
-                      (if-not (or (editor/selection? ed)
-                                  (> (.-length (.getSelections (editor/->cm-ed ed))) 1))
-                        (let [cursor (editor/->cursor ed)
-                              unit (editor/option ed :indentUnit)
-                              [indent rem] (pre-cursor-indent ed cursor)
-                              cursor (if (> rem 0) (adjust-loc (editor/->cursor ed) (- unit rem)) cursor)
-                              [indent rem] (if (> rem 0) (pre-cursor-indent ed cursor) [indent rem])]
-                          (if (and (> indent 0) (zero? rem))
-                            (editor/replace ed (adjust-loc cursor (- unit)) cursor "")
-                            (passthrough)))
-                        (passthrough))))
-
 (cmd/command {:command :editor.close-pair
               :hidden true
               :desc "Editor: Close pair character"
@@ -118,8 +96,38 @@
               :exec (fn [c]
                       (object/raise (ctx/->obj :editor.keys.normal) :repeat-pair! c))})
 
-(cmd/command {:command :editor.backspace
+(cmd/command {:command :editor.backspace-parens
               :hidden true
-              :desc "Editor: Pair and indent aware backspace"
+              :desc "Editor: Pair aware backspace"
               :exec (fn [c]
-                      (keyboard/raise (ctx/->obj :editor.keys.normal) :backspace! c))})
+                      (object/raise (ctx/->obj :editor.keys.normal) :backspace! c))})
+
+;; Treat spaces as tabs
+
+(defn pre-cursor-indent [ed {:keys [line ch]}]
+  (let [tabs (editor/option ed :indentWithTabs)
+        unit (editor/option ed :indentUnit)
+        precursor (.substring (editor/line ed line) 0 ch)
+        whitespace (count (re-find (if tabs #"^\t*$" #"^ *$") precursor))]
+    [(quot whitespace unit) (mod whitespace unit)]))
+
+(defn backspace-indent [ed]
+  (if-not (or (editor/selection? ed)
+              (> (.-length (.getSelections (editor/->cm-ed ed))) 1))
+    (let [cursor (editor/->cursor ed)
+          unit (editor/option ed :indentUnit)
+          [indent rem] (pre-cursor-indent ed cursor)
+          cursor (if (> rem 0) (adjust-loc (editor/->cursor ed) (- unit rem)) cursor)
+          [indent rem] (if (> rem 0) (pre-cursor-indent ed cursor) [indent rem])]
+      (if (and (> indent 0) (zero? rem))
+        (editor/replace ed (adjust-loc cursor (- unit)) cursor "")
+        (passthrough)))
+    (passthrough)))
+
+(cmd/command {:command :editor.backspace-indent
+              :hidden true
+              :desc "Editor: Indent aware backspace"
+              :exec (fn [second]
+                      (when-not (and second keyboard/*capture*)
+                        (set! keyboard/*capture* true)
+                        (backspace-indent (ctx/->obj :editor.keys.normal))))})

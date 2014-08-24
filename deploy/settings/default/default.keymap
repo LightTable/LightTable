@@ -29,7 +29,8 @@
                           "{" [(:editor.open-pair "{")]
                           "]" [(:editor.close-pair "]")]
                           "}" [(:editor.close-pair "}")]
-                          "backspace" [:editor.backspace]}
+                          "backspace" [:editor.backspace-parens
+                                       (:editor.backspace-indent true)]}
      :tabs {"pmeta-w" [:tabs.close]
             "pmeta-shift-[" [:tabs.prev]
             "pmeta-shift-]" [:tabs.next]
