@@ -18,8 +18,6 @@
                 :tag "tag"
                 })
 
-deprecated
-
 (defn mark-deprecated [type old-name val]
   (swap! deprecated assoc-in [type old-name] val))
 
@@ -28,3 +26,4 @@ deprecated
     (when-not (get deprecations old-name)
       (.warn js/console (str "The " (type key-name) " '" old-name "' has been deprecated. Please use '" new-name "' instead."))
       (mark-deprecated type old-name true))))
+
