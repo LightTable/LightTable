@@ -10,10 +10,14 @@
             [lt.util.cljs :refer [->dottedkw]]
             [clojure.string :as string]
             [crate.core :as crate]
-            [crate.binding :refer [subatom bound map-bound computed]])
-  (:require-macros [lt.macros :refer [behavior defui]]))
+            [crate.binding :refer [subatom bound map-bound computed]]
+            [lt.util.deprecate])
+  (:require-macros [lt.macros :refer [behavior defui]]
+                   [lt.deprecate-macros :as deprecate]))
 
 (load/js "core/node_modules/lighttable/util/fuzzy.js" :sync)
+
+(deprecate/namespace lt.objs.sidebar.command lt.objs.side-bar.command)
 
 ;**********************************************************
 ;; options input

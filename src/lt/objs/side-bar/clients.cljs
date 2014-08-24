@@ -9,8 +9,12 @@
             [lt.objs.popup :as popup]
             [lt.objs.editor.pool :as pool]
             [lt.util.dom :as dom]
-            [crate.binding :refer [bound map-bound subatom]])
-  (:require-macros [lt.macros :refer [behavior defui]]))
+            [crate.binding :refer [bound map-bound subatom]]
+            [lt.util.deprecate])
+  (:require-macros [lt.macros :refer [behavior defui]]
+                   [lt.deprecate-macros :as deprecate]))
+
+(deprecate/namespace lt.objs.sidebar.clients lt.objs.side-bar.clients)
 
 (defui close-button [i]
   [:span.button "disconnect"]
