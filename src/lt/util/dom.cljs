@@ -149,6 +149,9 @@
 (defn width [elem]
   (.-clientWidth elem))
 
+(defn scroll-width [elem]
+  (.-scrollWidth elem))
+
 (defn offset-top [elem]
   (.-offsetTop elem))
 
