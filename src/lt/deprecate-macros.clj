@@ -48,7 +48,17 @@
 ;; Namespaces
 (defmacro namespace [old-name new-name]
   `(do
-     (lt.util.deprecate/mark-deprecated :fn '~old-name "???")
-     (set! ~old-name ~new-name)))
+     (lt.util.deprecate/mark-deprecated :ns ~(str old-name) "???")
+     (let [old-proxy# ~(clojure.string/split (str old-name) #"\.")
+           mk-ns# (fn [memo# v#]
+                    (when-not (aget memo# v#)
+                      (aset memo# v# (clojure.core/js-obj)))
+                    (aget memo# v#))]
+       (reduce mk-ns# js/window old-proxy#)
+       (apply aset js/window (conj old-proxy# ~new-name))
+       )))
 
 ;; No inline example possible -- this wankery only runs in cljs.
+;; (macroexpand-1 '(namespace lt.blues.clues lt.util.deprecate))
+
+
