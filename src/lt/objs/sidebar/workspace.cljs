@@ -343,7 +343,9 @@
           :reaction (fn [this]
                       (object/merge! this {:renaming? true})
                       (let [input (dom/$ :input (object/->content this))
-                            len (count (files/without-ext (files/basename (:path @this))))]
+                            len (count (files/without-ext (files/basename (:path @this))))
+                            width (dom/scroll-width (dom/parent input))]
+                        (dom/css input {:width width})
                         (dom/focus input)
                         (dom/selection input 0 len "forward"))))
 
