@@ -33,7 +33,6 @@
 (defui console-ui [this]
   [:ul.console]
   :contextmenu (fn [e]
-                 (object/assoc-in! this [:current-event] e)
                  (object/raise this :menu! e)))
 
 (behavior ::on-close
