@@ -150,7 +150,6 @@
 (behavior ::menu+
           :triggers #{:menu+}
           :reaction (fn [this items event]
-
                       (conj items
                             {:label "Clear"
                              :order 1
