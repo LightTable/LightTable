@@ -67,7 +67,11 @@
                       (object/merge! this {:open? true})
                       (when-not (:realized? @this)
                         (object/merge! this {:realized? true})
-                        (object/merge! this (files-and-folders (:path @this))))))
+                        (object/merge! this (files-and-folders (:path @this)))
+                        (let [folder (dom/$ :ul (object/->content this))
+                              width (dom/scroll-width folder)]
+                          (doseq [child (dom/children folder)]
+                            (dom/css child {:width width}))))))
 
 (behavior ::refresh
           :triggers #{:refresh!}
