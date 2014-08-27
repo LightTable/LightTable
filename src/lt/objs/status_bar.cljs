@@ -7,8 +7,12 @@
             [lt.objs.editor :as ed]
             [lt.util.dom :as dom]
             [lt.util.cljs :as cljs]
-            [crate.binding :refer [bound map-bound]])
-  (:require-macros [lt.macros :refer [behavior defui]]))
+            [crate.binding :refer [bound map-bound]]
+            [lt.util.deprecate])
+  (:require-macros [lt.macros :refer [behavior defui]]
+                   [lt.deprecate-macros :as deprecate]))
+
+(deprecate/namespace lt.objs.statusbar lt.objs.status-bar)
 
 ;;**********************************************************
 ;; status-bar container
@@ -84,7 +88,7 @@
           :reaction (fn [this]
                       (object/raise status :show!)))
 
-(defn add-status-item [item]
+(deprecate/function ::ns add-statusbar-item add-status-item [item]
   (object/update! status [:items] conj item))
 
 ;;**********************************************************

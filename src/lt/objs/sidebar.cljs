@@ -6,8 +6,10 @@
             [lt.objs.canvas :as canvas]
             [lt.util.dom :as dom]
             [lt.util.cljs :refer [->dottedkw]]
-            [crate.binding :refer [map-bound bound subatom]])
-  (:require-macros [lt.macros :refer [behavior defui]]))
+            [crate.binding :refer [map-bound bound subatom]]
+            [lt.util.deprecate])
+  (:require-macros [lt.macros :refer [behavior defui]]
+                   [lt.deprecate-macros :as deprecate]))
 
 (def default-width 200)
 
@@ -120,8 +122,8 @@
                          [:div.content
                           ]]))
 
-(def left-bar (object/create ::left-bar))
-(def right-bar (object/create ::right-bar))
+(deprecate/variable ::ns leftbar left-bar (object/create ::left-bar))
+(deprecate/variable ::ns rightbar right-bar (object/create ::right-bar))
 
 (canvas/add! left-bar)
 (canvas/add! right-bar)
