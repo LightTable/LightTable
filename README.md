@@ -61,6 +61,12 @@ On Windows (manual):
 
 After the initial setup, you can compile the ClojureScript source at any time with `lein cljsbuild once`.
 
+# Note on Hotkeys for OS X
+
+Many (though not all) of the OS X hotkeys mentioned in the Light Table documentation use the cmd key instead of ctrl. 
+
+When in doubt, you can look up the key sequence by name by pressing ctrl-space (yes, it's really ctrl on this one) and then typing part of the name of the command you want to use. If a key is mapped to the command, it will be printed right below the command name in the command bar.
+
 # Workflow
 
 I'll assume you already know how to eval code (ctrl-enter), how to open the command bar (ctrl-space) and how to open files with the navigator (ctrl-o). If you don't, start with the [Light Table tutorial](http://docs.lighttable.com/tutorials/full/).
@@ -69,7 +75,7 @@ Add `LightTable/src` to your Light Table workspace and open `src/lt/objs/jump_st
 
 The new Light Table release supports auto-complete (tab), inline docs (ctrl-d) and jump-to-definition (ctrl-. to jump and ctrl-, to jump back) for ClojureScript and Clojure vars, all of which are very useful for exploring the codebase. In ClojureScript these features are only aware of vars that have been eval'd in the current compiler process, so be sure to eval the ns form at the top of the file to get the full effect.
 
-For hunting down behaviors, objects and other things that don't live in vars use the searcher (ctrl-shift-f or cmd-shift-f on Mac). If it isn't clear how to use a given function then using the searcher to find examples will also help.
+For hunting down behaviors, objects and other things that don't live in vars use the searcher (ctrl-shift-f). If it isn't clear how to use a given function then using the searcher to find examples will also help.
 
 Finally, use the documentation searcher (ctrl-shift-d) for full-text search over the names and docstrings of all known vars. Most of Light Table doesn't have docstrings, but this is still useful for library code.
 

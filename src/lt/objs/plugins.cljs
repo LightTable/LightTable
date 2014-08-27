@@ -601,7 +601,6 @@
                             dep-graph (plugin-dependency-graph plugins)
                             dep-ordered (-> dep-graph
                                             (kahn/kahn-sort)
-                                            (reverse)
                                             (seq))
                             mapped (if dep-ordered
                                      (map plugins dep-ordered)

@@ -234,8 +234,8 @@
 (defn set-extending [e ext?]
   (.setExtending (->cm-ed e) ext?))
 
-(defn replace-selection [e neue]
-  (.replaceSelection (->cm-ed e) neue "end" "+input"))
+(defn replace-selection [e neue & [after]]
+  (.replaceSelection (->cm-ed e) neue (name (or after :end)) "+input"))
 
 (defn undo [e]
   (.undo (->cm-ed e)))
@@ -316,10 +316,10 @@
   (count (line e l)))
 
 (defn +line-class [e lh plane class]
-  (.addLineClass e lh (name plane) (name class)))
+  (.addLineClass (->cm-ed e) lh (name plane) (name class)))
 
 (defn -line-class [e lh plane class]
-  (.removeLineClass e lh (name plane) (name class)))
+  (.removeLineClass (->cm-ed e) lh (name plane) (name class)))
 
 (defn show-hints [e hint-fn options]
   (js/CodeMirror.showHint (->cm-ed e) hint-fn (clj->js options))
