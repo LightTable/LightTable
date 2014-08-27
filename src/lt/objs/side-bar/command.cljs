@@ -1,7 +1,7 @@
-(ns lt.objs.side-bar.command
+(ns lt.objs.sidebar.command
   (:require [lt.object :as object]
             [lt.objs.context :as ctx]
-            [lt.objs.side-bar :as side-bar]
+            [lt.objs.sidebar :as sidebar]
             [lt.objs.command :as cmd]
             [lt.objs.app :as app]
             [lt.objs.keyboard :as keyboard]
@@ -10,14 +10,10 @@
             [lt.util.cljs :refer [->dottedkw]]
             [clojure.string :as string]
             [crate.core :as crate]
-            [crate.binding :refer [subatom bound map-bound computed]]
-            [lt.util.deprecate])
-  (:require-macros [lt.macros :refer [behavior defui]]
-                   [lt.deprecate-macros :as deprecate]))
+            [crate.binding :refer [subatom bound map-bound computed]])
+  (:require-macros [lt.macros :refer [behavior defui]]))
 
 (load/js "core/node_modules/lighttable/util/fuzzy.js" :sync)
-
-(deprecate/namespace lt.objs.sidebar.command lt.objs.side-bar.command)
 
 ;**********************************************************
 ;; options input
@@ -148,13 +144,13 @@
           :triggers #{:escape!}
           :reaction (fn [this]
                       (object/raise this :inactive)
-                      (exec! :close-side-bar)))
+                      (exec! :close-sidebar)))
 
 (behavior ::options-escape!
           :triggers #{:escape!}
           :reaction (fn [this]
-                      (object/raise side-bar-command :cancel!)
-                      (exec! :close-side-bar)))
+                      (object/raise sidebar-command :cancel!)
+                      (exec! :close-sidebar)))
 
 (behavior ::set-on-select
           :triggers #{:select}
@@ -312,12 +308,12 @@
                       (when-let [cmd (by-id sel)]
                         (if (:options cmd)
                           (do
-                            (object/merge! side-bar-command {:active cmd})
+                            (object/merge! sidebar-command {:active cmd})
                             (object/raise (:options cmd) :focus!))
                           (do
-                            (object/raise side-bar-command :exec! cmd)
-                            (object/raise side-bar-command :selected-exec cmd)
-                            (object/merge! side-bar-command {:active nil})))
+                            (object/raise sidebar-command :exec! cmd)
+                            (object/raise sidebar-command :selected-exec cmd)
+                            (object/merge! sidebar-command {:active nil})))
                         )
                       ))
 
@@ -330,8 +326,8 @@
 (behavior ::post-select-pop
           :triggers #{:selected-exec}
           :reaction (fn [this]
-                      (when (= this (:active @side-bar/right-bar))
-                        (object/raise side-bar/right-bar :close!
+                      (when (= this (:active @sidebar/right-bar))
+                        (object/raise sidebar/right-bar :close!
                                       (not (or (ctx/in? :filter-list.input)
                                                (ctx/in? :options-input)))))))
 
@@ -411,8 +407,8 @@
   (str "<p>" highlighted "<p>" (when-let [binding (seq (keyboard/cmd->bindings (item :command)))]
                                  (str "<p class='binding'>" (string/join " | " (map ->binding (reverse binding))) "</p>"))))
 
-(object/object* ::side-bar.command
-                :tags #{:side-bar.command}
+(object/object* ::sidebar.command
+                :tags #{:sidebar.command}
                 :label "command"
                 :active nil
                 :order 3
@@ -439,32 +435,32 @@
 (behavior ::init-commands
           :triggers #{:post-init}
           :reaction (fn [app]
-                      (object/raise side-bar-command :refresh!)))
+                      (object/raise sidebar-command :refresh!)))
 
-(def side-bar-command (object/create ::side-bar.command))
-(ctx/in! :commandbar side-bar-command)
+(def sidebar-command (object/create ::sidebar.command))
+(ctx/in! :commandbar sidebar-command)
 
-(side-bar/add-item side-bar/right-bar side-bar-command)
+(sidebar/add-item sidebar/right-bar sidebar-command)
 
 (def command cmd/command)
 
 (defn show-and-focus [opts]
-  (object/raise side-bar/right-bar :toggle side-bar-command opts))
+  (object/raise sidebar/right-bar :toggle sidebar-command opts))
 
 (defn pre-fill [v]
-  (dom/val (dom/$ :.search (object/->content side-bar-command)) v))
+  (dom/val (dom/$ :.search (object/->content sidebar-command)) v))
 
 (defn show-filled [fill opts]
   (pre-fill fill)
-  (object/raise side-bar/right-bar :toggle side-bar-command (assoc opts :soft? true))
-  (object/raise side-bar-command :soft-focus!))
+  (object/raise sidebar/right-bar :toggle sidebar-command (assoc opts :soft? true))
+  (object/raise sidebar-command :soft-focus!))
 
 (def by-id cmd/by-id)
 
 (def exec! cmd/exec!)
 
 (defn exec-active! [& args]
-  (object/raise side-bar-command :exec-active! args))
+  (object/raise sidebar-command :exec-active! args))
 
 (command {:command :show-commandbar
           :desc "Command: Show command bar"

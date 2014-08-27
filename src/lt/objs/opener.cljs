@@ -4,7 +4,7 @@
             [lt.objs.editor :as editor]
             [lt.objs.editor.pool :as pool]
             [lt.objs.document :as doc]
-            [lt.objs.side-bar.command :as cmd]
+            [lt.objs.sidebar.command :as cmd]
             [lt.objs.editor.file :as fed]
             [lt.objs.workspace :as workspace]
             [lt.objs.popup :as popup]

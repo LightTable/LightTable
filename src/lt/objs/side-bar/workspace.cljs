@@ -1,4 +1,4 @@
-(ns lt.objs.side-bar.workspace
+(ns lt.objs.sidebar.workspace
   (:require [lt.object :as object]
             [lt.objs.command :as cmd]
             [lt.objs.context :as ctx]
@@ -6,7 +6,7 @@
             [lt.objs.workspace :as workspace]
             [lt.objs.opener :as opener]
             [lt.objs.popup :as popup]
-            [lt.objs.side-bar :as side-bar]
+            [lt.objs.sidebar :as sidebar]
             [lt.util.dom :as dom]
             [lt.util.cljs :refer [->dottedkw]]
             [crate.binding :refer [bound subatom]]
@@ -531,7 +531,7 @@
           :triggers #{:select!}
           :reaction (fn [this]
                       (workspace/open workspace/current-ws (:path @this))
-                      (object/raise side-bar-workspace :tree!)
+                      (object/raise sidebar-workspace :tree!)
                       ))
 
 (behavior ::recent.delete!
@@ -541,7 +541,7 @@
                                (files/basename (:path @this)))
                         (object/raise tree :clear!))
                       (files/delete! (:path @this))
-                      (object/raise side-bar-workspace :recent!)))
+                      (object/raise sidebar-workspace :recent!)))
 
 (object/object* ::recent-workspace
                 :tags #{:recent-workspace}
@@ -582,8 +582,8 @@
   :contextmenu (fn [e]
                  (object/raise this :menu! e)))
 
-(object/object* ::side-bar.workspace
-                :tags #{:side-bar.workspace}
+(object/object* ::sidebar.workspace
+                :tags #{:sidebar.workspace}
                 :label "workspace"
                 :order -7
                 :init (fn [this]
@@ -591,7 +591,7 @@
                         ))
 
 ;(dom/trigger (input) :click)
-(behavior ::side-bar-menu
+(behavior ::sidebar-menu
           :triggers #{:menu-items}
           :reaction (fn [this items]
                       (conj items
@@ -619,9 +619,9 @@
           :reaction (fn [this]
                       (cmd/exec! :workspace.show)))
 
-(def side-bar-workspace (object/create ::side-bar.workspace))
+(def sidebar-workspace (object/create ::sidebar.workspace))
 
-(side-bar/add-item side-bar/left-bar side-bar-workspace)
+(sidebar/add-item sidebar/left-bar sidebar-workspace)
 
 (cmd/command {:command :workspace.add-folder
               :desc "Workspace: add folder"
@@ -636,7 +636,7 @@
 (cmd/command {:command :workspace.show
               :desc "Workspace: Toggle workspace tree"
               :exec (fn [force?]
-                      (object/raise side-bar/left-bar :toggle side-bar-workspace {:transient? false :force? force?}))})
+                      (object/raise sidebar/left-bar :toggle sidebar-workspace {:transient? false :force? force?}))})
 
 (cmd/command {:command :workspace.rename.cancel!
               :desc "Workspace: Cancel rename"
@@ -656,4 +656,4 @@
               :desc "Workspace: Open recent workspace"
               :exec (fn []
                       (cmd/exec! :workspace.show :force)
-                      (recent side-bar-workspace))})
+                      (recent sidebar-workspace))})

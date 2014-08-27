@@ -4,7 +4,7 @@
             [lt.object :as object]
             [lt.objs.files :as files]
             [lt.objs.clients :as clients]
-            [lt.objs.side-bar.clients :as scl]
+            [lt.objs.sidebar.clients :as scl]
             [lt.objs.eval :as eval]
             [lt.objs.console :as console]
             [clojure.string :as string]

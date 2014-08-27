@@ -6,7 +6,7 @@
             [lt.objs.cache :as cache]
             [lt.objs.notifos :as notifos]
             [lt.objs.platform :as platform]
-            [lt.objs.side-bar.command :as cmd]
+            [lt.objs.sidebar.command :as cmd]
             [lt.objs.app :as app]
             [lt.util.load :as load]
             [lt.util.js :refer [every]]

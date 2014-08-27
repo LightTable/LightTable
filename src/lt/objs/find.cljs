@@ -4,7 +4,7 @@
             [lt.objs.statusbar :as statusbar]
             [lt.util.load :as load]
             [lt.objs.canvas :as canvas]
-            [lt.objs.side-bar.command :as cmd]
+            [lt.objs.sidebar.command :as cmd]
             [lt.objs.editor.pool :as pool]
             [lt.objs.keyboard :as keyboard]
             [lt.objs.editor :as editor]

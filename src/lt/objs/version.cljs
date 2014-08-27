@@ -1,6 +1,6 @@
 (ns lt.objs.version
   (:require [lt.object :as object]
-            [lt.objs.side-bar.command :as cmd]
+            [lt.objs.sidebar.command :as cmd]
             [lt.objs.opener :as opener]
             [lt.objs.editor.pool :as pool]
             [lt.objs.editor :as editor]

@@ -5,7 +5,7 @@
             [lt.objs.notifos :as notifos]
             [lt.objs.editor :as editor]
             [lt.objs.editor.pool :as pool]
-            [lt.objs.side-bar :as side-bar]
+            [lt.objs.sidebar :as sidebar]
             [lt.util.dom :as dom]
             [lt.util.cljs :refer [str-contains?]]
             [clojure.set :as set]
@@ -92,9 +92,9 @@
 (defui search-input [this]
   [:input.search {:type "text" :placeholder "search docs"}]
   :focus (fn []
-           (ctx/in! :side-bar.doc.search.input this))
+           (ctx/in! :sidebar.doc.search.input this))
   :blur (fn []
-          (ctx/out! :side-bar.doc.search.input)))
+          (ctx/out! :sidebar.doc.search.input)))
 
 (defui type-item [this i]
   [:li (:label i)]
@@ -176,8 +176,8 @@
                               (object/raise this :set-item! neue)
                               ))))))
 
-(behavior ::side-bar.doc.search.exec
-          :triggers #{:side-bar.doc.search.exec}
+(behavior ::sidebar.doc.search.exec
+          :triggers #{:sidebar.doc.search.exec}
           :reaction (fn [this]
                       (let [v (->val this)
                             trigger (-> @this :cur :trigger)]
@@ -203,8 +203,8 @@
           :reaction (fn [this]
                       (dom/focus (dom/$ :input (object/->content this)))))
 
-(object/object* ::side-bar.doc.search
-                :tags #{:side-bar.docs.search}
+(object/object* ::sidebar.doc.search
+                :tags #{:sidebar.docs.search}
                 :label "Doc search"
                 :init (fn [this]
                         (object/merge! this {:cur (first (object/raise-reduce this :types+ []))})
@@ -220,14 +220,14 @@
               :hidden true
               :exec (fn []
                       (when doc-search
-                        (object/raise doc-search :side-bar.doc.search.exec))
+                        (object/raise doc-search :sidebar.doc.search.exec))
                       )})
 
 (cmd/command {:command :docs.search.show
               :desc "Docs: Search language docs"
               :exec (fn [force?]
                       (when doc-search
-                        (object/raise side-bar/right-bar :toggle doc-search {:force? force?})
+                        (object/raise sidebar/right-bar :toggle doc-search {:force? force?})
                         (object/raise doc-search :focus!))
                       )})
 
@@ -236,14 +236,14 @@
               :hidden true
               :exec (fn [force?]
                       (when doc-search
-                        (object/raise side-bar/right-bar :close! doc-search))
+                        (object/raise sidebar/right-bar :close! doc-search))
                       )})
 
 (behavior ::init-doc-search
           :triggers #{:init}
           :reaction (fn [this]
-                      (set! doc-search (object/create ::side-bar.doc.search))
-                      (side-bar/add-item side-bar/right-bar doc-search)
+                      (set! doc-search (object/create ::sidebar.doc.search))
+                      (sidebar/add-item sidebar/right-bar doc-search)
                       ))
 
 (def doc-search nil)

@@ -34,7 +34,7 @@
     (when (and cmd
                (:exec cmd))
       (if (:options cmd)
-        (apply object/raise (first (object/by-tag :side-bar.command)) :exec! cmd args)
+        (apply object/raise (first (object/by-tag :sidebar.command)) :exec! cmd args)
         (apply (:exec cmd) args)))))
 
 ;;*********************************************************

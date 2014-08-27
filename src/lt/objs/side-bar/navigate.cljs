@@ -1,13 +1,13 @@
-(ns lt.objs.side-bar.navigate
+(ns lt.objs.sidebar.navigate
   (:require [lt.object :as object]
             [lt.objs.workspace :as workspace]
             [lt.objs.context :as ctx]
-            [lt.objs.side-bar.command :as cmd]
+            [lt.objs.sidebar.command :as cmd]
             [lt.objs.files :as files]
             [lt.objs.notifos :as notifos]
             [lt.objs.keyboard :as keyboard]
             [lt.objs.opener :as opener]
-            [lt.objs.side-bar :as side-bar]
+            [lt.objs.sidebar :as sidebar]
             [lt.util.dom :as dom]
             [lt.util.load :as load]
             [lt.util.cljs :as cljs-util]
@@ -52,7 +52,7 @@
                   :triggers #{:updated :refresh}
                   :debounce 150
                   :reaction (fn [ws]
-                              (populate-bg side-bar-navigate {:lim (dec (:file-limit @side-bar-navigate))
+                              (populate-bg sidebar-navigate {:lim (dec (:file-limit @sidebar-navigate))
                                                              :pattern (.-source files/ignore-pattern)
                                                              :ws (workspace/serialize @ws)})))
 
@@ -62,15 +62,15 @@
                               (when-not (file-filters (files/basename path))
                                 (let [ws-parent (files/parent (first (filter #(= 0 (.indexOf path %)) (:folders @ws))))
                                       rel-length (inc (count ws-parent))]
-                                  (object/update! side-bar-navigate [:files] conj {:full path :rel (subs path rel-length)})
-                                  (object/raise (:filter-list @side-bar-navigate) :refresh!)))))
+                                  (object/update! sidebar-navigate [:files] conj {:full path :rel (subs path rel-length)})
+                                  (object/raise (:filter-list @sidebar-navigate) :refresh!)))))
 
 (behavior ::watched.delete
                   :triggers #{:watched.delete}
                   :reaction (fn [ws path]
                               ;;TODO: this is terribly inefficient
-                              (object/update! side-bar-navigate [:files] #(remove (fn [x] (= 0 (.indexOf (:full x) path))) %))
-                              (object/raise (:filter-list @side-bar-navigate) :refresh!)))
+                              (object/update! sidebar-navigate [:files] #(remove (fn [x] (= 0 (.indexOf (:full x) path))) %))
+                              (object/raise (:filter-list @sidebar-navigate) :refresh!)))
 
 (behavior ::focus!
                   :triggers #{:focus!}
@@ -97,7 +97,7 @@
 (behavior ::pop-transient-on-select
                   :triggers #{:selected}
                   :reaction (fn [this]
-                              (object/raise side-bar/right-bar :close!)))
+                              (object/raise sidebar/right-bar :close!)))
 
 (behavior ::set-file-limit
           :triggers #{:object.instant}
@@ -108,7 +108,7 @@
           :reaction (fn [this n]
                       (object/merge! this {:file-limit n})))
 
-(object/object* ::side-bar.navigate
+(object/object* ::sidebar.navigate
                 :tags #{:navigator}
                 :label "navigate"
                 :order -3
@@ -128,26 +128,26 @@
                          ]
                         )))
 
-(def side-bar-navigate (object/create ::side-bar.navigate))
+(def sidebar-navigate (object/create ::sidebar.navigate))
 
-(side-bar/add-item side-bar/right-bar side-bar-navigate)
+(sidebar/add-item sidebar/right-bar sidebar-navigate)
 
 (cmd/command {:command :navigate-workspace
               :desc "Navigate: open navigate"
               :exec (fn []
-                      (object/raise side-bar/right-bar :toggle side-bar-navigate {:transient? false})
+                      (object/raise sidebar/right-bar :toggle sidebar-navigate {:transient? false})
                       )})
 
 (cmd/command {:command :navigate-workspace-transient
               :desc "Navigate: open navigate transient"
               :hidden true
               :exec (fn []
-                      (object/raise side-bar/right-bar :toggle side-bar-navigate {:transient? true})
+                      (object/raise sidebar/right-bar :toggle sidebar-navigate {:transient? true})
                       )})
 
 (cmd/command {:command :escape-navigate
               :desc "Navigate: exit navigate"
               :hidden true
               :exec (fn []
-                      (cmd/exec! :close-side-bar)
+                      (cmd/exec! :close-sidebar)
                       (cmd/exec! :focus-last-editor))})

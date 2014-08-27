@@ -11,7 +11,7 @@
             [lt.objs.editor.pool :as pool2]
             [lt.objs.workspace :as workspace]
             [clojure.string :as string]
-            [lt.objs.side-bar.command :as scmd]
+            [lt.objs.sidebar.command :as scmd]
             [lt.util.dom :as dom]
             [lt.util.cljs :refer [str-contains?]]
             [cljs.reader :as reader])

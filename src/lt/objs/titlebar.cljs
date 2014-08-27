@@ -1,8 +1,8 @@
 (ns lt.objs.titlebar
   (:require [lt.object :as object]
             [lt.objs.tabs :as tabs]
-            [lt.objs.side-bar :as side-bar]
-            [lt.objs.side-bar.command :as cmd]
+            [lt.objs.sidebar :as sidebar]
+            [lt.objs.sidebar.command :as cmd]
             [lt.objs.canvas :as canvas]
             [lt.util.dom :refer [$ append add-class remove-class]]
             )
