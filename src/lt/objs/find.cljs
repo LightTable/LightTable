@@ -71,12 +71,8 @@
 
 (behavior ::hide!
           :triggers #{:hide!}
-          :reaction (fn [this revert-pos]
+          :reaction (fn [this]
                       (when-let [ed (pool/last-active)]
-                        (when revert-pos
-                          (when-let [pos (:pos @this)]
-                            (editor/move-cursor ed pos)))
-
                             (editor/focus ed))))
 
 (behavior ::next!
@@ -185,8 +181,8 @@
 
 (cmd/command {:command :find.hide
               :desc "Find: Hide the find bar"
-              :exec (fn [revert-pos]
-                      (object/raise bar :hide! revert-pos))})
+              :exec (fn []
+                      (object/raise bar :hide!))})
 
 (cmd/command {:command :find.next
               :desc "Find: Next find result"
