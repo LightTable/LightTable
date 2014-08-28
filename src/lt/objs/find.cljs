@@ -18,7 +18,7 @@
 (defui input [this]
   [:input.find {:type "text"
                 :placeholder "find"}]
-  :keyup (fn []
+  :keydown (fn []
            (this-as me
                     (object/raise this :search! (dom/val me))))
   :focus (fn []
@@ -127,12 +127,11 @@
           :triggers #{:search!}
           :debounce 50
           :reaction (fn [this v]
-                      (.log js/console "search!" v)
                       (if (empty? v)
                         (object/raise this :clear!)
                         (when-let [e (pool/last-active)]
-;;                           (when-let [pos (:pos @this)]
-;;                             (editor/move-cursor e pos))
+                          (when-let [pos (:pos @this)]
+                            (editor/move-cursor e pos))
                           (object/merge! this {:searching? true})
                           (object/merge! e {:searching.for v})
                           (let [ed (editor/->cm-ed e)]
