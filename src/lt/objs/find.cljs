@@ -71,8 +71,12 @@
 
 (behavior ::hide!
           :triggers #{:hide!}
-          :reaction (fn [this]
+          :reaction (fn [this revert-pos]
                       (when-let [ed (pool/last-active)]
+                        (when revert-pos
+                          (when-let [pos (:pos @this)]
+                            (editor/move-cursor ed pos)))
+
                             (editor/focus ed))))
 
 (behavior ::next!
@@ -123,11 +127,12 @@
           :triggers #{:search!}
           :debounce 50
           :reaction (fn [this v]
+                      (.log js/console "search!" v)
                       (if (empty? v)
                         (object/raise this :clear!)
                         (when-let [e (pool/last-active)]
-                          (when-let [pos (:pos @this)]
-                            (editor/move-cursor e pos))
+;;                           (when-let [pos (:pos @this)]
+;;                             (editor/move-cursor e pos))
                           (object/merge! this {:searching? true})
                           (object/merge! e {:searching.for v})
                           (let [ed (editor/->cm-ed e)]
@@ -181,8 +186,8 @@
 
 (cmd/command {:command :find.hide
               :desc "Find: Hide the find bar"
-              :exec (fn []
-                      (object/raise bar :hide!))})
+              :exec (fn [revert-pos]
+                      (object/raise bar :hide! revert-pos))})
 
 (cmd/command {:command :find.next
               :desc "Find: Next find result"
