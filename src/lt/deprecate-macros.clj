@@ -50,12 +50,19 @@
   `(do
      (lt.util.deprecate/mark-deprecated :ns ~(str old-name) "???")
      (let [old-proxy# ~(clojure.string/split (str old-name) #"\.")
+           old-root# (butlast old-proxy#)
+           old-tail# (last old-proxy#)
            mk-ns# (fn [memo# v#]
                     (when-not (aget memo# v#)
                       (aset memo# v# (clojure.core/js-obj)))
-                    (aget memo# v#))]
-       (reduce mk-ns# js/window old-proxy#)
-       (apply aset js/window (conj old-proxy# ~new-name))
+                    (aget memo# v#))
+           old-obj# (reduce mk-ns# js/window old-root#)]
+
+       (.__defineGetter__
+        old-obj# old-tail#
+        (fn []
+          (lt.util.deprecate/mark-activated :ns ~(str old-name) ~(str new-name))
+          ~new-name))
        )))
 
 ;; No inline example possible -- this wankery only runs in cljs.
