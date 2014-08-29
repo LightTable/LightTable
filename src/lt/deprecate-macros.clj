@@ -48,7 +48,7 @@
 ;; Namespaces
 (defmacro namespace [old-name new-name]
   `(do
-     (lt.util.deprecate/mark-deprecated :ns ~(str old-name) "???")
+     (lt.util.deprecate/mark-deprecated :ns ~(str old-name) nil)
      (let [old-proxy# ~(clojure.string/split (str old-name) #"\.")
            old-root# (butlast old-proxy#)
            old-tail# (last old-proxy#)
