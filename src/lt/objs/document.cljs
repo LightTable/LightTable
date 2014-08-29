@@ -62,14 +62,26 @@
                                 (object/destroy! this)
                                 (object/update! this [:sub-docs] disj ::this))))
 
+(def default-linked-doc-options {})
+
+(behavior ::set-linked-doc-options
+          :triggers #{:object.instant}
+          :type :user
+          :exclusive true
+          :desc "Doc: Set default options for new linked docs"
+          :reaction (fn [this opts]
+                      (set! default-linked-doc-options opts)))
+
 (defn create [info]
   (object/create ::document info))
 
 (defn create-sub
   ([doc] (create-sub doc nil))
   ([doc info]
-   (let [neue (create (merge (select-keys @doc doc-keys) info {:doc (linked* doc info)
-                                                               :root doc}))]
+   (let [info (merge default-linked-doc-options info)
+         neue (create (merge (select-keys @doc doc-keys)
+                             info
+                             {:doc (linked* doc info) :root doc}))]
      (object/add-tags neue [:document.linked])
      (object/update! doc [:sub-docs] conj neue))))
 
