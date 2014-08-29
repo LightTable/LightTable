@@ -135,6 +135,13 @@
   [ed obj path ldoc-options]
   (open-path* (partial doc/linked-open ed ldoc-options) obj path))
 
+(behavior ::existing-path-opens-linked-doc
+          :triggers #{:object.instant}
+          :type :user
+          :exclusive true
+          :desc "Doc: Open a linked document when the file is already opened"
+          :reaction (fn [this bool]
+                      (object/merge! this {:open-linked-doc bool})))
 
 (behavior ::open-standard-editor
                   :triggers #{:open!}
@@ -144,7 +151,9 @@
                                   (notifos/set-msg! (str "Cannot open a directory: " path))
                                   (notifos/set-msg! (str "No such file: " path)))
                                 (if-let [ed (first (pool/by-path path))]
-                                  (open-linked-path ed obj path {})
+                                  (if (:open-linked-doc @obj)
+                                    (open-linked-path ed obj path {})
+                                    (tabs/active! ed))
                                   (open-path obj path)))))
 
 (behavior ::track-open-files

@@ -324,7 +324,8 @@
            :lt.objs.opener/open-standard-editor
            :lt.objs.opener/track-open-files
            :lt.objs.opener/watch-on-open
-           :lt.objs.opener/check-read-only]
+           :lt.objs.opener/check-read-only
+           (:lt.objs.opener/existing-path-opens-linked-doc false)]
   :options-input [:lt.objs.sidebar.command/op-select!
                   :lt.objs.sidebar.command/options-escape!
                   :lt.objs.sidebar.command/op-clear!
