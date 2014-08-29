@@ -14,10 +14,12 @@
 (defn create* [info]
   (.Doc js/CodeMirror (:content info) (:mime info)))
 
+(defn ->cm-doc [doc]
+  (-> @doc :doc))
+
 (defn linked* [doc info]
-  (let [{:keys [from to shared-history type]} info
-        cm-doc (-> @doc :doc)]
-    (.linkedDoc cm-doc (clj->js {:from from
+  (let [{:keys [from to shared-history type]} info]
+    (.linkedDoc (->cm-doc doc) (clj->js {:from from
                                  :to to
                                  :sharedHist shared-history
                                  :mode type}))))
@@ -42,7 +44,7 @@
                   :triggers #{:close.force}
                   :reaction (fn [this]
                               (when-let [root (:root @this)]
-                                (.unlinkDoc (:doc @this) (:doc @root))
+                                (.unlinkDoc (->cm-doc this) (->cm-doc root))
                                 (object/update! root [:sub-docs] disj this))
                               (object/destroy! this)))
 
@@ -84,9 +86,6 @@
                              {:doc (linked* doc info) :root doc}))]
      (object/add-tags neue [:document.linked])
      (object/update! doc [:sub-docs] conj neue))))
-
-(defn ->cm-doc [doc]
-  (-> @doc :doc))
 
 (defn ->snapshot [doc]
   (let [d (->cm-doc doc)
