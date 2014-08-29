@@ -1,21 +1,11 @@
 (ns lt.deprecate-macros)
 
-(defn full-name [ns-key sym]
-  (let [ns-str (clojure.core/namespace ns-key)]
-    (str ns-str "/" sym)))
-
-;; Variables
-
-;; @TODO: Add warning.
-(defmacro variable [ns-key old-name new-name val]
-  `(let [ns-old-name# (symbol ~(full-name ns-key old-name))]
-     (lt.util.deprecate/mark-deprecated :var ns-old-name# "???")
-     (def ~new-name ~val)
-     (def ~old-name ~new-name)))
-
-;; Ex.
-;; (macroexpand-1 '(variable ::ns old-var new-var 5))
-
+(defn full-name
+  ([ns-key sym]
+   (let [ns-str (clojure.core/namespace ns-key)]
+     (str ns-str
+          (when sym (str "/" sym)))))
+  ([ns-key] (full-name ns-key nil)))
 
 ;; Functions
 (defn wrap-bodies [old-name new-name body]
@@ -45,6 +35,28 @@
 ;; (old-name 5)
 
 
+;; Variables
+
+;; @TODO: Add warning.
+(defmacro variable [ns-key old-name new-name val]
+  `(let [ns-old-name# (symbol ~(full-name ns-key old-name))
+         ns-old-proxy# ~(clojure.string/split
+                         (full-name ns-key)
+                         #"\.")
+         ns-old-obj# (apply aget (cons js/window ns-old-proxy#))]
+     (lt.util.deprecate/mark-deprecated :var ns-old-name# nil)
+     (def ~new-name ~val)
+
+     (.__defineGetter__
+      ns-old-obj# ~(name old-name)
+      (fn []
+        (lt.util.deprecate/mark-activated :var ~(str old-name) ~(str new-name))
+        ~new-name))))
+
+;; Ex.
+;; (macroexpand-1 '(variable ::ns old-var new-var 5))
+
+
 ;; Namespaces
 (defmacro namespace [old-name new-name]
   `(do
@@ -62,8 +74,7 @@
         old-obj# old-tail#
         (fn []
           (lt.util.deprecate/mark-activated :ns ~(str old-name) ~(str new-name))
-          ~new-name))
-       )))
+          ~new-name)))))
 
 ;; No inline example possible -- this wankery only runs in cljs.
 ;; (macroexpand-1 '(namespace lt.blues.clues lt.util.deprecate))
