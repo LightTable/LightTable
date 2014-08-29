@@ -42,9 +42,9 @@
                   :triggers #{:close.force}
                   :reaction (fn [this]
                               (when-let [root (:root @this)]
-                                (object/update! root [:sub-docs] disj this)
-                                (object/destroy! this)
-                                (object/raise root :try-close))))
+                                (.unlinkDoc (:doc @this) (:doc @root))
+                                (object/update! root [:sub-docs] disj this))
+                              (object/destroy! this)))
 
 (behavior ::try-close-root-document
                   :for #{:document}
@@ -57,7 +57,8 @@
                   :for #{:document}
                   :triggers #{:close.force}
                   :reaction (fn [this]
-                              (if (= #{::this} (:sub-docs @this))
+                              (if (and (= #{::this} (:sub-docs @this))
+                                       (not (object/has-tag? this :document.linked)))
                                 (object/destroy! this)
                                 (object/update! this [:sub-docs] disj ::this))))
 
