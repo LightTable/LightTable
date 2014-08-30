@@ -50,7 +50,7 @@
      (.__defineGetter__
       ns-old-obj# ~(name old-name)
       (fn []
-        (lt.util.deprecate/mark-activated :var ~(str old-name) ~(str new-name))
+        (lt.util.deprecate/mark-activated :var ~(full-name ns-key old-name) ~(full-name ns-key new-name))
         ~new-name))))
 
 ;; Ex.
