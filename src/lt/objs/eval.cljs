@@ -189,16 +189,16 @@
               (dom/prevent e)
               (object/raise this :double-click)))
 
-(behavior ::result-menu!
-          :triggers #{:menu!}
-          :reaction (fn [this ev]
-                      (-> (menu/menu [{:label "Remove result"
-                                       :click (fn [] (object/raise this :clear!))}
-                                      {:label "Copy result"
-                                       :click (fn [] (object/raise this :copy))}])
-                          (menu/show-menu (.-clientX ev) (.-clientY ev)))
-                      (dom/prevent ev)
-                      (dom/stop-propagation ev)))
+(behavior ::result-menu+
+          :triggers #{:menu+}
+          :reaction (fn [this items]
+                      (conj items
+                            {:label "Remove result"
+                             :order 1
+                             :click (fn [] (object/raise this :clear!))}
+                            {:label "Copy result"
+                             :order 2
+                             :click (fn [] (object/raise this :copy))})))
 
 (behavior ::expand-on-click
           :triggers #{:click :expand!}
