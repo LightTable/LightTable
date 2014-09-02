@@ -305,7 +305,8 @@
   :inline.exception [:lt.objs.eval/ex-menu! :lt.objs.eval/ex-clear
                      :lt.objs.eval/destroy-on-clear
                      :lt.objs.eval/ex-shrink-on-double-click]
-  :inline.result [:lt.objs.eval/shrink-on-double-click :lt.objs.eval/result-menu!
+  :inline.result [:lt.objs.eval/shrink-on-double-click :lt.objs.menu/menu!
+                  :lt.objs.eval/result-menu+
                   :lt.objs.eval/expand-on-click :lt.objs.eval/clear-mark
                   :lt.objs.eval/move-mark :lt.objs.eval/changed
                   :lt.objs.eval/update!
