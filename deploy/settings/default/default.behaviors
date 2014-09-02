@@ -122,6 +122,8 @@
            :lt.objs.clients/try-send]
   :client.local [:lt.objs.clients.local/send!]
   :client.placeholder [:lt.objs.clients/remove-placeholder-on-swapped]
+  :client.selector [:lt.objs.connector/on-close!
+                    :lt.objs.connector/on-selected]
   :clients [:lt.objs.clients/raise-on-object]
   :clients.devtools [:lt.objs.clients.devtools/clear-queue-on-connect
                      :lt.objs.clients.devtools/console-log
