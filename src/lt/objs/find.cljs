@@ -18,7 +18,7 @@
 (defui input [this]
   [:input.find {:type "text"
                 :placeholder "find"}]
-  :keyup (fn []
+  :keydown (fn []
            (this-as me
                     (object/raise this :search! (dom/val me))))
   :focus (fn []
