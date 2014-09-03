@@ -74,7 +74,8 @@
                           (if (and (pairs ch)
                                    (= (get-char this 1) (pairs ch)))
                             (let [loc (editor/->cursor this)]
-                              (editor/replace this (adjust-loc loc -1) (adjust-loc loc 1) ""))
+                              (editor/replace this (adjust-loc loc -1) (adjust-loc loc 1) "")
+                              (keyboard/stop-commands!))
                             (passthrough)))
                         (passthrough))))
 
@@ -96,7 +97,7 @@
               :exec (fn [c]
                       (object/raise (ctx/->obj :editor.keys.normal) :repeat-pair! c))})
 
-(cmd/command {:command :editor.backspace-parens
+(cmd/command {:command :editor.backspace-pair
               :hidden true
               :desc "Editor: Pair aware backspace"
               :exec (fn [c]
@@ -120,14 +121,13 @@
           cursor (if (> rem 0) (adjust-loc (editor/->cursor ed) (- unit rem)) cursor)
           [indent rem] (if (> rem 0) (pre-cursor-indent ed cursor) [indent rem])]
       (if (and (> indent 0) (zero? rem))
-        (editor/replace ed (adjust-loc cursor (- unit)) cursor "")
+        (do
+          (editor/replace ed (adjust-loc cursor (- unit)) cursor "")
+          (keyboard/stop-commands!))
         (passthrough)))
     (passthrough)))
 
 (cmd/command {:command :editor.backspace-indent
               :hidden true
               :desc "Editor: Indent aware backspace"
-              :exec (fn [second]
-                      (when-not (and second keyboard/*capture*)
-                        (set! keyboard/*capture* true)
-                        (backspace-indent (ctx/->obj :editor.keys.normal))))})
+              :exec #(backspace-indent (ctx/->obj :editor.keys.normal))})
