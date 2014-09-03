@@ -261,7 +261,7 @@
                       (object/raise opener :open-info! info))})
 
 (cmd/command {:command :opener.open-linked-doc
-              :desc "Opener: Open linked document of current file"
+              :desc "File: Open another view of current file"
               :exec (fn []
                       (let [ed (pool/last-active)]
                         (open-linked-path ed opener (get-in @ed [:info :path]) {})))})
