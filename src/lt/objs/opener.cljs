@@ -260,6 +260,12 @@
               :exec (fn [info]
                       (object/raise opener :open-info! info))})
 
+(cmd/command {:command :opener.open-linked-doc
+              :desc "Opener: Open linked document of current file"
+              :exec (fn []
+                      (let [ed (pool/last-active)]
+                        (open-linked-path ed opener (get-in @ed [:info :path]) {})))})
+
 (set! js/window.ondragover  (fn [e]
                               (set! (.-dataTransfer.dropEffect e) "move")
                               (dom/prevent e)
