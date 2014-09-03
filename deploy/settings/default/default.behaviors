@@ -143,7 +143,8 @@
             :lt.objs.menu/menu!
             :lt.objs.console/menu+]
   :context [:lt.objs.context/log]
-  :document [:lt.objs.document/try-close-root-document :lt.objs.document/close-root-document]
+  :document [:lt.objs.document/try-close-root-document :lt.objs.document/close-root-document
+             (:lt.objs.document/set-linked-doc-options {})]
   :document.linked [:lt.objs.document/close-linked-document]
   :docs [:lt.objs.docs/on-close-destroy]
   :docable [:lt.plugins.doc/editor.doc.show!
@@ -329,7 +330,8 @@
            :lt.objs.opener/open-standard-editor
            :lt.objs.opener/track-open-files
            :lt.objs.opener/watch-on-open
-           :lt.objs.opener/check-read-only]
+           :lt.objs.opener/check-read-only
+           (:lt.objs.opener/existing-path-opens-linked-doc false)]
   :options-input [:lt.objs.sidebar.command/op-select!
                   :lt.objs.sidebar.command/options-escape!
                   :lt.objs.sidebar.command/op-clear!
