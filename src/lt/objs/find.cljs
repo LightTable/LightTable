@@ -18,7 +18,7 @@
 (defui input [this]
   [:input.find {:type "text"
                 :placeholder "find"}]
-  :keydown (fn []
+  :input (fn []
            (this-as me
                     (object/raise this :search! (dom/val me))))
   :focus (fn []
@@ -31,7 +31,7 @@
 (defui replace-input [this]
   [:input.replace {:type "text"
                    :placeholder "replace"}]
-  :keyup (fn []
+  :input (fn []
            (this-as me
                     (object/raise this :replace.changed (dom/val me))))
   :focus (fn []
