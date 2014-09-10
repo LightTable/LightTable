@@ -117,6 +117,7 @@
     (when-let [cs (chord|mapping key char ev)]
       (doseq [c cs]
         (when-not *stop*
+          (set! *capture* true)
           (trigger c)))
       *capture*)))
 
