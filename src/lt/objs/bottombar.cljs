@@ -5,8 +5,10 @@
             [lt.objs.canvas :as canvas]
             [lt.util.cljs :refer [->dottedkw]]
             [lt.util.style :refer [->px]]
-            [crate.binding :refer [map-bound bound subatom]])
-  (:require-macros [lt.macros :refer [behavior defui]]))
+            [crate.binding :refer [map-bound bound subatom]]
+            [lt.util.deprecate])
+  (:require-macros [lt.macros :refer [behavior defui]]
+                   [lt.deprecate-macros :as deprecate]))
 
 
 (def min-height 30)
@@ -27,7 +29,7 @@
     (object/->content active)))
 
 (defn active? [item]
-  (= (:active @bottombar) item))
+  (= (:active @bottom-bar) item))
 
 (defn ->active-class [{:keys [active]}]
   (if active
@@ -35,7 +37,7 @@
     "closed"))
 
 (defn add-item [item]
-  (object/update! bottombar [:items] assoc (:order @item) item))
+  (object/update! bottom-bar [:items] assoc (:order @item) item))
 
 ;;*********************************************************
 ;; Object
@@ -55,9 +57,9 @@
                          [:div.content
                           (bound (subatom this :active) active-content)]]))
 
-(def bottombar (object/create ::bottombar))
+(deprecate/variable ::ns bottombar bottom-bar (object/create ::bottombar))
 
-(canvas/add! bottombar)
+(canvas/add! bottom-bar)
 
 ;;*********************************************************
 ;; Behaviors
