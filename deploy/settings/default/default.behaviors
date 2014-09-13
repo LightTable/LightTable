@@ -97,7 +97,7 @@
         (:lt.objs.style/provide-theme "xq-light" "core/css/themes/xq-light.css")
         (:lt.objs.style/set-skin "dark")
         :lt.objs.editor/init-codemirror]
-  :bottombar [:lt.objs.bottombar/item-toggled
+  :bottom-bar [:lt.objs.bottombar/item-toggled
               :lt.objs.bottombar/height!
               :lt.objs.bottombar/no-anim-on-drag
               :lt.objs.bottombar/reanim-on-drop

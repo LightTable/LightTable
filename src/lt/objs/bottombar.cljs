@@ -43,8 +43,8 @@
 ;; Object
 ;;*********************************************************
 
-(object/object* ::bottombar
-                :tags #{:bottombar}
+(object/object* ::bottom-bar
+                :tags #{:bottom-bar}
                 :items (sorted-map-by >)
                 :height 0
                 :max-height default-height
@@ -57,7 +57,7 @@
                          [:div.content
                           (bound (subatom this :active) active-content)]]))
 
-(deprecate/variable ::ns bottombar bottom-bar (object/create ::bottombar))
+(deprecate/variable ::ns bottombar bottom-bar (object/create ::bottom-bar))
 
 (canvas/add! bottom-bar)
 
