@@ -170,7 +170,7 @@
 (behavior ::status-bar-console-toggle
           :triggers #{:toggle}
           :reaction (fn [this]
-                      (object/raise bottombar/bottombar :toggle console)
+                      (object/raise bottombar/bottom-bar :toggle console)
                       (when (bottombar/active? console)
                         (dom/scroll-top (object/->content console) 10000000000)
                         (status-bar/clean))
@@ -180,7 +180,7 @@
 (behavior ::status-bar-console-show
           :triggers #{:show!}
           :reaction (fn [this]
-                      (object/raise bottombar/bottombar :show! console)
+                      (object/raise bottombar/bottom-bar :show! console)
                       (when (bottombar/active? console)
                         (dom/scroll-top (object/->content console) 10000000000)
                         (status-bar/clean))
@@ -190,7 +190,7 @@
 (behavior ::status-bar-console-hide
           :triggers #{:hide!}
           :reaction (fn [this]
-                      (object/raise bottombar/bottombar :hide! console)))
+                      (object/raise bottombar/bottom-bar :hide! console)))
 
 
 (bottombar/add-item console)
