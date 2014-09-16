@@ -2,7 +2,7 @@
   (:require [lt.object :as object]
             [lt.objs.app :as app]
             [lt.objs.files :as files]
-            [lt.objs.bottombar :as bottombar]
+            [lt.objs.bottom-bar :as bottom-bar]
             [lt.objs.command :as cmd]
             [lt.objs.status-bar :as status-bar]
             [lt.objs.tabs :as tabs]
@@ -74,7 +74,7 @@
 (defn write [$console msg]
   (when (> (count (dom/children $console)) (dec console-limit))
     (dom/remove (aget (dom/children $console) 0)))
-  (when-not (bottombar/active? console)
+  (when-not (bottom-bar/active? console)
     (status-bar/dirty))
   (append $console msg))
 
@@ -170,8 +170,8 @@
 (behavior ::status-bar-console-toggle
           :triggers #{:toggle}
           :reaction (fn [this]
-                      (object/raise bottombar/bottom-bar :toggle console)
-                      (when (bottombar/active? console)
+                      (object/raise bottom-bar/bottom-bar :toggle console)
+                      (when (bottom-bar/active? console)
                         (dom/scroll-top (object/->content console) 10000000000)
                         (status-bar/clean))
                       ))
@@ -180,8 +180,8 @@
 (behavior ::status-bar-console-show
           :triggers #{:show!}
           :reaction (fn [this]
-                      (object/raise bottombar/bottom-bar :show! console)
-                      (when (bottombar/active? console)
+                      (object/raise bottom-bar/bottom-bar :show! console)
+                      (when (bottom-bar/active? console)
                         (dom/scroll-top (object/->content console) 10000000000)
                         (status-bar/clean))
                       ))
@@ -190,10 +190,10 @@
 (behavior ::status-bar-console-hide
           :triggers #{:hide!}
           :reaction (fn [this]
-                      (object/raise bottombar/bottom-bar :hide! console)))
+                      (object/raise bottom-bar/bottom-bar :hide! console)))
 
 
-(bottombar/add-item console)
+(bottom-bar/add-item console)
 
 (cmd/command {:command :console-tab
               :desc "Console: Open the console in a tab"

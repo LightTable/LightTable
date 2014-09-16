@@ -3,7 +3,6 @@
             [lt.objs.tabs :as tabs]
             [lt.objs.canvas :as canvas]
             [lt.objs.command :as cmd]
-            [lt.objs.bottombar :as bottombar]
             [lt.objs.editor :as ed]
             [lt.util.dom :as dom]
             [lt.util.cljs :as cljs]
@@ -13,6 +12,7 @@
                    [lt.deprecate-macros :as deprecate]))
 
 (deprecate/namespace lt.objs.statusbar lt.objs.status-bar)
+
 
 ;;**********************************************************
 ;; status-bar container

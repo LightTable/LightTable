@@ -1,4 +1,4 @@
-(ns lt.objs.bottombar
+(ns lt.objs.bottom-bar
   (:require [lt.object :as object]
             [lt.objs.tabs :as tabs]
             [lt.objs.animations :as anim]
@@ -10,6 +10,7 @@
   (:require-macros [lt.macros :refer [behavior defui]]
                    [lt.deprecate-macros :as deprecate]))
 
+(deprecate/namespace lt.objs.bottombar lt.objs.bottom-bar)
 
 (def min-height 30)
 (def default-height 130)
@@ -110,4 +111,3 @@
                               force?)
                         (object/raise this :show! item)
                         (object/raise this :hide! item))))
-
