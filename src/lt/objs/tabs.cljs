@@ -94,7 +94,8 @@
               (map #(dom/attr % :pos) children))
         prev-active (:active-obj @multi)]
     (object/merge! multi {:objs (mapv (:objs @multi) ser)
-                          :active-obj nil})
+                          :active-obj nil
+                          :no-redraw false})
     (active! prev-active)
     ))
 
@@ -110,12 +111,19 @@
     (active! obj)))
 
 (defn objs-list [multi objs]
-  (let [item (crate/html
-              [:ul
-               (for [[idx o] (map vector (range) objs)
+  (let [labels (for [[idx o] (map vector (range) objs)
                      :when @o]
-                 (object/->content (object/create ::tab-label multi o idx)))])]
-    (js/sortable item (js-obj "axis" "x" "distance" 10  "scroll" false "opacity" 0.9 "connectWith" ".list"))
+                 (object/create ::tab-label multi o idx))
+        item (crate/html
+              [:ul
+               (map object/->content labels)
+               ])]
+    (doseq [old (:labels @multi)]
+      (object/destroy! old))
+    ;;TODO: this is an unbelievably awful hack to get around looping infinitely trying to draw the
+    ;;labels.
+    (object/merge! multi {:labels labels :no-redraw true})
+    (js/sortable item (js-obj "axis" "x" "distance" 10  "scroll" false "opacity" 0.9 "connectwith" ".list"))
     (dom/on item "contextmenu" (fn [e]
                                  (object/raise multi :menu! e)))
     (dom/on item "moved" (fn [e] (move-tab multi (.-opts e)) ))
@@ -205,7 +213,8 @@
 (defui tabset-ui [this]
   [:div.tabset {:style {:width (bound (subatom this :width) ->perc)}}
    [:div.list
-    (bound this #(objs-list this (:objs %)))]
+    (bound this #(when-not (:no-redraw %)
+                   (objs-list this (:objs %))))]
    [:div.items
     (map-bound (partial tabbed-item (subatom this :active-obj)) this {:path [:objs]})]
    (vertical-grip this)]
@@ -277,7 +286,8 @@
           aidx (->index active)]
       (remove-watch obj :tabs)
       (object/merge! obj {::tabset nil})
-      (object/merge! cur-tabset {:objs (vec (remove #(= obj %) (@cur-tabset :objs)))})
+      (object/merge! cur-tabset {:objs (vec (remove #(= obj %) (@cur-tabset :objs)))
+                                 :no-redraw false})
       (if (= obj active)
         (object/raise cur-tabset :tab idx)
         (when (not= aidx (->index active))
@@ -291,6 +301,7 @@
    (when-let [cur-tabset (or ts (ctx/->obj :tabset))]
      (object/add-tags obj [:tabset.tab])
      (object/update! cur-tabset [:objs] conj obj)
+     (object/merge! {:no-redraw false})
      (object/merge! obj {::tabset cur-tabset})
      (add-watch (subatom obj [:dirty]) :tabs (fn [_ _ _ cur]
                                                (object/raise cur-tabset :tab.updated)
@@ -314,7 +325,8 @@
 (defn active! [obj]
   (when (and obj
              (::tabset @obj))
-    (object/merge! (::tabset @obj) {:active-obj obj})
+    (object/merge! (::tabset @obj) {:active-obj obj
+                                    :no-redraw false})
     (object/raise obj :show)
     (ensure-visible (->index obj) (::tabset @obj))))
 
@@ -396,7 +408,8 @@
 (behavior ::repaint-tab-updated
           :triggers #{:tab.updated}
           :reaction (fn [this]
-                      (object/update! this [:count] inc)))
+                      (object/update! this [:count] inc)
+                      (object/merge! this {:no-redraw false})))
 
 (behavior ::no-anim-on-drag
           :triggers #{:start-drag}
