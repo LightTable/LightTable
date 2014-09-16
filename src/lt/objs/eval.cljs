@@ -189,16 +189,16 @@
               (dom/prevent e)
               (object/raise this :double-click)))
 
-(behavior ::result-menu!
-          :triggers #{:menu!}
-          :reaction (fn [this ev]
-                      (-> (menu/menu [{:label "Remove result"
-                                       :click (fn [] (object/raise this :clear!))}
-                                      {:label "Copy result"
-                                       :click (fn [] (object/raise this :copy))}])
-                          (menu/show-menu (.-clientX ev) (.-clientY ev)))
-                      (dom/prevent ev)
-                      (dom/stop-propagation ev)))
+(behavior ::result-menu+
+          :triggers #{:menu+}
+          :reaction (fn [this items]
+                      (conj items
+                            {:label "Remove result"
+                             :order 1
+                             :click (fn [] (object/raise this :clear!))}
+                            {:label "Copy result"
+                             :order 2
+                             :click (fn [] (object/raise this :copy))})))
 
 (behavior ::expand-on-click
           :triggers #{:click :expand!}
@@ -420,14 +420,19 @@
                       (object/raise this :clear)
                       (object/raise this :cleared)))
 
-(behavior ::ex-menu!
-          :triggers #{:menu!}
-          :reaction (fn [this ev]
-                      (-> (menu/menu [{:label "Remove exception"
-                                       :click (fn [] (object/raise this :clear!))}])
-                          (menu/show-menu (.-clientX ev) (.-clientY ev)))
-                      (dom/prevent ev)
-                      (dom/stop-propagation ev)))
+(behavior ::ex-menu+
+          :triggers #{:menu+}
+          :reaction (fn [this items]
+                      (conj items
+                            {:label "Remove exception"
+                             :click (fn [] (object/raise this :clear!))}
+                            {:label "Copy exception"
+                             :click (fn [] (object/raise this :copy))})))
+
+(behavior ::copy-exception
+          :triggers #{:copy}
+          :reaction (fn [this]
+                      (platform/copy (:ex @this))))
 
 (object/object* ::inline-exception
                 :triggers #{:click :double-click :clear!}

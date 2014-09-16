@@ -376,8 +376,11 @@
   (object/merge! e {:doc doc})
   (.swapDoc (->cm-ed e) (:doc @doc)))
 
-(defn fold-code [e]
-  (.foldCode (->cm-ed e) (cursor e)))
+(defn fold-code
+  ([e]
+   (fold-code e (->cursor e)))
+  ([e loc]
+   (.foldCode (->cm-ed e) (clj->js loc))))
 
 (defn gutter-widths [e]
   (let [gutter-div (dom/$ :div.CodeMirror-gutters (object/->content e))

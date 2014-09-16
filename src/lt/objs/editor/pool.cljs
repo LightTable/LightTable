@@ -51,7 +51,7 @@
 
 (defn containing-path [path]
   (let [path (string/lower-case path)]
-    (filter #(> (.indexOf (-> @% :info :path string/lower-case) path) -1) (object/by-tag :editor))))
+    (filter #(> (.indexOf (-> @% :info :path (or "") string/lower-case) path) -1) (object/by-tag :editor))))
 
 (defui button [label & [cb]]
   [:div.button.right label]

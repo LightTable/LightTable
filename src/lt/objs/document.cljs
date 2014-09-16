@@ -14,10 +14,12 @@
 (defn create* [info]
   (.Doc js/CodeMirror (:content info) (:mime info)))
 
+(defn ->cm-doc [doc]
+  (-> @doc :doc))
+
 (defn linked* [doc info]
-  (let [{:keys [from to shared-history type]} info
-        cm-doc (-> @doc :doc)]
-    (.linkedDoc cm-doc (clj->js {:from from
+  (let [{:keys [from to shared-history type]} info]
+    (.linkedDoc (->cm-doc doc) (clj->js {:from from
                                  :to to
                                  :sharedHist shared-history
                                  :mode type}))))
@@ -42,9 +44,9 @@
                   :triggers #{:close.force}
                   :reaction (fn [this]
                               (when-let [root (:root @this)]
-                                (object/update! root [:sub-docs] disj this)
-                                (object/destroy! this)
-                                (object/raise root :try-close))))
+                                (.unlinkDoc (->cm-doc this) (->cm-doc root))
+                                (object/update! root [:sub-docs] disj this))
+                              (object/destroy! this)))
 
 (behavior ::try-close-root-document
                   :for #{:document}
@@ -57,9 +59,20 @@
                   :for #{:document}
                   :triggers #{:close.force}
                   :reaction (fn [this]
-                              (if (= #{::this} (:sub-docs @this))
+                              (if (and (= #{::this} (:sub-docs @this))
+                                       (not (object/has-tag? this :document.linked)))
                                 (object/destroy! this)
                                 (object/update! this [:sub-docs] disj ::this))))
+
+(def default-linked-doc-options {})
+
+(behavior ::set-linked-doc-options
+          :triggers #{:object.instant}
+          :type :user
+          :exclusive true
+          :desc "Doc: Set default options for new linked docs"
+          :reaction (fn [this opts]
+                      (set! default-linked-doc-options opts)))
 
 (defn create [info]
   (object/create ::document info))
@@ -67,13 +80,12 @@
 (defn create-sub
   ([doc] (create-sub doc nil))
   ([doc info]
-   (let [neue (create (merge (select-keys @doc doc-keys) info {:doc (linked* (:doc doc) info)
-                                                               :root doc}))]
+   (let [info (merge default-linked-doc-options info)
+         neue (create (merge (select-keys @doc doc-keys)
+                             info
+                             {:doc (linked* doc info) :root doc}))]
      (object/add-tags neue [:document.linked])
      (object/update! doc [:sub-docs] conj neue))))
-
-(defn ->cm-doc [doc]
-  (-> @doc :doc))
 
 (defn ->snapshot [doc]
   (let [d (->cm-doc doc)
@@ -133,7 +145,6 @@
   (object/update! manager [:files] assoc path doc))
 
 (defn open [path cb]
-  ;;TODO: check if the file is already open?
   (files/open path (fn [data]
                      (let [d (create {:content (:content data)
                                       :line-ending (:line-ending data)
@@ -143,6 +154,13 @@
                        (when cb
                          (cb d)))))
   )
+
+(defn linked-open [ed ldoc-options path cb]
+  (create-sub (:doc @ed) ldoc-options)
+  (files/open path (fn [data]
+                     (let [d (-> @ed :doc deref :sub-docs last)]
+                       (when cb
+                         (cb d))))))
 
 (defn check-mtime [prev updated]
   (if prev
