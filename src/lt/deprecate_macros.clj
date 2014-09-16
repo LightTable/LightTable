@@ -20,6 +20,7 @@
      (list bodies)
      bodies)))
 
+; ns-key is a namespaced keyword, e.g. ::ns
 (defmacro function [ns-key old-name new-name & body]
   `(do
      (lt.util.deprecate/mark-deprecated :fn ~(full-name ns-key old-name) nil)
@@ -37,6 +38,7 @@
 
 
 ;; Variables
+; ns-key is a namespaced keyword, e.g. ::ns
 (defmacro variable [ns-key old-name new-name val]
   (let [old-str (full-name ns-key old-name)
         new-str (full-name ns-key new-name)
