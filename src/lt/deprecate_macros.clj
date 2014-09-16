@@ -39,19 +39,17 @@
 
 ;; @TODO: Add warning.
 (defmacro variable [ns-key old-name new-name val]
-  `(let [ns-old-name# (symbol ~(full-name ns-key old-name))
-         ns-old-proxy# ~(clojure.string/split
-                         (full-name ns-key)
-                         #"\.")
-         ns-old-obj# (apply aget (cons js/window ns-old-proxy#))]
-     (lt.util.deprecate/mark-deprecated :var ns-old-name# nil)
-     (def ~new-name ~val)
-
-     (.__defineGetter__
-      ns-old-obj# ~(name old-name)
-      (fn []
-        (lt.util.deprecate/mark-activated :var ~(full-name ns-key old-name) ~(full-name ns-key new-name))
-        ~new-name))))
+  (let [old-str (full-name ns-key old-name)
+        new-str (full-name ns-key new-name)
+        old-root (clojure.string/split (full-name ns-key) #"\.")]
+    `(let [root-obj# (lt.util.deprecate/safe-aget ~old-root)]
+       (lt.util.deprecate/mark-deprecated :var ~old-str nil)
+       (def ~new-name ~val)
+       (.__defineGetter__
+        root-obj# ~old-str
+        (fn []
+          (lt.util.deprecate/mark-activated :var ~old-str ~new-str)
+          ~new-name)))))
 
 ;; Ex.
 ;; (macroexpand-1 '(variable ::ns old-var new-var 5))
@@ -59,24 +57,18 @@
 
 ;; Namespaces
 (defmacro namespace [old-name new-name]
-  `(do
-     (lt.util.deprecate/mark-deprecated :ns ~(str old-name) nil)
-     (let [old-proxy# ~(clojure.string/split (str old-name) #"\.")
-           old-root# (butlast old-proxy#)
-           old-tail# (last old-proxy#)
-           mk-ns# (fn [memo# v#]
-                    (when-not (aget memo# v#)
-                      (aset memo# v# (clojure.core/js-obj)))
-                    (aget memo# v#))
-           old-obj# (reduce mk-ns# js/window old-root#)]
-
+  (let [old-str (str old-name)
+        new-str (str new-name)
+        old-proxy (clojure.string/split old-str #"\.")
+        old-root (vec (butlast old-proxy))
+        old-tail (last old-proxy)]
+    `(let [root-obj# (lt.util.deprecate/safe-aget ~old-root)]
+       (lt.util.deprecate/mark-deprecated :ns ~old-str nil)
        (.__defineGetter__
-        old-obj# old-tail#
+        root-obj# ~old-tail
         (fn []
-          (lt.util.deprecate/mark-activated :ns ~(str old-name) ~(str new-name))
-          ~new-name)))))
+          (lt.util.deprecate/mark-activated :ns ~old-str ~new-str)
+            ~new-name)))))
 
 ;; No inline example possible -- this wankery only runs in cljs.
-;; (macroexpand-1 '(namespace lt.blues.clues lt.util.deprecate))
-
-
+;; (macroexpand-1 '(namespace lt.objs.statusbar lt.objs.status-bar))

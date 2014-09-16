@@ -18,6 +18,11 @@
                 :tag "tag"
                 })
 
+(defn safe-aget [path]
+  (reduce #(or (aget %1 %2)
+               (aset %1 %2 (js-obj)))
+          js/window path))
+
 (defn mark-deprecated [type old-name val]
   (swap! deprecated assoc-in [type old-name] val))
 
@@ -26,4 +31,3 @@
     (when-not (get deprecations old-name)
       (.warn js/console (str "The " (type key-name) " '" old-name "' has been deprecated. Please use '" new-name "' instead."))
       (mark-deprecated type old-name true))))
-
