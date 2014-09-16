@@ -8,36 +8,35 @@
   ([ns-key] (full-name ns-key nil)))
 
 ;; Functions
-(defn wrap-bodies [old-name new-name body]
-  (let [wrapper (fn [item]
-                  `(~(first item)
-                     (lt.util.deprecate/mark-activated :fn ~old-name ~new-name)
-                     ~(second item)))
-        body (if (vector? (first body))
-               (list body)
-               body)
-        body (map wrapper body)]
-    body))
+
+;; Injects a call to mark-activated into the given function body or bodies.
+(defn wrap-bodies [old-name new-name & bodies]
+  (map
+   (fn [[args body]]
+     `(~args
+       (lt.util.deprecate/mark-activated :fn ~old-name ~new-name)
+       ~body))
+   (if (vector? (first bodies))
+     (list bodies)
+     bodies)))
 
 (defmacro function [ns-key old-name new-name & body]
-  `(let []
+  `(do
      (lt.util.deprecate/mark-deprecated :fn ~(full-name ns-key old-name) nil)
-     ~(conj body new-name 'defn)
-     ~(conj (wrap-bodies (full-name ns-key old-name)
-                         (full-name ns-key new-name)
-                         body)
-            old-name 'defn)))
+     (defn ~new-name ~@body)
+     (defn ~old-name
+       ~@(wrap-bodies (full-name ns-key old-name)
+                      (full-name ns-key new-name)
+                      body))))
 
 ;; Ex.
 ;; (macroexpand-1 '(function ::ns old-name new-name [x] x))
 ;; (function ::ns old-name new-name [x] x)
-;; (new-name 5)
-;; (old-name 5)
+;; (macroexpand-1 '(function ::ns old-name-2 new-name-2 ([x] x) ([x y] (+ x y))))
+;; (function ::ns old-name-2 new-name-2 ([x] x) ([x y] (+ x y)))
 
 
 ;; Variables
-
-;; @TODO: Add warning.
 (defmacro variable [ns-key old-name new-name val]
   (let [old-str (full-name ns-key old-name)
         new-str (full-name ns-key new-name)
@@ -70,5 +69,5 @@
           (lt.util.deprecate/mark-activated :ns ~old-str ~new-str)
             ~new-name)))))
 
-;; No inline example possible -- this wankery only runs in cljs.
+;; Ex.
 ;; (macroexpand-1 '(namespace lt.objs.statusbar lt.objs.status-bar))
