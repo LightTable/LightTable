@@ -46,7 +46,7 @@
        (lt.util.deprecate/mark-deprecated :var ~old-str nil)
        (def ~new-name ~val)
        (.__defineGetter__
-        root-obj# ~old-str
+        root-obj# ~(str old-name)
         (fn []
           (lt.util.deprecate/mark-activated :var ~old-str ~new-str)
           ~new-name)))))
