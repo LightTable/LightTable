@@ -38,6 +38,7 @@
                             [:dl
                              [:dt "Light Table version"] [:dd (:version deploy/version)]
                              [:dt "Binary version"] [:dd (deploy/binary-version)]
+                             [:dt "Plugins directory" [:dd (files/lt-user-dir "plugins")]]
                              ]
                             (check-button)
                             ]
