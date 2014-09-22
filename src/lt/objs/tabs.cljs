@@ -406,7 +406,7 @@
                       ))
 
 (behavior ::repaint-tab-updated
-          :triggers #{:tab.updated}
+          :triggers #{:tab.updated, :object.refresh}
           :reaction (fn [this]
                       (object/update! this [:count] inc)
                       (object/merge! this {:no-redraw false})))
