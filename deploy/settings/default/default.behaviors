@@ -389,7 +389,7 @@
   :tab-label [:lt.objs.menu/menu!
               :lt.objs.tabs/tab-label-menu+
               :lt.objs.tabs/on-close-tab-label]
-  :tabs [:lt.objs.tabs/on-destroy-eds :lt.objs.tabs/active-tab-num :lt.objs.tabs/prev-tab :lt.objs.tabs/next-tab :lt.objs.tabs/tab-close :lt.objs.tabs/repaint-tab-updated
+  :tabs [:lt.objs.tabs/on-destroy-objs :lt.objs.tabs/active-tab-num :lt.objs.tabs/prev-tab :lt.objs.tabs/next-tab :lt.objs.tabs/tab-close :lt.objs.tabs/repaint-tab-updated
          :lt.objs.tabs/tabset-bottom!
          :lt.objs.tabs/right! :lt.objs.tabs/left! :lt.objs.tabs/bottom!
          :lt.objs.find/adjust-find-on-resize]
