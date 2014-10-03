@@ -293,7 +293,7 @@
   :inline.doc [:lt.plugins.doc/clear]
   :inline.exception [:lt.objs.eval/ex-menu+ :lt.objs.eval/ex-clear
                      :lt.objs.menu/menu!
-                     :lt.objs.eval/destroy-on-clear
+                     :lt.objs.eval/destroy-on-cleared
                      :lt.objs.eval/ex-shrink-on-double-click
                      :lt.objs.eval/copy-exception]
   :inline.result [:lt.objs.eval/shrink-on-double-click
@@ -304,7 +304,7 @@
                   :lt.objs.eval/update!
                   :lt.objs.eval/destroy-on-cleared
                   :lt.objs.eval/copy-result]
-  :inline.underline-result [:lt.objs.eval/result-menu! :lt.objs.eval/ex-clear :lt.objs.eval/destroy-on-clear]
+  :inline.underline-result [:lt.objs.eval/result-menu! :lt.objs.eval/ex-clear :lt.objs.eval/destroy-on-cleared]
   :inline.watch [:lt.plugins.watches/clear!]
   :inspector.object [:lt.objs.clients.devtools/clear-inspector-object]
   :jump-stack [:lt.objs.jump-stack/jump-stack.push :lt.objs.jump-stack/jump-stack.pop]
