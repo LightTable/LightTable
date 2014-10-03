@@ -1,19 +1,14 @@
 {
  :+
- {:app [:lt.objs.clients.local/startup-with-local-client
-        :lt.objs.cache/init
+ {:app [:lt.objs.cache/init
         :lt.objs.settings/load-behaviors
         :lt.objs.settings/create-user-settings
         :lt.objs.proc/set-path-OSX
         :lt.objs.workspace/reconstitute-last-workspace
         :lt.objs.sidebar.command/init-commands
         :lt.objs.clients.ws/kill-on-closed
-        :lt.objs.keyboard/load-keys-on-init
         :lt.objs.workspace/stop-watch-on-close
-        :lt.objs.workspace/store-last-workspace
         :lt.objs.clients.devtools/clean-inspectors-timer
-        :lt.objs.editor.pool/init-tab-settings
-        :lt.objs.app/pre-init-args
         :lt.objs.deploy/check-deploy :lt.objs.editor.pool/stop-close-dirty
         :lt.objs.clients/close-clients-on-closed
         :lt.objs.app/restore-position-on-init
@@ -21,11 +16,9 @@
         :lt.objs.editor.pool/init-syntax-selector
         :lt.objs.cli/open!
         :lt.objs.thread/shutdown-worker-on-close
-        :lt.objs.clients.tcp-client/kill-on-closed
         :lt.objs.animations/animate-on-init
         :lt.objs.app/store-position-on-close :lt.objs.canvas/append-canvas
         :lt.objs.tabs/init-sortable
-        :lt.objs.sidebar.navigate/set-exclude-on-init
         :lt.objs.deploy/check-version
         :lt.objs.style/style-on-init
         :lt.objs.app/initial-focus
@@ -35,10 +28,8 @@
         :lt.objs.app/close!
         :lt.objs.menu/remove-menu-close
         :lt.objs.app/refresh
-        :lt.objs.app/ready!
         :lt.objs.app/on-show-bind-navigate
         :lt.objs.editor.pool/stop-reload-dirty
-        :lt.objs.window/track-focus
         :lt.objs.menu/set-menu
         :lt.plugins.auto-complete/init
         :lt.objs.clients.devtools/connect-on-init
@@ -134,7 +125,6 @@
                      :lt.objs.clients.devtools/reconnect
                      :lt.objs.clients.devtools/disconnect
                      :lt.objs.clients.devtools/print-messages]
-  :codex [:lt.objs.codex/close :lt.objs.codex/add! :lt.objs.codex/clear!]
   :command.options [:lt.objs.sidebar.command/options-escape!]
   :command.selector [:lt.objs.sidebar.command/escape!
                      :lt.objs.sidebar.command/select-hidden
@@ -223,12 +213,10 @@
                          :lt.objs.eval/inline-exceptions]
   :editor.markdown [:lt.objs.editor/wrap]
   :editor.plaintext [:lt.objs.editor/wrap]
-  :editor.pool [:lt.objs.editor.pool/add-tab-settings
-                :lt.objs.editor.pool/options-changed
+  :editor.pool [:lt.objs.editor.pool/options-changed
                 :lt.objs.editor.pool/line-numbers-changed
                 :lt.objs.editor.pool/theme-changed]
   :editor.read-only [:lt.objs.editor/read-only]
-  :editor.structural [:lt.plugins.struct/rem-on-close]
   :editor.transient [:lt.objs.editor.file/dirty-on-change
                      :lt.objs.opener/transient-save
                      :lt.objs.opener/save-as]
@@ -348,9 +336,7 @@
           :lt.objs.popup/on-click-destroy
           :lt.objs.popup/change-active-button
           :lt.objs.popup/exec-active]
-  :searcher [:lt.objs.search/on-error
-             :lt.objs.search/on-data :lt.objs.search/clear!
-             :lt.objs.search/on-end
+  :searcher [:lt.objs.search/clear!
              :lt.objs.search/search!
              :lt.objs.search/done-searching
              :lt.objs.search/next!
@@ -394,7 +380,6 @@
                      :lt.objs.sidebar.workspace/recent-menu
                      :lt.objs.sidebar.workspace/recent.delete!
                      :lt.objs.sidebar.workspace/recent.select!]
-  :skin-selector [:lt.objs.style/set-skin-on-select]
   :status-bar-item [:lt.objs.status-bar/on-show!
                              :lt.objs.status-bar/on-hide!
                              :lt.objs.status-bar/init-status-bar]
@@ -404,7 +389,6 @@
   :tab-label [:lt.objs.menu/menu!
               :lt.objs.tabs/tab-label-menu+
               :lt.objs.tabs/on-close-tab-label]
-  :tab-options [:lt.objs.editor.pool/focus-options]
   :tabs [:lt.objs.tabs/on-destroy-eds :lt.objs.tabs/active-tab-num :lt.objs.tabs/prev-tab :lt.objs.tabs/next-tab :lt.objs.tabs/tab-close :lt.objs.tabs/repaint-tab-updated
          :lt.objs.tabs/tabset-bottom!
          :lt.objs.tabs/right! :lt.objs.tabs/left! :lt.objs.tabs/bottom!
@@ -420,7 +404,6 @@
                :lt.objs.tabs/tab-active
                :lt.objs.tabs/show-close-button]
   :tcp.client [:lt.objs.clients.tcp/send!]
-  :theme-selector [:lt.objs.style/set-theme-on-select]
   :tree-item [:lt.objs.sidebar.workspace/rename-submit
               :lt.objs.sidebar.workspace/rename-focus
               :lt.objs.sidebar.workspace/start-rename
@@ -434,7 +417,6 @@
               :lt.plugins.watches/eval-on-watch-or-unwatch]
   :window [:lt.objs.clients.tcp/kill-on-closed
            :lt.objs.workspace/stop-watch-on-blur
-           :lt.objs.window/track-focus
            :lt.objs.workspace/watch-workspace
            :lt.objs.menu/set-menu
            :lt.objs.menu/remove-menu-close
