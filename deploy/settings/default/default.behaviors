@@ -391,8 +391,7 @@
               :lt.objs.tabs/on-close-tab-label]
   :tabs [:lt.objs.tabs/on-destroy-objs :lt.objs.tabs/active-tab-num :lt.objs.tabs/prev-tab :lt.objs.tabs/next-tab :lt.objs.tabs/tab-close :lt.objs.tabs/repaint-tab-updated
          :lt.objs.tabs/tabset-bottom!
-         :lt.objs.tabs/right! :lt.objs.tabs/left! :lt.objs.tabs/bottom!
-         :lt.objs.find/adjust-find-on-resize]
+         :lt.objs.tabs/right! :lt.objs.tabs/left! :lt.objs.tabs/bottom!]
   :tabset [:lt.objs.tabs/set-width-final! :lt.objs.tabs/tabset-active
            :lt.objs.tabs/next-tab :lt.objs.tabs/unset-dragging
            :lt.objs.tabs/repaint-tab-updated :lt.objs.tabs/width!
@@ -416,8 +415,6 @@
               :lt.plugins.watches/unwatch!
               :lt.plugins.watches/eval-on-watch-or-unwatch]
   :window [:lt.objs.clients.tcp/kill-on-closed
-           :lt.objs.workspace/stop-watch-on-blur
-           :lt.objs.workspace/watch-workspace
            :lt.objs.menu/set-menu
            :lt.objs.menu/remove-menu-close
            ]
