@@ -537,26 +537,22 @@
 (behavior ::left!
           :triggers #{:left!}
           :reaction (fn [this v]
-                      (object/update! this [:left] + v)
-                      (object/raise this :resize)))
+                      (object/update! this [:left] + v)))
 
 (behavior ::right!
           :triggers #{:right!}
           :reaction (fn [this v]
-                      (object/update! this [:right] + v)
-                      (object/raise this :resize)))
+                      (object/update! this [:right] + v)))
 
 (behavior ::bottom!
           :triggers #{:bottom!}
           :reaction (fn [this v]
-                      (object/update! this [:bottom] + v)
-                      (object/raise this :resize)))
+                      (object/update! this [:bottom] + v)))
 
 (behavior ::tabset-bottom!
           :triggers #{:tabset-bottom!}
           :reaction (fn [this v]
-                      (object/update! this [:tabset-bottom] + v)
-                      (object/raise this :resize)))
+                      (object/update! this [:tabset-bottom] + v)))
 
 
 (behavior ::init-sortable
