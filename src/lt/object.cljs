@@ -23,6 +23,11 @@
 (defn add-behavior [beh]
   (swap! behaviors assoc (:name beh) beh))
 
+(defn ->id [obj]
+  (if (deref? obj)
+    (::id @obj)
+    (::id obj)))
+
 (defn ->behavior-name [beh]
   (if (coll? beh)
     (first beh)
@@ -77,6 +82,46 @@
 (defn trigger->behaviors [trig ts]
   (get (->triggers (tags->behaviors ts)) trig))
 
+(defn safe-report-error [e]
+  (if js/lt.objs.console
+    (js/lt.objs.console.error e)
+    (.error js/console (if (string? e)
+                         e
+                         (.-stack e)))))
+
+(declare raise)
+
+(defn raise*
+  ([obj reactions args] (raise* obj reactions args nil))
+  ([obj reactions args trigger]
+   (doseq [r reactions
+           :let [func (:reaction (->behavior r))
+                 args (if (coll? r)
+                        (concat (rest r) args)
+                        args)
+                 meta (if (coll? r)
+                        (meta r)
+                        {})]
+           :when func]
+     (try
+     (with-time
+       (binding [*behavior-meta* meta]
+         (apply func obj args))
+       (when-not (= trigger :object.behavior.time)
+         (raise obj :object.behavior.time r time trigger)))
+       (catch js/Error e
+         (safe-report-error (str "Invalid behavior: " (-> (->behavior r) :name)))
+         (safe-report-error e)
+         )
+       (catch js/global.Error e
+         (safe-report-error (str "Invalid behavior: " (-> (->behavior r) :name)))
+         (safe-report-error e)
+         )))))
+
+(defn raise [obj k & args]
+  (let [reactions (-> @obj :listeners k)]
+    (raise* obj reactions args k)))
+
 (defn update-listeners
   ([obj] (update-listeners obj nil))
   ([obj instants]
@@ -108,6 +153,11 @@
 
 (defn instances-by-type [type]
   (filter #(= type (::type (deref %))) (vals @instances)))
+
+(defn merge! [obj m]
+  (when (and m (not (map? m)))
+    (throw (js/Error. (str "Merge requires a map: " m))))
+  (swap! obj merge m))
 
 (defn handle-redef [odef]
   (let [id (::type odef)]
@@ -161,44 +211,6 @@
       (wrap-debounce)
       (store-behavior*)))
 
-(defn safe-report-error [e]
-  (if js/lt.objs.console
-    (js/lt.objs.console.error e)
-    (.error js/console (if (string? e)
-                         e
-                         (.-stack e)))))
-
-(defn raise*
-  ([obj reactions args] (raise* obj reactions args nil))
-  ([obj reactions args trigger]
-   (doseq [r reactions
-           :let [func (:reaction (->behavior r))
-                 args (if (coll? r)
-                        (concat (rest r) args)
-                        args)
-                 meta (if (coll? r)
-                        (meta r)
-                        {})]
-           :when func]
-     (try
-     (with-time
-       (binding [*behavior-meta* meta]
-         (apply func obj args))
-       (when-not (= trigger :object.behavior.time)
-         (raise obj :object.behavior.time r time trigger)))
-       (catch js/Error e
-         (safe-report-error (str "Invalid behavior: " (-> (->behavior r) :name)))
-         (safe-report-error e)
-         )
-       (catch js/global.Error e
-         (safe-report-error (str "Invalid behavior: " (-> (->behavior r) :name)))
-         (safe-report-error e)
-         )))))
-
-(defn raise [obj k & args]
-  (let [reactions (-> @obj :listeners k)]
-    (raise* obj reactions args k)))
-
 (defn raise-reduce [obj k start & args]
   (let [reactions (-> @obj :listeners k)]
     (reduce (fn [res cur]
@@ -218,11 +230,6 @@
 
 (declare create)
 
-(defn merge! [obj m]
-  (when (and m (not (map? m)))
-    (throw (js/Error. (str "Merge requires a map: " m))))
-  (swap! obj merge m))
-
 (defn update! [obj & r]
   (swap! obj #(apply update-in % r)))
 
@@ -231,16 +238,14 @@
     (throw (js/Error. (str "Associate requires a sequence of keys: " k))))
   (swap! obj #(assoc-in % k v)))
 
-(defn ->id [obj]
-  (if (deref? obj)
-    (::id @obj)
-    (::id obj)))
-
 (defn ->inst [o]
   (cond
    (map? o) (@instances (->id o))
    (deref? o) o
    :else (@instances o)))
+
+(defn ->content [obj]
+  (:content @obj))
 
 (defn destroy! [obj]
   (when-let [inst (->inst obj)]
@@ -296,9 +301,6 @@
   (if (map? def|name)
     def|name
     (@object-defs def|name)))
-
-(defn ->content [obj]
-  (:content @obj))
 
 (defn by-id [id]
   (when id

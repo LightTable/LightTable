@@ -11,6 +11,7 @@
 (def win (.Window.get gui))
 (def closing true)
 (def default-zoom 0)
+(def app (object/create ::app))
 
 (defn window-number []
   (let [n (last (string/split js/window.location.search "="))]
@@ -22,29 +23,6 @@
 
 (defn prevent-close []
   (set! closing false))
-
-(defn close
-  ([] (close false))
-  ([force?]
-   (when force?
-     (object/raise app :closing)
-     (object/raise app :closed))
-   (.close win force?)))
-
-(defn refresh []
-  (js/window.location.reload true))
-
-(defn open-window []
-  (let [id (store-swap! :window-id inc)
-        w (.Window.open gui (str "LightTable.html?id=" id) (clj->js {:toolbar false
-                                                                     :icon "core/img/lticon.png"
-                                                                     :new-instance true
-                                                                     :min_height 400
-                                                                     :min_width 400
-                                                                     :frame true
-                                                                     :show false}))]
-    (set! (.-ltid w) id)
-    w))
 
 (defn args []
   (when-not (= 0 (.-App.argv.length gui))
@@ -87,6 +65,29 @@
 (defn zoom-level []
   (when (not= (.-zoomLevel win) 0)
     (.-zoomLevel win)))
+
+(defn close
+  ([] (close false))
+  ([force?]
+   (when force?
+     (object/raise app :closing)
+     (object/raise app :closed))
+   (.close win force?)))
+
+(defn refresh []
+  (js/window.location.reload true))
+
+(defn open-window []
+  (let [id (store-swap! :window-id inc)
+        w (.Window.open gui (str "LightTable.html?id=" id) (clj->js {:toolbar false
+                                                                     :icon "core/img/lticon.png"
+                                                                     :new-instance true
+                                                                     :min_height 400
+                                                                     :min_width 400
+                                                                     :frame true
+                                                                     :show false}))]
+    (set! (.-ltid w) id)
+    w))
 
 ;;*********************************************************
 ;; Behaviors
@@ -222,8 +223,6 @@
                 :delays 0
                 :init (fn [this]
                         (ctx/in! :app this)))
-
-(def app (object/create ::app))
 
 (when (= 0 (window-number))
   (store! :window-id 0))
