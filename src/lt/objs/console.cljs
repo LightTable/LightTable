@@ -79,15 +79,18 @@
     (status-bar/dirty))
   (append $console msg))
 
-(defn verbatim [thing class str-content]
-  (let [$console (->ui console)]
-    (when str-content
-      (write-to-log str-content))
-    (when class
-      (status-bar/console-class class))
-    (write $console (->item thing class))
-    (dom/scroll-top $console 10000000000)
-    nil))
+(defn verbatim
+  ([thing class]
+   (verbatim thing class nil))
+  ([thing class str-content]
+   (let [$console (->ui console)]
+     (when str-content
+       (write-to-log str-content))
+     (when class
+       (status-bar/console-class class))
+     (write $console (->item thing class))
+     (dom/scroll-top $console 10000000000)
+     nil)))
 
 (defn try-update [{:keys [content id]}]
   (when id
@@ -112,17 +115,19 @@
                                                                   content)]]]]
                 class))))
 
-(defn log [l class str-content]
-  (when-not (= "" l)
-    (let [$console (->ui console)]
-      (when (or (string? l) str-content) (write-to-log (if (string? l)
-                                                         l
-                                                         str-content))
-        (write $console (->item [:pre (if-not (dom-like? l)
-                                        (pr-str l)
-                                        l)] class))
-        (dom/scroll-top $console 10000000000)
-        nil))))
+(defn log
+  ([l class] (log l class nil))
+  ([l class str-content]
+   (when-not (= "" l)
+     (let [$console (->ui console)]
+       (when (or (string? l) str-content) (write-to-log (if (string? l)
+                                                          l
+                                                          str-content))
+         (write $console (->item [:pre (if-not (dom-like? l)
+                                         (pr-str l)
+                                         l)] class))
+         (dom/scroll-top $console 10000000000)
+         nil)))))
 
 (defn error [e]
   (status-bar/console-class "error")

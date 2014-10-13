@@ -8,10 +8,12 @@
 
 (def standard-timeout 10000)
 
-(defn working [msg]
-  (when msg
-    (set-msg! msg))
-  (status-bar/loader-inc))
+(defn working
+  ([] (working nil))
+  ([msg]
+    (when msg
+      (set-msg! msg))
+    (status-bar/loader-inc)))
 
 (defn done-working
   ([]
@@ -40,5 +42,5 @@
 (cmd/command {:command :reset-working
               :desc "Status Bar: Reset working indicator"
               :exec (fn []
-                      (status-bar/loader-set 0)
+                      (status-bar/loader-set)
                       )})

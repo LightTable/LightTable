@@ -99,8 +99,10 @@
      (when-not (number? recursive?)
        (object/update! current-ws [:watches] merge (persistent! results)))))
 
-(defn unwatch! [path recursive?]
-  (object/merge! current-ws {:watches (unwatch (:watches @current-ws) path recursive?)}))
+(defn unwatch!
+  ([path] (unwatch! path false))
+  ([path recursive?]
+   (object/merge! current-ws {:watches (unwatch (:watches @current-ws) path recursive?)})))
 
 (defn stop-watching [ws]
   (unwatch! (keys (:watches @ws))))

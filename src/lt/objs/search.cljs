@@ -234,7 +234,7 @@
                          [:div.searcher
                           [:p (bound this result-count)]
                           (search-box this)
-                          [:div (replace-box this) (replace-all-button)]
+                          [:div (replace-box this) (replace-all-button this)]
                           (location-box this)
                           ]
                          ]

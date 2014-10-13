@@ -147,7 +147,7 @@
                 (when cb
                   (cb))))
 
-(defn alert-binary-update [on-yes]
+(defn alert-binary-update []
   (popup/popup! {:header "There's been a binary update!"
                  :body "There's a new version of the Light Table binary. Clicking below will open the
                                  Light Table website so you can download the updated version."

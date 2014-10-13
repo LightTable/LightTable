@@ -267,16 +267,18 @@
     (str f separator)
     (str f)))
 
-(defn ls [path cb]
-  (try
-    (let [fs (map (partial ->file|dir path) (.readdirSync fs path))]
-      (if cb
-        (cb fs)
-        fs))
-    (catch js/global.Error e
-      (when cb
-        (cb nil))
-      nil)))
+(defn ls
+  ([path] (ls path nil))
+  ([path cb]
+   (try
+     (let [fs (map (partial ->file|dir path) (.readdirSync fs path))]
+       (if cb
+         (cb fs)
+         fs))
+     (catch js/global.Error e
+       (when cb
+         (cb nil))
+       nil))))
 
 (defn ls-sync [path opts]
   (try
@@ -305,14 +307,18 @@
 (defn join [& segs]
   (apply (.-join fpath) (filter string? (map str segs))))
 
-(defn home [path]
-  (let [h (if (= js/process.platform "win32")
-            js/process.env.USERPROFILE
-            js/process.env.HOME)]
-    (join h (or path separator))))
+(defn home
+  ([] (home nil))
+  ([path]
+   (let [h (if (= js/process.platform "win32")
+             js/process.env.USERPROFILE
+             js/process.env.HOME)]
+     (join h (or path separator)))))
 
-(defn lt-home [path]
-  (join pwd path))
+(defn lt-home
+  ([] pwd)
+  ([path]
+   (join pwd path)))
 
 (defn lt-user-dir [path]
   (if js/process.env.LT_USER_DIR

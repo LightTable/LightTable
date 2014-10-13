@@ -113,20 +113,22 @@
     (= (.indexOf (string/lower-case sub) (string/lower-case root)) 0)))
 
 ;;return client based on path and type
-(defn discover* [command {:keys [path]}]
-  (let [all (filter (fn [cur]
-                      (let [{:keys [dir commands]} (if (satisfies? IDeref cur)
-                                                     @cur
-                                                     cur)]
-                        (and (if (and path dir)
-                               (subpath? dir path)
-                               true)
-                             (get commands command))))
-                    (vals @cs))
-        with-dir (filter #(@% :dir) all)]
-    (if (and path (seq with-dir))
-      with-dir
-      all)))
+(defn discover*
+  ([command] (discover* command nil))
+  ([command {:keys [path]}]
+   (let [all (filter (fn [cur]
+                       (let [{:keys [dir commands]} (if (satisfies? IDeref cur)
+                                                      @cur
+                                                      cur)]
+                         (and (if (and path dir)
+                                (subpath? dir path)
+                                true)
+                              (get commands command))))
+                     (vals @cs))
+         with-dir (filter #(@% :dir) all)]
+     (if (and path (seq with-dir))
+       with-dir
+       all))))
 
 (defn discover [command info]
   (let [[found & others :as all] (discover* command info)]

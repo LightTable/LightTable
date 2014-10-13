@@ -110,8 +110,9 @@
   (remove-class (->elem e) (name klass))
   e)
 
-(defn cursor [e side]
-  (.getCursor (->cm-ed e) side))
+(defn cursor
+  ([e] (cursor e nil))
+  ([e side] (.getCursor (->cm-ed e) side)))
 
 (defn ->cursor [e & [side]]
   (let [pos (cursor e side)]
@@ -325,10 +326,12 @@
   (js/CodeMirror.showHint (->cm-ed e) hint-fn (clj->js options))
   e)
 
-(defn inner-mode [e state]
-  (let [state (or state (->> (cursor e) (->token-js e) (.-state)))]
-    (-> (js/CodeMirror.innerMode (.getMode (->cm-ed e)) state)
-        (.-mode))))
+(defn inner-mode
+  ([e] (inner-mode e nil))
+  ([e state]
+   (let [state (or state (->> (cursor e) (->token-js e) (.-state)))]
+     (-> (js/CodeMirror.innerMode (.getMode (->cm-ed e)) state)
+         (.-mode)))))
 
 (defn adjust-loc
   ([loc dir]
@@ -360,8 +363,11 @@
 (defn line-comment [e from to opts]
   (.lineComment (->cm-ed e) (clj->js from) (clj->js to) (clj->js opts)))
 
-(defn uncomment [e from to opts]
-  (.uncomment (->cm-ed e) (clj->js from) (clj->js to) (clj->js opts)))
+(defn uncomment
+  ([e from to]
+   (uncomment e from to nil))
+  ([e from to opts]
+   (.uncomment (->cm-ed e) (clj->js from) (clj->js to) (clj->js opts))))
 
 (defn ->generation [e]
   (.changeGeneration (->cm-ed e)))

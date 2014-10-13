@@ -23,11 +23,13 @@
 (defn prevent-close []
   (set! closing false))
 
-(defn close [force?]
-  (when force?
-    (object/raise app :closing)
-    (object/raise app :closed))
-  (.close win force?))
+(defn close
+  ([] (close false))
+  ([force?]
+   (when force?
+     (object/raise app :closing)
+     (object/raise app :closed))
+   (.close win force?)))
 
 (defn refresh []
   (js/window.location.reload true))

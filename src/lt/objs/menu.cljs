@@ -10,16 +10,18 @@
 
 (def gui (js/require "nw.gui"))
 
-(defn create-menu [type]
-  (let [m (.-Menu gui)]
-    (if type
-      (m. (js-obj "type" type))
-      (m.))))
+(defn create-menu
+  ([] (create-menu nil))
+  ([type]
+   (let [m (.-Menu gui)]
+     (if type
+       (m. (js-obj "type" type))
+       (m.)))))
 
 (def menu-instance (create-menu))
 
 (defn submenu [items]
-  (let [menu (create-menu nil)]
+  (let [menu (create-menu)]
     (doseq [i items
             :when i]
       (.append menu (menu-item i)))
@@ -100,7 +102,7 @@
     {:label label
      :click (fn [] (cmd/exec! cmd))}
     opts
-    (command->menu-binding cmd opts))))
+    (command->menu-binding cmd))))
 
 
 (defn main-menu []

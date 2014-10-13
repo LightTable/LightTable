@@ -160,15 +160,17 @@
          " open"
          )))
 
-(defn truncate-result [r opts]
-  (when (string? r)
-    (let [nl (.indexOf r "\n")
-          len (if (> nl -1)
-                nl
-                (:trunc-length opts 50))]
-      (if (> (count r) len)
-        (str (subs r 0 len)  " …")
-        r))))
+(defn truncate-result
+  ([r] (truncate-result r nil))
+  ([r opts]
+   (when (string? r)
+     (let [nl (.indexOf r "\n")
+           len (if (> nl -1)
+                 nl
+                 (:trunc-length opts 50))]
+       (if (> (count r) len)
+         (str (subs r 0 len)  " …")
+         r)))))
 
 (defui ->inline-res [this info]
   (let [r (:result info)

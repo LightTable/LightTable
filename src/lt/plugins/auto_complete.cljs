@@ -233,28 +233,30 @@
                         (async-hints this))
                       ))
 
-(defn start-hinting [this opts]
-  (let [pos (editor/->cursor this)
-        token (get-token this pos)
-        line (editor/line-handle this (:line pos))
-        elem (object/->content hinter)]
-    (ctx/in! [:editor.keys.hinting.active] this)
-    (object/merge! hinter {:token token
-                           :starting-token token
-                           :ed this
-                           :active true
-                           :line line})
-    (object/raise hinter :change! (:string token))
-    (object/raise hinter :active)
-    (let [count (count (:cur @hinter))]
-      (cond
-       (= 0 count) (ctx/out! [:editor.keys.hinting.active :filter-list.input])
-       (and (= 1 count)
-            (:select-single opts)) (object/raise hinter :select! 0)
-       :else (do
-               (js/CodeMirror.on line "change" on-line-change)
-               (dom/append (dom/$ :body) elem)
-               (js/CodeMirror.positionHint (editor/->cm-ed this) elem (:start token)))))))
+(defn start-hinting
+  ([this] (start-hinting this nil))
+  ([this opts]
+   (let [pos (editor/->cursor this)
+         token (get-token this pos)
+         line (editor/line-handle this (:line pos))
+         elem (object/->content hinter)]
+     (ctx/in! [:editor.keys.hinting.active] this)
+     (object/merge! hinter {:token token
+                            :starting-token token
+                            :ed this
+                            :active true
+                            :line line})
+     (object/raise hinter :change! (:string token))
+     (object/raise hinter :active)
+     (let [count (count (:cur @hinter))]
+       (cond
+        (= 0 count) (ctx/out! [:editor.keys.hinting.active :filter-list.input])
+        (and (= 1 count)
+             (:select-single opts)) (object/raise hinter :select! 0)
+        :else (do
+                (js/CodeMirror.on line "change" on-line-change)
+                (dom/append (dom/$ :body) elem)
+                (js/CodeMirror.positionHint (editor/->cm-ed this) elem (:start token))))))))
 
 (behavior ::show-hint
           :triggers #{:hint}
