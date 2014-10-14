@@ -12,6 +12,7 @@
   (:require-macros [crate.def-macros :refer [defpartial]]
                    [lt.macros :refer [behavior defui]]))
 
+(def console (object/create ::console))
 (def console-limit 50)
 (def util-inspect (.-inspect (js/require "util")))
 (def logs-dir (files/lt-user-dir "logs"))
@@ -29,6 +30,30 @@
 (defn write-to-log [thing]
   (when core-log
     (.write core-log thing)))
+
+(defn log
+  ([l class] (log l class nil))
+  ([l class str-content]
+   (when-not (= "" l)
+     (let [$console (->ui console)]
+       (when (or (string? l) str-content) (write-to-log (if (string? l)
+                                                          l
+                                                          str-content))
+         (write $console (->item [:pre (if-not (dom-like? l)
+                                         (pr-str l)
+                                         l)] class))
+         (dom/scroll-top $console 10000000000)
+         nil)))))
+
+(defn error [e]
+  (status-bar/console-class "error")
+  (log (str (if (.-stack e)
+              (.-stack e)
+              (let [pr-e (pr-str e)]
+                (if (not= pr-e "[object Object]")
+                  pr-e
+                  (str e)))))
+       "error"))
 
 (defui console-ui [this]
   [:ul.console]
@@ -115,30 +140,6 @@
                                                                   content)]]]]
                 class))))
 
-(defn log
-  ([l class] (log l class nil))
-  ([l class str-content]
-   (when-not (= "" l)
-     (let [$console (->ui console)]
-       (when (or (string? l) str-content) (write-to-log (if (string? l)
-                                                          l
-                                                          str-content))
-         (write $console (->item [:pre (if-not (dom-like? l)
-                                         (pr-str l)
-                                         l)] class))
-         (dom/scroll-top $console 10000000000)
-         nil)))))
-
-(defn error [e]
-  (status-bar/console-class "error")
-  (log (str (if (.-stack e)
-              (.-stack e)
-              (let [pr-e (pr-str e)]
-                (if (not= pr-e "[object Object]")
-                  pr-e
-                  (str e)))))
-       "error"))
-
 (defn clear []
   (dom/empty (->ui console)))
 
@@ -149,8 +150,6 @@
                 :init (fn [this]
                         (console-ui this)
                         ))
-
-(def console (object/create ::console))
 
 (behavior ::menu+
           :triggers #{:menu+}

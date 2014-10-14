@@ -68,6 +68,17 @@
 
 (def pool (object/create ::pool))
 
+(defn last-active []
+  (let [l (:last @pool)]
+    (when (and l @l)
+      l)))
+
+(defn focus-last []
+  (when-let [ed (last-active)]
+    (when-let [ed (:ed @ed)]
+      (dom/focus js/document.body)
+      (editor/focus ed))))
+
 (behavior ::track-active
           :triggers #{:active}
           :reaction (fn [this]
@@ -146,6 +157,22 @@
                                         (object/raise ed :save))}
                              {:label "ok"}]}))
 
+(def syntax-selector (cmd/filter-list {:items (fn []
+                                                (sort-by :name (-> @files/files-obj :types vals)))
+                                       :key :name
+                                       :placeholder "Syntax"}))
+
+(defn set-syntax [ed new-syn]
+  (let [prev-info (-> @ed :info)]
+    (when prev-info
+      (object/remove-tags ed (:tags prev-info)))
+    (object/update! ed [:info] merge (dissoc new-syn :name))
+    (editor/set-mode ed (:mime new-syn))
+    (object/add-tags ed (:tags new-syn))))
+
+(defn set-syntax-by-path [ed path]
+  (set-syntax ed (files/path->type path)))
+
 (behavior ::watched.delete
           :triggers #{:watched.delete}
           :reaction (fn [ws del]
@@ -181,17 +208,6 @@
                             (doc/move-doc old neue-path)
                             )))))
 
-(defn last-active []
-  (let [l (:last @pool)]
-    (when (and l @l)
-      l)))
-
-(defn focus-last []
-  (when-let [ed (last-active)]
-    (when-let [ed (:ed @ed)]
-      (dom/focus js/document.body)
-      (editor/focus ed))))
-
 (defn create [info]
   (let [ed (object/create :lt.objs.editor/editor info)]
     (object/add-tags ed (:tags info []))
@@ -205,23 +221,6 @@
               :hidden true
               :exec (fn []
                       (focus-last))})
-
-
-(def syntax-selector (cmd/filter-list {:items (fn []
-                                                (sort-by :name (-> @files/files-obj :types vals)))
-                                       :key :name
-                                       :placeholder "Syntax"}))
-
-(defn set-syntax [ed new-syn]
-  (let [prev-info (-> @ed :info)]
-    (when prev-info
-      (object/remove-tags ed (:tags prev-info)))
-    (object/update! ed [:info] merge (dissoc new-syn :name))
-    (editor/set-mode ed (:mime new-syn))
-    (object/add-tags ed (:tags new-syn))))
-
-(defn set-syntax-by-path [ed path]
-  (set-syntax ed (files/path->type path)))
 
 (behavior ::set-syntax
           :triggers #{:select}

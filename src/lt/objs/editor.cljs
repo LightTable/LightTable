@@ -17,6 +17,35 @@
 
 (def gui (js/require "nw.gui"))
 
+(defn ->cm-ed [e]
+  (if (satisfies? IDeref e)
+    (:ed @e)
+    e))
+
+(defn ->elem [e]
+  (.-parentElement (.getScrollerElement (->cm-ed e))))
+
+(defn set-val [e v]
+  (. (->cm-ed e) (setValue (or v "")))
+  e)
+
+(defn set-options [e m]
+  (doseq [[k v] m]
+    (.setOption (->cm-ed e) (name k) v))
+  e)
+
+(defn clear-history [e]
+  (.clearHistory (->cm-ed e))
+  e)
+
+(defn get-history [e]
+  (.getHistory (->cm-ed e)))
+
+(defn set-history [e v]
+  (.setHistory (->cm-ed e) v)
+  e)
+
+
 ;;*********************************************************
 ;; commands
 ;;*********************************************************
@@ -53,11 +82,6 @@
       (clear-history e))
     (when (:doc context)
       (.swapDoc e (-> (:doc context) deref :doc)))
-    e))
-
-(defn ->cm-ed [e]
-  (if (satisfies? IDeref e)
-    (:ed @e)
     e))
 
 (defn on [ed ev func]
@@ -99,9 +123,6 @@
 (defn ->coords [e]
   (js->clj (.cursorCoords (->cm-ed e)) :keywordize-keys true :force-obj true))
 
-(defn ->elem [e]
-  (.-parentElement (.getScrollerElement (->cm-ed e))))
-
 (defn +class [e klass]
   (add-class (->elem e) (name klass))
   e)
@@ -122,10 +143,6 @@
 (defn pos->index [e pos]
   (.indexFromPos (->cm-ed e) (clj->js pos)))
 
-(defn set-val [e v]
-  (. (->cm-ed e) (setValue (or v "")))
-  e)
-
 (defn mark [e from to opts]
   (.markText (->cm-ed e) (clj->js from) (clj->js to) (clj->js opts)))
 
@@ -137,11 +154,6 @@
 
 (defn option [e o]
   (.getOption (->cm-ed e) (name o)))
-
-(defn set-options [e m]
-  (doseq [[k v] m]
-    (.setOption (->cm-ed e) (name k) v))
-  e)
 
 (defn set-mode [e m]
   (.setOption (->cm-ed e) "mode" m)
@@ -218,6 +230,9 @@
         half-h (/ (.-offsetHeight (.getScrollerElement (->cm-ed ed))) 2)]
     (scroll-to ed nil (- y half-h -55))))
 
+(defn selection? [e]
+  (.somethingSelected (->cm-ed e)))
+
 (defn selection-bounds [e]
   (when (selection? e)
     {:from (->cursor e"start")
@@ -225,9 +240,6 @@
 
 (defn selection [e]
   (.getSelection (->cm-ed e)))
-
-(defn selection? [e]
-  (.somethingSelected (->cm-ed e)))
 
 (defn set-selection [e start end]
   (.setSelection (->cm-ed e) (clj->js start) (clj->js end)))
@@ -254,22 +266,6 @@
 (defn paste [e]
   (replace-selection e (platform/paste)))
 
-(defn select-all [e]
-  (set-selection e
-                 {:line (first-line e) :ch 0}
-                 {:line (last-line e)}))
-
-(defn clear-history [e]
-  (.clearHistory (->cm-ed e))
-  e)
-
-(defn get-history [e]
-  (.getHistory (->cm-ed e)))
-
-(defn set-history [e v]
-  (.setHistory (->cm-ed e) v)
-  e)
-
 (defn char-coords [e pos]
   (js->clj (.charCoords (->cm-ed e) (clj->js pos)) :keywordize-keys true :force-obj true))
 
@@ -294,13 +290,6 @@
 (defn line [e l]
   (.getLine (->cm-ed e) l))
 
-(defn set-line [e l text]
-  (let [length (line-length e l)]
-    (replace e
-             {:line l :ch 0}
-             {:line l :ch length}
-             text)))
-
 (defn first-line [e]
   (.firstLine (->cm-ed e)))
 
@@ -315,6 +304,18 @@
 
 (defn line-length [e l]
   (count (line e l)))
+
+(defn select-all [e]
+  (set-selection e
+                 {:line (first-line e) :ch 0}
+                 {:line (last-line e)}))
+
+(defn set-line [e l text]
+  (let [length (line-length e l)]
+    (replace e
+             {:line l :ch 0}
+             {:line l :ch length}
+             text)))
 
 (defn +line-class [e lh plane class]
   (.addLineClass (->cm-ed e) lh (name plane) (name class)))

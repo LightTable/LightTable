@@ -8,6 +8,8 @@
             [lt.util.cljs :refer [js->clj]])
   (:require-macros [lt.macros :refer [behavior background defui]]))
 
+(def helper (object/create ::helper))
+
 (def parser (background (fn [obj-id contents]
                           (let [StringStream (-> (js/require (str js/ltpath "/core/node_modules/codemirror/stringstream.js"))
                                                  (.-StringStream))
@@ -152,5 +154,3 @@
                                                        :line (:line loc)
                                                        :ed ed}))
                                 (set-param this param-idx))))
-
-(def helper (object/create ::helper))

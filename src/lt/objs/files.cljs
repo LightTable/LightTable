@@ -16,6 +16,11 @@
                    (first path)
                    path)))
 
+(def files-obj (object/create (object/object* ::files
+                                              :tags [:files]
+                                              :exts {}
+                                              :types {})))
+
 (defn typelist->index [cur types]
   (let [full (map (juxt :name identity) types)
         ext (for [cur types
@@ -23,6 +28,12 @@
               [ext (:name cur)])]
     {:types (into (:types cur {}) full)
      :exts (into (:exts cur {}) ext)}))
+
+(def line-ending (.-EOL os))
+(def separator (.-sep fpath))
+(def available-drives #{})
+(def ignore-pattern #"(^\..*)|\.class$|target/|svn|cvs|\.git|\.pyc|~|\.swp|\.jar|.DS_Store")
+(def pwd (.resolve fpath "."))
 
 (behavior ::file-types
                   :triggers #{:object.instant}
@@ -42,18 +53,6 @@
                             :example "\"\\\\.git|\\\\.pyc\""}]
                   :reaction (fn [this pattern]
                               (set! ignore-pattern (js/RegExp. pattern))))
-
-
-(def files-obj (object/create (object/object* ::files
-                                              :tags [:files]
-                                              :exts {}
-                                              :types {})))
-
-(def line-ending (.-EOL os))
-(def separator (.-sep fpath))
-(def available-drives #{})
-(def ignore-pattern #"(^\..*)|\.class$|target/|svn|cvs|\.git|\.pyc|~|\.swp|\.jar|.DS_Store")
-(def pwd (.resolve fpath "."))
 
 (when (= separator "\\")
   (.exec (js/require "child_process") "wmic logicaldisk get name"
@@ -123,6 +122,45 @@
       (and (not rn) (not n)) line-ending
       (not n) "\r\n"
       :else "\n")))
+
+(defn exists? [path]
+  (.existsSync fs path))
+
+(defn stats [path]
+  (when (exists? path)
+    (.statSync fs path)))
+
+(defn dir? [path]
+  (when (exists? path)
+    (let [stat (.statSync fs path)]
+      (.isDirectory stat))))
+
+(defn file? [path]
+  (when (exists? path)
+    (let [stat (.statSync fs path)]
+      (.isFile stat))))
+
+(defn absolute? [path]
+  (boolean (re-seq #"^[\\\/]|([\w]+:[\\\/])" path)))
+
+(defn writable? [path]
+  (let [perm (-> (.statSync fs path)
+                 (.mode.toString 8)
+                 (js/parseInt 10)
+                 (str))
+        perm (subs perm (- (count perm) 3))]
+    (#{"7" "6" "3" "2"} (first perm))))
+
+(defn resolve [base cur]
+  (.resolve fpath base cur))
+
+(defn real-path [c]
+  (.realpathSync fs c))
+
+(defn ->file|dir [path f]
+  (if (dir? (str path separator f))
+    (str f separator)
+    (str f)))
 
 (defn bomless-read [path]
   (let [content (.readFileSync fs path "utf-8")]
@@ -216,6 +254,9 @@
 (defn mkdir [path]
   (.mkdirSync fs path))
 
+(defn parent [path]
+	(.dirname fpath path))
+
 (defn next-available-name [path]
   (if-not (exists? path)
     path
@@ -227,45 +268,6 @@
         (if-not (exists? cur)
           cur
           (recur (inc x) (join p (str name (inc x) (when ext (str "." ext))))))))))
-
-(defn exists? [path]
-  (.existsSync fs path))
-
-(defn stats [path]
-  (when (exists? path)
-    (.statSync fs path)))
-
-(defn dir? [path]
-  (when (exists? path)
-    (let [stat (.statSync fs path)]
-      (.isDirectory stat))))
-
-(defn file? [path]
-  (when (exists? path)
-    (let [stat (.statSync fs path)]
-      (.isFile stat))))
-
-(defn absolute? [path]
-  (boolean (re-seq #"^[\\\/]|([\w]+:[\\\/])" path)))
-
-(defn writable? [path]
-  (let [perm (-> (.statSync fs path)
-                 (.mode.toString 8)
-                 (js/parseInt 10)
-                 (str))
-        perm (subs perm (- (count perm) 3))]
-    (#{"7" "6" "3" "2"} (first perm))))
-
-(defn resolve [base cur]
-  (.resolve fpath base cur))
-
-(defn real-path [c]
-  (.realpathSync fs c))
-
-(defn ->file|dir [path f]
-  (if (dir? (str path separator f))
-    (str f separator)
-    (str f)))
 
 (defn ls
   ([path] (ls path nil))
@@ -298,14 +300,14 @@
     (catch js/global.Error e
       (js/lt.objs.console.error e))))
 
+(defn join [& segs]
+  (apply (.-join fpath) (filter string? (map str segs))))
+
 (defn dirs [path]
   (try
     (filter dir? (map (partial join path) (.readdirSync fs path)))
     (catch js/Error e)
     (catch js/global.Error e)))
-
-(defn join [& segs]
-  (apply (.-join fpath) (filter string? (map str segs))))
 
 (defn home
   ([] (home nil))
@@ -345,9 +347,6 @@
                (relative rel f)
                f)]
     [(.basename fpath f) path]))
-
-(defn parent [path]
-	(.dirname fpath path))
 
 (defn path-segs [path]
   (let [segs (.split path separator)

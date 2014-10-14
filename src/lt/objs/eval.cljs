@@ -18,6 +18,8 @@
             [lt.objs.platform :as platform])
   (:require-macros [lt.macros :refer [behavior defui]]))
 
+(def evaler (object/create ::evaler))
+
 (defui button [label & [cb]]
   [:div.button.right label]
   :click (fn []
@@ -137,8 +139,6 @@
 (object/object* ::evaler
                 :tags #{:evaler}
                 :init (fn []))
-
-(def evaler (object/create ::evaler))
 
 (object/add-behavior! clients/clients ::on-connect-check-queue)
 
@@ -330,6 +330,11 @@
 ;; underline result
 ;;****************************************************
 
+(defn ->spacing [text]
+  (when text
+    (-> (re-seq #"^\s+" text)
+        (first))))
+
 (defui ->underline-result [this info]
   [:div {:class (str "underline-result " (when (-> info :class) (:class info)))}
    [:span.spacer (->spacing (ed/line (:ed info) (-> info :loc :line)))]
@@ -386,11 +391,6 @@
 ;; inline exception
 ;;****************************************************
 
-(defn ->spacing [text]
-  (when text
-    (-> (re-seq #"^\s+" text)
-        (first))))
-
 (defn ->exception-class [this]
   (str "inline-exception " (when (:open this)
                              "open"
@@ -418,7 +418,7 @@
           :triggers #{:clear!}
           :reaction (fn [this]
                       (when (ed/->cm-ed (:ed @this))
-                        (ed/remove-line-widget (ed/->cm-ed (:ed @this)) (:widget @this)))i
+                        (ed/remove-line-widget (ed/->cm-ed (:ed @this)) (:widget @this)))
                       (object/raise this :clear)
                       (object/raise this :cleared)))
 

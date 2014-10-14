@@ -25,6 +25,11 @@
 (def home-path (files/lt-home ""))
 (def get-proxy (.-App.getProxyForURL (js/require "nw.gui")))
 
+(defn tar-path [v]
+  (if (cache/fetch :edge)
+    (str "http://temp2.kodowa.com.s3.amazonaws.com/playground/releases/" v ".tar.gz")
+    (str "https://d35ac8ww5dfjyg.cloudfront.net/playground/releases/" v ".tar.gz")))
+
 (def version-regex #"^\d+\.\d+\.\d+(-.*)?$")
 
 (defn get-versions []
@@ -65,11 +70,6 @@
 
 (defn mac-resources-path [p]
   (.resolve fs-path (exec-path) (files/join "../../../../../Resources" p)))
-
-(defn tar-path [v]
-  (if (cache/fetch :edge)
-    (str "http://temp2.kodowa.com.s3.amazonaws.com/playground/releases/" v ".tar.gz")
-    (str "https://d35ac8ww5dfjyg.cloudfront.net/playground/releases/" v ".tar.gz")))
 
 (defn download-file [from to cb]
   (let [options (js-obj "url" from

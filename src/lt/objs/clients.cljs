@@ -8,12 +8,20 @@
 
 (def cs (atom {}))
 
+(defn ->id [obj]
+  (object/->id obj))
+
+(def clients (object/create ::clients))
+
+(defn client! [type]
+  (let [obj (object/create ::client)]
+    (object/add-tags obj [type])
+    (swap! cs assoc (->id obj) obj)
+    obj))
+
 (defn by-id [n]
   (when n
     (@cs n)))
-
-(defn ->id [obj]
-  (object/->id obj))
 
 (defn by-name [n]
   (first (filter #(= n (:name @%)) (vals @cs))))
@@ -159,8 +167,6 @@
                 :init (fn []
                         ))
 
-(def clients (object/create ::clients))
-
 (behavior ::close-clients-on-closed
                   :triggers #{:closing}
                   :reaction (fn [app]
@@ -193,12 +199,6 @@
 ;;**********************************************************
 ;; individual Clients
 ;;**********************************************************
-
-(defn client! [type]
-  (let [obj (object/create ::client)]
-    (object/add-tags obj [type])
-    (swap! cs assoc (->id obj) obj)
-    obj))
 
 (defn placeholder []
   (-> (object/create ::client)
