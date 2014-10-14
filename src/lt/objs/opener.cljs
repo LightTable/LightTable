@@ -18,6 +18,8 @@
   (:use-macros [crate.def-macros :only [defpartial]]
                [lt.macros :only [behavior defui]]))
 
+(def opener (object/create ::opener))
+
 ;;**********************************************************
 ;; transient docs
 ;;**********************************************************
@@ -216,7 +218,6 @@
                 :behaviors [::open-standard-editor]
                 :init (fn [this]))
 
-(def opener (object/create ::opener))
 
 (cmd/command {:command :new-file
               :desc "File: New file"

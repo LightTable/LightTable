@@ -25,6 +25,9 @@
 (defn current [s]
   (.current s))
 
+(defn peek* [s]
+  (.peek s))
+
 (defn skip-space [s]
   (when (and (peek* s) (re-seq #"\s" (peek* s)))
     (.eatSpace s)
@@ -32,9 +35,6 @@
 
 (defn eat-while [s r]
   (.eatWhile s r))
-
-(defn peek* [s]
-  (.peek s))
 
 (defn string->tokens [str pattern]
   (let [s (stream str)
@@ -51,6 +51,12 @@
           (advance s)))
       (skip-space s))
     (into-array (map #(do #js {:completion %}) (js/Object.keys res)))))
+
+(def default-pattern #"[\w_$]")
+
+(defn get-pattern [ed]
+  (let [mode (editor/inner-mode ed)]
+    (or (:hint-pattern @ed) (aget mode "hint-pattern") default-pattern)))
 
 (defn get-token [ed pos]
   (let [line (editor/line ed (:line pos))
@@ -120,12 +126,6 @@
                                               (into-array (map #(do #js {:completion %}) (js/Object.keys res)))))]
                        (js/_send obj-id :hint-tokens (string->tokens (:string m) (:pattern m)))))))
 
-(def default-pattern #"[\w_$]")
-
-(defn get-pattern [ed]
-  (let [mode (editor/inner-mode ed)]
-    (or (:hint-pattern @ed) (aget mode "hint-pattern") default-pattern)))
-
 (defn async-hints [this]
   (when @this
     (w this {:string (editor/->val this)
@@ -155,6 +155,9 @@
                                                    (object/raise-reduce cur :hints+ []))))))
                                    :key text|completion})
                 (object/add-tags [:hinter])))
+
+(defn on-line-change [line ch]
+  (object/raise hinter :line-change line ch))
 
 (behavior ::textual-hints
           :triggers #{:hints+}
@@ -215,9 +218,6 @@
                                   (ctx/in! [:filter-list.input] hinter)
                                   (ctx/in! [:editor.keys.hinting.active] (:ed @hinter))))
                               (object/merge! hinter {:token token})))))))
-
-(defn on-line-change [line ch]
-  (object/raise hinter :line-change line ch))
 
 (behavior ::async-hint-tokens
           :triggers #{:hint-tokens}

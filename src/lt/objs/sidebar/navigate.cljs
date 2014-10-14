@@ -16,6 +16,9 @@
   (:require-macros [lt.macros :refer [behavior defui background]]))
 
 
+(def sidebar-navigate (object/create ::sidebar.navigate))
+(sidebar/add-item sidebar/rightbar sidebar-navigate)
+
 (defn file-filters [f]
   (re-seq files/ignore-pattern f))
 
@@ -127,10 +130,6 @@
                          (object/->content list)
                          ]
                         )))
-
-(def sidebar-navigate (object/create ::sidebar.navigate))
-
-(sidebar/add-item sidebar/rightbar sidebar-navigate)
 
 (cmd/command {:command :navigate-workspace
               :desc "Navigate: open navigate"

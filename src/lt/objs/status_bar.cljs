@@ -94,6 +94,9 @@
 (defn ->cursor-str [{:keys [pos]}]
   [:span.pos (str "" (inc (:line pos)) " / " (inc (:ch pos)))])
 
+(def status-cursor (object/create ::status.cursor))
+(add-status-item status-cursor)
+
 (behavior ::update-cursor-location
                   :triggers #{:update!}
                   :reaction (fn [this pos]
@@ -111,9 +114,6 @@
                   :triggers #{:move :active}
                   :reaction (fn [this]
                               (object/raise status-cursor :update! (ed/->cursor this))))
-
-(def status-cursor (object/create ::status.cursor))
-(add-status-item status-cursor)
 
 ;;**********************************************************
 ;; loader
@@ -156,6 +156,9 @@
                         (status-item (log this) "left")
                         ))
 
+(def status-loader (object/create ::status.loader))
+(add-status-item status-loader)
+
 (defn loader-set []
   (object/merge! status-loader {:loaders 0}))
 
@@ -166,12 +169,12 @@
   (if (> (:loaders @status-loader) 0)
     (object/update! status-loader [:loaders] dec)))
 
-(def status-loader (object/create ::status.loader))
-(add-status-item status-loader)
-
 ;;**********************************************************
 ;; console list
 ;;**********************************************************
+
+(defn toggle-class [{:keys [dirty class]}]
+  (str "console-toggle " (when class (str class " ")) (when (> dirty 0) "dirty")))
 
 (defui toggle-span [this]
   [:span {:class (bound this toggle-class)}
@@ -179,8 +182,8 @@
   :click (fn []
            (cmd/exec! :toggle-console)))
 
-(defn toggle-class [{:keys [dirty class]}]
-  (str "console-toggle " (when class (str class " ")) (when (> dirty 0) "dirty")))
+(def console-toggle (object/create ::status.console-toggle))
+(add-status-item console-toggle)
 
 (defn dirty []
   (object/update! console-toggle [:dirty] inc))
@@ -196,7 +199,4 @@
                 :dirty 0
                 :tags [:status.console-toggle]
                 :init (fn [this]
-                        (status-item (toggle-span this))))
-
-(def console-toggle (object/create ::status.console-toggle))
-(add-status-item console-toggle)
+                        (status-item (toggle-span this) "")))

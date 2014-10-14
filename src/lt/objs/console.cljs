@@ -25,7 +25,23 @@
                 (catch js/Error e
                   (.error js/console (str "Failed to initialize the log writer: " e)))))
 
-(.on js/process "uncaughtException" #(error %))
+(defn ->ui [c]
+  (object/->content c))
+
+(defpartial ->item [l & [class]]
+  [:li {:class class} l])
+
+(defn dom-like? [thing]
+  (or (vector? thing)
+      (.-nodeType thing)
+      (string? thing)))
+
+(defn write [$console msg]
+  (when (> (count (dom/children $console)) (dec console-limit))
+    (dom/remove (aget (dom/children $console) 0)))
+  (when-not (bottombar/active? console)
+    (status-bar/dirty))
+  (append $console msg))
 
 (defn write-to-log [thing]
   (when core-log
@@ -54,6 +70,8 @@
                   pr-e
                   (str e)))))
        "error"))
+
+(.on js/process "uncaughtException" #(error %))
 
 (defui console-ui [this]
   [:ul.console]
@@ -85,24 +103,6 @@
 
 (defn inspect [thing]
   (util-inspect thing false 2))
-
-(defn dom-like? [thing]
-  (or (vector? thing)
-      (.-nodeType thing)
-      (string? thing)))
-
-(defpartial ->item [l & [class]]
-  [:li {:class class} l])
-
-(defn ->ui [c]
-  (object/->content c))
-
-(defn write [$console msg]
-  (when (> (count (dom/children $console)) (dec console-limit))
-    (dom/remove (aget (dom/children $console) 0)))
-  (when-not (bottombar/active? console)
-    (status-bar/dirty))
-  (append $console msg))
 
 (defn verbatim
   ([thing class]

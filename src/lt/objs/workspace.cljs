@@ -19,6 +19,8 @@
 (def max-depth 10)
 (def watch-interval 1000)
 
+(def current-ws (object/create ::workspace))
+
 (defn unwatch [watches path recursive?]
   (when watches
     (let [removes (cond
@@ -30,6 +32,11 @@
         ((:close r)))
       (apply dissoc watches removes))))
 
+(defn unwatch!
+  ([path] (unwatch! path false))
+  ([path recursive?]
+   (object/merge! current-ws {:watches (unwatch (:watches @current-ws) path recursive?)})))
+
 (defn alert-file [path]
   (fn [cur prev]
     (if (.existsSync fs path)
@@ -39,21 +46,6 @@
         (unwatch! path)
         (object/raise current-ws :watched.delete path)))))
 
-(defn alert-folder [path]
-  (fn [cur prev]
-    (if (.existsSync fs path)
-      (do
-        (let [watches (:watches @current-ws)
-              neue (first (filter #(and (not (get watches %))
-                                        (not (re-seq files/ignore-pattern %)))
-                                  (files/full-path-ls path)))]
-          (when neue
-            (watch! neue)
-            (object/raise current-ws :watched.create neue (.statSync fs neue)))))
-      (do
-        (unwatch! path :recursive)
-        (object/raise current-ws :watched.delete path)))))
-
 (defn file->watch [path]
   (let [alert (alert-file path)]
     {:path path
@@ -61,12 +53,7 @@
      :close (fn []
               (.unwatchFile fs path alert))}))
 
-(defn folder->watch [path]
-  (let [alert (alert-folder path)]
-     {:path path
-      :alert alert
-      :close (fn []
-              (.unwatchFile fs path alert))}))
+(declare folder->watch)
 
 (defn watch!
   ([path] (watch! (transient {}) path nil))
@@ -99,10 +86,27 @@
      (when-not (number? recursive?)
        (object/update! current-ws [:watches] merge (persistent! results)))))
 
-(defn unwatch!
-  ([path] (unwatch! path false))
-  ([path recursive?]
-   (object/merge! current-ws {:watches (unwatch (:watches @current-ws) path recursive?)})))
+(defn alert-folder [path]
+  (fn [cur prev]
+    (if (.existsSync fs path)
+      (do
+        (let [watches (:watches @current-ws)
+              neue (first (filter #(and (not (get watches %))
+                                        (not (re-seq files/ignore-pattern %)))
+                                  (files/full-path-ls path)))]
+          (when neue
+            (watch! neue)
+            (object/raise current-ws :watched.create neue (.statSync fs neue)))))
+      (do
+        (unwatch! path :recursive)
+        (object/raise current-ws :watched.delete path)))))
+
+(defn folder->watch [path]
+  (let [alert (alert-folder path)]
+     {:path path
+      :alert alert
+      :close (fn []
+              (.unwatchFile fs path alert))}))
 
 (defn stop-watching [ws]
   (unwatch! (keys (:watches @ws))))
@@ -146,6 +150,16 @@
 (defn new-cached-file []
   (str (now) ".clj"))
 
+(defn file->ws [file]
+  (-> (files/open-sync file)
+      (:content)
+      (reader/read-string)
+      (assoc :path file)))
+
+(defn save [ws file]
+  (files/save (files/join workspace-cache-path file) (pr-str (serialize @ws)))
+  (object/raise ws :save))
+
 (defn open [ws file]
   (let [loc (if-not (> (.indexOf file files/separator) -1)
               (files/join workspace-cache-path file)
@@ -158,18 +172,8 @@
       (catch js/Error e
         ))))
 
-(defn save [ws file]
-  (files/save (files/join workspace-cache-path file) (pr-str (serialize @ws)))
-  (object/raise ws :save))
-
 (defn cached []
   (filter #(> (.indexOf % ".clj") -1) (files/full-path-ls workspace-cache-path)))
-
-(defn file->ws [file]
-  (-> (files/open-sync file)
-      (:content)
-      (reader/read-string)
-      (assoc :path file)))
 
 (defn all []
   (let [fs (sort > (cached))]
@@ -287,8 +291,6 @@
                 :ws-behaviors ""
                 :init (fn [this]
                         nil))
-
-(def current-ws (object/create ::workspace))
 
 (cmd/command {:command :workspace.new
               :desc "Workspace: Create new workspace"

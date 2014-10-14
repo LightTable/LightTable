@@ -16,6 +16,25 @@
 
 (load/js "core/node_modules/lighttable/ui/dragdrop.js" :sync)
 
+
+(def multi-def (object* ::multi-editor2
+                        :tags #{:tabs}
+                        :tabsets []
+                        :left 0
+                        :right 0
+                        :bottom 0
+                        :init (fn [this]
+                                (let [tabsets (crate/html [:div.tabsets {:style {:bottom (bound (subatom this :tabset-bottom) ->px)}}])]
+                                  (object/merge! this {:tabsets-elem tabsets})
+                                  (ctx/in! :tabs this)
+                                  [:div#multi {:style {:left (bound (subatom this :left) ->px)
+                                                       :right (bound (subatom this :right) ->px)
+                                                       :bottom (bound (subatom this :bottom) ->px)}}
+                                   tabsets]
+                                  ))))
+
+(def multi (object/create multi-def))
+
 (defn ensure-visible [idx tabset]
   (when-let [cur (aget (dom/$$ ".list li" (object/->content tabset)) idx)]
     (let [left (.-offsetLeft cur)
@@ -33,10 +52,26 @@
           (set! (.-scrollLeft gp) (+ (- right pwidth) 50)))
         ))))
 
-
 (defn ->index [obj]
   (when (and obj @obj (::tabset @obj))
     (first (first (filter #(= obj (second %)) (map-indexed vector (:objs @(::tabset @obj))))))))
+
+(defn active! [obj]
+  (when (and obj
+             (::tabset @obj))
+    (object/merge! (::tabset @obj) {:active-obj obj})
+    (object/raise obj :show)
+    (ensure-visible (->index obj) (::tabset @obj))))
+
+(defn update-tab-order [multi children]
+  (let [ser (if (vector? children)
+              children
+              (map #(dom/attr % :pos) children))
+        prev-active (:active-obj @multi)]
+    (object/merge! multi {:objs (mapv (:objs @multi) ser)
+                          :active-obj nil})
+    (active! prev-active)
+    ))
 
 (defn ->name [e]
   (or
@@ -87,28 +122,6 @@
                         (object/merge! this {::tab-object e
                                              :tabset multi})
                         (item this multi e pos)))
-
-
-(defn update-tab-order [multi children]
-  (let [ser (if (vector? children)
-              children
-              (map #(dom/attr % :pos) children))
-        prev-active (:active-obj @multi)]
-    (object/merge! multi {:objs (mapv (:objs @multi) ser)
-                          :active-obj nil})
-    (active! prev-active)
-    ))
-
-(defn move-tab [multi elem]
-  (let [id (dom/attr elem :obj-id)
-        idx (dom/index elem)
-        obj (object/by-id (js/parseInt id))
-        cnt (-> @multi :objs count)]
-    (rem! obj)
-    (add! obj multi)
-    (if (> cnt 0)
-      (update-tab-order multi (vec (concat (range idx) [cnt] (range idx cnt)))))
-    (active! obj)))
 
 (defn objs-list [multi objs]
   (let [prev-tabs (filter #(= (:tabset @%) multi) (object/by-tag :tab-label))
@@ -176,6 +189,11 @@
     (reduce + 0 (map (comp :width deref) (take-while #(not= cur %) ts)))
     ))
 
+(defn add-tabset [ts]
+  (object/update! multi [:tabsets] conj ts)
+  (dom/append (:tabsets-elem @multi) (object/->content ts))
+  )
+
 (defn spawn-tabset []
   (let [ts (object/create ::tabset)
         width (- 100 (reduce + (map (comp :width deref) (@multi :tabsets))))]
@@ -231,32 +249,19 @@
   (for [k tabs]
     (object/->content k)))
 
-
-(def multi-def (object* ::multi-editor2
-                        :tags #{:tabs}
-                        :tabsets []
-                        :left 0
-                        :right 0
-                        :bottom 0
-                        :init (fn [this]
-                                (let [tabsets (crate/html [:div.tabsets {:style {:bottom (bound (subatom this :tabset-bottom) ->px)}}])]
-                                  (object/merge! this {:tabsets-elem tabsets})
-                                  (ctx/in! :tabs this)
-                                  [:div#multi {:style {:left (bound (subatom this :left) ->px)
-                                                       :right (bound (subatom this :right) ->px)
-                                                       :bottom (bound (subatom this :bottom) ->px)}}
-                                   tabsets]
-                                  ))))
-
-(def multi (object/create multi-def))
-
 (def tabset (object/create ::tabset))
 
-
-(defn add-tabset [ts]
-  (object/update! multi [:tabsets] conj ts)
-  (dom/append (:tabsets-elem @multi) (object/->content ts))
-  )
+(defn add!
+  ([obj] (add! obj nil))
+  ([obj ts]
+   (when-let [cur-tabset (or ts (ctx/->obj :tabset))]
+     (object/add-tags obj [:tabset.tab])
+     (object/update! cur-tabset [:objs] conj obj)
+     (object/merge! obj {::tabset cur-tabset})
+     (add-watch (subatom obj [:dirty]) :tabs (fn [_ _ _ cur]
+                                               (object/raise cur-tabset :tab.updated)
+                                               ))
+     obj)))
 
 (defn rem-tabset
   ([ts] (rem-tabset ts false))
@@ -290,18 +295,6 @@
           (active! active))
         ))))
 
-(defn add!
-  ([obj] (add! obj nil))
-  ([obj ts]
-   (when-let [cur-tabset (or ts (ctx/->obj :tabset))]
-     (object/add-tags obj [:tabset.tab])
-     (object/update! cur-tabset [:objs] conj obj)
-     (object/merge! obj {::tabset cur-tabset})
-     (add-watch (subatom obj [:dirty]) :tabs (fn [_ _ _ cur]
-                                               (object/raise cur-tabset :tab.updated)
-                                               ))
-     obj)))
-
 (defn refresh! [obj]
   (when-let [ts (::tabset @obj)]
     (object/raise ts :tab.updated)))
@@ -315,13 +308,6 @@
     (do
       (add! obj)
       (active! obj))))
-
-(defn active! [obj]
-  (when (and obj
-             (::tabset @obj))
-    (object/merge! (::tabset @obj) {:active-obj obj})
-    (object/raise obj :show)
-    (ensure-visible (->index obj) (::tabset @obj))))
 
 (defn num-tabs []
   (reduce (fn [res cur]
@@ -338,6 +324,17 @@
   (rem! obj)
   (add! obj ts)
   (active! obj))
+
+(defn move-tab [multi elem]
+  (let [id (dom/attr elem :obj-id)
+        idx (dom/index elem)
+        obj (object/by-id (js/parseInt id))
+        cnt (-> @multi :objs count)]
+    (rem! obj)
+    (add! obj multi)
+    (if (> cnt 0)
+      (update-tab-order multi (vec (concat (range idx) [cnt] (range idx cnt)))))
+    (active! obj)))
 
 ;;*********************************************************
 ;; Behaviors

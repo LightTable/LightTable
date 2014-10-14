@@ -8,6 +8,25 @@
 
 (def standard-timeout 10000)
 
+(defn msg* [m & [opts]]
+  (let [m (if (string? m)
+            m
+            (pr-str m))]
+    (object/merge! status-bar/status-loader (merge {:message m :class ""} opts))))
+
+(declare cur-timeout)
+
+(defn set-msg!
+  ([msg]
+   (msg* msg)
+   (js/clearTimeout cur-timeout)
+   (set! cur-timeout (wait standard-timeout #(msg* ""))))
+  ([msg opts]
+   (msg* msg opts)
+   (js/clearTimeout cur-timeout)
+   (set! cur-timeout (wait (or (:timeout opts)
+                               standard-timeout) #(msg* "")))))
+
 (defn working
   ([] (working nil))
   ([msg]
@@ -21,23 +40,6 @@
   ([msg]
    (set-msg! msg)
    (status-bar/loader-dec)))
-
-(defn msg* [m & [opts]]
-  (let [m (if (string? m)
-            m
-            (pr-str m))]
-    (object/merge! status-bar/status-loader (merge {:message m :class ""} opts))))
-
-(defn set-msg!
-  ([msg]
-   (msg* msg)
-   (js/clearTimeout cur-timeout)
-   (set! cur-timeout (wait standard-timeout #(msg* ""))))
-  ([msg opts]
-   (msg* msg opts)
-   (js/clearTimeout cur-timeout)
-   (set! cur-timeout (wait (or (:timeout opts)
-                               standard-timeout) #(msg* "")))))
 
 (cmd/command {:command :reset-working
               :desc "Status Bar: Reset working indicator"

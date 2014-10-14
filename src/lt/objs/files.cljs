@@ -35,6 +35,9 @@
 (def ignore-pattern #"(^\..*)|\.class$|target/|svn|cvs|\.git|\.pyc|~|\.swp|\.jar|.DS_Store")
 (def pwd (.resolve fpath "."))
 
+(defn join [& segs]
+  (apply (.-join fpath) (filter string? (map str segs))))
+
 (behavior ::file-types
                   :triggers #{:object.instant}
                   :type :user
@@ -299,9 +302,6 @@
       (js/lt.objs.console.error e))
     (catch js/global.Error e
       (js/lt.objs.console.error e))))
-
-(defn join [& segs]
-  (apply (.-join fpath) (filter string? (map str segs))))
 
 (defn dirs [path]
   (try

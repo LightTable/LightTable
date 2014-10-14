@@ -19,6 +19,8 @@
             [lt.objs.editor.pool :as pool])
   (:require-macros [lt.macros :refer [behavior defui extract foreach background]]))
 
+(def searcher (object/create ::workspace-search))
+
 (def search! (background (fn [obj-id opts]
                            (let [replacer (js/require (str js/ltpath "/core/node_modules/replace"))
                                  search (if-let [pattern (re-seq #"^/(.+)/$" (:search opts))]
@@ -272,5 +274,3 @@
               :hidden true
               :exec (fn []
                       (object/raise searcher :replace!))})
-
-(def searcher (object/create ::workspace-search))

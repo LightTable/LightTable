@@ -16,6 +16,8 @@
 (def active-dialog nil)
 (def gui (js/require "nw.gui"))
 
+(def tree (object/create ::workspace.root))
+
 (defn menu-item [opts]
   (let [mi (.-MenuItem gui)]
     (mi. (clj->js opts))))
@@ -47,6 +49,9 @@
   (if (object/has-tag? child :workspace.file)
     (object/update! p [:files] (fn [cur] (vec (remove #{child} cur))))
     (object/update! p [:folders] (fn [cur] (vec (remove #{child} cur))))))
+
+(defn find-by-path [path]
+  (first (filter #(= (:path @%) path) (object/by-tag :tree-item))))
 
 (behavior ::add-ws-folder
           :triggers #{:workspace.add.folder!}
@@ -139,9 +144,6 @@
           :triggers #{:watch-paths+}
           :reaction (fn [this cur]
                       (concat cur (:open-dirs @tree))))
-
-(defn find-by-path [path]
-  (first (filter #(= (:path @%) path) (object/by-tag :tree-item))))
 
 (behavior ::watched.delete
           :triggers #{:watched.delete}
@@ -471,8 +473,6 @@
                         [:div.tree-root
                          (bound this sub-folders)]))
 
-(def tree (object/create ::workspace.root))
-
 (defui input [type event]
   [:input {:type "file" type true :style "display:none;"}]
   :change (fn []
@@ -510,6 +510,11 @@
   :click (fn []
            (object/raise this :select!)))
 
+(defui back-button [this]
+  [:h2 "Select a workspace"]
+  :click (fn []
+           (object/raise this :tree!)))
+
 (defui recents [this rs]
   [:div
    (back-button this)
@@ -517,10 +522,9 @@
     (for [r rs]
       (object/->content r))]])
 
-(defui back-button [this]
-  [:h2 "Select a workspace"]
-  :click (fn []
-           (object/raise this :tree!)))
+(def sidebar-workspace (object/create ::sidebar.workspace))
+
+(sidebar/add-item sidebar/sidebar sidebar-workspace)
 
 (behavior ::recent!
           :triggers #{:recent!}
@@ -630,10 +634,6 @@
           :desc "Workspace: Show workspace on start"
           :reaction (fn [this]
                       (cmd/exec! :workspace.show)))
-
-(def sidebar-workspace (object/create ::sidebar.workspace))
-
-(sidebar/add-item sidebar/sidebar sidebar-workspace)
 
 (cmd/command {:command :workspace.add-folder
               :desc "Workspace: add folder"

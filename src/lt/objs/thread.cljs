@@ -8,6 +8,8 @@
 
 (def cp (js/require "child_process"))
 
+(def worker (object/create ::worker-thread))
+
 (behavior ::try-send
                   :triggers #{:try-send!}
                   :reaction (fn [this msg]
@@ -101,7 +103,6 @@
 ;;      the defined functions are sent correctly
 (object/tag-behaviors :worker-thread [::kill! ::connect ::send! ::queue! ::try-send ::message])
 
-(def worker (object/create ::worker-thread))
 
 (comment
 

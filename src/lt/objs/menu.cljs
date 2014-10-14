@@ -20,12 +20,7 @@
 
 (def menu-instance (create-menu))
 
-(defn submenu [items]
-  (let [menu (create-menu)]
-    (doseq [i items
-            :when i]
-      (.append menu (menu-item i)))
-    menu))
+(declare submenu)
 
 (defn menu-item [opts]
   (let [mi (.-MenuItem gui)
@@ -43,6 +38,13 @@
                                         (.error js/console e)))))
                opts)]
     (mi. (clj->js opts))))
+
+(defn submenu [items]
+  (let [menu (create-menu)]
+    (doseq [i items
+            :when i]
+      (.append menu (menu-item i)))
+    menu))
 
 (defn clear! [menu]
   (let [m (or menu menu-instance)]
