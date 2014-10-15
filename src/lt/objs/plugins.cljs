@@ -84,12 +84,12 @@
 ;; Plugin reading
 ;;*********************************************************
 
-(defn validate [plugin]
+(defn validate [plugin filename]
   (let [valid? (every? plugin [:name :author :behaviors :desc])]
     (if-not valid?
       (do
-        (console/error (str "Invalid plugin.json file: " (:dir plugin) "/plugin.json \nPlugins
-                            must include values for name, version, author, behaviors, and desc."))
+        (console/error (str "Invalid " filename " file: " (:dir plugin) "/" filename "\nPlugins "
+                            "must include values for name, version, author, behaviors, and desc."))
         nil)
       plugin)))
 
@@ -97,14 +97,14 @@
   (when-let [content (files/open-sync (files/join dir "plugin.edn"))]
     (-> (EOF-read (:content content))
         (assoc :dir dir)
-        (validate))))
+        (validate "plugin.edn"))))
 
 (defn plugin-json [dir]
   (when-let [content (files/open-sync (files/join dir "plugin.json"))]
     (-> (js/JSON.parse (:content content))
         (js->clj :keywordize-keys true)
         (assoc :dir dir)
-        (validate))))
+        (validate "plugin.json"))))
 
 (defn plugin-info [dir]
   (or (plugin-json dir) (plugin-edn dir)))
@@ -322,7 +322,7 @@
         p (popup/popup! {:header "Submit a plugin to the central repository"
                          :body [:div
                                 [:p "You can submit a github url to add a plugin to the central repository.
-                                 All plugin repos must have at least one tag in version format, e.g. 0.1.2 and must have a plugin.json
+                                 All plugin repos must have at least one tag in version format, e.g. 0.1.2 and must have a plugin.json or plugin.edn
                                  with name, version, desc, and behaviors keys. To refresh the available versions, just resubmit the plugin."]
                                 [:label "Github URL for plugin: "]
                                 input
