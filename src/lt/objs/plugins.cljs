@@ -322,7 +322,7 @@
         p (popup/popup! {:header "Submit a plugin to the central repository"
                          :body [:div
                                 [:p "You can submit a github url to add a plugin to the central repository.
-                                 All plugin repos must have at least one tag in version format, e.g. 0.1.2 and must have a plugin.json or plugin.edn
+                                 All plugin repos must have at least one tag in version format X.X.X , e.g. 0.1.2 and must have a plugin.json or plugin.edn
                                  with name, version, desc, and behaviors keys. To refresh the available versions, just resubmit the plugin."]
                                 [:label "Github URL for plugin: "]
                                 input
