@@ -69,41 +69,10 @@
                         (object/merge! this opts)
                         (op-input this)))
 
-(def by-id cmd/by-id)
-
-(def exec! cmd/exec!)
-
-(def sidebar-command (object/create ::sidebar.command))
-
 (defn options-input [opts]
   (let [lst (object/create ::options-input opts)]
     (object/raise lst :refresh!)
     lst))
-
-(defn ->items [items]
-  (cond
-   (satisfies? IDeref items) @items
-   (fn? items) (items)
-   :else items))
-
-(defn score-sort [x y]
-  (- (aget y 3) (aget x 3)))
-
-(defn score-sort2 [x y]
-  (- (.-score (aget y 4)) (.-score (aget x 4))))
-
-(defn indexed-results [{:keys [search size items key size]}]
-  (let [items (apply array (->items items))
-        map-func3 #(array % (key %) (js/fastScore (key %) search) nil nil)
-        map-func #(do (aset % 3 (.score (aget % 1) search)) %)
-        map-func2 #(do (aset % 4 (js/score (aget % 1) search)) %)
-        has-score #(> (.-score (aget % 4)) 0)]
-    (if-not (empty? search)
-      (let [score0 (.. items (map map-func3) (filter #(aget % 2)))
-            score1 (.. score0  (map map-func) (sort score-sort))
-            score2 (.. score1 (slice 0 50) (map map-func2) (filter has-score) (sort score-sort2))]
-        score2)
-      (.. items (map #(array % (key %) nil nil))))))
 
 ;;**********************************************************
 ;; filter list
@@ -138,31 +107,6 @@
         (+ (.-scrollTop list) (.-clientHeight list))) (set! (.-scrollTop list)
                                                             (- (+ (.-offsetTop elem) (.-offsetHeight elem) 15) (.-clientHeight list)))
      :else nil)))
-
-(defn fill-lis [{:keys [lis size search selected key transform] :as this} results]
-  (let [cnt (count results)
-        cur (mod selected (if (> cnt size)
-                            size
-                            cnt))
-        transform (if transform
-                    transform
-                    #(do %3))]
-    (if (= cnt 0)
-      (dom/add-class (:content this) :empty)
-      (dom/remove-class (:content this) :empty))
-    (doseq [[i li res] (map vector (range) lis results)
-            :when res]
-      (dom/html li (transform (aget res 1) (aget res 4) (if-not (empty? search)
-
-                                                          (js/wrapMatch (aget res 1) (aget res 4))
-                                                          (aget res 1))
-                              (aget res 0)))
-      (dom/css li {:display "block"})
-      (if (= i cur)
-        (dom/add-class li :selected)
-        (dom/remove-class li :selected)))
-    (doseq [li (drop cnt lis)]
-      (dom/css li {:display "none"}))))
 
 (behavior ::move-selection
           :triggers #{:move-selection}
@@ -271,6 +215,33 @@
                     (object/raise this :change! (dom/val me)))
            ))
 
+(defn ->items [items]
+  (cond
+   (satisfies? IDeref items) @items
+   (fn? items) (items)
+   :else items))
+
+(defn score-sort [x y]
+  (- (aget y 3) (aget x 3)))
+
+(defn score-sort2 [x y]
+  (- (.-score (aget y 4)) (.-score (aget x 4))))
+
+(defn indexed-results [{:keys [search size items key size]}]
+  (let [items (apply array (->items items))
+        map-func3 #(array % (key %) (js/fastScore (key %) search) nil nil)
+        map-func #(do (aset % 3 (.score (aget % 1) search)) %)
+        map-func2 #(do (aset % 4 (js/score (aget % 1) search)) %)
+        has-score #(> (.-score (aget % 4)) 0)]
+    (if-not (empty? search)
+      (let [score0 (.. items (map map-func3) (filter #(aget % 2)))
+            score1 (.. score0  (map map-func) (sort score-sort))
+            score2 (.. score1 (slice 0 50) (map map-func2) (filter has-score) (sort score-sort2))]
+        score2)
+      (.. items (map #(array % (key %) nil nil))))))
+
+
+
 (defui item [this x]
   [:li {:index x}]
   :mousedown (fn [e]
@@ -278,6 +249,31 @@
                (dom/stop-propagation e)
                (object/raise this :set-selection! x)
                (object/raise this :select! x)))
+
+(defn fill-lis [{:keys [lis size search selected key transform] :as this} results]
+  (let [cnt (count results)
+        cur (mod selected (if (> cnt size)
+                            size
+                            cnt))
+        transform (if transform
+                    transform
+                    #(do %3))]
+    (if (= cnt 0)
+      (dom/add-class (:content this) :empty)
+      (dom/remove-class (:content this) :empty))
+    (doseq [[i li res] (map vector (range) lis results)
+            :when res]
+      (dom/html li (transform (aget res 1) (aget res 4) (if-not (empty? search)
+
+                                                          (js/wrapMatch (aget res 1) (aget res 4))
+                                                          (aget res 1))
+                              (aget res 0)))
+      (dom/css li {:display "block"})
+      (if (= i cur)
+        (dom/add-class li :selected)
+        (dom/remove-class li :selected)))
+    (doseq [li (drop cnt lis)]
+      (dom/css li {:display "none"}))))
 
 (object/object* ::filter-list
                 :tags #{:filter-list}
@@ -441,6 +437,7 @@
           :reaction (fn [app]
                       (object/raise sidebar-command :refresh!)))
 
+(def sidebar-command (object/create ::sidebar.command))
 (ctx/in! :commandbar sidebar-command)
 
 (sidebar/add-item sidebar/rightbar sidebar-command)
@@ -457,6 +454,10 @@
   (pre-fill fill)
   (object/raise sidebar/rightbar :toggle sidebar-command (assoc opts :soft? true))
   (object/raise sidebar-command :soft-focus!))
+
+(def by-id cmd/by-id)
+
+(def exec! cmd/exec!)
 
 (defn exec-active! [& args]
   (object/raise sidebar-command :exec-active! args))
