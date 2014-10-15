@@ -18,8 +18,6 @@
             [lt.objs.platform :as platform])
   (:require-macros [lt.macros :refer [behavior defui]]))
 
-(def evaler (object/create ::evaler))
-
 (defui button [label & [cb]]
   [:div.button.right label]
   :click (fn []
@@ -139,6 +137,8 @@
 (object/object* ::evaler
                 :tags #{:evaler}
                 :init (fn []))
+
+(def evaler (object/create ::evaler))
 
 (object/add-behavior! clients/clients ::on-connect-check-queue)
 

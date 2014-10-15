@@ -14,8 +14,6 @@
   (:require-macros [lt.macros :refer [behavior defui]]))
 
 (def find-height 30)
-(def bar (object/create ::find-bar))
-(status-bar/add-container bar)
 
 (defui input [this]
   [:input.find {:type "text"
@@ -157,6 +155,8 @@
 
                       ))
 
+(def bar (object/create ::find-bar))
+(status-bar/add-container bar)
 
 (cmd/command {:command :find.show
               :desc "Find: In current editor"

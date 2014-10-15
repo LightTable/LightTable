@@ -157,11 +157,6 @@
                                         (object/raise ed :save))}
                              {:label "ok"}]}))
 
-(def syntax-selector (cmd/filter-list {:items (fn []
-                                                (sort-by :name (-> @files/files-obj :types vals)))
-                                       :key :name
-                                       :placeholder "Syntax"}))
-
 (defn set-syntax [ed new-syn]
   (let [prev-info (-> @ed :info)]
     (when prev-info
@@ -221,6 +216,12 @@
               :hidden true
               :exec (fn []
                       (focus-last))})
+
+
+(def syntax-selector (cmd/filter-list {:items (fn []
+                                                (sort-by :name (-> @files/files-obj :types vals)))
+                                       :key :name
+                                       :placeholder "Syntax"}))
 
 (behavior ::set-syntax
           :triggers #{:select}

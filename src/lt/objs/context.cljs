@@ -2,7 +2,6 @@
   (:require [lt.object :as object])
   (:require-macros [lt.macros :refer [behavior]]))
 
-(def ctx-obj (object/create ::context))
 (def contexts (atom #{}))
 (def groups (atom {}))
 (def ctx->obj (atom {}))
@@ -18,16 +17,13 @@
 (defn in? [k]
   (@contexts k))
 
-(defn out!
-  ([] (out! nil))
-  ([ctxs]
+(defn out! [ctxs]
    (let [ctxs (if (coll? ctxs)
                 ctxs
                 [ctxs])]
      (swap! contexts #(apply disj % ctxs))
      (swap! ctx->obj #(apply dissoc % ctxs))
-     (object/raise ctx-obj :log!))))
-
+    (object/raise ctx-obj :log!)))
 
 (defn in! [ctxs & [obj]]
   (let [ctxs (if (coll? ctxs)
@@ -77,3 +73,6 @@
                 :history cljs.core.PersistentQueue.EMPTY
                 :buffer-size 8
                 :init (fn [this]))
+
+
+(def ctx-obj (object/create ::context))

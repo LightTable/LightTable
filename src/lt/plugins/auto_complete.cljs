@@ -52,8 +52,6 @@
       (skip-space s))
     (into-array (map #(do #js {:completion %}) (js/Object.keys res)))))
 
-(def default-pattern #"[\w_$]")
-
 (defn get-pattern [ed]
   (let [mode (editor/inner-mode ed)]
     (or (:hint-pattern @ed) (aget mode "hint-pattern") default-pattern)))
@@ -125,6 +123,8 @@
                                                 (skip-space s))
                                               (into-array (map #(do #js {:completion %}) (js/Object.keys res)))))]
                        (js/_send obj-id :hint-tokens (string->tokens (:string m) (:pattern m)))))))
+
+(def default-pattern #"[\w_$]")
 
 (defn async-hints [this]
   (when @this

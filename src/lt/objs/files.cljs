@@ -16,11 +16,6 @@
                    (first path)
                    path)))
 
-(def files-obj (object/create (object/object* ::files
-                                              :tags [:files]
-                                              :exts {}
-                                              :types {})))
-
 (defn typelist->index [cur types]
   (let [full (map (juxt :name identity) types)
         ext (for [cur types
@@ -28,12 +23,6 @@
               [ext (:name cur)])]
     {:types (into (:types cur {}) full)
      :exts (into (:exts cur {}) ext)}))
-
-(def line-ending (.-EOL os))
-(def separator (.-sep fpath))
-(def available-drives #{})
-(def ignore-pattern #"(^\..*)|\.class$|target/|svn|cvs|\.git|\.pyc|~|\.swp|\.jar|.DS_Store")
-(def pwd (.resolve fpath "."))
 
 (defn join [& segs]
   (apply (.-join fpath) (filter string? (map str segs))))
@@ -56,6 +45,18 @@
                             :example "\"\\\\.git|\\\\.pyc\""}]
                   :reaction (fn [this pattern]
                               (set! ignore-pattern (js/RegExp. pattern))))
+
+
+(def files-obj (object/create (object/object* ::files
+                                              :tags [:files]
+                                              :exts {}
+                                              :types {})))
+
+(def line-ending (.-EOL os))
+(def separator (.-sep fpath))
+(def available-drives #{})
+(def ignore-pattern #"(^\..*)|\.class$|target/|svn|cvs|\.git|\.pyc|~|\.swp|\.jar|.DS_Store")
+(def pwd (.resolve fpath "."))
 
 (when (= separator "\\")
   (.exec (js/require "child_process") "wmic logicaldisk get name"

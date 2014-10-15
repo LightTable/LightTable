@@ -16,25 +16,6 @@
 
 (load/js "core/node_modules/lighttable/ui/dragdrop.js" :sync)
 
-
-(def multi-def (object* ::multi-editor2
-                        :tags #{:tabs}
-                        :tabsets []
-                        :left 0
-                        :right 0
-                        :bottom 0
-                        :init (fn [this]
-                                (let [tabsets (crate/html [:div.tabsets {:style {:bottom (bound (subatom this :tabset-bottom) ->px)}}])]
-                                  (object/merge! this {:tabsets-elem tabsets})
-                                  (ctx/in! :tabs this)
-                                  [:div#multi {:style {:left (bound (subatom this :left) ->px)
-                                                       :right (bound (subatom this :right) ->px)
-                                                       :bottom (bound (subatom this :bottom) ->px)}}
-                                   tabsets]
-                                  ))))
-
-(def multi (object/create multi-def))
-
 (defn ensure-visible [idx tabset]
   (when-let [cur (aget (dom/$$ ".list li" (object/->content tabset)) idx)]
     (let [left (.-offsetLeft cur)
@@ -248,6 +229,25 @@
 (defn ->tabsets [tabs]
   (for [k tabs]
     (object/->content k)))
+
+
+(def multi-def (object* ::multi-editor2
+                        :tags #{:tabs}
+                        :tabsets []
+                        :left 0
+                        :right 0
+                        :bottom 0
+                        :init (fn [this]
+                                (let [tabsets (crate/html [:div.tabsets {:style {:bottom (bound (subatom this :tabset-bottom) ->px)}}])]
+                                  (object/merge! this {:tabsets-elem tabsets})
+                                  (ctx/in! :tabs this)
+                                  [:div#multi {:style {:left (bound (subatom this :left) ->px)
+                                                       :right (bound (subatom this :right) ->px)
+                                                       :bottom (bound (subatom this :bottom) ->px)}}
+                                   tabsets]
+                                  ))))
+
+(def multi (object/create multi-def))
 
 (def tabset (object/create ::tabset))
 

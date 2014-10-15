@@ -12,7 +12,6 @@
   (:require-macros [crate.def-macros :refer [defpartial]]
                    [lt.macros :refer [behavior defui]]))
 
-(def console (object/create ::console))
 (def console-limit 50)
 (def util-inspect (.-inspect (js/require "util")))
 (def logs-dir (files/lt-user-dir "logs"))
@@ -25,11 +24,9 @@
                 (catch js/Error e
                   (.error js/console (str "Failed to initialize the log writer: " e)))))
 
+(.on js/process "uncaughtException" #(error %))
 (defn ->ui [c]
   (object/->content c))
-
-(defpartial ->item [l & [class]]
-  [:li {:class class} l])
 
 (defn dom-like? [thing]
   (or (vector? thing)
@@ -71,8 +68,6 @@
                   (str e)))))
        "error"))
 
-(.on js/process "uncaughtException" #(error %))
-
 (defui console-ui [this]
   [:ul.console]
   :contextmenu (fn [e]
@@ -103,6 +98,9 @@
 
 (defn inspect [thing]
   (util-inspect thing false 2))
+
+(defpartial ->item [l & [class]]
+  [:li {:class class} l])
 
 (defn verbatim
   ([thing class]
@@ -150,6 +148,8 @@
                 :init (fn [this]
                         (console-ui this)
                         ))
+
+(def console (object/create ::console))
 
 (behavior ::menu+
           :triggers #{:menu+}

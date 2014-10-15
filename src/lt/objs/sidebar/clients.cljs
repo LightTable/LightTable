@@ -12,10 +12,6 @@
             [crate.binding :refer [bound map-bound subatom]])
   (:require-macros [lt.macros :refer [behavior defui]]))
 
-(def clients (object/create ::sidebar.clients))
-
-(sidebar/add-item sidebar/rightbar clients)
-
 (defui close-button [i]
   [:span.button "disconnect"]
   :click (fn []
@@ -155,6 +151,10 @@
                 :init (fn [this]
                         (connect-ui this)
                         ))
+
+(def clients (object/create ::sidebar.clients))
+
+(sidebar/add-item sidebar/rightbar clients)
 
 (defn add-connector [c]
   (object/update! clients [:connectors] assoc (:name c) c))

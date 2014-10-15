@@ -22,10 +22,6 @@
           (object/raise this :height! e)
           ))
 
-(def bottombar (object/create ::bottombar))
-
-(canvas/add! bottombar)
-
 (defn active-content [active]
   (when active
     (object/->content active)))
@@ -58,6 +54,10 @@
                          (horizontal-grip this)
                          [:div.content
                           (bound (subatom this :active) active-content)]]))
+
+(def bottombar (object/create ::bottombar))
+
+(canvas/add! bottombar)
 
 ;;*********************************************************
 ;; Behaviors

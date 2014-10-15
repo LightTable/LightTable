@@ -20,7 +20,6 @@
 
 (def menu-instance (create-menu))
 
-(declare submenu)
 
 (defn menu-item [opts]
   (let [mi (.-MenuItem gui)

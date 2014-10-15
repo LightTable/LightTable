@@ -11,8 +11,6 @@
 (defn ->id [obj]
   (object/->id obj))
 
-(def clients (object/create ::clients))
-
 (defn client! [type]
   (let [obj (object/create ::client)]
     (object/add-tags obj [type])
@@ -166,6 +164,8 @@
                 :tags #{:clients}
                 :init (fn []
                         ))
+
+(def clients (object/create ::clients))
 
 (behavior ::close-clients-on-closed
                   :triggers #{:closing}
