@@ -19,6 +19,17 @@
 (def max-depth 10)
 (def watch-interval 1000)
 
+(object/object* ::workspace
+                :tags #{:workspace}
+                :files []
+                :folders []
+                :watches {}
+                :ws-behaviors ""
+                :init (fn [this]
+                        nil))
+
+(def current-ws (object/create ::workspace))
+
 (defn unwatch [watches path recursive?]
   (when watches
     (let [removes (cond
@@ -51,6 +62,7 @@
      :close (fn []
               (.unwatchFile fs path alert))}))
 
+(declare folder->watch)
 
 (defn watch!
   ([path] (watch! (transient {}) path nil))
@@ -279,17 +291,6 @@
           :reaction (fn [app]
                       (when-not (files/exists? workspace-cache-path)
                         (files/mkdir workspace-cache-path))))
-
-(object/object* ::workspace
-                :tags #{:workspace}
-                :files []
-                :folders []
-                :watches {}
-                :ws-behaviors ""
-                :init (fn [this]
-                        nil))
-
-(def current-ws (object/create ::workspace))
 
 (cmd/command {:command :workspace.new
               :desc "Workspace: Create new workspace"
