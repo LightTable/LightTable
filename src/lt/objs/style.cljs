@@ -99,8 +99,6 @@
            (for [[skin path] (object/raise-reduce app/app :skins+ {})]
               #js {:text (pr-str skin) :completion (pr-str skin)})))
 
-(get-skins)
-
 (behavior ::set-skin
                   :triggers #{:object.instant}
                   :desc "Style: Set Light Table skin"
