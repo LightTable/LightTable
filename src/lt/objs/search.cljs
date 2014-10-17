@@ -240,6 +240,8 @@
                          ]
                         ))
 
+(def searcher (object/create ::workspace-search))
+
 (cmd/command {:command :searcher.search
               :desc "Searcher: Execute search"
               :hidden true
@@ -272,5 +274,3 @@
               :hidden true
               :exec (fn []
                       (object/raise searcher :replace!))})
-
-(def searcher (object/create ::workspace-search))
