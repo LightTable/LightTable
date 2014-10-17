@@ -31,34 +31,6 @@
                (button "Cancel")
                ))
 
-(defn find-client [{:keys [origin command info key create] :as opts}]
-  (let [[result client] (clients/discover command info)
-        key (or key :default)]
-    (condp = result
-      :none (if create
-              (create opts)
-              (do
-                (notifos/done-working)
-                (object/raise evaler :no-client opts)
-                (clients/placeholder)))
-      :found client
-      :select (do
-                (object/raise evaler :select-client client (fn [client]
-                                                             (clients/swap-client! (-> @origin :client key) client)
-                                                             (object/update! origin [:client] assoc key client)))
-                (clients/placeholder))
-      :unsupported (unsupported))))
-
-(defn get-client! [{:keys [origin command key create] :as opts}]
-  (let [key (or key :default)
-        cur (-> @origin :client key)]
-    (if (and cur (clients/available? cur))
-      cur
-      (let [neue (find-client opts)]
-        (object/update! origin [:client] assoc key neue)
-        (object/raise origin :set-client neue)
-        neue))))
-
 (defn unescape-unicode [s]
   (string/replace s
                   #"\\x(..)"
@@ -147,6 +119,34 @@
     (reader/read-string r)
     (catch :default e
       r)))
+
+(defn find-client [{:keys [origin command info key create] :as opts}]
+  (let [[result client] (clients/discover command info)
+        key (or key :default)]
+    (condp = result
+      :none (if create
+              (create opts)
+              (do
+                (notifos/done-working)
+                (object/raise evaler :no-client opts)
+                (clients/placeholder)))
+      :found client
+      :select (do
+                (object/raise evaler :select-client client (fn [client]
+                                                             (clients/swap-client! (-> @origin :client key) client)
+                                                             (object/update! origin [:client] assoc key client)))
+                (clients/placeholder))
+      :unsupported (unsupported))))
+
+(defn get-client! [{:keys [origin command key create] :as opts}]
+  (let [key (or key :default)
+        cur (-> @origin :client key)]
+    (if (and cur (clients/available? cur))
+      cur
+      (let [neue (find-client opts)]
+        (object/update! origin [:client] assoc key neue)
+        (object/raise origin :set-client neue)
+        neue))))
 
 ;;****************************************************
 ;; inline result

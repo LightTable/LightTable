@@ -15,6 +15,8 @@
 
 (def find-height 30)
 
+(declare bar)
+
 (defui input [this]
   [:input.find {:type "text"
                 :placeholder "find"}]

@@ -27,6 +27,10 @@
 (defn join [& segs]
   (apply (.-join fpath) (filter string? (map str segs))))
 
+(def ignore-pattern #"(^\..*)|\.class$|target/|svn|cvs|\.git|\.pyc|~|\.swp|\.jar|.DS_Store")
+
+(declare files-obj)
+
 (behavior ::file-types
                   :triggers #{:object.instant}
                   :type :user
@@ -55,7 +59,6 @@
 (def line-ending (.-EOL os))
 (def separator (.-sep fpath))
 (def available-drives #{})
-(def ignore-pattern #"(^\..*)|\.class$|target/|svn|cvs|\.git|\.pyc|~|\.swp|\.jar|.DS_Store")
 (def pwd (.resolve fpath "."))
 
 (when (= separator "\\")
