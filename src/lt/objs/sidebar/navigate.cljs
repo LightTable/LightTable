@@ -41,6 +41,8 @@
                                  (js/_send obj-id :workspace-files final)
                                  ))))
 
+(declare sidebar-navigate)
+
 (behavior ::workspace-files
                   :triggers #{:workspace-files}
                   :reaction (fn [this files]
