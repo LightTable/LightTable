@@ -105,6 +105,8 @@
                                      :else nil)
                                     )})
 
+(declare helper)
+
 (behavior ::behavior-hints
                   :triggers #{:hints+}
                   :reaction (fn [this hints token]
