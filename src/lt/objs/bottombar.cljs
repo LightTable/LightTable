@@ -26,6 +26,8 @@
   (when active
     (object/->content active)))
 
+(declare bottombar)
+
 (defn active? [item]
   (= (:active @bottombar) item))
 

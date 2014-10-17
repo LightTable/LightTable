@@ -24,7 +24,6 @@
                 (catch js/Error e
                   (.error js/console (str "Failed to initialize the log writer: " e)))))
 
-(.on js/process "uncaughtException" #(error %))
 (defn ->ui [c]
   (object/->content c))
 
@@ -32,6 +31,8 @@
   (or (vector? thing)
       (.-nodeType thing)
       (string? thing)))
+
+(declare console)
 
 (defn write [$console msg]
   (when (> (count (dom/children $console)) (dec console-limit))
@@ -43,6 +44,9 @@
 (defn write-to-log [thing]
   (when core-log
     (.write core-log thing)))
+
+(defpartial ->item [l & [class]]
+  [:li {:class class} l])
 
 (defn log
   ([l class] (log l class nil))
@@ -67,6 +71,8 @@
                   pr-e
                   (str e)))))
        "error"))
+
+(.on js/process "uncaughtException" #(error %))
 
 (defui console-ui [this]
   [:ul.console]
@@ -98,9 +104,6 @@
 
 (defn inspect [thing]
   (util-inspect thing false 2))
-
-(defpartial ->item [l & [class]]
-  [:li {:class class} l])
 
 (defn verbatim
   ([thing class]

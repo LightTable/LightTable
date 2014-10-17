@@ -36,6 +36,8 @@
     (when tags
       (object/add-tags client tags))))
 
+(declare clients)
+
 (defn handle-connection! [info]
   (if-let [client (by-id (:client-id info))]
     (do
