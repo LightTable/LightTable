@@ -455,6 +455,8 @@
   (object/raise sidebar/rightbar :toggle sidebar-command (assoc opts :soft? true))
   (object/raise sidebar-command :soft-focus!))
 
+(def exec! cmd/exec!)
+
 (defn exec-active! [& args]
   (object/raise sidebar-command :exec-active! args))
 
