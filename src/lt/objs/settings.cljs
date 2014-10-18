@@ -183,14 +183,17 @@
 
 (def user-behaviors-path (files/lt-user-dir "settings/user.behaviors"))
 (def user-keymap-path (files/lt-user-dir "settings/user.keymap"))
+(def user-plugin-paths ["user.behaviors" "user.keymap" "src" "project.clj" "plugin.edn"])
+(def user-plugin-dir (files/lt-user-dir "settings"))
 
 (behavior ::create-user-settings
           :triggers #{:init}
           :reaction (fn [app]
-                      (when-not (files/exists? user-behaviors-path)
-                        (files/copy (files/lt-home "/core/misc/example.behaviors") user-behaviors-path))
-                      (when-not (files/exists? user-keymap-path)
-                        (files/copy (files/lt-home "/core/misc/example.keymap") user-keymap-path))))
+                      (doseq [path user-plugin-paths]
+                        (let [full-path (files/join user-plugin-dir path)]
+                          (when-not (files/exists? full-path)
+                            (files/copy (files/lt-home (files/join "core" "settings" path))
+                                        full-path))))))
 
 ;;*********************************************************
 ;; Commands
