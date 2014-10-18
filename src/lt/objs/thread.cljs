@@ -81,6 +81,7 @@
                           (object/merge! this {:worker worker})
                         nil)))
 
+(declare worker)
 
 (defn send [msg]
   (object/raise worker :try-send! msg))

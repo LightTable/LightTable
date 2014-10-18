@@ -122,6 +122,8 @@
                                              :tabset multi})
                         (item this multi e pos)))
 
+(declare move-tab)
+
 (defn objs-list [multi objs]
   (let [prev-tabs (filter #(= (:tabset @%) multi) (object/by-tag :tab-label))
         item (crate/html
