@@ -8,6 +8,8 @@
 
 (def cp (js/require "child_process"))
 
+(declare worker)
+
 (behavior ::try-send
                   :triggers #{:try-send!}
                   :reaction (fn [this msg]
@@ -80,8 +82,6 @@
                                                   :ltpath (files/lt-home)}))
                           (object/merge! this {:worker worker})
                         nil)))
-
-(declare worker)
 
 (defn send [msg]
   (object/raise worker :try-send! msg))
