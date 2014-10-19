@@ -327,6 +327,7 @@
   :plugin.file [(:lt.objs.editor.file/on-save :build)]
   :plugin-manager [:lt.objs.plugins/on-close
                    :lt.objs.plugins/search-server-plugins
+                   :lt.objs.plugins/save-user-plugin-dependencies
                    :lt.objs.plugins/render-installed-plugins
                    :lt.objs.plugins/render-server-plugins
                    :lt.objs.plugins/submit-plugin

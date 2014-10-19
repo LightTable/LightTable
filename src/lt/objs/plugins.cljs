@@ -305,6 +305,7 @@
 
 (defn uninstall [plugin]
   (files/delete! (:dir plugin))
+  (object/raise manager :save-deps)
   (object/raise manager :refresh!))
 
 ;;*********************************************************
@@ -369,6 +370,7 @@
            (dom/stop-propagation e)
            (discover-deps plugin (fn []
                                    (cmd/exec! :behaviors.reload)
+                                   (object/raise manager :save-deps)
                                    (object/raise manager :refresh!)))))
 
 (defui install-button [plugin]
@@ -378,8 +380,8 @@
                     (discover-deps plugin (fn []
                                             (dom/remove (dom/parent me))
                                             (cmd/exec! :behaviors.reload)
-                                            (object/raise manager :refresh!)
-                                            )))
+                                            (object/raise manager :save-deps)
+                                            (object/raise manager :refresh!))))
            (dom/prevent e)
            (dom/stop-propagation e)))
 
@@ -513,6 +515,33 @@
                                        (when data
                                          (object/raise this :plugin-results (EOF-read data)))
                                        ))))))
+
+(defn save-plugins [plugin-maps]
+  (let [plugin-edn-file (files/join settings/user-plugin-dir "plugin.edn")
+        plugin-edn (-> plugin-edn-file files/open-sync :content (settings/safe-read plugin-edn-file))
+        plugin-name (doto (:name plugin-edn) (assert "User plugin doesn't have a :name"))
+        deps (->> plugin-maps
+                  vals
+                  (remove #(contains? #{plugin-name} (:name %)))
+                  (map (juxt :name :version))
+                  (into (sorted-map)))
+         plugin-edn-body (pr-str (assoc plugin-edn :dependencies deps))]
+
+    (files/save plugin-edn-file
+                (-> plugin-edn-body
+                    ;; Until clojurescript gets pprint
+                    ;; one key/val pair or parent key per line for diffing
+                    (string/replace #"(\"\s*,|\{|\},)" #(str % "\n"))
+                    (string/replace-first #"^\{\n" "{")
+                    (string/replace-first #":dependencies"
+                                          ";; Do not edit - :dependencies are auto-generated\n:dependencies")))))
+
+(behavior ::save-user-plugin-dependencies
+          :triggers #{:save-deps}
+          :desc "Saves dependencies to user's plugin.edn"
+          :reaction (fn [this]
+                      ;; Use available-plugins b/c ::plugins aren't always up to date e.g. uninstall
+                      (save-plugins (available-plugins))))
 
 (behavior ::render-installed-plugins
           :triggers #{:refresh!}
