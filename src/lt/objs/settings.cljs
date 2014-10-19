@@ -183,7 +183,7 @@
 
 (def user-behaviors-path (files/lt-user-dir "settings/user.behaviors"))
 (def user-keymap-path (files/lt-user-dir "settings/user.keymap"))
-(def user-plugin-paths ["user.behaviors" "user.keymap" "src" "project.clj" "plugin.edn"])
+(def user-plugin-paths ["user.behaviors" "user.keymap" "src" "project.clj" "plugin.edn" "user_compiled.js"])
 (def user-plugin-dir (files/lt-user-dir "settings"))
 
 (behavior ::create-user-settings

@@ -12,7 +12,8 @@
 {:+ {
      ;; The app tag is kind of like global scope. You assign behaviors that affect
      ;; all of Light Table here
-     :app [(:lt.objs.style/set-skin "dark")]
+     :app [(:lt.objs.style/set-skin "dark")
+           (:lt.objs.plugins/load-js "user_compiled.js")]
 
      ;; The editor tag is applied to all editors
      :editor [:lt.objs.editor/no-wrap
@@ -21,7 +22,7 @@
      ;; Here we can add behaviors to just clojure editors
      :editor.clojure [(:lt.plugins.clojure/print-length 1000)]
 
-     ;; Add user-defined behaviors
+     ;; Behaviors specific to a user-defined object
      :user.hello [:lt.plugins.user/on-close-destroy]}
 
  ;; You can use the subtract key to remove behavior that may get added by

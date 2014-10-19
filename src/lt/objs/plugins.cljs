@@ -145,7 +145,8 @@
 
 (defn available-plugins []
   (let [ds (concat (files/dirs user-plugins-dir)
-                   (files/dirs plugins-dir))
+                   (files/dirs plugins-dir)
+                   [settings/user-plugin-dir])
         plugins (->> ds
                      (map plugin-info)
                      (filterv identity))
