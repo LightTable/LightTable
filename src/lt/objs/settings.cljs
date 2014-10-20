@@ -183,6 +183,7 @@
 
 (def user-behaviors-path (files/lt-user-dir "settings/user.behaviors"))
 (def user-keymap-path (files/lt-user-dir "settings/user.keymap"))
+(def user-cljs-path (files/lt-user-dir "settings/src/lt/plugins/user.cljs"))
 (def user-plugin-paths ["user.behaviors" "user.keymap" "src" "project.clj" "plugin.edn" "user_compiled.js"])
 (def user-plugin-dir (files/lt-user-dir "settings"))
 
@@ -242,6 +243,11 @@
               :desc "Settings: Default keymap"
               :exec (fn []
                       (cmd/exec! :open-path (files/lt-home "/settings/default/default.keymap")))})
+
+(cmd/command {:command :user.modify-user
+              :desc "Settings: User clojurescript"
+              :exec (fn []
+                      (cmd/exec! :open-path user-cljs-path))})
 
 (behavior ::on-close-remove
           :triggers #{:close}
