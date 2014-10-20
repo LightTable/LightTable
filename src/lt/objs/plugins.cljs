@@ -143,7 +143,8 @@
     (doseq [dep missing]
       (discover-deps dep count-down))))
 
-(defn available-plugins []
+(defn available-plugins
+  [& {:keys [ignore-missing]}]
   (let [ds (concat (files/dirs user-plugins-dir)
                    (files/dirs plugins-dir)
                    [settings/user-plugin-dir])
@@ -161,12 +162,12 @@
                           plugins)
                   (persistent!))
         missing? (missing-deps final)]
-    (when missing?
+    (when (and missing? (not ignore-missing))
       (popup/popup! {:header "Some plugin dependencies are missing."
                      :body [:div
                             [:span "We found that the following plugin dependencies are missing: "]
-                             (for [{:keys [name version]} missing?]
-                               [:div name " " version " "])
+                            (for [{:keys [name version]} missing?]
+                              [:div name " " version " "])
                             [:span "Would you like us to install them?"]]
                      :buttons [{:label "Cancel"}
                                {:label "Install all"
@@ -538,7 +539,8 @@
           :desc "Saves dependencies to user's plugin.edn"
           :reaction (fn [this]
                       ;; Use available-plugins b/c ::plugins aren't always up to date e.g. uninstall
-                      (save-plugins (available-plugins))))
+                      ;; :ignore-missing to avoid missing popup on uninstall
+                      (save-plugins (available-plugins :ignore-missing true))))
 
 (behavior ::render-installed-plugins
           :triggers #{:refresh!}
