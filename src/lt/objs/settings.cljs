@@ -249,6 +249,12 @@
               :exec (fn []
                       (cmd/exec! :open-path user-cljs-path))})
 
+
+(cmd/command {:command :user.add-user-plugin-to-workspace
+              :desc "Settings: Add User plugin to workspace"
+              :exec (fn []
+                      (object/raise workspace/current-ws :add.folder! user-plugin-dir))})
+
 (behavior ::on-close-remove
           :triggers #{:close}
           :reaction (fn [this]
