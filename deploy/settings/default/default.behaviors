@@ -52,7 +52,7 @@
         :lt.objs.workspace/init-workspace-cache-dir
         :lt.objs.metrics/init-metrics
         (:lt.objs.keyboard/chord-timeout 1000)
-        (:lt.objs.files/file.ignore-pattern "(^\\..*)|\\.class$|target/|svn|cvs|\\.git|\\.pyc|~|\\.swp|\\.jar|.DS_Store|\\.nrepl-port")
+        (:lt.objs.files/file.ignore-pattern "\\.class$|target/|svn|cvs|\\.git$|\\.pyc|~|\\.swp|\\.jar|.DS_Store|\\.nrepl-port")
         (:lt.objs.style/provide-skin "dark" "core/css/skins/new-dark.css")
         (:lt.objs.style/provide-skin "light" "core/css/skins/new-dark.css")
         (:lt.objs.style/provide-skin "new-dark" "core/css/skins/new-dark.css")
