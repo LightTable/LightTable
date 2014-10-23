@@ -1,6 +1,6 @@
 {
 	"name": "LightTable",
-  "main": "core/LightTable.html",
+	"main": "core/LightTable.html",
 	"js-flags": "--harmony",
 	"single-instance": true,
 	"webkit": {
@@ -13,7 +13,7 @@
 		"height": 700,
 		"min_height": 400,
 		"min_width": 400,
-    "position": "center",
+		"position": "center",
 		"show":false,
 		"toolbar": false,
 		"frame": true
