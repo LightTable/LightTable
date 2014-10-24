@@ -207,16 +207,18 @@
 (behavior ::add-file!
                   :triggers #{:add.file!}
                   :reaction (fn [this f]
-                              (add! this :files f)
-                              (object/raise this :add f)
-                              (object/raise this :updated)))
+                              (when-not (some #{f} (:files (-> @this)))
+                                (add! this :files f)
+                                (object/raise this :add f)
+                                (object/raise this :updated))))
 
 (behavior ::add-folder!
                   :triggers #{:add.folder!}
                   :reaction (fn [this f]
-                              (add! this :folders f)
-                              (object/raise this :add f)
-                              (object/raise this :updated)))
+                              (when-not (some #{f} (:folders (-> @this)))
+                                (add! this :folders f)
+                                (object/raise this :add f)
+                                (object/raise this :updated))))
 
 (behavior ::remove-file!
                   :triggers #{:remove.file!}
