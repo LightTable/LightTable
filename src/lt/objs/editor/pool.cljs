@@ -138,7 +138,7 @@
                                                          ]})
                               (reload ed)))))))
 
-(defn warn-delete [f ed]
+(defn warn-delete [ed f]
   (active-warn ed {:header (str "File deleted: " f)
                    :body "This file seems to have been deleted and we've marked it as unsaved."
                    :buttons [{:label "Save as.."
@@ -151,7 +151,7 @@
           :reaction (fn [ws del]
                       (if-let [ed (first (by-path del))]
                         (do
-                          (warn-delete del ed)
+                          (warn-delete ed del)
                           (make-transient-dirty ed)
                           (when-let [ts (:lt.objs.tabs/tabset @ed)]
                             (object/raise ts :tab.updated)))
@@ -160,7 +160,7 @@
                                               false)
                                            (object/by-tag :editor))]
                           (doseq [ed open]
-                            (warn-delete del ed)
+                            (warn-delete ed del)
                             (make-transient-dirty ed))))))
 
 (behavior ::watched.rename
