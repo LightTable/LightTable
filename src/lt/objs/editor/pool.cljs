@@ -129,7 +129,7 @@
                         (when-let [ed (first (by-path f))]
                           (when-not (doc/check-mtime (doc/->stats f) stat)
                             (if (:dirty @ed)
-                              (active-warn ed {:header "This file has been modified."
+                              (active-warn ed {:header (str "File modified: " f)
                                                :body "This file seems to have been modified outside of Light Table. Do you want to load the latest and lose your changes?"
                                                :buttons [{:label "Reload from disk"
                                                           :action (fn []
@@ -138,8 +138,8 @@
                                                          ]})
                               (reload ed)))))))
 
-(defn warn-delete [ed]
-  (active-warn ed {:header "This file has been deleted."
+(defn warn-delete [ed f]
+  (active-warn ed {:header (str "File deleted: " f)
                    :body "This file seems to have been deleted and we've marked it as unsaved."
                    :buttons [{:label "Save as.."
                               :action (fn []
@@ -151,7 +151,7 @@
           :reaction (fn [ws del]
                       (if-let [ed (first (by-path del))]
                         (do
-                          (warn-delete ed)
+                          (warn-delete ed del)
                           (make-transient-dirty ed)
                           (when-let [ts (:lt.objs.tabs/tabset @ed)]
                             (object/raise ts :tab.updated)))
@@ -160,7 +160,7 @@
                                               false)
                                            (object/by-tag :editor))]
                           (doseq [ed open]
-                            (warn-delete ed)
+                            (warn-delete ed del)
                             (make-transient-dirty ed))))))
 
 (behavior ::watched.rename
