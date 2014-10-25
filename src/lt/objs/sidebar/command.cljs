@@ -326,8 +326,8 @@
 (behavior ::post-select-pop
           :triggers #{:selected-exec}
           :reaction (fn [this]
-                      (when (= this (:active @sidebar/rightbar))
-                        (object/raise sidebar/rightbar :close!
+                      (when (= this (:active @sidebar/right-bar))
+                        (object/raise sidebar/right-bar :close!
                                       (not (or (ctx/in? :filter-list.input)
                                                (ctx/in? :options-input)))))))
 
@@ -440,19 +440,19 @@
 (def sidebar-command (object/create ::sidebar.command))
 (ctx/in! :commandbar sidebar-command)
 
-(sidebar/add-item sidebar/rightbar sidebar-command)
+(sidebar/add-item sidebar/right-bar sidebar-command)
 
 (def command cmd/command)
 
 (defn show-and-focus [opts]
-  (object/raise sidebar/rightbar :toggle sidebar-command opts))
+  (object/raise sidebar/right-bar :toggle sidebar-command opts))
 
 (defn pre-fill [v]
   (dom/val (dom/$ :.search (object/->content sidebar-command)) v))
 
 (defn show-filled [fill opts]
   (pre-fill fill)
-  (object/raise sidebar/rightbar :toggle sidebar-command (assoc opts :soft? true))
+  (object/raise sidebar/right-bar :toggle sidebar-command (assoc opts :soft? true))
   (object/raise sidebar-command :soft-focus!))
 
 (def by-id cmd/by-id)

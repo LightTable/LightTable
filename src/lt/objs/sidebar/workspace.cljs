@@ -633,7 +633,7 @@
 
 (def sidebar-workspace (object/create ::sidebar.workspace))
 
-(sidebar/add-item sidebar/sidebar sidebar-workspace)
+(sidebar/add-item sidebar/left-bar sidebar-workspace)
 
 (cmd/command {:command :workspace.add-folder
               :desc "Workspace: add folder"
@@ -648,7 +648,7 @@
 (cmd/command {:command :workspace.show
               :desc "Workspace: Toggle workspace tree"
               :exec (fn [force?]
-                      (object/raise sidebar/sidebar :toggle sidebar-workspace {:transient? false :force? force?}))})
+                      (object/raise sidebar/left-bar :toggle sidebar-workspace {:transient? false :force? force?}))})
 
 (cmd/command {:command :workspace.rename.cancel!
               :desc "Workspace: Cancel rename"

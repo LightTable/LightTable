@@ -88,12 +88,12 @@
         (:lt.objs.style/provide-theme "xq-light" "core/css/themes/xq-light.css")
         (:lt.objs.style/set-skin "dark")
         :lt.objs.editor/init-codemirror]
-  :bottombar [:lt.objs.bottombar/item-toggled
-              :lt.objs.bottombar/height!
-              :lt.objs.bottombar/no-anim-on-drag
-              :lt.objs.bottombar/reanim-on-drop
-              :lt.objs.bottombar/show-item
-              :lt.objs.bottombar/hide-item]
+  :bottom-bar [:lt.objs.bottom-bar/item-toggled
+              :lt.objs.bottom-bar/height!
+              :lt.objs.bottom-bar/no-anim-on-drag
+              :lt.objs.bottom-bar/reanim-on-drop
+              :lt.objs.bottom-bar/show-item
+              :lt.objs.bottom-bar/hide-item]
   :browser [:lt.objs.browser/forward! :lt.objs.browser/init!
             :lt.objs.browser/destroy-on-close :lt.objs.browser/focus!
             :lt.objs.browser/url-focus!

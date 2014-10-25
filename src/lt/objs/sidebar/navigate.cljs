@@ -97,7 +97,7 @@
 (behavior ::pop-transient-on-select
                   :triggers #{:selected}
                   :reaction (fn [this]
-                              (object/raise sidebar/rightbar :close!)))
+                              (object/raise sidebar/right-bar :close!)))
 
 (behavior ::set-file-limit
           :triggers #{:object.instant}
@@ -130,19 +130,19 @@
 
 (def sidebar-navigate (object/create ::sidebar.navigate))
 
-(sidebar/add-item sidebar/rightbar sidebar-navigate)
+(sidebar/add-item sidebar/right-bar sidebar-navigate)
 
 (cmd/command {:command :navigate-workspace
               :desc "Navigate: open navigate"
               :exec (fn []
-                      (object/raise sidebar/rightbar :toggle sidebar-navigate {:transient? false})
+                      (object/raise sidebar/right-bar :toggle sidebar-navigate {:transient? false})
                       )})
 
 (cmd/command {:command :navigate-workspace-transient
               :desc "Navigate: open navigate transient"
               :hidden true
               :exec (fn []
-                      (object/raise sidebar/rightbar :toggle sidebar-navigate {:transient? true})
+                      (object/raise sidebar/right-bar :toggle sidebar-navigate {:transient? true})
                       )})
 
 (cmd/command {:command :escape-navigate

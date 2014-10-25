@@ -131,7 +131,7 @@
 (behavior ::hide-on-select
                   :triggers #{:selected}
                   :reaction (fn [this]
-                              (object/raise sidebar/rightbar :close!)))
+                              (object/raise sidebar/right-bar :close!)))
 
 (behavior ::focus!
                   :triggers #{:focus!}
@@ -154,7 +154,7 @@
 
 (def clients (object/create ::sidebar.clients))
 
-(sidebar/add-item sidebar/rightbar clients)
+(sidebar/add-item sidebar/right-bar clients)
 
 (defn add-connector [c]
   (object/update! clients [:connectors] assoc (:name c) c))
@@ -162,7 +162,7 @@
 (cmd/command {:command :show-connect
               :desc "Connect: Show connect bar"
               :exec (fn []
-                      (object/raise sidebar/rightbar :toggle clients)
+                      (object/raise sidebar/right-bar :toggle clients)
                       (object/raise clients :focus!)
                       )})
 
@@ -170,13 +170,13 @@
 (cmd/command {:command :hide-connect
               :desc "Connect: hide connect bar"
               :exec (fn []
-                      (object/raise sidebar/rightbar :close!)
+                      (object/raise sidebar/right-bar :close!)
                       )})
 
 (cmd/command {:command :show-add-connection
               :desc "Connect: Add Connection"
               :exec (fn []
-                      (object/raise sidebar/rightbar :toggle clients {:force? true
+                      (object/raise sidebar/right-bar :toggle clients {:force? true
                                                                      :transient? false})
                       (object/raise clients :selecting!)
                       )})

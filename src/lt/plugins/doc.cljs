@@ -216,7 +216,7 @@
                         ))
 
 (cmd/command {:command :docs.search.exec
-              :desc "Docs: Execute sidebar search"
+              :desc "Docs: Execute side bar search"
               :hidden true
               :exec (fn []
                       (when doc-search
@@ -227,7 +227,7 @@
               :desc "Docs: Search language docs"
               :exec (fn [force?]
                       (when doc-search
-                        (object/raise sidebar/rightbar :toggle doc-search {:force? force?})
+                        (object/raise sidebar/right-bar :toggle doc-search {:force? force?})
                         (object/raise doc-search :focus!))
                       )})
 
@@ -236,14 +236,14 @@
               :hidden true
               :exec (fn [force?]
                       (when doc-search
-                        (object/raise sidebar/rightbar :close! doc-search))
+                        (object/raise sidebar/right-bar :close! doc-search))
                       )})
 
 (behavior ::init-doc-search
           :triggers #{:init}
           :reaction (fn [this]
                       (set! doc-search (object/create ::sidebar.doc.search))
-                      (sidebar/add-item sidebar/rightbar doc-search)
+                      (sidebar/add-item sidebar/right-bar doc-search)
                       ))
 
 (def doc-search nil)
