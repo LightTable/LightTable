@@ -258,34 +258,27 @@
           :reaction (fn [this options]
                       (object/merge! this {::comment-options options})))
 
+(defn do-commenting [commenting-fn]
+  (fn []
+    (when-let [cur (last-active)]
+      (let [from (editor/->cursor cur "start")
+            to (if (editor/selection? cur)
+                 (editor/->cursor cur "end")
+                 from)
+            options (::comment-options @cur)]
+        (commenting-fn cur from to options)))))
+
 (cmd/command {:command :comment-selection
               :desc "Editor: Comment line(s)"
-              :exec (fn []
-                      (when-let [cur (last-active)]
-                        (let [cursor (editor/->cursor cur "start")]
-                          (if (editor/selection? cur)
-                            (editor/line-comment cur cursor (editor/->cursor cur "end") (::comment-options @cur))
-                            (editor/line-comment cur cursor cursor (::comment-options @cur))))))})
+              :exec (do-commenting editor/line-comment)})
 
 (cmd/command {:command :uncomment-selection
               :desc "Editor: Uncomment line(s)"
-              :exec (fn []
-                      (when-let [cur (last-active)]
-                        (let [cursor (editor/->cursor cur "start")]
-                          (if (editor/selection? cur)
-                            (editor/uncomment cur cursor (editor/->cursor cur "end"))
-                            (editor/uncomment cur cursor cursor)))))})
+              :exec (do-commenting editor/uncomment)})
 
 (cmd/command {:command :toggle-comment-selection
               :desc "Editor: Toggle comment line(s)"
-              :exec (fn []
-                      (when-let [cur (last-active)]
-                        (let [cursor (editor/->cursor cur "start")
-                              [start end] (if (editor/selection? cur)
-                                            [cursor (editor/->cursor cur "end")]
-                                            [cursor cursor])]
-                          (when-not (editor/uncomment cur start end)
-                            (editor/line-comment cur cursor (editor/->cursor cur "end") (::comment-options @cur))))))})
+              :exec (do-commenting editor/toggle-comment)})
 
 (cmd/command {:command :indent-selection
               :desc "Editor: Indent line(s)"

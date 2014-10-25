@@ -364,11 +364,12 @@
 (defn line-comment [e from to opts]
   (.lineComment (->cm-ed e) (clj->js from) (clj->js to) (clj->js opts)))
 
-(defn uncomment
-  ([e from to]
-   (uncomment e from to nil))
-  ([e from to opts]
-   (.uncomment (->cm-ed e) (clj->js from) (clj->js to) (clj->js opts))))
+(defn uncomment [e from to opts]
+  (.uncomment (->cm-ed e) (clj->js from) (clj->js to) (clj->js opts)))
+
+(defn toggle-comment [e from to opts]
+  (when-not (uncomment e from to opts)
+    (line-comment e from to opts)))
 
 (defn ->generation [e]
   (.changeGeneration (->cm-ed e)))
