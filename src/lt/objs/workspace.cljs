@@ -4,6 +4,7 @@
             [lt.objs.files :as files]
             [lt.objs.command :as cmd]
             [lt.objs.cache :as cache]
+            [lt.objs.notifos :as notifos]
             [cljs.reader :as reader]
             [lt.util.load :as load]
             [lt.util.js :refer [now]]
@@ -207,16 +208,22 @@
 (behavior ::add-file!
                   :triggers #{:add.file!}
                   :reaction (fn [this f]
-                              (add! this :files f)
-                              (object/raise this :add f)
-                              (object/raise this :updated)))
+                              (if-not (contains? (set (:files @this)) f)
+                                (do
+                                  (add! this :files f)
+                                  (object/raise this :add f)
+                                  (object/raise this :updated))
+                                (notifos/set-msg! "This file is already in your workspace." {:class "error"}))))
 
 (behavior ::add-folder!
                   :triggers #{:add.folder!}
                   :reaction (fn [this f]
-                              (add! this :folders f)
-                              (object/raise this :add f)
-                              (object/raise this :updated)))
+                              (if-not (contains? (set (:folders @this)) f)
+                                (do
+                                  (add! this :folders f)
+                                  (object/raise this :add f)
+                                  (object/raise this :updated))
+                                (notifos/set-msg! "This folder is already in your workspace." {:class "error"}))))
 
 (behavior ::remove-file!
                   :triggers #{:remove.file!}
