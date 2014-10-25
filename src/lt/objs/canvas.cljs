@@ -8,10 +8,6 @@
 (defui canvas-elem [obj]
   [:div#canvas])
 
-(defn add! [obj & [position?]]
-  (append (object/->content canvas) (object/->content obj))
-  (object/raise obj :show rep))
-
 ;;*********************************************************
 ;; Object
 ;;*********************************************************
@@ -22,6 +18,10 @@
 
 (def canvas (object/create ::canvas))
 (append ($ "#wrapper") (object/->content canvas))
+
+(defn add! [obj & [position?]]
+  (append (object/->content canvas) (object/->content obj))
+  (object/raise obj :show rep))
 
 ;;*********************************************************
 ;; Behaviors

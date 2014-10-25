@@ -135,6 +135,8 @@
   [ed obj path ldoc-options]
   (open-path* (partial doc/linked-open ed ldoc-options) obj path))
 
+(declare opener)
+
 (behavior ::existing-path-opens-linked-doc
           :triggers #{:object.instant}
           :type :user

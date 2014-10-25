@@ -74,14 +74,16 @@
     (aset cur "select" wrapped-replacement))
   cur)
 
-(defn user-behavior-completions [_ _ token]
-  (if (and token
-           (= (subs token 0 1) ":"))
-    (map #(->wrapped-behavior % #js {:text (str (:name %))}) (vals @object/behaviors))
-    (map #(if-not (:desc %)
-            (->wrapped-behavior % #js {:text (str (:name %))})
-            (->wrapped-behavior % #js {:text (:desc %)}))
-         (filter #(= (:type %) :user) (vals @object/behaviors)))))
+(defn user-behavior-completions
+  ([] (user-behavior-completions nil nil nil))
+  ([_ _ token]
+   (if (and token
+            (= (subs token 0 1) ":"))
+     (map #(->wrapped-behavior % #js {:text (str (:name %))}) (vals @object/behaviors))
+     (map #(if-not (:desc %)
+             (->wrapped-behavior % #js {:text (str (:name %))})
+             (->wrapped-behavior % #js {:text (:desc %)}))
+          (filter #(= (:type %) :user) (vals @object/behaviors))))))
 
 (def completions {:root [#js {:completion ":+"}
                          #js {:completion ":-"}]
@@ -102,6 +104,8 @@
                                                                       (:items param))))
                                      :else nil)
                                     )})
+
+(declare helper)
 
 (behavior ::behavior-hints
                   :triggers #{:hints+}

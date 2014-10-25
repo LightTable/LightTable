@@ -67,6 +67,8 @@
                          (map #(do #js {:completion (str %) :text (str %)}) (keys @object/tags)))
                   :key cmd/completions})
 
+(declare helper)
+
 (behavior ::keymap-hints
                   :triggers #{:hints+}
                   :exclusive [:lt.plugins.auto-complete/textual-hints]

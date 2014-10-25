@@ -17,13 +17,17 @@
 (defn in? [k]
   (@contexts k))
 
-(defn out! [ctxs]
-  (let [ctxs (if (coll? ctxs)
-               ctxs
-               [ctxs])]
-    (swap! contexts #(apply disj % ctxs))
-    (swap! ctx->obj #(apply dissoc % ctxs))
+(declare ctx-obj)
+
+(defn out!
+  ([ctxs]
+   (let [ctxs (if (coll? ctxs)
+                ctxs
+                [ctxs])]
+     (swap! contexts #(apply disj % ctxs))
+     (swap! ctx->obj #(apply dissoc % ctxs))
     (object/raise ctx-obj :log!)))
+   ([ctxs _] (out! ctxs)))
 
 (defn in! [ctxs & [obj]]
   (let [ctxs (if (coll? ctxs)

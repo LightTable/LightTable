@@ -24,11 +24,55 @@
                 (catch js/Error e
                   (.error js/console (str "Failed to initialize the log writer: " e)))))
 
-(.on js/process "uncaughtException" #(error %))
+(defn ->ui [c]
+  (object/->content c))
+
+(defn dom-like? [thing]
+  (or (vector? thing)
+      (.-nodeType thing)
+      (string? thing)))
+
+(declare console)
+
+(defn write [$console msg]
+  (when (> (count (dom/children $console)) (dec console-limit))
+    (dom/remove (aget (dom/children $console) 0)))
+  (when-not (bottombar/active? console)
+    (status-bar/dirty))
+  (append $console msg))
 
 (defn write-to-log [thing]
   (when core-log
     (.write core-log thing)))
+
+(defpartial ->item [l & [class]]
+  [:li {:class class} l])
+
+(defn log
+  ([l class] (log l class nil))
+  ([l class str-content]
+   (when-not (= "" l)
+     (let [$console (->ui console)]
+       (when (or (string? l) str-content) (write-to-log (if (string? l)
+                                                          l
+                                                          str-content))
+         (write $console (->item [:pre (if-not (dom-like? l)
+                                         (pr-str l)
+                                         l)] class))
+         (dom/scroll-top $console 10000000000)
+         nil)))))
+
+(defn error [e]
+  (status-bar/console-class "error")
+  (log (str (if (.-stack e)
+              (.-stack e)
+              (let [pr-e (pr-str e)]
+                (if (not= pr-e "[object Object]")
+                  pr-e
+                  (str e)))))
+       "error"))
+
+(.on js/process "uncaughtException" #(error %))
 
 (defui console-ui [this]
   [:ul.console]
@@ -61,33 +105,18 @@
 (defn inspect [thing]
   (util-inspect thing false 2))
 
-(defn dom-like? [thing]
-  (or (vector? thing)
-      (.-nodeType thing)
-      (string? thing)))
-
-(defpartial ->item [l & [class]]
-  [:li {:class class} l])
-
-(defn ->ui [c]
-  (object/->content c))
-
-(defn write [$console msg]
-  (when (> (count (dom/children $console)) (dec console-limit))
-    (dom/remove (aget (dom/children $console) 0)))
-  (when-not (bottombar/active? console)
-    (status-bar/dirty))
-  (append $console msg))
-
-(defn verbatim [thing class str-content]
-  (let [$console (->ui console)]
-    (when str-content
-      (write-to-log str-content))
-    (when class
-      (status-bar/console-class class))
-    (write $console (->item thing class))
-    (dom/scroll-top $console 10000000000)
-    nil))
+(defn verbatim
+  ([thing class]
+   (verbatim thing class nil))
+  ([thing class str-content]
+   (let [$console (->ui console)]
+     (when str-content
+       (write-to-log str-content))
+     (when class
+       (status-bar/console-class class))
+     (write $console (->item thing class))
+     (dom/scroll-top $console 10000000000)
+     nil)))
 
 (defn try-update [{:keys [content id]}]
   (when id
@@ -111,28 +140,6 @@
                                                                   (string/replace content #"^\s+" "")
                                                                   content)]]]]
                 class))))
-
-(defn log [l class str-content]
-  (when-not (= "" l)
-    (let [$console (->ui console)]
-      (when (or (string? l) str-content) (write-to-log (if (string? l)
-                                                         l
-                                                         str-content))
-        (write $console (->item [:pre (if-not (dom-like? l)
-                                        (pr-str l)
-                                        l)] class))
-        (dom/scroll-top $console 10000000000)
-        nil))))
-
-(defn error [e]
-  (status-bar/console-class "error")
-  (log (str (if (.-stack e)
-              (.-stack e)
-              (let [pr-e (pr-str e)]
-                (if (not= pr-e "[object Object]")
-                  pr-e
-                  (str e)))))
-       "error"))
 
 (defn clear []
   (dom/empty (->ui console)))

@@ -128,51 +128,6 @@
         (vals)
         (seq))))
 
-(defn install-missing [missing]
-  (let [counter (atom (count missing))
-        count-down (fn []
-                     (swap! counter dec)
-                     ;;then install the actual plugin
-                     (when (<= @counter 0)
-                       (cmd/exec! :behaviors.reload)
-                       (object/raise manager :refresh!)
-                       (notifos/set-msg! "All missing dependencies installed.")
-                       ))]
-    ;;first get and install all the deps
-    ;;count them down and then install the real plugin and reload.
-    (doseq [dep missing]
-      (discover-deps dep count-down))))
-
-(defn available-plugins []
-  (let [ds (concat (files/dirs user-plugins-dir)
-                   (files/dirs plugins-dir))
-        plugins (->> ds
-                     (map plugin-info)
-                     (filterv identity))
-        final (-> (reduce (fn [final p]
-                            (if-let [cur (get final (:name p))]
-                              ;;check if it's newer
-                              (if (deploy/is-newer? (:version cur) (:version p))
-                                (assoc! final (:name p) p)
-                                final)
-                              (assoc! final (:name p) p)))
-                          (transient {})
-                          plugins)
-                  (persistent!))
-        missing? (missing-deps final)]
-    (when missing?
-      (popup/popup! {:header "Some plugin dependencies are missing."
-                     :body [:div
-                            [:span "We found that the following plugin dependencies are missing: "]
-                             (for [{:keys [name version]} missing?]
-                               [:div name " " version " "])
-                            [:span "Would you like us to install them?"]]
-                     :buttons [{:label "Cancel"}
-                               {:label "Install all"
-                                :action (fn []
-                                          (install-missing missing?))}]}))
-    final))
-
 (defn outdated? [plugin]
   (let [cached (-> @manager :version-cache (get (:name plugin)))]
     (if cached
@@ -301,6 +256,51 @@
                                      (if-not (and data (seq data))
                                        (install-failed (or (-> plugin :name) (-> plugin :info :name)))
                                        (transitive-install plugin (EOF-read data) cb)))))
+
+(defn install-missing [missing]
+  (let [counter (atom (count missing))
+        count-down (fn []
+                     (swap! counter dec)
+                     ;;then install the actual plugin
+                     (when (<= @counter 0)
+                       (cmd/exec! :behaviors.reload)
+                       (object/raise manager :refresh!)
+                       (notifos/set-msg! "All missing dependencies installed.")
+                       ))]
+    ;;first get and install all the deps
+    ;;count them down and then install the real plugin and reload.
+    (doseq [dep missing]
+      (discover-deps dep count-down))))
+
+(defn available-plugins []
+  (let [ds (concat (files/dirs user-plugins-dir)
+                   (files/dirs plugins-dir))
+        plugins (->> ds
+                     (map plugin-info)
+                     (filterv identity))
+        final (-> (reduce (fn [final p]
+                            (if-let [cur (get final (:name p))]
+                              ;;check if it's newer
+                              (if (deploy/is-newer? (:version cur) (:version p))
+                                (assoc! final (:name p) p)
+                                final)
+                              (assoc! final (:name p) p)))
+                          (transient {})
+                          plugins)
+                  (persistent!))
+        missing? (missing-deps final)]
+    (when missing?
+      (popup/popup! {:header "Some plugin dependencies are missing."
+                     :body [:div
+                            [:span "We found that the following plugin dependencies are missing: "]
+                             (for [{:keys [name version]} missing?]
+                               [:div name " " version " "])
+                            [:span "Would you like us to install them?"]]
+                     :buttons [{:label "Cancel"}
+                               {:label "Install all"
+                                :action (fn []
+                                          (install-missing missing?))}]}))
+    final))
 
 (defn uninstall [plugin]
   (files/delete! (:dir plugin))

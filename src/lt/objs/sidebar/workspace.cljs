@@ -48,6 +48,11 @@
     (object/update! p [:files] (fn [cur] (vec (remove #{child} cur))))
     (object/update! p [:folders] (fn [cur] (vec (remove #{child} cur))))))
 
+(defn find-by-path [path]
+  (first (filter #(= (:path @%) path) (object/by-tag :tree-item))))
+
+(declare tree)
+
 (behavior ::add-ws-folder
           :triggers #{:workspace.add.folder!}
           :reaction (fn [this path]
@@ -139,9 +144,6 @@
           :triggers #{:watch-paths+}
           :reaction (fn [this cur]
                       (concat cur (:open-dirs @tree))))
-
-(defn find-by-path [path]
-  (first (filter #(= (:path @%) path) (object/by-tag :tree-item))))
 
 (behavior ::watched.delete
           :triggers #{:watched.delete}
@@ -510,6 +512,11 @@
   :click (fn []
            (object/raise this :select!)))
 
+(defui back-button [this]
+  [:h2 "Select a workspace"]
+  :click (fn []
+           (object/raise this :tree!)))
+
 (defui recents [this rs]
   [:div
    (back-button this)
@@ -517,10 +524,7 @@
     (for [r rs]
       (object/->content r))]])
 
-(defui back-button [this]
-  [:h2 "Select a workspace"]
-  :click (fn []
-           (object/raise this :tree!)))
+(declare sidebar-workspace)
 
 (behavior ::recent!
           :triggers #{:recent!}
