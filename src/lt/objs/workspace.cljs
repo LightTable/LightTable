@@ -208,7 +208,7 @@
 (behavior ::add-file!
                   :triggers #{:add.file!}
                   :reaction (fn [this f]
-                              (if-not (some #{f} (:files @this))
+                              (if-not (contains? (set (:files @this)) f)
                                 (do
                                   (add! this :files f)
                                   (object/raise this :add f)
@@ -218,7 +218,7 @@
 (behavior ::add-folder!
                   :triggers #{:add.folder!}
                   :reaction (fn [this f]
-                              (if-not (some #{f} (:folders @this))
+                              (if-not (contains? (set (:folders @this)) f)
                                 (do
                                   (add! this :folders f)
                                   (object/raise this :add f)
