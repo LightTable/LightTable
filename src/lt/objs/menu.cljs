@@ -170,6 +170,8 @@
 (behavior ::create-menu
            :triggers #{:init}
            :reaction (fn [this]
+                       (when (platform/mac?)
+                         (set! (.-menu app/win) nil))
                        (main-menu)))
 
 (behavior ::recreate-menu
@@ -189,8 +191,9 @@
 (behavior ::remove-menu-close
                   :triggers #{:closed :blur}
                   :reaction (fn [this]
-                              (when (platform/mac?)
-                                (set! (.-menu app/win) nil))))
+                               (when (platform/mac?)
+                                 (set! (.-menu app/win) nil))
+                              ))
 
 (behavior ::menu!
                   :triggers #{:menu!}
