@@ -94,6 +94,8 @@
 (defn ->cursor-str [{:keys [pos]}]
   [:span.pos (str "" (inc (:line pos)) " / " (inc (:ch pos)))])
 
+(declare status-cursor)
+
 (behavior ::update-cursor-location
                   :triggers #{:update!}
                   :reaction (fn [this pos]
@@ -156,6 +158,9 @@
                         (status-item (log this) "left")
                         ))
 
+(def status-loader (object/create ::status.loader))
+(add-status-item status-loader)
+
 (defn loader-set []
   (object/merge! status-loader {:loaders 0}))
 
@@ -166,12 +171,12 @@
   (if (> (:loaders @status-loader) 0)
     (object/update! status-loader [:loaders] dec)))
 
-(def status-loader (object/create ::status.loader))
-(add-status-item status-loader)
-
 ;;**********************************************************
 ;; console list
 ;;**********************************************************
+
+(defn toggle-class [{:keys [dirty class]}]
+  (str "console-toggle " (when class (str class " ")) (when (> dirty 0) "dirty")))
 
 (defui toggle-span [this]
   [:span {:class (bound this toggle-class)}
@@ -179,8 +184,14 @@
   :click (fn []
            (cmd/exec! :toggle-console)))
 
-(defn toggle-class [{:keys [dirty class]}]
-  (str "console-toggle " (when class (str class " ")) (when (> dirty 0) "dirty")))
+(object/object* ::status.console-toggle
+                :dirty 0
+                :tags [:status.console-toggle]
+                :init (fn [this]
+                        (status-item (toggle-span this) "")))
+
+(def console-toggle (object/create ::status.console-toggle))
+(add-status-item console-toggle)
 
 (defn dirty []
   (object/update! console-toggle [:dirty] inc))
@@ -191,12 +202,3 @@
 
 (defn console-class [class]
   (object/merge! console-toggle {:class class}))
-
-(object/object* ::status.console-toggle
-                :dirty 0
-                :tags [:status.console-toggle]
-                :init (fn [this]
-                        (status-item (toggle-span this))))
-
-(def console-toggle (object/create ::status.console-toggle))
-(add-status-item console-toggle)

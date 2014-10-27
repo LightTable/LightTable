@@ -187,14 +187,14 @@
 (defn ->stats [path]
   (-> (path->doc path) deref :mtime))
 
+(defn update-stats [path]
+  (object/merge! (get-in @manager [:files path]) {:mtime (files/stats path)}))
+
 (defn move-doc [old neue]
   (when-let [old-d (path->doc old)]
     (object/update! manager [:files] assoc neue old-d)
     (object/update! manager [:files] dissoc old)
     (update-stats neue)))
-
-(defn update-stats [path]
-  (object/merge! (get-in @manager [:files path]) {:mtime (files/stats path)}))
 
 (defn save* [path content cb]
   (files/save path content (fn [data]

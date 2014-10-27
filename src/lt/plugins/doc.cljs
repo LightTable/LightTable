@@ -215,6 +215,8 @@
                           ]]
                         ))
 
+(def doc-search nil)
+
 (cmd/command {:command :docs.search.exec
               :desc "Docs: Execute sidebar search"
               :hidden true
@@ -245,7 +247,3 @@
                       (set! doc-search (object/create ::sidebar.doc.search))
                       (sidebar/add-item sidebar/rightbar doc-search)
                       ))
-
-(def doc-search nil)
-
-

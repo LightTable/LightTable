@@ -88,12 +88,6 @@
     (reset! object/negated-tags (or (:- final) {}))
     (reset! object/tags (or (:+ final) {}))))
 
-(defn refresh-diffed [diff]
-  (->> (concat (keys (:+ diff))
-               (keys (:- diff)))
-       (mapcat object/by-tag)
-       (refresh-all)))
-
 (defn refresh-all [objs]
   (if-not (seq objs)
     (do
@@ -109,6 +103,68 @@
       (js/process.nextTick (fn []
                              (refresh-all (next objs)))))))
 
+(defn refresh-diffed [diff]
+  (->> (concat (keys (:+ diff))
+               (keys (:- diff)))
+       (mapcat object/by-tag)
+       (refresh-all)))
+
+
+(defn ->ordered-keystr [k]
+  (let [char (if (= (last k) "-")
+               "-"
+               (-> (string/split k "-") last))]
+    (str (when (str-contains? k "ctrl")
+           "ctrl-")
+         (when (str-contains? k "cmd")
+           "cmd-")
+         (when (str-contains? k "meta")
+           "meta-")
+         (when (str-contains? k "altgr")
+           "altgr-")
+         (when (str-contains? k "alt")
+           "alt-")
+         (when (str-contains? k "shift")
+           "shift-")
+         char)))
+
+
+(defn fix-key [k]
+  (let [k (string/replace k "pmeta" kb/meta)
+        keys (string/split k " ")]
+    ;;ctrl cmd alt altgr shift
+    (reduce #(str % " " %2) (map ->ordered-keystr keys))))
+
+(defn fix-key-entry [[k v]]
+  [(fix-key k) v])
+
+(defn +keys [cur m]
+  (reduce (fn [res [k v]]
+            (update-in res [k] #(into (or % {}) (map fix-key-entry v))))
+          cur
+          m))
+
+(defn -keys [cur m]
+  (reduce (fn [res [k v]]
+            (update-in res [k] #(apply dissoc % (map fix-key (if (map? v)
+                                                                (keys v)
+                                                                v)))))
+          cur
+          m))
+
+(defn key-diff [{add :+ rem :-} final]
+  (-> final
+      (-keys rem)
+      (+keys add)))
+
+(defn load-all-keys []
+  (let [final (reduce (fn [fin cur]
+                        (key-diff cur fin))
+                      {}
+                      (concat (object/raise-reduce app/app :keymap.diffs.default+ [])
+                              (object/raise-reduce app/app :keymap.diffs.plugin+ [])
+                              (object/raise-reduce app/app :keymap.diffs.user+ [])))]
+    (reset! kb/keys final)))
 
 ;;*********************************************************
 ;; Behaviors
@@ -245,54 +301,6 @@
           :reaction (fn [this]
                       (tabs/rem! this)))
 
-
-(defn ->ordered-keystr [k]
-  (let [char (if (= (last k) "-")
-               "-"
-               (-> (string/split k "-") last))]
-    (str (when (str-contains? k "ctrl")
-           "ctrl-")
-         (when (str-contains? k "cmd")
-           "cmd-")
-         (when (str-contains? k "meta")
-           "meta-")
-         (when (str-contains? k "altgr")
-           "altgr-")
-         (when (str-contains? k "alt")
-           "alt-")
-         (when (str-contains? k "shift")
-           "shift-")
-         char)))
-
-
-(defn fix-key [k]
-  (let [k (string/replace k "pmeta" kb/meta)
-        keys (string/split k " ")]
-    ;;ctrl cmd alt altgr shift
-    (reduce #(str % " " %2) (map ->ordered-keystr keys))))
-
-(defn fix-key-entry [[k v]]
-  [(fix-key k) v])
-
-(defn +keys [cur m]
-  (reduce (fn [res [k v]]
-            (update-in res [k] #(into (or % {}) (map fix-key-entry v))))
-          cur
-          m))
-
-(defn -keys [cur m]
-  (reduce (fn [res [k v]]
-            (update-in res [k] #(apply dissoc % (map fix-key (if (map? v)
-                                                                (keys v)
-                                                                v)))))
-          cur
-          m))
-
-(defn key-diff [{add :+ rem :-} final]
-  (-> final
-      (-keys rem)
-      (+keys add)))
-
 (defn parse-key-file [file final]
   (-> (files/open-sync file)
       :content
@@ -304,15 +312,6 @@
      (filter #(= (files/ext %) "keymap")
              (files/full-path-ls path))
      (map parse-key-file))))
-
-(defn load-all-keys []
-  (let [final (reduce (fn [fin cur]
-                        (key-diff cur fin))
-                      {}
-                      (concat (object/raise-reduce app/app :keymap.diffs.default+ [])
-                              (object/raise-reduce app/app :keymap.diffs.plugin+ [])
-                              (object/raise-reduce app/app :keymap.diffs.user+ [])))]
-    (reset! kb/keys final)))
 
 (behavior ::default-keymap-diffs
           :triggers #{:keymap.diffs.default+}

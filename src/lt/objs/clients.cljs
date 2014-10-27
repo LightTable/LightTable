@@ -8,12 +8,18 @@
 
 (def cs (atom {}))
 
+(defn ->id [obj]
+  (object/->id obj))
+
+(defn client! [type]
+  (let [obj (object/create ::client)]
+    (object/add-tags obj [type])
+    (swap! cs assoc (->id obj) obj)
+    obj))
+
 (defn by-id [n]
   (when n
     (@cs n)))
-
-(defn ->id [obj]
-  (object/->id obj))
 
 (defn by-name [n]
   (first (filter #(= n (:name @%)) (vals @cs))))
@@ -29,6 +35,8 @@
     (object/merge! client (merge info {:commands (set (map keyword commands))}))
     (when tags
       (object/add-tags client tags))))
+
+(declare clients)
 
 (defn handle-connection! [info]
   (if-let [client (by-id (:client-id info))]
@@ -113,20 +121,22 @@
     (= (.indexOf (string/lower-case sub) (string/lower-case root)) 0)))
 
 ;;return client based on path and type
-(defn discover* [command {:keys [path]}]
-  (let [all (filter (fn [cur]
-                      (let [{:keys [dir commands]} (if (satisfies? IDeref cur)
-                                                     @cur
-                                                     cur)]
-                        (and (if (and path dir)
-                               (subpath? dir path)
-                               true)
-                             (get commands command))))
-                    (vals @cs))
-        with-dir (filter #(@% :dir) all)]
-    (if (and path (seq with-dir))
-      with-dir
-      all)))
+(defn discover*
+  ([command] (discover* command nil))
+  ([command {:keys [path]}]
+   (let [all (filter (fn [cur]
+                       (let [{:keys [dir commands]} (if (satisfies? IDeref cur)
+                                                      @cur
+                                                      cur)]
+                         (and (if (and path dir)
+                                (subpath? dir path)
+                                true)
+                              (get commands command))))
+                     (vals @cs))
+         with-dir (filter #(@% :dir) all)]
+     (if (and path (seq with-dir))
+       with-dir
+       all))))
 
 (defn discover [command info]
   (let [[found & others :as all] (discover* command info)]
@@ -191,12 +201,6 @@
 ;;**********************************************************
 ;; individual Clients
 ;;**********************************************************
-
-(defn client! [type]
-  (let [obj (object/create ::client)]
-    (object/add-tags obj [type])
-    (swap! cs assoc (->id obj) obj)
-    obj))
 
 (defn placeholder []
   (-> (object/create ::client)

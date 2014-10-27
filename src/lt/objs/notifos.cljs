@@ -8,23 +8,13 @@
 
 (def standard-timeout 10000)
 
-(defn working [msg]
-  (when msg
-    (set-msg! msg))
-  (status-bar/loader-inc))
-
-(defn done-working
-  ([]
-   (status-bar/loader-dec))
-  ([msg]
-   (set-msg! msg)
-   (status-bar/loader-dec)))
-
 (defn msg* [m & [opts]]
   (let [m (if (string? m)
             m
             (pr-str m))]
     (object/merge! status-bar/status-loader (merge {:message m :class ""} opts))))
+
+(declare cur-timeout)
 
 (defn set-msg!
   ([msg]
@@ -37,8 +27,22 @@
    (set! cur-timeout (wait (or (:timeout opts)
                                standard-timeout) #(msg* "")))))
 
+(defn working
+  ([] (working nil))
+  ([msg]
+    (when msg
+      (set-msg! msg))
+    (status-bar/loader-inc)))
+
+(defn done-working
+  ([]
+   (status-bar/loader-dec))
+  ([msg]
+   (set-msg! msg)
+   (status-bar/loader-dec)))
+
 (cmd/command {:command :reset-working
               :desc "Status Bar: Reset working indicator"
               :exec (fn []
-                      (status-bar/loader-set 0)
+                      (status-bar/loader-set)
                       )})

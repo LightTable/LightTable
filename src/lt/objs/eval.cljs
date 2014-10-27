@@ -31,34 +31,6 @@
                (button "Cancel")
                ))
 
-(defn find-client [{:keys [origin command info key create] :as opts}]
-  (let [[result client] (clients/discover command info)
-        key (or key :default)]
-    (condp = result
-      :none (if create
-              (create opts)
-              (do
-                (notifos/done-working)
-                (object/raise evaler :no-client opts)
-                (clients/placeholder)))
-      :found client
-      :select (do
-                (object/raise evaler :select-client client (fn [client]
-                                                             (clients/swap-client! (-> @origin :client key) client)
-                                                             (object/update! origin [:client] assoc key client)))
-                (clients/placeholder))
-      :unsupported (unsupported))))
-
-(defn get-client! [{:keys [origin command key create] :as opts}]
-  (let [key (or key :default)
-        cur (-> @origin :client key)]
-    (if (and cur (clients/available? cur))
-      cur
-      (let [neue (find-client opts)]
-        (object/update! origin [:client] assoc key neue)
-        (object/raise origin :set-client neue)
-        neue))))
-
 (defn unescape-unicode [s]
   (string/replace s
                   #"\\x(..)"
@@ -148,6 +120,34 @@
     (catch :default e
       r)))
 
+(defn find-client [{:keys [origin command info key create] :as opts}]
+  (let [[result client] (clients/discover command info)
+        key (or key :default)]
+    (condp = result
+      :none (if create
+              (create opts)
+              (do
+                (notifos/done-working)
+                (object/raise evaler :no-client opts)
+                (clients/placeholder)))
+      :found client
+      :select (do
+                (object/raise evaler :select-client client (fn [client]
+                                                             (clients/swap-client! (-> @origin :client key) client)
+                                                             (object/update! origin [:client] assoc key client)))
+                (clients/placeholder))
+      :unsupported (unsupported))))
+
+(defn get-client! [{:keys [origin command key create] :as opts}]
+  (let [key (or key :default)
+        cur (-> @origin :client key)]
+    (if (and cur (clients/available? cur))
+      cur
+      (let [neue (find-client opts)]
+        (object/update! origin [:client] assoc key neue)
+        (object/raise origin :set-client neue)
+        neue))))
+
 ;;****************************************************
 ;; inline result
 ;;****************************************************
@@ -160,15 +160,17 @@
          " open"
          )))
 
-(defn truncate-result [r opts]
-  (when (string? r)
-    (let [nl (.indexOf r "\n")
-          len (if (> nl -1)
-                nl
-                (:trunc-length opts 50))]
-      (if (> (count r) len)
-        (str (subs r 0 len)  " …")
-        r))))
+(defn truncate-result
+  ([r] (truncate-result r nil))
+  ([r opts]
+   (when (string? r)
+     (let [nl (.indexOf r "\n")
+           len (if (> nl -1)
+                 nl
+                 (:trunc-length opts 50))]
+       (if (> (count r) len)
+         (str (subs r 0 len)  " …")
+         r)))))
 
 (defui ->inline-res [this info]
   (let [r (:result info)
@@ -328,6 +330,11 @@
 ;; underline result
 ;;****************************************************
 
+(defn ->spacing [text]
+  (when text
+    (-> (re-seq #"^\s+" text)
+        (first))))
+
 (defui ->underline-result [this info]
   [:div {:class (str "underline-result " (when (-> info :class) (:class info)))}
    [:span.spacer (->spacing (ed/line (:ed info) (-> info :loc :line)))]
@@ -384,11 +391,6 @@
 ;; inline exception
 ;;****************************************************
 
-(defn ->spacing [text]
-  (when text
-    (-> (re-seq #"^\s+" text)
-        (first))))
-
 (defn ->exception-class [this]
   (str "inline-exception " (when (:open this)
                              "open"
@@ -416,7 +418,7 @@
           :triggers #{:clear!}
           :reaction (fn [this]
                       (when (ed/->cm-ed (:ed @this))
-                        (ed/remove-line-widget (ed/->cm-ed (:ed @this)) (:widget @this)))i
+                        (ed/remove-line-widget (ed/->cm-ed (:ed @this)) (:widget @this)))
                       (object/raise this :clear)
                       (object/raise this :cleared)))
 

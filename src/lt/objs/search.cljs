@@ -234,11 +234,13 @@
                          [:div.searcher
                           [:p (bound this result-count)]
                           (search-box this)
-                          [:div (replace-box this) (replace-all-button)]
+                          [:div (replace-box this) (replace-all-button this)]
                           (location-box this)
                           ]
                          ]
                         ))
+
+(def searcher (object/create ::workspace-search))
 
 (cmd/command {:command :searcher.search
               :desc "Searcher: Execute search"
@@ -272,5 +274,3 @@
               :hidden true
               :exec (fn []
                       (object/raise searcher :replace!))})
-
-(def searcher (object/create ::workspace-search))

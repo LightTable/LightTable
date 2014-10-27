@@ -84,6 +84,11 @@
            ((:connect i))
            ))
 
+(defn connectors [this connectors]
+  (for [[k c] connectors]
+    (connection-type this c)
+    ))
+
 (defui connect-ui [this]
   [:div {:class (bound this connector?)
          :tabindex -1}
@@ -137,11 +142,6 @@
                   :triggers #{:focus!}
                   :reaction (fn [this]
                               (dom/focus (object/->content this))))
-
-(defn connectors [this connectors]
-  (for [[k c] connectors]
-    (connection-type this c)
-    ))
 
 (object/object* ::sidebar.clients
                 :tags #{:sidebar.clients}
