@@ -1,9 +1,5 @@
 /* structure */
 
-:root {
-  var-top-offset: 10px;
-}
-
 html { overflow:hidden; height:100vh; }
 body { position:fixed; top:0; bottom:0; left:0; right:0; font-family: "Verdana", "Courier New", "Inconsolata", monospace; font-size:10pt; overflow:hidden;}
 input { border:none; padding:5px; outline:none; border-radius:0px; font-size:10pt; }
@@ -50,7 +46,7 @@ body { -webkit-user-select: none; }
 .underline-result .spacer { display:inline-block; white-space:pre; vertical-align:top; }
 
 .dragimage { display:block; height:0; width:0; cursor:default; }
-.sortable-placeholder { box-sizing:border-box; background:var(multi); border:2px solid var(bg); border-top:none; }
+.sortable-placeholder { box-sizing:border-box; }
 
 .inspector-object h2 { cursor:default; }
 .inspector-object > h2:before { content:"▶"; margin-right:10px; font-size:8px; width:6px; display:inline-block; vertical-align:middle; box-sizing:border-box; }
@@ -61,10 +57,10 @@ body { -webkit-user-select: none; }
 .inspector-object.open > div > ul { display:inline-block; margin-left:16px; }
 .inspector-object.open .inspector-object > div > ul {margin:0;}
 
-#wrapper { position:fixed; top:var(top-offset); bottom:0px; left:0; right:0; overflow:hidden; -webkit-transition:opacity 0.2s ease-in-out 0.2s; }
-#canvas { position:fixed; top:var(top-offset); bottom:0; left:0; right:0; overflow:hidden; }
+#wrapper { position:fixed; top:10px; bottom:0px; left:0; right:0; overflow:hidden; -webkit-transition:opacity 0.2s ease-in-out 0.2s; }
+#canvas { position:fixed; top:10px; bottom:0; left:0; right:0; overflow:hidden; }
 
-#multi { z-index:20; position:fixed; left:0px; right:0px; top:var(top-offset); bottom:0px; overflow:hidden; }
+#multi { z-index:20; position:fixed; left:0px; right:0px; top:10px; bottom:0px; overflow:hidden; }
 #multi .tabsets { left:0; right:0; position:absolute; top:0; bottom:34px; max-width:100%; width:100%; overflow:hidden; white-space:nowrap; }
 #multi .tabset { box-sizing:border-box; position:relative; overflow:hidden; width:100%; height:100%; float:none; vertical-align:top; display:inline-block; white-space:normal; }
 #multi .list { display:block; background:transparent; overflow-y:hidden; overflow-x:hidden; margin:0 8px; z-index:10000000; }
@@ -163,12 +159,12 @@ body { -webkit-user-select: none; }
 #version-info .button { padding:8px 10px; cursor:pointer; border-radius:3px; position:absolute; bottom:10px; box-sizing:border-box; right:30px; left:20px; }
 #version-info .CodeMirror { width:73%; height:100%; float:left; display:inline; padding-left:10px; }
 
-#right-bar { background:transparent; position:fixed; top:var(top-offset); right:0; z-index:10000; height:100%; box-sizing:border-box; }
+#right-bar { background:transparent; position:fixed; top:10px; right:0; z-index:10000; height:100%; box-sizing:border-box; }
 #right-bar .content { height:100%; overflow:hidden; padding:10px; box-sizing:border-box;}
 #right-bar .content > * { padding:0px 0px;  box-sizing:border-box; height:100%; }
 #right-bar .vertical-grip { left:-4px; }
 
-#left-bar { position:fixed; top:var(top-offset); left:0; bottom:0; z-index:1000000; overflow:hidden; }
+#left-bar { position:fixed; top:10px; left:0; bottom:0; z-index:1000000; overflow:hidden; }
 #left-bar .content { height:100%; overflow:hidden; padding:4px 5px; padding-bottom:10px; box-sizing:border-box;}
 #left-bar .content > * { padding:0px 0px;  box-sizing:border-box; }
 #left-bar .vertical-grip { right:-4px; pointer-events:auto; }
