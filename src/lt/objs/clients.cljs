@@ -24,11 +24,6 @@
 (defn by-name [n]
   (first (filter #(= n (:name @%)) (vals @cs))))
 
-(defn ->name [client]
-  (if (map? client)
-    (:name client)
-    client))
-
 (defn merge-info [client info]
   (let [{:keys [commands type tags]} info
         info (dissoc info :tags)]
@@ -49,7 +44,7 @@
       (handle-connection! (assoc info :client-id (->id c))))))
 
 (defn rem! [client]
-  (let [id (by-id (->id client))]
+  (let [cname (:name @client)]
     (swap! cs dissoc (->id client))
     (object/raise client :disconnect)
     (object/destroy! client)
