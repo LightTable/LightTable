@@ -12,11 +12,18 @@
 {:+ {
      ;; The app tag is kind of like global scope. You assign behaviors that affect
      ;; all of Light Table here
-     :app [(:lt.objs.style/set-skin "dark")]
-
+     :app [(:lt.objs.style/set-skin "dark")
+           ;; if you find the fonts are too small everywhere (for example, on a HiDPI screen), 
+           ;; try boosting the zoom level
+           ;; (:lt.objs.app/set-default-zoom-level 2)
+     ]
+      
      ;; The editor tag is applied to all editors
      :editor [:lt.objs.editor/no-wrap
-              (:lt.objs.style/set-theme "default")]
+              (:lt.objs.style/set-theme "default")
+              ;; if you want to customize font size
+              ;;(:lt.objs.style/font-settings   "DejaVu Sans Mono" 16 1.1)
+     ]
 
      ;; Here we can add behaviors to just clojure editors
      :editor.clojure [(:lt.plugins.clojure/print-length 1000)]}
