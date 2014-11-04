@@ -128,12 +128,6 @@
 (defn set-val [doc v]
   (.setValue (->cm-doc doc) v))
 
-(defn replace
-  ([d from v]
-   (.replaceRange (->cm-doc d) v (clj->js from)))
-  ([d from to v]
-   (.replaceRange (->cm-doc d) v (clj->js from) (clj->js to))))
-
 
 ;;***************************************************
 ;; Manager

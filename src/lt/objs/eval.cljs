@@ -433,8 +433,7 @@
                 :triggers #{:click :double-click :clear!}
                 :tags #{:inline :inline.exception}
                 :init (fn [this info]
-                        (if-not (-> info :loc :line)
-                          (notifos/set-msg! (str ex) {:class "error"})
+                        (if (-> info :loc :line)
                           (let [content (->inline-exception this info)]
                             (object/merge! this (assoc info
                                                   :widget (ed/line-widget (ed/->cm-ed (:ed info))
