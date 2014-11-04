@@ -124,7 +124,7 @@
 (defn capture-up [key char ev]
   (or (@key-map char) (@key-map (->keystr key ev))))
 
-(def meta (if (platform/mac?)
+(def meta-key (if (platform/mac?)
             "cmd"
             "ctrl"))
 

@@ -89,24 +89,6 @@
                   :else x))]
         (f x)))))
 
-(defn clj->js
-   "Recursively transforms ClojureScript values to JavaScript.
-sets/vectors/lists become Arrays, Keywords and Symbol become Strings,
-Maps become Objects. Arbitrary keys are encoded to by key->js."
-   [x]
-   (when-not (nil? x)
-     (if (satisfies? IEncodeJS x)
-       (-clj->js x)
-       (cond
-         (keyword? x) (name x)
-         (symbol? x) (str x)
-         (map? x) (let [m (js-obj)]
-                    (doseq [[k v] x]
-                      (aset m (key->js k) (clj->js v)))
-                    m)
-         (coll? x) (apply array (map clj->js x))
-         :else x))))
-
 (defn str-contains? [str x]
   (> (.indexOf str x) -1))
 

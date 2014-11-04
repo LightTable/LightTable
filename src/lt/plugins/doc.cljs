@@ -156,7 +156,7 @@
 (behavior ::clear!
           :triggers #{:clear!}
           :reaction (fn [this]
-                      (dom/empty (dom/$ :.results (object/->content this)))
+                      (dom/empty! (dom/$ :.results (object/->content this)))
                       (object/merge! this {:results #{}})))
 
 (behavior ::no-client
