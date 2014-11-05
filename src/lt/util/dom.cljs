@@ -102,7 +102,7 @@
   (when-let [p (parent elem)]
     (.removeChild p elem)))
 
-(defn empty! [elem]
+(defn empty [elem]
   (set! (.-innerHTML elem) ""))
 
 (defn val [elem & [v]]

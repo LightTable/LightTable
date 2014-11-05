@@ -24,6 +24,11 @@
 (defn by-name [n]
   (first (filter #(= n (:name @%)) (vals @cs))))
 
+(defn ->name [client]
+  (if (map? client)
+    (:name client)
+    client))
+
 (defn merge-info [client info]
   (let [{:keys [commands type tags]} info
         info (dissoc info :tags)]

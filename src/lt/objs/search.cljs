@@ -114,7 +114,7 @@
           :triggers #{:clear!}
           :reaction (fn [this]
                       (object/merge! this {:timeout nil :results (array) :result-count 0 ::time nil ::filesSearched nil :position [0 -1]})
-                      (dom/empty! (->res this))))
+                      (dom/empty (->res this))))
 
 (behavior ::search!
           :triggers #{:search!}
@@ -149,7 +149,7 @@
                       (if (:replace? info)
                         (do
                           (notifos/done-working (str "Replaced " (:result-count @this) " results in " (/ (:time info) 1000) "s." ))
-                          (dom/empty! (->res this)))
+                          (dom/empty (->res this)))
                         (notifos/done-working (str "Found " (:result-count @this) " results searching " (:total info) " files in " (/ (:time info) 1000) "s." )))))
 
 (behavior ::next!

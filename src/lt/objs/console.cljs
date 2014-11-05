@@ -142,7 +142,7 @@
                 class))))
 
 (defn clear []
-  (dom/empty! (->ui console)))
+  (dom/empty (->ui console)))
 
 (object/object* ::sidebar.console
                 :tags #{:console}

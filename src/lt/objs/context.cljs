@@ -49,6 +49,10 @@
 (defn current []
   @contexts)
 
+(defn group! [ctx group]
+  (swap! ctx->group assoc ctx group)
+  (swap! group->ctx update-in [group] conj ctx))
+
 (defn ->obj [ctx]
   (@ctx->obj ctx))
 

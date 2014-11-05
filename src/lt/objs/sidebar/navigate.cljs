@@ -19,6 +19,11 @@
 (defn file-filters [f]
   (re-seq files/ignore-pattern f))
 
+(defn populate [ws]
+  (let [files (reduce grab-files [] (:folders ws))
+        fs (map #(do {:full % :rel (files/basename %)}) (:files ws))]
+    (vec (filter #(files/file? (:full %)) (remove #(-> % :rel file-filters) (concat files fs))))))
+
 (def populate-bg (background (fn [obj-id {:keys [lim pattern ws]}]
                                (let [fs (js/require "fs")
                                      fpath (js/require "path")

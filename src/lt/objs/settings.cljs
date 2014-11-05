@@ -130,7 +130,7 @@
 
 
 (defn fix-key [k]
-  (let [k (string/replace k "pmeta" kb/meta-key)
+  (let [k (string/replace k "pmeta" kb/meta)
         keys (string/split k " ")]
     ;;ctrl cmd alt altgr shift
     (reduce #(str % " " %2) (map ->ordered-keystr keys))))

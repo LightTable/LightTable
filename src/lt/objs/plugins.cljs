@@ -473,7 +473,7 @@
           :desc "Plugin Manager: render plugin results"
           :reaction (fn [this plugins]
                       (let [ul (dom/$ :.server-plugins (object/->content this))]
-                        (dom/empty! ul)
+                        (dom/empty ul)
                         (->> (remove #(installed? (-> % :info :name)) plugins)
                              (map server-plugin-ui)
                              (dom/fragment)
@@ -519,7 +519,7 @@
           :reaction (fn [this plugins]
                       (object/merge! app/app {::plugins (available-plugins)})
                       (let [ul (dom/$ :.plugins (object/->content this))]
-                        (dom/empty! ul)
+                        (dom/empty ul)
                         (dom/append ul (dom/fragment (map installed-plugin-ui (->> @app/app ::plugins vals (sort-by #(.toUpperCase (:name %))))))))))
 
 (behavior ::on-close
