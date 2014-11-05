@@ -31,6 +31,7 @@
                           "}" [(:editor.close-pair "}")]
                           "backspace" [:editor.backspace-pair
                                        :editor.backspace-indent]}
+     :editor.keys.hinting.active {"enter" [:passthrough]}
      :tabs {"pmeta-w" [:tabs.close]
             "pmeta-shift-[" [:tabs.prev]
             "pmeta-shift-]" [:tabs.next]

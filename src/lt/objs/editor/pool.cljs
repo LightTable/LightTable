@@ -68,6 +68,17 @@
 
 (def pool (object/create ::pool))
 
+(defn last-active []
+  (let [l (:last @pool)]
+    (when (and l @l)
+      l)))
+
+(defn focus-last []
+  (when-let [ed (last-active)]
+    (when-let [ed (:ed @ed)]
+      (dom/focus js/document.body)
+      (editor/focus ed))))
+
 (behavior ::track-active
           :triggers #{:active}
           :reaction (fn [this]
@@ -129,7 +140,7 @@
                         (when-let [ed (first (by-path f))]
                           (when-not (doc/check-mtime (doc/->stats f) stat)
                             (if (:dirty @ed)
-                              (active-warn ed {:header "This file has been modified."
+                              (active-warn ed {:header (str "File modified: " f)
                                                :body "This file seems to have been modified outside of Light Table. Do you want to load the latest and lose your changes?"
                                                :buttons [{:label "Reload from disk"
                                                           :action (fn []
@@ -138,20 +149,31 @@
                                                          ]})
                               (reload ed)))))))
 
-(defn warn-delete [ed]
-  (active-warn ed {:header "This file has been deleted."
+(defn warn-delete [ed f]
+  (active-warn ed {:header (str "File deleted: " f)
                    :body "This file seems to have been deleted and we've marked it as unsaved."
                    :buttons [{:label "Save as.."
                               :action (fn []
                                         (object/raise ed :save))}
                              {:label "ok"}]}))
 
+(defn set-syntax [ed new-syn]
+  (let [prev-info (-> @ed :info)]
+    (when prev-info
+      (object/remove-tags ed (:tags prev-info)))
+    (object/update! ed [:info] merge (dissoc new-syn :name))
+    (editor/set-mode ed (:mime new-syn))
+    (object/add-tags ed (:tags new-syn))))
+
+(defn set-syntax-by-path [ed path]
+  (set-syntax ed (files/path->type path)))
+
 (behavior ::watched.delete
           :triggers #{:watched.delete}
           :reaction (fn [ws del]
                       (if-let [ed (first (by-path del))]
                         (do
-                          (warn-delete ed)
+                          (warn-delete ed del)
                           (make-transient-dirty ed)
                           (when-let [ts (:lt.objs.tabs/tabset @ed)]
                             (object/raise ts :tab.updated)))
@@ -160,7 +182,7 @@
                                               false)
                                            (object/by-tag :editor))]
                           (doseq [ed open]
-                            (warn-delete ed)
+                            (warn-delete ed del)
                             (make-transient-dirty ed))))))
 
 (behavior ::watched.rename
@@ -181,17 +203,6 @@
                             (doc/move-doc old neue-path)
                             )))))
 
-(defn last-active []
-  (let [l (:last @pool)]
-    (when (and l @l)
-      l)))
-
-(defn focus-last []
-  (when-let [ed (last-active)]
-    (when-let [ed (:ed @ed)]
-      (dom/focus js/document.body)
-      (editor/focus ed))))
-
 (defn create [info]
   (let [ed (object/create :lt.objs.editor/editor info)]
     (object/add-tags ed (:tags info []))
@@ -211,17 +222,6 @@
                                                 (sort-by :name (-> @files/files-obj :types vals)))
                                        :key :name
                                        :placeholder "Syntax"}))
-
-(defn set-syntax [ed new-syn]
-  (let [prev-info (-> @ed :info)]
-    (when prev-info
-      (object/remove-tags ed (:tags prev-info)))
-    (object/update! ed [:info] merge (dissoc new-syn :name))
-    (editor/set-mode ed (:mime new-syn))
-    (object/add-tags ed (:tags new-syn))))
-
-(defn set-syntax-by-path [ed path]
-  (set-syntax ed (files/path->type path)))
 
 (behavior ::set-syntax
           :triggers #{:select}

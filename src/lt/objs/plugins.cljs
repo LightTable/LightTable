@@ -84,12 +84,12 @@
 ;; Plugin reading
 ;;*********************************************************
 
-(defn validate [plugin]
+(defn validate [plugin filename]
   (let [valid? (every? plugin [:name :author :behaviors :desc])]
     (if-not valid?
       (do
-        (console/error (str "Invalid plugin.json file: " (:dir plugin) "/plugin.json \nPlugins
-                            must include values for name, version, author, behaviors, and desc."))
+        (console/error (str "Invalid " filename " file: " (:dir plugin) "/" filename "\nPlugins "
+                            "must include values for name, version, author, behaviors, and desc."))
         nil)
       plugin)))
 
@@ -97,14 +97,14 @@
   (when-let [content (files/open-sync (files/join dir "plugin.edn"))]
     (-> (EOF-read (:content content))
         (assoc :dir dir)
-        (validate))))
+        (validate "plugin.edn"))))
 
 (defn plugin-json [dir]
   (when-let [content (files/open-sync (files/join dir "plugin.json"))]
     (-> (js/JSON.parse (:content content))
         (js->clj :keywordize-keys true)
         (assoc :dir dir)
-        (validate))))
+        (validate "plugin.json"))))
 
 (defn plugin-info [dir]
   (or (plugin-json dir) (plugin-edn dir)))
@@ -127,53 +127,6 @@
         (persistent!)
         (vals)
         (seq))))
-
-(defn install-missing [missing]
-  (let [counter (atom (count missing))
-        count-down (fn []
-                     (swap! counter dec)
-                     ;;then install the actual plugin
-                     (when (<= @counter 0)
-                       (cmd/exec! :behaviors.reload)
-                       (object/raise manager :refresh!)
-                       (notifos/set-msg! "All missing dependencies installed.")
-                       ))]
-    ;;first get and install all the deps
-    ;;count them down and then install the real plugin and reload.
-    (doseq [dep missing]
-      (discover-deps dep count-down))))
-
-(defn available-plugins
-  [& {:keys [ignore-missing]}]
-  (let [ds (concat (files/dirs user-plugins-dir)
-                   (files/dirs plugins-dir)
-                   [settings/user-plugin-dir])
-        plugins (->> ds
-                     (map plugin-info)
-                     (filterv identity))
-        final (-> (reduce (fn [final p]
-                            (if-let [cur (get final (:name p))]
-                              ;;check if it's newer
-                              (if (deploy/is-newer? (:version cur) (:version p))
-                                (assoc! final (:name p) p)
-                                final)
-                              (assoc! final (:name p) p)))
-                          (transient {})
-                          plugins)
-                  (persistent!))
-        missing? (missing-deps final)]
-    (when (and missing? (not ignore-missing))
-      (popup/popup! {:header "Some plugin dependencies are missing."
-                     :body [:div
-                            [:span "We found that the following plugin dependencies are missing: "]
-                            (for [{:keys [name version]} missing?]
-                              [:div name " " version " "])
-                            [:span "Would you like us to install them?"]]
-                     :buttons [{:label "Cancel"}
-                               {:label "Install all"
-                                :action (fn []
-                                          (install-missing missing?))}]}))
-    final))
 
 (defn outdated? [plugin]
   (let [cached (-> @manager :version-cache (get (:name plugin)))]
@@ -304,6 +257,53 @@
                                        (install-failed (or (-> plugin :name) (-> plugin :info :name)))
                                        (transitive-install plugin (EOF-read data) cb)))))
 
+(defn install-missing [missing]
+  (let [counter (atom (count missing))
+        count-down (fn []
+                     (swap! counter dec)
+                     ;;then install the actual plugin
+                     (when (<= @counter 0)
+                       (cmd/exec! :behaviors.reload)
+                       (object/raise manager :refresh!)
+                       (notifos/set-msg! "All missing dependencies installed.")
+                       ))]
+    ;;first get and install all the deps
+    ;;count them down and then install the real plugin and reload.
+    (doseq [dep missing]
+      (discover-deps dep count-down))))
+
+(defn available-plugins
+  [& {:keys [ignore-missing]}]
+  (let [ds (concat (files/dirs user-plugins-dir)
+                   (files/dirs plugins-dir)
+                   [settings/user-plugin-dir])
+        plugins (->> ds
+                     (map plugin-info)
+                     (filterv identity))
+        final (-> (reduce (fn [final p]
+                            (if-let [cur (get final (:name p))]
+                              ;;check if it's newer
+                              (if (deploy/is-newer? (:version cur) (:version p))
+                                (assoc! final (:name p) p)
+                                final)
+                              (assoc! final (:name p) p)))
+                          (transient {})
+                          plugins)
+                  (persistent!))
+        missing? (missing-deps final)]
+    (when (and missing? (not ignore-missing))
+      (popup/popup! {:header "Some plugin dependencies are missing."
+                     :body [:div
+                            [:span "We found that the following plugin dependencies are missing: "]
+                            (for [{:keys [name version]} missing?]
+                              [:div name " " version " "])
+                            [:span "Would you like us to install them?"]]
+                     :buttons [{:label "Cancel"}
+                               {:label "Install all"
+                                :action (fn []
+                                          (install-missing missing?))}]}))
+    final))
+
 (defn uninstall [plugin]
   (files/delete! (:dir plugin))
   (object/raise manager :refresh!))
@@ -324,7 +324,7 @@
         p (popup/popup! {:header "Submit a plugin to the central repository"
                          :body [:div
                                 [:p "You can submit a github url to add a plugin to the central repository.
-                                 All plugin repos must have at least one tag in version format, e.g. 0.1.2 and must have a plugin.json
+                                 All plugin repos must have at least one tag in version format X.X.X , e.g. 0.1.2 and must have a plugin.json or plugin.edn
                                  with name, version, desc, and behaviors keys. To refresh the available versions, just resubmit the plugin."]
                                 [:label "Github URL for plugin: "]
                                 input

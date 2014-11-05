@@ -10,20 +10,17 @@
 
 (def gui (js/require "nw.gui"))
 
-(defn create-menu [type]
-  (let [m (.-Menu gui)]
-    (if type
-      (m. (js-obj "type" type))
-      (m.))))
+(defn create-menu
+  ([] (create-menu nil))
+  ([type]
+   (let [m (.-Menu gui)]
+     (if type
+       (m. (js-obj "type" type))
+       (m.)))))
 
 (def menu-instance (create-menu))
 
-(defn submenu [items]
-  (let [menu (create-menu nil)]
-    (doseq [i items
-            :when i]
-      (.append menu (menu-item i)))
-    menu))
+(declare submenu)
 
 (defn menu-item [opts]
   (let [mi (.-MenuItem gui)
@@ -41,6 +38,13 @@
                                         (.error js/console e)))))
                opts)]
     (mi. (clj->js opts))))
+
+(defn submenu [items]
+  (let [menu (create-menu)]
+    (doseq [i items
+            :when i]
+      (.append menu (menu-item i)))
+    menu))
 
 (defn clear! [menu]
   (let [m (or menu menu-instance)]
@@ -100,7 +104,7 @@
     {:label label
      :click (fn [] (cmd/exec! cmd))}
     opts
-    (command->menu-binding cmd opts))))
+    (command->menu-binding cmd))))
 
 
 (defn main-menu []
@@ -166,6 +170,8 @@
 (behavior ::create-menu
            :triggers #{:init}
            :reaction (fn [this]
+                       (when (platform/mac?)
+                         (set! (.-menu app/win) nil))
                        (main-menu)))
 
 (behavior ::recreate-menu
@@ -185,8 +191,9 @@
 (behavior ::remove-menu-close
                   :triggers #{:closed :blur}
                   :reaction (fn [this]
-                              (when (platform/mac?)
-                                (set! (.-menu app/win) nil))))
+                               (when (platform/mac?)
+                                 (set! (.-menu app/win) nil))
+                              ))
 
 (behavior ::menu!
                   :triggers #{:menu!}

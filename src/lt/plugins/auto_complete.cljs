@@ -25,6 +25,9 @@
 (defn current [s]
   (.current s))
 
+(defn peek* [s]
+  (.peek s))
+
 (defn skip-space [s]
   (when (and (peek* s) (re-seq #"\s" (peek* s)))
     (.eatSpace s)
@@ -32,9 +35,6 @@
 
 (defn eat-while [s r]
   (.eatWhile s r))
-
-(defn peek* [s]
-  (.peek s))
 
 (defn string->tokens [str pattern]
   (let [s (stream str)
@@ -51,6 +51,10 @@
           (advance s)))
       (skip-space s))
     (into-array (map #(do #js {:completion %}) (js/Object.keys res)))))
+
+(defn get-pattern [ed]
+  (let [mode (editor/inner-mode ed)]
+    (or (:hint-pattern @ed) (aget mode "hint-pattern") default-pattern)))
 
 (defn get-token [ed pos]
   (let [line (editor/line ed (:line pos))
@@ -122,10 +126,6 @@
 
 (def default-pattern #"[\w_$]")
 
-(defn get-pattern [ed]
-  (let [mode (editor/inner-mode ed)]
-    (or (:hint-pattern @ed) (aget mode "hint-pattern") default-pattern)))
-
 (defn async-hints [this]
   (when @this
     (w this {:string (editor/->val this)
@@ -155,6 +155,9 @@
                                                    (object/raise-reduce cur :hints+ []))))))
                                    :key text|completion})
                 (object/add-tags [:hinter])))
+
+(defn on-line-change [line ch]
+  (object/raise hinter :line-change line ch))
 
 (behavior ::textual-hints
           :triggers #{:hints+}
@@ -216,9 +219,6 @@
                                   (ctx/in! [:editor.keys.hinting.active] (:ed @hinter))))
                               (object/merge! hinter {:token token})))))))
 
-(defn on-line-change [line ch]
-  (object/raise hinter :line-change line ch))
-
 (behavior ::async-hint-tokens
           :triggers #{:hint-tokens}
           :reaction (fn [this tokens]
@@ -233,28 +233,30 @@
                         (async-hints this))
                       ))
 
-(defn start-hinting [this opts]
-  (let [pos (editor/->cursor this)
-        token (get-token this pos)
-        line (editor/line-handle this (:line pos))
-        elem (object/->content hinter)]
-    (ctx/in! [:editor.keys.hinting.active] this)
-    (object/merge! hinter {:token token
-                           :starting-token token
-                           :ed this
-                           :active true
-                           :line line})
-    (object/raise hinter :change! (:string token))
-    (object/raise hinter :active)
-    (let [count (count (:cur @hinter))]
-      (cond
-       (= 0 count) (ctx/out! [:editor.keys.hinting.active :filter-list.input])
-       (and (= 1 count)
-            (:select-single opts)) (object/raise hinter :select! 0)
-       :else (do
-               (js/CodeMirror.on line "change" on-line-change)
-               (dom/append (dom/$ :body) elem)
-               (js/CodeMirror.positionHint (editor/->cm-ed this) elem (:start token)))))))
+(defn start-hinting
+  ([this] (start-hinting this nil))
+  ([this opts]
+   (let [pos (editor/->cursor this)
+         token (get-token this pos)
+         line (editor/line-handle this (:line pos))
+         elem (object/->content hinter)]
+     (ctx/in! [:editor.keys.hinting.active] this)
+     (object/merge! hinter {:token token
+                            :starting-token token
+                            :ed this
+                            :active true
+                            :line line})
+     (object/raise hinter :change! (:string token))
+     (object/raise hinter :active)
+     (let [count (count (:cur @hinter))]
+       (cond
+        (= 0 count) (ctx/out! [:editor.keys.hinting.active :filter-list.input])
+        (and (= 1 count)
+             (:select-single opts)) (object/raise hinter :select! 0)
+        :else (do
+                (js/CodeMirror.on line "change" on-line-change)
+                (dom/append (dom/$ :body) elem)
+                (js/CodeMirror.positionHint (editor/->cm-ed this) elem (:start token))))))))
 
 (behavior ::show-hint
           :triggers #{:hint}

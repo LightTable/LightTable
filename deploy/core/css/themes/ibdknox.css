@@ -1,9 +1,9 @@
 #multi.theme-ibdknox .content { background: #202020; }
 #multi.theme-ibdknox .list .active, #multi.theme-ibdknox .list li:hover { background:#202020; color:#dfe1e8; }
 #multi.theme-ibdknox .list .dirty { color:#C7E6FF; }
-#multi.theme-ibdknox .tabset .list .active { color:var(placeholder-fg); }
-#multi.theme-ibdknox .tabset.active .list .active { color:var(highlight-fg); }
-#multi.theme-ibdknox .tabset.active .list .dirty { color:var(accent-foreground); }
+#multi.theme-ibdknox .tabset .list .active { color:#aaa; }
+#multi.theme-ibdknox .tabset.active .list .active { color:#f4f4f4; }
+#multi.theme-ibdknox .tabset.active .list .dirty { color:#C7E6FF; }
 
 .cm-s-ibdknox { background: #202020; color:#ccc; }
 
@@ -41,13 +41,24 @@
 .cm-s-ibdknox span.CodeMirror-searching { background: #aaa; color:black; }
 .cm-s-ibdknox span.CodeMirror-searching-active { background: #afa; color:black; }
 
+.cm-s-ibdknox span.cm-symbol-ruleName, span.cm-operator-rule { color: #9cc; }
+.cm-s-ibdknox span.cm-field { color: #FF8AB0; }
+.cm-s-ibdknox span.cm-aliased-field { color: #79a; }
+.cm-s-ibdknox span.cm-assigned-field { color: #79a; }
+.cm-s-ibdknox span.cm-symbol-variable { color: #FF8AB0; }
+.cm-s-ibdknox span.cm-symbol-alias { color: #FF8AB0; }
+.cm-s-ibdknox span.cm-symbol-table { color: #add; }
+.cm-s-ibdknox span.cm-function { color: #79a; }
+.cm-s-ibdknox span.cm-number { color: #79a; }
+
+
 .cm-s-ibdknox .CodeMirror-selected { background: #555; }
 .cm-s-ibdknox .CodeMirror-focused .CodeMirror-selected { background: #444; }
 
 .cm-s-ibdknox span.cm-SUBST { color:#FF1F69; }
 
 .cm-s-ibdknox .CodeMirror-activeline { background:#343d46; }
-.cm-s-ibdknox .CodeMirror-activeline .CodeMirror-linenumber { background:#444d56; color:var(blinding-fg); }
+.cm-s-ibdknox .CodeMirror-activeline .CodeMirror-linenumber { background:#444d56; color:#fff; }
 .cm-s-ibdknox span.CodeMirror-matchingbracket {box-sizing:border-box; background:transparent; border-bottom:1px solid #3FF; font-weight:normal;}
 .cm-s-ibdknox span.CodeMirror-nonmatchingbracket {color: #F33; border-bottom:1px solid #F33; background:none;}
 
@@ -59,4 +70,4 @@
 .cm-s-ibdknox.CodeMirror div.CodeMirror-secondarycursor { border-left: 1px solid silver; }
 .cm-s-ibdknox.CodeMirror.cm-keymap-fat-cursor div.CodeMirror-cursor { width: auto; border: none !important; background: #80838a; z-index:0;}
 
-.cm-s-ibdknox .CodeMirror-gutters { background: var(multi); border-right:0px solid #444; }
+.cm-s-ibdknox .CodeMirror-gutters { background: #202020; border-right:0px solid #444; }

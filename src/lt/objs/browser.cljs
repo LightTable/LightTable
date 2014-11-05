@@ -35,37 +35,6 @@
 (defn add-util [nme fn]
   (aset utils (name nme) fn))
 
-(defui url-bar [this]
-  [:input.url-bar {:type "text" :placeholder "url" :value (bound this :urlvalue)}]
-  :focus (fn []
-           (ctx/in! :browser.url-bar this)
-           (object/raise this :active))
-  :blur (fn []
-          (object/raise this :inactive)
-          (ctx/out! :browser.url-bar)))
-
-(defui backward [this]
-  [:button {:value "<"} "<"]
-  :click (fn []
-           (object/raise this :back!)))
-
-(defui forward [this]
-  [:button {:value ">"} ">"]
-  :click (fn []
-           (object/raise this :forward!)))
-
-(defui refresh [this]
-  [:button {:value "re"} "↺"]
-  :click (fn []
-           (object/raise this :refresh!)))
-
-(defui iframe [this]
-  [:iframe {:src (bound (subatom this :url)) :id (browser-id this) :nwfaketop "true" :nwdisable "true"}]
-  :focus (fn []
-           (object/raise this :active))
-  :blur (fn []
-          (object/raise this :inactive)))
-
 (defn browser-id [this]
   (str "browser" (object/->id this)))
 
@@ -96,6 +65,37 @@
     (tabs/add! browser)
     (tabs/active! browser)
     browser))
+
+(defui url-bar [this]
+  [:input.url-bar {:type "text" :placeholder "url" :value (bound this :urlvalue)}]
+  :focus (fn []
+           (ctx/in! :browser.url-bar this)
+           (object/raise this :active))
+  :blur (fn []
+          (object/raise this :inactive)
+          (ctx/out! :browser.url-bar)))
+
+(defui backward [this]
+  [:button {:value "<"} "<"]
+  :click (fn []
+           (object/raise this :back!)))
+
+(defui forward [this]
+  [:button {:value ">"} ">"]
+  :click (fn []
+           (object/raise this :forward!)))
+
+(defui refresh [this]
+  [:button {:value "re"} "↺"]
+  :click (fn []
+           (object/raise this :refresh!)))
+
+(defui iframe [this]
+  [:iframe {:src (bound (subatom this :url)) :id (browser-id this) :nwfaketop "true" :nwdisable "true"}]
+  :focus (fn []
+           (object/raise this :active))
+  :blur (fn []
+          (object/raise this :inactive)))
 
 ;;*********************************************************
 ;; Object

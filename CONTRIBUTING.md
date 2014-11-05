@@ -1,6 +1,6 @@
 #Contributing
 
-Like with Clojure and most other big OSS projects, we have a [Contributor's Agreement](https://docs.google.com/a/kodowa.com/forms/d/1ME_PT6qLKUcALUEz1h1yerLF7vP_Rnohpb9RvMLDALg/viewform) that you have to agree to before we can merge. It's a simple adaptation of Twitter's own Contributor's Agreement and just says that by signing this you can't take the code back from us or sue us into oblivion for using it later.
+We'd love to have your contribution. Like with Clojure and other big OSS projects, we do require you to agree to the [Contributor's Agreement](https://docs.google.com/a/kodowa.com/forms/d/1ME_PT6qLKUcALUEz1h1yerLF7vP_Rnohpb9RvMLDALg/viewform). It's as easy as a CLA can be; it's just a form that instantly enables you to contribute. Also, if your pull request is going to require some effort, please discuss it with us first. We want your hard work to count.
 
 #Plugins
 
