@@ -1,5 +1,5 @@
 (ns lt.util.cljs
-  (:refer-clojure :exclude [js->clj])
+  (:refer-clojure :exclude [js->clj clj->js])
   (:require [clojure.string :as string]))
 
 (set! *print-fn* (fn [x]

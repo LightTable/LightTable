@@ -1,5 +1,5 @@
 (ns lt.objs.keyboard
-  (:refer-clojure :exclude [keys])
+  (:refer-clojure :exclude [keys meta])
   (:require [clojure.string :as string]
             [lt.object :as object]
             [lt.objs.app :as app]
