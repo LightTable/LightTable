@@ -1,5 +1,5 @@
 (ns lt.util.dom
-  (:refer-clojure :exclude [parents remove next val]))
+  (:refer-clojure :exclude [parents remove next val empty]))
 
 (defn lazy-nl-via-item
   ([nl] (lazy-nl-via-item nl 0))
