@@ -21,3 +21,9 @@ deploy/ltbin
 deploy/nw.pak
 deploy/light
 .nrepl-port
+
+# ignore backup files created by your favorite editor(s)
+*~
+*.swp
+\#*\#
+.\#*
