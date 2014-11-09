@@ -244,7 +244,7 @@
 (def user-plugin-dir (files/lt-user-dir "settings"))
 
 (behavior ::create-user-settings
-          :triggers #{:init}
+          :triggers #{:pre-load}
           :reaction (fn [app]
                       (doseq [path user-plugin-paths]
                         (let [full-path (files/join user-plugin-dir path)]
@@ -301,7 +301,7 @@
                       (cmd/exec! :open-path (files/lt-home "/settings/default/default.keymap")))})
 
 (cmd/command {:command :user.modify-user
-              :desc "Settings: User clojurescript"
+              :desc "Settings: User script"
               :exec (fn []
                       (cmd/exec! :open-path user-cljs-path))})
 
@@ -354,4 +354,4 @@
 
 ;;This call to tag-behaviors is necessary as there are no behaviors loaded when the
 ;;app is first run.
-(object/tag-behaviors :app [::initial-behaviors ::load-behaviors ::default-behavior-diffs ::user-behavior-diffs ::default-keymap-diffs ::user-keymap-diffs])
+(object/tag-behaviors :app [::initial-behaviors ::create-user-settings ::load-behaviors ::default-behavior-diffs ::user-behavior-diffs ::default-keymap-diffs ::user-keymap-diffs])

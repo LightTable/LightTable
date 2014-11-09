@@ -2,7 +2,6 @@
  :+
  {:app [:lt.objs.cache/init
         :lt.objs.settings/load-behaviors
-        :lt.objs.settings/create-user-settings
         :lt.objs.proc/set-path-OSX
         :lt.objs.workspace/reconstitute-last-workspace
         :lt.objs.sidebar.command/init-commands
