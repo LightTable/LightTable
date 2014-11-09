@@ -18,6 +18,7 @@
               "ctrl-d" [:editor.doc.toggle]
               "ctrl-=" [:editor.fold-code]}
      :editor.keys.normal {"\"" [(:editor.repeat-pair "\"")]
+                          "'" [(:editor.repeat-pair "'")]
                           "(" [(:editor.open-pair "(")]
                           ")" [(:editor.close-pair ")")]
                           "pmeta-f" [:find.fill-selection
