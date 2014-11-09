@@ -176,17 +176,19 @@
                       (concat diffs (behavior-diffs-in (files/lt-home "settings/default/")))
                       ))
 
+
+(def user-plugin-dir (files/lt-user-dir "User"))
+
 (behavior ::user-behavior-diffs
           :triggers #{:behaviors.diffs.user+}
           :reaction (fn [this diffs]
-                      (concat diffs (behavior-diffs-in (files/lt-user-dir "User/")))
-                      ))
+                      (concat diffs (behavior-diffs-in user-plugin-dir))))
 
 (behavior ::initial-behaviors
           :triggers #{:pre-init}
           :reaction (fn [this]
-                      (when-not (files/exists? (files/lt-user-dir "User"))
-                        (files/mkdir (files/lt-user-dir "User")))
+                      (when-not (files/exists? user-plugin-dir)
+                        (files/mkdir user-plugin-dir))
                       (object/raise this :pre-load)
                       ;;Load all the behaviors
                       (load-all)
@@ -237,11 +239,10 @@
                         (object/raise editor :clean)
                         (object/raise workspace/current-ws :serialize!))))
 
-(def user-behaviors-path (files/lt-user-dir "User/user.behaviors"))
-(def user-keymap-path (files/lt-user-dir "User/user.keymap"))
-(def user-cljs-path (files/lt-user-dir "User/src/lt/plugins/user.cljs"))
+(def user-behaviors-path (files/join user-plugin-dir "user.behaviors"))
+(def user-keymap-path (files/join user-plugin-dir "user.keymap"))
+(def user-cljs-path (files/join user-plugin-dir "src" "lt" "plugins" "user.cljs"))
 (def user-plugin-paths ["user.behaviors" "user.keymap" "src" "project.clj" "plugin.edn" "user_compiled.js"])
-(def user-plugin-dir (files/lt-user-dir "User"))
 
 (behavior ::create-user-plugin
           :triggers #{:create-user-plugin}
@@ -342,8 +343,7 @@
 (behavior ::user-keymap-diffs
           :triggers #{:keymap.diffs.user+}
           :reaction (fn [this diffs]
-                      (concat diffs (keymap-diffs-in (files/lt-user-dir "/User/")))
-                      ))
+                      (concat diffs (keymap-diffs-in user-plugin-dir))))
 
 (behavior ::on-behaviors-editor-save
           :triggers #{:saved}
