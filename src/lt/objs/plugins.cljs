@@ -615,6 +615,7 @@
           :reaction (fn [app]
                       (when-not (files/exists? user-plugins-dir)
                         (files/mkdir user-plugins-dir))
+                      (object/raise app/app :create-user-plugin)
                       ;;load enabled plugins
                       (object/merge! app/app {::plugins (available-plugins)})))
 
