@@ -26,7 +26,7 @@
                 [ctxs])]
      (swap! contexts #(apply disj % ctxs))
      (swap! ctx->obj #(apply dissoc % ctxs))
-    (object/raise ctx-obj :log!)))
+     (object/raise ctx-obj :log!)))
    ([ctxs _] (out! ctxs)))
 
 (defn in! [ctxs & [obj]]
@@ -51,7 +51,7 @@
 
 (defn group! [ctx group]
   (swap! ctx->group assoc ctx group)
-  (swap! group->ctx update-in [group] conj ctx))
+  (swap! group->ctxs update-in [group] conj ctx))
 
 (defn ->obj [ctx]
   (@ctx->obj ctx))

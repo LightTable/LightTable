@@ -12,7 +12,6 @@
         res-obj (object/create :lt.objs.eval/inline-result {:ed this
                                                             :class (or (:class opts) (name type))
                                                             :opts opts
-                                                            :result res
                                                             :loc loc
                                                             :line line})]
     (object/add-tags res-obj [:inline.watch])

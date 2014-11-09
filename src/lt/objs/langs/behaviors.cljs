@@ -20,7 +20,6 @@
 
 (defn pos->state [ed]
   (let [token (editor/->token ed (editor/->cursor ed))
-        _ (set! tok token)
         level (-> (get-in token [:state :overlay :rainbowstack])
                   (last)
                   (:level))]
@@ -65,7 +64,7 @@
       (index-of res params)))))
 
 (defn wrapped-replacement [replace cur]
-  (replace (+ "(" (.-completion cur) " )"))
+  (replace (str "(" (.-completion cur) " )"))
   (cmd/exec! :editor.char-left))
 
 (defn ->wrapped-behavior [beh cur]

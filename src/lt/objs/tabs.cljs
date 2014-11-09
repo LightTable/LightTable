@@ -475,7 +475,6 @@
                                         (if-not ts
                                           1
                                           (+ (:width @ts) (- prev-width new-perc))))]
-                        ;(println (.-clientX e) (.-clientY e) (.-screenX e) (.-screenY e) (js->clj (js/Object.keys e)))
                         (when-not (= cx 0)
                           (if (or (< new-perc 0) )
                             (temp-width this 100)
@@ -487,7 +486,6 @@
                               (if ts
                                 (temp-width ts next-width)
                                 (spawn-tabset))))))
-                      (set! start (now))
                       ))
 
 

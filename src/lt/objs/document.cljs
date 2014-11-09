@@ -2,7 +2,8 @@
   (:require [lt.object :as object]
             [lt.objs.files :as files]
             [lt.objs.popup :as popup])
-  (:require-macros [lt.macros :refer [behavior defui]]))
+  (:require-macros [lt.macros :refer [behavior defui]])
+  (:refer-clojure :exclude [replace]))
 
 
 ;;***************************************************

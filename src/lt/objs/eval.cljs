@@ -24,13 +24,6 @@
            (when cb
              (cb))))
 
-(defn unsupported []
-  (popup/show! [:h2 "We can't eval that yet."]
-               [:p "We can't eval this type of file yet. The extensions that we know how to execute are:"
-                (str " [ " (apply str (map #(str "." % " ") supported-types)) "]")]
-               (button "Cancel")
-               ))
-
 (defn unescape-unicode [s]
   (string/replace s
                   #"\\x(..)"
@@ -136,7 +129,7 @@
                                                              (clients/swap-client! (-> @origin :client key) client)
                                                              (object/update! origin [:client] assoc key client)))
                 (clients/placeholder))
-      :unsupported (unsupported))))
+                )))
 
 (defn get-client! [{:keys [origin command key create] :as opts}]
   (let [key (or key :default)
@@ -441,7 +434,7 @@
                 :tags #{:inline :inline.exception}
                 :init (fn [this info]
                         (if-not (-> info :loc :line)
-                          (notifos/set-msg! (str ex) {:class "error"})
+                          (notifos/set-msg! (str (:ex info)) {:class "error"})
                           (let [content (->inline-exception this info)]
                             (object/merge! this (assoc info
                                                   :widget (ed/line-widget (ed/->cm-ed (:ed info))

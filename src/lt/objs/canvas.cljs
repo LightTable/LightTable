@@ -21,7 +21,7 @@
 
 (defn add! [obj & [position?]]
   (append (object/->content canvas) (object/->content obj))
-  (object/raise obj :show rep))
+  (object/raise obj :show))
 
 ;;*********************************************************
 ;; Behaviors

@@ -17,6 +17,8 @@
   :click (fn []
            (clients/close! i)))
 
+(declare clients)
+
 (defui unset-button [i]
   [:span.button.unset "unset"]
   :click (fn []
