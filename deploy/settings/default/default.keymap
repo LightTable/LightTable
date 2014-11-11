@@ -18,6 +18,7 @@
               "ctrl-d" [:editor.doc.toggle]
               "ctrl-=" [:editor.fold-code]}
      :editor.keys.normal {"\"" [(:editor.repeat-pair "\"")]
+                          "'" [(:editor.repeat-pair "'")]
                           "(" [(:editor.open-pair "(")]
                           ")" [(:editor.close-pair ")")]
                           "pmeta-f" [:find.fill-selection
@@ -31,6 +32,7 @@
                           "}" [(:editor.close-pair "}")]
                           "backspace" [:editor.backspace-pair
                                        :editor.backspace-indent]}
+     :editor.keys.hinting.active {"enter" [:passthrough]}
      :tabs {"pmeta-w" [:tabs.close]
             "pmeta-shift-[" [:tabs.prev]
             "pmeta-shift-]" [:tabs.next]

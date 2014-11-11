@@ -7,7 +7,7 @@
             [lt.util.dom :as dom])
   (:require-macros [lt.macros :refer [behavior defui]]))
 
-(def *no-close* nil)
+(def ^{:dynamic true} *no-close* nil)
 
 (behavior ::on-click-destroy
           :triggers #{:click}

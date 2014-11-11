@@ -49,7 +49,7 @@
       (handle-connection! (assoc info :client-id (->id c))))))
 
 (defn rem! [client]
-  (let [id (by-id (->id client))]
+  (let [cname (:name @client)]
     (swap! cs dissoc (->id client))
     (object/raise client :disconnect)
     (object/destroy! client)
