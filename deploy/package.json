@@ -7,7 +7,7 @@
 	"webkit": {
 		"plugin": true
 		},
-		"chromium-args" : "--disable-threaded-compositing --enable-smooth-scrolling --disable-accelerated-video --enable-webgl --enable-webaudio --ignore-gpu-blacklist --force-compositing-mode --remote-debugging-port=10138 --harmony --enable-devtools-experiments --enable-experimental-web-platform-features --enable-experimental-webkit-features",
+		"chromium-args" : "--enable-smooth-scrolling --disable-accelerated-video --enable-webgl --enable-webaudio --ignore-gpu-blacklist --force-compositing-mode --remote-debugging-port=10138 --harmony",
 		"window": {
 			"icon": "core/img/lticon.png",
 			"width": 1024,
@@ -15,7 +15,7 @@
 			"min_height": 400,
 			"min_width": 400,
 			"position": "center",
-			"show":false,
+			"show": false,
 			"toolbar": false,
 			"frame": true
 		}
