@@ -3,7 +3,6 @@
   :url "http://www.lighttable.com/"
   :dependencies [[org.clojure/clojure "1.5.1"]
                  [crate "0.2.5"]
-                 [noir "1.3.0"]
                  ;[core.async "0.1.0-SNAPSHOT"]
                  [org.clojure/clojurescript "0.0-2138"
                   :exclusions [org.apache.ant/ant]]
