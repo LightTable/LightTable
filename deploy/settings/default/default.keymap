@@ -17,19 +17,19 @@
               "ctrl-," [:editor.unjump]
               "ctrl-d" [:editor.doc.toggle]
               "ctrl-=" [:editor.fold-code]}
-     :editor.keys.normal {"\"" [(:editor.repeat-pair "\"")]
+     :editor.keys.normal {"\"" [:passthrough]
                           "'" [(:editor.repeat-pair "'")]
-                          "(" [(:editor.open-pair "(")]
-                          ")" [(:editor.close-pair ")")]
+                          "(" [:passthrough]
+                          ")" [:passthrough]
                           "pmeta-f" [:find.fill-selection
                                      :find.show]
                           "tab" [:auto-complete]
                           "pmeta-g" [:find.next]
                           "pmeta-shift-g" [:find.prev]
-                          "[" [(:editor.open-pair "[")]
-                          "{" [(:editor.open-pair "{")]
-                          "]" [(:editor.close-pair "]")]
-                          "}" [(:editor.close-pair "}")]
+                          "[" [:passthrough]
+                          "{" [:passthrough]
+                          "]" [:passthrough]
+                          "}" [:passthrough]
                           "backspace" [:editor.backspace-pair
                                        :editor.backspace-indent]}
      :editor.keys.hinting.active {"enter" [:passthrough]}

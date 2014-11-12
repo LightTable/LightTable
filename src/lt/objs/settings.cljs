@@ -325,6 +325,19 @@
                       (concat diffs (keymap-diffs-in (files/lt-user-dir "/settings/")))
                       ))
 
+(def pair-keybindings {:editor.keys.normal {"\"" ['(:editor.repeat-pair "\"")]
+                                            "(" ['(:editor.open-pair "(")]
+                                            ")" ['(:editor.close-pair ")")]
+                                            "[" ['(:editor.open-pair "[")]
+                                            "{" ['(:editor.open-pair "{")]
+                                            "]" ['(:editor.close-pair "]")]
+                                            "}" ['(:editor.close-pair "}")]}})
+
+(behavior ::pair-keymap-diffs
+          :triggers #{:keymap.diffs.user+}
+          :reaction (fn [this diffs]
+                      (concat diffs (list {:+ pair-keybindings}))))
+
 (behavior ::on-behaviors-editor-save
           :triggers #{:saved}
           :reaction (fn [editor]
