@@ -6,7 +6,7 @@
             [lt.objs.console :as console]
             [lt.objs.app :as app]
             [lt.objs.clients :as clients]
-            [fetch.core :as fetch]
+            [lt.util.fetch.core :as fetch]
             [crate.core :as crate]
             [lt.util.dom :as dom]
             [lt.util.js :refer [every wait ->clj]]

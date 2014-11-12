@@ -12,8 +12,8 @@
             [lt.util.js :refer [every]]
             [lt.util.cljs :refer [str-contains?]]
             [clojure.string :as string]
-            [fetch.core :as fetch])
-  (:require-macros [fetch.macros :refer [letrem]]
+            [lt.util.fetch.core :as fetch])
+  (:require-macros [lt.util.fetch.macros :refer [letrem]]
                    [lt.macros :refer [behavior defui]]))
 
 (def shell (load/node-module "shelljs"))
