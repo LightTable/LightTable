@@ -272,9 +272,11 @@
     (doseq [dep missing]
       (discover-deps dep count-down))))
 
-(defn available-plugins []
+(defn available-plugins
+  [& {:keys [ignore-missing]}]
   (let [ds (concat (files/dirs user-plugins-dir)
-                   (files/dirs plugins-dir))
+                   (files/dirs plugins-dir)
+                   [settings/user-plugin-dir])
         plugins (->> ds
                      (map plugin-info)
                      (filterv identity))
@@ -289,12 +291,12 @@
                           plugins)
                   (persistent!))
         missing? (missing-deps final)]
-    (when missing?
+    (when (and missing? (not ignore-missing))
       (popup/popup! {:header "Some plugin dependencies are missing."
                      :body [:div
                             [:span "We found that the following plugin dependencies are missing: "]
-                             (for [{:keys [name version]} missing?]
-                               [:div name " " version " "])
+                            (for [{:keys [name version]} missing?]
+                              [:div name " " version " "])
                             [:span "Would you like us to install them?"]]
                      :buttons [{:label "Cancel"}
                                {:label "Install all"
@@ -377,8 +379,7 @@
                     (discover-deps plugin (fn []
                                             (dom/remove (dom/parent me))
                                             (cmd/exec! :behaviors.reload)
-                                            (object/raise manager :refresh!)
-                                            )))
+                                            (object/raise manager :refresh!))))
            (dom/prevent e)
            (dom/stop-propagation e)))
 
@@ -513,6 +514,34 @@
                                          (object/raise this :plugin-results (EOF-read data)))
                                        ))))))
 
+(defn save-plugins [plugin-maps]
+  (let [plugin-edn-file (files/join settings/user-plugin-dir "plugin.edn")
+        plugin-edn (-> plugin-edn-file files/open-sync :content (settings/safe-read plugin-edn-file))
+        plugin-name (doto (:name plugin-edn) (assert "User plugin doesn't have a :name"))
+        deps (->> plugin-maps
+                  vals
+                  (remove #(contains? #{plugin-name} (:name %)))
+                  (map (juxt :name :version))
+                  (into (sorted-map)))
+         plugin-edn-body (pr-str (assoc plugin-edn :dependencies deps))]
+
+    (files/save plugin-edn-file
+                (-> plugin-edn-body
+                    ;; Until clojurescript gets pprint
+                    ;; one key/val pair or parent key per line for diffing
+                    (string/replace #"(\"\s*,|\{|\},)" #(str % "\n"))
+                    (string/replace-first #"^\{\n" "{")
+                    (string/replace-first #":dependencies"
+                                          ";; Do not edit - :dependencies are auto-generated\n:dependencies")))))
+
+(behavior ::save-user-plugin-dependencies
+          :triggers #{:refresh!}
+          :desc "Saves dependencies to user's plugin.edn"
+          :reaction (fn [this]
+                      ;; Use available-plugins b/c ::plugins aren't always up to date e.g. uninstall
+                      ;; :ignore-missing to avoid missing popup on uninstall
+                      (save-plugins (available-plugins :ignore-missing true))))
+
 (behavior ::render-installed-plugins
           :triggers #{:refresh!}
           :desc "Plugin Manager: refresh installed plugins"
@@ -586,6 +615,7 @@
           :reaction (fn [app]
                       (when-not (files/exists? user-plugins-dir)
                         (files/mkdir user-plugins-dir))
+                      (object/raise app/app :create-user-plugin)
                       ;;load enabled plugins
                       (object/merge! app/app {::plugins (available-plugins)})))
 

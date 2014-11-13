@@ -2,7 +2,6 @@
  :+
  {:app [:lt.objs.cache/init
         :lt.objs.settings/load-behaviors
-        :lt.objs.settings/create-user-settings
         :lt.objs.proc/set-path-OSX
         :lt.objs.workspace/reconstitute-last-workspace
         :lt.objs.sidebar.command/init-commands
@@ -327,6 +326,7 @@
   :plugin.file [(:lt.objs.editor.file/on-save :build)]
   :plugin-manager [:lt.objs.plugins/on-close
                    :lt.objs.plugins/search-server-plugins
+                   :lt.objs.plugins/save-user-plugin-dependencies
                    :lt.objs.plugins/render-installed-plugins
                    :lt.objs.plugins/render-server-plugins
                    :lt.objs.plugins/submit-plugin

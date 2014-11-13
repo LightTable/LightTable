@@ -176,17 +176,19 @@
                       (concat diffs (behavior-diffs-in (files/lt-home "settings/default/")))
                       ))
 
+
+(def user-plugin-dir (files/lt-user-dir "User"))
+
 (behavior ::user-behavior-diffs
           :triggers #{:behaviors.diffs.user+}
           :reaction (fn [this diffs]
-                      (concat diffs (behavior-diffs-in (files/lt-user-dir "settings/")))
-                      ))
+                      (concat diffs (behavior-diffs-in user-plugin-dir))))
 
 (behavior ::initial-behaviors
           :triggers #{:pre-init}
           :reaction (fn [this]
-                      (when-not (files/exists? (files/lt-user-dir "settings"))
-                        (files/mkdir (files/lt-user-dir "settings")))
+                      (when-not (files/exists? user-plugin-dir)
+                        (files/mkdir user-plugin-dir))
                       (object/raise this :pre-load)
                       ;;Load all the behaviors
                       (load-all)
@@ -237,16 +239,24 @@
                         (object/raise editor :clean)
                         (object/raise workspace/current-ws :serialize!))))
 
-(def user-behaviors-path (files/lt-user-dir "settings/user.behaviors"))
-(def user-keymap-path (files/lt-user-dir "settings/user.keymap"))
+(def user-behaviors-path (files/join user-plugin-dir "user.behaviors"))
+(def user-keymap-path (files/join user-plugin-dir "user.keymap"))
+(def user-cljs-path (files/join user-plugin-dir "src" "lt" "plugins" "user.cljs"))
+(def user-plugin-paths ["user.behaviors" "user.keymap" "src" "project.clj" "plugin.edn" "user_compiled.js"])
 
-(behavior ::create-user-settings
-          :triggers #{:init}
+(behavior ::create-user-plugin
+          :triggers #{:create-user-plugin}
           :reaction (fn [app]
-                      (when-not (files/exists? user-behaviors-path)
-                        (files/copy (files/lt-home "/core/misc/example.behaviors") user-behaviors-path))
-                      (when-not (files/exists? user-keymap-path)
-                        (files/copy (files/lt-home "/core/misc/example.keymap") user-keymap-path))))
+                      (doseq [path user-plugin-paths]
+                        (let [full-path (files/join user-plugin-dir path)]
+                          (when-not (files/exists? full-path)
+                            (if (and (contains? #{"user.behaviors" "user.keymap"} path)
+                                     (files/exists? (files/lt-user-dir (str "/settings/" path))))
+                              ;; Copy over files from previous user dir
+                              (files/copy (files/lt-user-dir (str "/settings/" path))
+                                          full-path)
+                              (files/copy (files/lt-home (files/join "core" "User" path))
+                                          full-path)))))))
 
 ;;*********************************************************
 ;; Commands
@@ -296,6 +306,17 @@
               :exec (fn []
                       (cmd/exec! :open-path (files/lt-home "/settings/default/default.keymap")))})
 
+(cmd/command {:command :user.modify-user
+              :desc "Settings: User script"
+              :exec (fn []
+                      (cmd/exec! :open-path user-cljs-path))})
+
+
+(cmd/command {:command :user.add-user-plugin-to-workspace
+              :desc "Settings: Add User plugin to workspace"
+              :exec (fn []
+                      (object/raise workspace/current-ws :add.folder! user-plugin-dir))})
+
 (behavior ::on-close-remove
           :triggers #{:close}
           :reaction (fn [this]
@@ -322,8 +343,7 @@
 (behavior ::user-keymap-diffs
           :triggers #{:keymap.diffs.user+}
           :reaction (fn [this diffs]
-                      (concat diffs (keymap-diffs-in (files/lt-user-dir "/settings/")))
-                      ))
+                      (concat diffs (keymap-diffs-in user-plugin-dir))))
 
 (behavior ::on-behaviors-editor-save
           :triggers #{:saved}
@@ -339,4 +359,4 @@
 
 ;;This call to tag-behaviors is necessary as there are no behaviors loaded when the
 ;;app is first run.
-(object/tag-behaviors :app [::initial-behaviors ::load-behaviors ::default-behavior-diffs ::user-behavior-diffs ::default-keymap-diffs ::user-keymap-diffs])
+(object/tag-behaviors :app [::initial-behaviors ::create-user-plugin ::load-behaviors ::default-behavior-diffs ::user-behavior-diffs ::default-keymap-diffs ::user-keymap-diffs])
