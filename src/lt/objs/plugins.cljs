@@ -591,7 +591,7 @@
           :reaction (fn [this plugins]
                       (let [ul (dom/$ :.server-plugins (object/->content this))]
                         (dom/empty ul)
-                        (->> (remove #(installed? (-> % :fname)) plugins)
+                        (->> (remove #(installed? (-> % :name)) plugins)
                              (map server-plugin-ui)
                              (dom/fragment)
                              (dom/append ul)))))
