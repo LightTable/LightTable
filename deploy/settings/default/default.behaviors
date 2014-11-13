@@ -330,7 +330,10 @@
                    :lt.objs.plugins/render-installed-plugins
                    :lt.objs.plugins/render-server-plugins
                    :lt.objs.plugins/submit-plugin
-                   :lt.objs.plugins/update-server-plugins]
+                   :lt.objs.plugins/draw-plugins-on-updated
+                   :lt.objs.plugins/get-latest-metadata-sha
+                   :lt.objs.plugins/check-metadata-sha
+                   :lt.objs.plugins/check-local-metadata-cache]
   :popup [:lt.objs.popup/refocus-on-close
           :lt.objs.popup/close!
           :lt.objs.popup/on-click-destroy
