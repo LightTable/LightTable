@@ -95,9 +95,13 @@
 
 (defn plugin-edn [dir]
   (when-let [content (files/open-sync (files/join dir "plugin.edn"))]
-    (-> (EOF-read (:content content))
-        (assoc :dir dir)
-        (validate "plugin.edn"))))
+    (try
+      (-> (EOF-read (:content content))
+          (assoc :dir dir)
+          (validate "plugin.edn"))
+      (catch :default e
+        (console/error "FAILED to load plugin.edn: " dir)))
+    ))
 
 (defn plugin-json [dir]
   (when-let [content (files/open-sync (files/join dir "plugin.json"))]
