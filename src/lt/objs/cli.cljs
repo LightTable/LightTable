@@ -3,6 +3,7 @@
             [lt.objs.app :as app]
             [lt.objs.files :as files]
             [lt.objs.workspace :as workspace]
+            [lt.objs.command :as cmd]
             [lt.util.load :refer [node-module]]
             [lt.util.cljs :refer [js->clj]]
             [clojure.string :as string]
@@ -26,13 +27,15 @@
       (js->clj :keywordize-keys true)))
 
 (defn open-paths [paths add?]
-  (doseq [path paths
+  (doseq [[path line] paths
           :when (not= path (.-execPath js/process))]
     (if (files/exists? path)
       (if (files/dir? path)
         (object/raise workspace/current-ws :add.folder! path)
         (do
           (object/raise opener/opener :open! path)
+          (when line
+            (cmd/exec! :goto-line line))
           (when add?
             (object/raise workspace/current-ws :add.file! path))))
       (object/raise opener/opener :new! path))))
@@ -57,28 +60,32 @@
 ;;*********************************************************
 
 (behavior ::open-on-args
-                  :triggers #{:post-init}
+                  :triggers #{:show}
                   :reaction (fn [this]
                               (when (args)
                                 (let [args-str (or (app/extract! (args-key (app/window-number)))
                                                    (first (app/args)))
                                       args (parse-args (rebuild-argv args-str))
-                                      paths (map #(files/resolve (:dir args) %) (filter valid-path? (:_ args)))
+                                      paths-line-no (map #(string/split (files/resolve (:dir args) %) #":")
+                                                         (filter valid-path? (:_ args)))
+                                      paths (map first paths-line-no)
                                       open-dir? (some files/dir? paths)]
                                   (when open-dir?
                                     (object/merge! workspace/current-ws {:initialized? true}))
-                                  (open-paths paths (:add args))))))
+                                  (open-paths paths-line-no (:add args))))))
 
 (behavior ::open!
                   :triggers #{:open!}
                   :reaction (fn [this path]
                               (when (= (app/fetch :focusedWindow) (app/window-number))
                                 (let [args (parse-args (rebuild-argv path))
-                                      paths (map #(files/resolve (:dir args) %) (filter valid-path? (:_ args)))
+                                      paths-line-no (map #(string/split (files/resolve (:dir args) %) #":")
+                                                         (filter valid-path? (:_ args)))
+                                      paths (map first paths-line-no)
                                       open-dir? (some files/dir? paths)]
                                   (if (or (:new args)
                                           (and open-dir? (not (:add args))))
                                     (let [winid (inc (app/fetch :window-id))]
                                       (app/store! (args-key winid) path)
                                       (app/open-window))
-                                    (open-paths paths (:add args)))))))
+                                    (open-paths paths-line-no (:add args)))))))
