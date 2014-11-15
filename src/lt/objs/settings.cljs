@@ -420,7 +420,7 @@
                                   key
                                   [key []])
                   tag-vec [tag (str "-" key)]]]
-      (.push flat (into tag-vec commands)))
+      (.push flat (into tag-vec command)))
     (->> (js->clj flat)
          (sort-by first)
          (vec))))
