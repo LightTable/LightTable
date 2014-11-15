@@ -289,10 +289,14 @@
          (select-keys deps unique)))
       seen)))
 
+
+(defn latest-version [plugin]
+  (get (:versions plugin) (keyword (:latest-version plugin))))
+
 (defn all-latest [plugins]
   (->> (dissoc plugins :__sha)
        (vals)
-       (map #(get (:versions %) (keyword (:latest-version %))))))
+       (map latest-version)))
 
 ;; (plugin->tar (:Rainbow (transitive-deps (:server-plugins @manager) ["Rainbow" "0.0.8"] {})))
 ;; (save-cache (build-cache))
@@ -531,7 +535,7 @@
                                     {:label "Cancel"}]})))
 
 (defui installed-plugin-ui [plugin]
-  (let [cached (-> @manager :server-plugins (get (:name plugin)) :latest-version)
+  (let [cached (-> @manager :server-plugins (get (keyword (:name plugin))) :latest-version)
         update? (when cached
                   (deploy/is-newer? (:version plugin) cached))]
     [:li {:class (if update?
