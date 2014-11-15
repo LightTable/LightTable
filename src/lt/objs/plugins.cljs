@@ -12,7 +12,7 @@
             [lt.objs.notifos :as notifos]
             [lt.objs.tabs :as tabs]
             [cljs.reader :as reader]
-            [fetch.core :as fetch]
+            [lt.util.fetch.core :as fetch]
             [crate.core :as crate]
             [crate.binding :refer [bound]]
             [lt.util.kahn :as kahn]
