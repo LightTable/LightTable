@@ -100,7 +100,7 @@
           (assoc :dir dir)
           (validate "plugin.edn"))
       (catch :default e
-        (console/error "FAILED to load plugin.edn: " dir)))
+        (console/error (str "FAILED to load plugin.edn: " dir))))
     ))
 
 (defn plugin-json [dir]
