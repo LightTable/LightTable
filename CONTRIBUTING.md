@@ -1,6 +1,6 @@
 # Help
 
-For questions and community discussion, please drop them in the [Light Table Google group](https://groups.google.com/forum/#!forum/light-table-discussion).
+For questions and community discussion, please drop them in the [Light Table Google group](https://groups.google.com/forum/#!forum/light-table-discussion). Also check out #lighttable in Freenode IRC.
 
 # Bugs
 
@@ -15,11 +15,11 @@ Note: The issue tracker is mainly for bugs. Questions should be asked on the [Li
 # Feature Requests
 
 If a feature is specific to a library, language or is something that is normally a plugin in other editors, please add it to [the wishlist](https://github.com/LightTable/LightTable/wiki/Feature-wishlist).
-For other features, feel free to discuss in an issue. Be aware that Light Table has a plugin system that has the same degree of power that any core code does. This means that as a user, you usually have the ability to add any feature you desire without waiting on Light Table to implement it! Having such a powerful plugin system allows us to keep a small, well maintained LightTable core while encouraging a large ecosystem of plugins.
+For other features, feel free to discuss in an issue. Be aware that Light Table has a plugin system that has the same degree of power that any core code does. This means that as a user, you usually have the ability to add any feature you desire without waiting on Light Table to implement it! Having such a powerful plugin system allows us to keep a small, well maintained Light Table core while encouraging a large ecosystem of plugins.
 
 # Contributing
 
-Hello! Thanks for your interest in LightTable. Things you can do to make LightTable even more awesome :sunrise: :koala: :exclamation::
+Hello! Thanks for your interest in Light Table. Things you can do to make Light Table even more awesome :sunrise: :koala: :exclamation:
 
 * `Answering issues`: See the [answering issues guide](https://github.com/LightTable/LightTable/wiki/For-Contributors#answering-issues).
 * `Code contributions`: See [section below](#code-contributions).
@@ -27,7 +27,7 @@ Hello! Thanks for your interest in LightTable. Things you can do to make LightTa
 
 ## Code Contributions
 
-If it's your first time contributing, we'd love to have you :). We require contributors to agree to the [Contributor's Agreement](https://docs.google.com/a/kodowa.com/forms/d/1ME_PT6qLKUcALUEz1h1yerLF7vP_Rnohpb9RvMLDALg/viewform). It's as easy as a CLA can be; it's just a form that instantly enables you to contribute.
+If it's your first time contributing, we'd love to have you :). Be sure to check out our [contributing tutorial](https://github.com/LightTable/LightTable/wiki/First-Contribution). We require contributors to agree to the [Contributor's Agreement](https://docs.google.com/a/kodowa.com/forms/d/1ME_PT6qLKUcALUEz1h1yerLF7vP_Rnohpb9RvMLDALg/viewform). It's as easy as a CLA can be; it's just a form that instantly enables you to contribute.
 
 When contributing:
 
