@@ -1,474 +1,559 @@
-{
- :+
- {:app [:lt.objs.cache/init
-        :lt.objs.settings/load-behaviors
-        :lt.objs.proc/set-path-OSX
-        :lt.objs.workspace/reconstitute-last-workspace
-        :lt.objs.sidebar.command/init-commands
-        :lt.objs.clients.ws/kill-on-closed
-        :lt.objs.workspace/stop-watch-on-close
-        :lt.objs.clients.devtools/clean-inspectors-timer
-        :lt.objs.deploy/check-deploy :lt.objs.editor.pool/stop-close-dirty
-        :lt.objs.clients/close-clients-on-closed
-        :lt.objs.app/restore-position-on-init
-        :lt.objs.cli/open-on-args
-        :lt.objs.editor.pool/init-syntax-selector
-        :lt.objs.cli/open!
-        :lt.objs.thread/shutdown-worker-on-close
-        :lt.objs.animations/animate-on-init
-        :lt.objs.app/store-position-on-close :lt.objs.canvas/append-canvas
-        :lt.objs.tabs/init-sortable
-        :lt.objs.deploy/check-version
-        :lt.objs.style/style-on-init
-        :lt.objs.app/initial-focus
-        :lt.objs.app/track-focus
-        :lt.objs.app/blur-class
-        :lt.objs.app/focus-class
-        :lt.objs.app/close!
-        :lt.objs.menu/remove-menu-close
-        :lt.objs.app/refresh
-        :lt.objs.app/on-show-bind-navigate
-        :lt.objs.editor.pool/stop-reload-dirty
-        :lt.objs.menu/set-menu
-        :lt.plugins.auto-complete/init
-        :lt.objs.clients.devtools/connect-on-init
-        :lt.objs.tabs/init
-        :lt.objs.find/init
-        :lt.plugins.doc/init-doc-search
-        :lt.objs.intro/show-intro
-        :lt.objs.menu/recreate-menu
-        :lt.objs.menu/create-menu
-        :lt.objs.settings/default-keymap-diffs
-        :lt.objs.settings/user-keymap-diffs
-        :lt.objs.settings/default-behavior-diffs
-        :lt.objs.settings/user-behavior-diffs
-        :lt.objs.plugins/init-plugins
-        :lt.objs.plugins/plugin-behavior-diffs
-        :lt.objs.plugins/plugin-keymap-diffs
-        :lt.objs.plugins/behaviors.refreshed-load-keys
-        :lt.objs.status-bar/init-status-bar
-        :lt.objs.status-bar/show-status-bar
-        :lt.objs.workspace/init-workspace-cache-dir
-        :lt.objs.metrics/init-metrics
-        (:lt.objs.keyboard/chord-timeout 1000)
-        (:lt.objs.files/file.ignore-pattern "(^\\..*)|\\.class$|target/|svn|cvs|\\.git|\\.pyc|~|\\.swp|\\.jar|.DS_Store|\\.nrepl-port")
-        (:lt.objs.style/provide-skin "dark" "core/css/skins/new-dark.css")
-        (:lt.objs.style/provide-skin "light" "core/css/skins/new-dark.css")
-        (:lt.objs.style/provide-skin "new-dark" "core/css/skins/new-dark.css")
-        (:lt.objs.style/provide-theme "3024-day" "core/css/themes/3024-day.css")
-        (:lt.objs.style/provide-theme "3024-night" "core/css/themes/3024-night.css")
-        (:lt.objs.style/provide-theme "ambiance" "core/css/themes/ambiance.css")
-        (:lt.objs.style/provide-theme "base16-dark" "core/css/themes/base16-dark.css")
-        (:lt.objs.style/provide-theme "base16-light" "core/css/themes/base16-light.css")
-        (:lt.objs.style/provide-theme "blackboard" "core/css/themes/blackboard.css")
-        (:lt.objs.style/provide-theme "cobalt" "core/css/themes/cobalt.css")
-        (:lt.objs.style/provide-theme "codemirror" "core/css/themes/codemirror.css")
-        (:lt.objs.style/provide-theme "default" "core/css/themes/default.css")
-        (:lt.objs.style/provide-theme "eclipse" "core/css/themes/eclipse.css")
-        (:lt.objs.style/provide-theme "elegant" "core/css/themes/elegant.css")
-        (:lt.objs.style/provide-theme "erlang-dark" "core/css/themes/erlang-dark.css")
-        (:lt.objs.style/provide-theme "ibdknox" "core/css/themes/ibdknox.css")
-        (:lt.objs.style/provide-theme "lesser-dark" "core/css/themes/lesser-dark.css")
-        (:lt.objs.style/provide-theme "midnight" "core/css/themes/midnight.css")
-        (:lt.objs.style/provide-theme "monokai" "core/css/themes/monokai.css")
-        (:lt.objs.style/provide-theme "neat" "core/css/themes/neat.css")
-        (:lt.objs.style/provide-theme "night" "core/css/themes/night.css")
-        (:lt.objs.style/provide-theme "paraiso-dark" "core/css/themes/paraiso-dark.css")
-        (:lt.objs.style/provide-theme "paraiso-light" "core/css/themes/paraiso-light.css")
-        (:lt.objs.style/provide-theme "rubyblue" "core/css/themes/rubyblue.css")
-        (:lt.objs.style/provide-theme "solarized-light" "core/css/themes/solarized-light.css")
-        (:lt.objs.style/provide-theme "solarized" "core/css/themes/solarized.css")
-        (:lt.objs.style/provide-theme "the-matrix" "core/css/themes/the-matrix.css")
-        (:lt.objs.style/provide-theme "tomorrow-night-eighties" "core/css/themes/tomorrow-night-eighties.css")
-        (:lt.objs.style/provide-theme "tomorrow-night" "core/css/themes/tomorrow-night.css")
-        (:lt.objs.style/provide-theme "twilight" "core/css/themes/twilight.css")
-        (:lt.objs.style/provide-theme "vibrant-ink" "core/css/themes/vibrant-ink.css")
-        (:lt.objs.style/provide-theme "xq-dark" "core/css/themes/xq-dark.css")
-        (:lt.objs.style/provide-theme "xq-light" "core/css/themes/xq-light.css")
-        (:lt.objs.style/set-skin "dark")
-        :lt.objs.editor/init-codemirror]
-  :bottombar [:lt.objs.bottombar/item-toggled
-              :lt.objs.bottombar/height!
-              :lt.objs.bottombar/no-anim-on-drag
-              :lt.objs.bottombar/reanim-on-drop
-              :lt.objs.bottombar/show-item
-              :lt.objs.bottombar/hide-item]
-  :browser [:lt.objs.browser/forward! :lt.objs.browser/init!
-            :lt.objs.browser/destroy-on-close :lt.objs.browser/focus!
-            :lt.objs.browser/url-focus!
-            :lt.objs.browser/focus-on-show
-            :lt.objs.browser/set-client-name :lt.objs.browser/rem-client
-            :lt.objs.browser/store-history :lt.objs.browser/refresh!
-            :lt.objs.browser/set-active :lt.objs.browser/navigate!
-            :lt.objs.browser/active-context
-            :lt.objs.browser/inactive-context
-            :lt.objs.browser/window-load-click-handler
-            :lt.objs.browser/window-load-key-handler
-            :lt.objs.browser/window-load-lttools
-            :lt.objs.browser/menu!
-            :lt.objs.browser/menu+
-            :lt.objs.browser/back!]
-  :client [:lt.objs.clients/on-connect-drain :lt.objs.clients/queue!
-           :lt.objs.clients/try-send]
-  :client.local [:lt.objs.clients.local/send!]
-  :client.placeholder [:lt.objs.clients/remove-placeholder-on-swapped]
-  :client.selector [:lt.objs.connector/on-close!
-                    :lt.objs.connector/on-selected]
-  :clients [:lt.objs.clients/raise-on-object]
-  :clients.devtools [:lt.objs.clients.devtools/clear-queue-on-connect
-                     :lt.objs.clients.devtools/console-log
-                     :lt.objs.clients.devtools/handle-message
-                     :lt.objs.clients.devtools/clear-console
-                     :lt.objs.clients.devtools/connect!
-                     :lt.objs.clients.devtools/script-parsed
-                     :lt.objs.clients.devtools/reconnect
-                     :lt.objs.clients.devtools/disconnect
-                     :lt.objs.clients.devtools/print-messages]
-  :command.options [:lt.objs.sidebar.command/options-escape!]
-  :command.selector [:lt.objs.sidebar.command/escape!
-                     :lt.objs.sidebar.command/select-hidden
-                     :lt.objs.sidebar.command/select-command]
-  :console [:lt.objs.console/on-close
-            :lt.objs.menu/menu!
-            :lt.objs.console/menu+]
-  :context [:lt.objs.context/log]
-  :document [:lt.objs.document/try-close-root-document :lt.objs.document/close-root-document
-             (:lt.objs.document/set-linked-doc-options {})]
-  :document.linked [:lt.objs.document/close-linked-document]
-  :docs [:lt.objs.docs/on-close-destroy]
-  :docable [:lt.plugins.doc/editor.doc.show!
-            :lt.plugins.doc/doc-menu+]
-  :editor [:lt.objs.document/close-document-on-editor-close
-           :lt.objs.editor/active-on-focus
-           :lt.objs.editor/on-tags-added
-           :lt.objs.editor/on-tags-removed
-           :lt.objs.editor/inactive-on-blur
-           :lt.objs.editor/context-on-active
-           :lt.objs.editor/focus
-           :lt.objs.editor/context-on-inactive
-           :lt.objs.editor/refresh-on-show
-           :lt.objs.editor/destroy-on-close
-           :lt.objs.sidebar.clients/track-active-client
-           :lt.plugins.auto-complete/intra-buffer-string-hints
-           :lt.plugins.auto-complete/textual-hints
-           :lt.plugins.auto-paren/close-pair :lt.objs.editor.pool/track-active
-           :lt.objs.editor.pool/ed-close :lt.objs.editor/menu!
-           :lt.objs.editor.pool/warn-on-active :lt.objs.editor/refresh!
-           (:lt.objs.editor.pool/line-comment-options {})
-           :lt.plugins.auto-paren/repeat-pair
-           :lt.plugins.auto-complete/async-hint-tokens
-           :lt.objs.editor/copy-paste-menu+
-           :lt.plugins.auto-paren/try-remove-pair
-           :lt.plugins.auto-paren/open-pair
-           :lt.plugins.auto-complete/show-hint
-           :lt.objs.editor/not-read-only
-           :lt.objs.opener/untrack-closed
-           :lt.objs.opener/unwatch-closed
-           :lt.objs.editor/hide-line-numbers
-           :lt.objs.editor/hide-fold-gutter
-           :lt.objs.editor/no-wrap
-           :lt.objs.settings/default-keymap-diffs
-           :lt.objs.settings/user-keymap-diffs
-           :lt.objs.settings/default-behavior-diffs
-           :lt.objs.settings/user-behavior-diffs
-           :lt.objs.style/remove-theme
-           (:lt.objs.style/set-theme "default")
-           (:lt.objs.editor/tab-settings false 2 2)
-           :lt.plugins.auto-complete/remove-on-move-line
-           :lt.plugins.auto-complete/remove-on-scroll-inactive
-           :lt.plugins.auto-complete/auto-show-on-input
-           ]
-  :editor.active [:lt.objs.status-bar/report-cursor-location]
-  :editor.force.wrap [:lt.objs.editor/wrap]
-  :editor.force.unwrap [:lt.objs.editor/no-wrap]
-  :editor.behaviors [:lt.objs.settings/on-behaviors-editor-save
-                     :lt.objs.settings/eval-settings
-                     :lt.objs.langs.behaviors/behavior-hints
-                     :lt.objs.langs.behaviors/show-info-on-move
-                     :lt.objs.langs.behaviors/on-changed
-                     :lt.objs.langs.behaviors/parsed
-                     :lt.objs.langs.behaviors/behavior-hint-pattern
-                     :lt.plugins.auto-complete/auto-show-on-input
-                     ]
-  :editor.behaviors.helper [:lt.objs.langs.behaviors/helper.show!
-                            :lt.objs.langs.behaviors/helper.clear!]
-  :editor.behaviors.workspace [:lt.objs.settings/workspace-save
-                               :lt.objs.editor.file/dirty-on-change]
-  :editor.keymap [:lt.objs.settings/on-keymap-editor-save
-                  :lt.objs.settings/eval-settings
-                  :lt.objs.langs.keymap/keymap-hints
-                  :lt.objs.langs.keymap/show-info-on-move
-                  :lt.objs.langs.keymap/on-changed
-                  :lt.objs.langs.keymap/parsed
-                  :lt.objs.langs.keymap/keymap-hint-pattern
-                  :lt.plugins.auto-complete/auto-show-on-input]
-  :editor.keymap.helper [:lt.objs.langs.keymap/helper.show!]
-  :editor.file-backed [:lt.objs.opener/save-as-rename!
-                       :lt.objs.editor.file/remove-trailing-whitespace
-                       :lt.objs.editor.file/dirty-on-change :lt.objs.editor.file/file-save
-                       :lt.objs.opener/save-as :lt.objs.editor.file/preserve-line-endings
-                       :lt.objs.editor.file/last-char-newline]
-  :editor.inline-result [:lt.objs.eval/underline-results :lt.objs.eval/inline-results
-                         :lt.objs.eval/inline-exceptions]
-  :editor.markdown [:lt.objs.editor/wrap]
-  :editor.plaintext [:lt.objs.editor/wrap]
-  :editor.pool [:lt.objs.editor.pool/options-changed
-                :lt.objs.editor.pool/line-numbers-changed
-                :lt.objs.editor.pool/theme-changed]
-  :editor.read-only [:lt.objs.editor/read-only]
-  :editor.transient [:lt.objs.editor.file/dirty-on-change
-                     :lt.objs.opener/transient-save
-                     :lt.objs.opener/save-as]
-  :evaler [:lt.objs.eval/alert-on-no-client]
-  :files [:lt.objs.opener/save-failed
-          (:lt.objs.files/file-types [{:name "C" :exts [:c] :mime "text/x-c" :tags [:editor.c]}
-                                      {:name "C++" :exts [:cpp :mm :cc] :mime "text/x-c++src" :tags [:editor.cpp]}
-                                      {:name "C++ Header" :exts [:h] :mime "text/x-c++hdr" :tags [:editor.cpph]}
-                                      {:name "C#" :exts [:cs] :mime "text/x-csharpr" :tags [:editor.csharp]}
-                                      {:name "CoffeeScript" :exts [:coffee] :mime "text/x-coffeescript" :tags [:editor.coffee]}
-                                      {:name "Common Lisp" :exts [:cl :lisp] :mime "text/x-common-lisp" :tags [:editor.common-lisp]}
-                                      {:name "Diff" :exts [:diff :patch] :mime "text/x-diff" :tags [:editor.diff]}
-                                      {:name "EDN" :exts [:edn] :mime "text/x-clojure" :tags [:editor.clj :editor.edn]}
-                                      {:name "Erlang" :exts [:erl] :mime "text/x-erlang" :tags [:editor.erlang]}
-                                      {:name "Go" :exts [:go] :mime "text/x-go" :tags [:editor.go]}
-                                      {:name "Groovy" :exts [:groovy] :mime "text/x-groovy" :tags [:editor.groovy]}
-                                      {:name "HAML" :exts [:haml] :mime "text/x-haml" :tags [:editor.haml]}
-                                      {:name "Haskell" :exts [:hs] :mime "text/x-haskell" :tags [:editor.haskell]}
-                                      {:name "Haxe" :exts [:hx] :mime "text/x-haxe" :tags [:editor.haxe]}
-                                      {:name "HTML" :exts [:html :htm] :mime "htmlmixed" :tags [:editor.html]}
-                                      {:name "INI" :exts [:ini] :mime "text/x-ini" :tags [:editor.ini]}
-                                      {:name "Java" :exts [:java] :mime "text/x-java" :tags [:editor.java]}
-                                      {:name "Julia" :exts [:jl] :mime "text/x-julia" :tags [:editor.julia]}
-                                      {:name "LaTeX" :exts [:latex :tex] :mime "text/x-stex" :tags [:editor.latex]}
-                                      {:name "LESS" :exts [:less] :mime "text/x-less" :tags [:editor.less]}
-                                      {:name "Light Table Behaviors" :exts [:behaviors] :mime "text/x-clojurescript" :tags [:editor.behaviors]}
-                                      {:name "Light Table Keymap" :exts [:keymap] :mime "text/x-clojurescript" :tags [:editor.keymap]}
-                                      {:name "LiveScript" :exts [:ls] :mime "text/x-livescript" :tags [:editor.livescript]}
-                                      {:name "Lua" :exts [:lua] :mime "text/x-lua" :tags [:editor.lua]}
-                                      {:name "Markdown" :exts [:md :markdown] :mime "text/x-markdown" :tags [:editor.markdown]}
-                                      {:name "MySQL" :exts [] :mime "text/x-mysql" :tags [:editor.sql :editor.mysql]}
-                                      {:name "OCaml" :exts [:ocaml :ml] :mime "text/x-ocaml" :tags [:editor.ocaml]}
-                                      {:name "Pascal" :exts [:pas] :mime "text/x-pascal" :tags [:editor.pascal]}
-                                      {:name "Perl" :exts [:pl] :mime "text/x-perl" :tags [:editor.perl]}
-                                      {:name "PHP" :exts [:php] :mime "text/x-php" :tags [:editor.php]}
-                                      {:name "Plain Text" :exts [:txt] :mime "plaintext" :tags [:editor.plaintext]}
-                                      {:name "Python" :exts [:py :pyw] :mime "text/x-python" :tags [:editor.python]}
-                                      {:name "R" :exts [:r] :mime "text/x-rsrc" :tags [:editor.r]}
-                                      {:name "Ruby" :exts [:rb] :mime "text/x-ruby" :tags [:editor.ruby]}
-                                      {:name "Rust" :exts [:rs] :mime "text/x-rustsrc" :tags [:editor.rust]}
-                                      {:name "Sass" :exts [:sass] :mime "text/x-sass" :tags [:editor.sass]}
-                                      {:name "Scala" :exts [:scala] :mime "text/x-scala" :tags [:editor.scala]}
-                                      {:name "Scheme" :exts [:ss :scm :sch] :mime "text/x-scheme" :tags [:editor.scheme]}
-                                      {:name "Shell" :exts [:sh :bash :profile :bash_profile :bashrc :zsh :zshrc] :mime "text/x-sh" :tags [:editor.shell]}
-                                      {:name "Smarty" :exts [:smarty] :mime "text/x-smarty" :tags [:editor.smarty]}
-                                      {:name "SPARQL" :exts [:sparql] :mime "text/x-sparql-query" :tags [:editor.sparql]}
-                                      {:name "SQL" :exts [:sql] :mime "text/x-sql" :tags [:editor.sql]}
+[
+ [:app :lt.objs.cache/init]
+ [:app :lt.objs.settings/load-behaviors]
+ [:app :lt.objs.proc/set-path-OSX]
+ [:app :lt.objs.workspace/reconstitute-last-workspace]
+ [:app :lt.objs.sidebar.command/init-commands]
+ [:app :lt.objs.clients.ws/kill-on-closed]
+ [:app :lt.objs.workspace/stop-watch-on-close]
+ [:app :lt.objs.clients.devtools/clean-inspectors-timer]
+ [:app :lt.objs.deploy/check-deploy]
+ [:app :lt.objs.editor.pool/stop-close-dirty]
+ [:app :lt.objs.clients/close-clients-on-closed]
+ [:app :lt.objs.app/restore-position-on-init]
+ [:app :lt.objs.cli/open-on-args]
+ [:app :lt.objs.editor.pool/init-syntax-selector]
+ [:app :lt.objs.cli/open!]
+ [:app :lt.objs.thread/shutdown-worker-on-close]
+ [:app :lt.objs.animations/animate-on-init]
+ [:app :lt.objs.app/store-position-on-close]
+ [:app :lt.objs.canvas/append-canvas]
+ [:app :lt.objs.tabs/init-sortable]
+ [:app :lt.objs.deploy/check-version]
+ [:app :lt.objs.style/style-on-init]
+ [:app :lt.objs.app/initial-focus]
+ [:app :lt.objs.app/track-focus]
+ [:app :lt.objs.app/blur-class]
+ [:app :lt.objs.app/focus-class]
+ [:app :lt.objs.app/close!]
+ [:app :lt.objs.menu/remove-menu-close]
+ [:app :lt.objs.app/refresh]
+ [:app :lt.objs.app/on-show-bind-navigate]
+ [:app :lt.objs.editor.pool/stop-reload-dirty]
+ [:app :lt.objs.menu/set-menu]
+ [:app :lt.plugins.auto-complete/init]
+ [:app :lt.objs.clients.devtools/connect-on-init]
+ [:app :lt.objs.tabs/init]
+ [:app :lt.objs.find/init]
+ [:app :lt.plugins.doc/init-doc-search]
+ [:app :lt.objs.intro/show-intro]
+ [:app :lt.objs.menu/recreate-menu]
+ [:app :lt.objs.menu/create-menu]
+ [:app :lt.objs.settings/default-keymap-diffs]
+ [:app :lt.objs.settings/user-keymap-diffs]
+ [:app :lt.objs.settings/default-behavior-diffs]
+ [:app :lt.objs.settings/user-behavior-diffs]
+ [:app :lt.objs.plugins/init-plugins]
+ [:app :lt.objs.plugins/plugin-behavior-diffs]
+ [:app :lt.objs.plugins/plugin-keymap-diffs]
+ [:app :lt.objs.plugins/behaviors.refreshed-load-keys]
+ [:app :lt.objs.status-bar/init-status-bar]
+ [:app :lt.objs.status-bar/show-status-bar]
+ [:app :lt.objs.workspace/init-workspace-cache-dir]
+ [:app :lt.objs.metrics/init-metrics]
+ [:app :lt.objs.keyboard/chord-timeout 1000]
+ [:app :lt.objs.files/file.ignore-pattern "(^\\..*)|\\.class$|target/|svn|cvs|\\.git|\\.pyc|~|\\.swp|\\.jar|.DS_Store|\\.nrepl-port"]
+ [:app :lt.objs.style/provide-skin "dark" "core/css/skins/new-dark.css"]
+ [:app :lt.objs.style/provide-skin "light" "core/css/skins/new-dark.css"]
+ [:app :lt.objs.style/provide-skin "new-dark" "core/css/skins/new-dark.css"]
+ [:app :lt.objs.style/provide-theme "3024-day" "core/css/themes/3024-day.css"]
+ [:app :lt.objs.style/provide-theme "3024-night" "core/css/themes/3024-night.css"]
+ [:app :lt.objs.style/provide-theme "ambiance" "core/css/themes/ambiance.css"]
+ [:app :lt.objs.style/provide-theme "base16-dark" "core/css/themes/base16-dark.css"]
+ [:app :lt.objs.style/provide-theme "base16-light" "core/css/themes/base16-light.css"]
+ [:app :lt.objs.style/provide-theme "blackboard" "core/css/themes/blackboard.css"]
+ [:app :lt.objs.style/provide-theme "cobalt" "core/css/themes/cobalt.css"]
+ [:app :lt.objs.style/provide-theme "codemirror" "core/css/themes/codemirror.css"]
+ [:app :lt.objs.style/provide-theme "default" "core/css/themes/default.css"]
+ [:app :lt.objs.style/provide-theme "eclipse" "core/css/themes/eclipse.css"]
+ [:app :lt.objs.style/provide-theme "elegant" "core/css/themes/elegant.css"]
+ [:app :lt.objs.style/provide-theme "erlang-dark" "core/css/themes/erlang-dark.css"]
+ [:app :lt.objs.style/provide-theme "ibdknox" "core/css/themes/ibdknox.css"]
+ [:app :lt.objs.style/provide-theme "lesser-dark" "core/css/themes/lesser-dark.css"]
+ [:app :lt.objs.style/provide-theme "midnight" "core/css/themes/midnight.css"]
+ [:app :lt.objs.style/provide-theme "monokai" "core/css/themes/monokai.css"]
+ [:app :lt.objs.style/provide-theme "neat" "core/css/themes/neat.css"]
+ [:app :lt.objs.style/provide-theme "night" "core/css/themes/night.css"]
+ [:app :lt.objs.style/provide-theme "paraiso-dark" "core/css/themes/paraiso-dark.css"]
+ [:app :lt.objs.style/provide-theme "paraiso-light" "core/css/themes/paraiso-light.css"]
+ [:app :lt.objs.style/provide-theme "rubyblue" "core/css/themes/rubyblue.css"]
+ [:app :lt.objs.style/provide-theme "solarized-light" "core/css/themes/solarized-light.css"]
+ [:app :lt.objs.style/provide-theme "solarized" "core/css/themes/solarized.css"]
+ [:app :lt.objs.style/provide-theme "the-matrix" "core/css/themes/the-matrix.css"]
+ [:app :lt.objs.style/provide-theme "tomorrow-night-eighties" "core/css/themes/tomorrow-night-eighties.css"]
+ [:app :lt.objs.style/provide-theme "tomorrow-night" "core/css/themes/tomorrow-night.css"]
+ [:app :lt.objs.style/provide-theme "twilight" "core/css/themes/twilight.css"]
+ [:app :lt.objs.style/provide-theme "vibrant-ink" "core/css/themes/vibrant-ink.css"]
+ [:app :lt.objs.style/provide-theme "xq-dark" "core/css/themes/xq-dark.css"]
+ [:app :lt.objs.style/provide-theme "xq-light" "core/css/themes/xq-light.css"]
+ [:app :lt.objs.style/set-skin "dark"]
+ [:app :lt.objs.editor/init-codemirror]
 
-                                      {:name "TypeScript" :exts [:ts] :mime "text/x-typescript" :tags [:editor.typescript]}
-                                      {:name "VB" :exts [:vb] :mime "text/x-vb" :tags [:editor.visualbasic]}
-                                      {:name "XML" :exts [:xml] :mime "application/xml" :tags [:editor.xml]}
-                                      {:name "YAML" :exts [:yml :yaml] :mime "text/x-yaml" :tags [:editor.yaml]}
-                                      ])]
-  :filter-list [:lt.objs.sidebar.command/select!
-                :lt.objs.sidebar.command/filter-inactive
-                :lt.objs.sidebar.command/filter-list.focus! :lt.objs.sidebar.command/change!
-                :lt.objs.sidebar.command/clear! :lt.objs.sidebar.command/update-lis
-                :lt.objs.sidebar.command/set-on-select
-                :lt.objs.sidebar.command/move-selection
-                :lt.objs.sidebar.command/set-selection!
-                :lt.objs.sidebar.command/filter-active]
-  :find-bar [:lt.objs.find/clear! :lt.objs.find/next! :lt.objs.find/show!
-             :lt.objs.find/focus! :lt.objs.find/hide! :lt.objs.find/prev!
-             :lt.objs.find/replace!
-             :lt.objs.find/search!]
-  :frame.client [:lt.objs.browser/html-eval :lt.objs.browser/cljs-exec
-                 :lt.objs.browser/handle-refresh! :lt.objs.browser/handle-send!
-                 :lt.objs.browser/css-eval :lt.objs.browser/js-eval
-                 :lt.objs.browser/js-eval-file :lt.objs.browser/handle-close!
-                 :lt.objs.browser/change-live]
-  :hinter [:lt.plugins.auto-complete/select :lt.plugins.auto-complete/escape!
-           :lt.plugins.auto-complete/select-unknown
-           :lt.plugins.auto-complete/line-change]
-  :inline.doc [:lt.plugins.doc/clear]
-  :inline.exception [:lt.objs.eval/ex-menu+ :lt.objs.eval/ex-clear
-                     :lt.objs.menu/menu!
-                     :lt.objs.eval/destroy-on-cleared
-                     :lt.objs.eval/ex-shrink-on-double-click
-                     :lt.objs.eval/copy-exception]
-  :inline.result [:lt.objs.eval/shrink-on-double-click
-                  :lt.objs.menu/menu!
-                  :lt.objs.eval/result-menu+
-                  :lt.objs.eval/expand-on-click :lt.objs.eval/clear-mark
-                  :lt.objs.eval/move-mark :lt.objs.eval/changed
-                  :lt.objs.eval/update!
-                  :lt.objs.eval/destroy-on-cleared
-                  :lt.objs.eval/copy-result]
-  :inline.underline-result [:lt.objs.eval/result-menu+ :lt.objs.eval/ex-clear :lt.objs.eval/destroy-on-cleared]
-  :inline.watch [:lt.plugins.watches/clear!]
-  :inspector.object [:lt.objs.clients.devtools/clear-inspector-object]
-  :jump-stack [:lt.objs.jump-stack/jump-stack.push :lt.objs.jump-stack/jump-stack.pop]
-  :navigate.selector [:lt.objs.sidebar.navigate/escape!
-                      :lt.objs.sidebar.navigate/pop-transient-on-select
-                      :lt.objs.sidebar.navigate/open-on-select]
-  :navigator [:lt.objs.sidebar.navigate/focus! :lt.objs.sidebar.navigate/focus-on-show :lt.objs.sidebar.navigate/workspace-files
-              (:lt.objs.sidebar.navigate/set-file-limit 8000)]
-  :object [:lt.objs.clients/on-destroy-remove-cb]
-  :opener [:lt.objs.opener/open-from-info :lt.objs.opener/open-transient-editor
-           :lt.objs.opener/open-standard-editor
-           :lt.objs.opener/track-open-files
-           :lt.objs.opener/watch-on-open
-           :lt.objs.opener/check-read-only
-           (:lt.objs.opener/existing-path-opens-linked-doc false)]
-  :options-input [:lt.objs.sidebar.command/op-select!
-                  :lt.objs.sidebar.command/options-escape!
-                  :lt.objs.sidebar.command/op-clear!
-                  :lt.objs.sidebar.command/op-focus!]
-  :plugin.file [(:lt.objs.editor.file/on-save :build)]
-  :plugin-manager [:lt.objs.plugins/on-close
-                   :lt.objs.plugins/search-server-plugins
-                   :lt.objs.plugins/save-user-plugin-dependencies
-                   :lt.objs.plugins/render-installed-plugins
-                   :lt.objs.plugins/render-server-plugins
-                   :lt.objs.plugins/submit-plugin
-                   :lt.objs.plugins/draw-plugins-on-updated
-                   :lt.objs.plugins/get-latest-metadata-sha
-                   :lt.objs.plugins/check-metadata-sha
-                   :lt.objs.plugins/check-local-metadata-cache]
-  :popup [:lt.objs.popup/refocus-on-close
-          :lt.objs.popup/close!
-          :lt.objs.popup/on-click-destroy
-          :lt.objs.popup/change-active-button
-          :lt.objs.popup/exec-active]
-  :searcher [:lt.objs.search/clear!
-             :lt.objs.search/search!
-             :lt.objs.search/done-searching
-             :lt.objs.search/next!
-             :lt.objs.search/prev!
-             :lt.objs.search/replace!
-             :lt.objs.search/on-result
-             :lt.objs.search/focus
-             :lt.objs.search/on-close]
-  :sidebar [:lt.objs.sidebar/item-toggled
-            :lt.objs.sidebar/width!
-            :lt.objs.sidebar/open!
-            :lt.objs.sidebar/close!
-            :lt.objs.sidebar/no-anim-on-drag
-            :lt.objs.sidebar/reanim-on-drop
-            :lt.objs.sidebar/pop-transient]
-  :sidebar.clients [:lt.objs.sidebar.clients/unset-client
-                    :lt.objs.sidebar.clients/selecting!
-                    :lt.objs.sidebar.clients/focus!
-                    :lt.objs.sidebar.clients/hide-on-select
-                    :lt.objs.sidebar.clients/done-selecting]
-  :sidebar.command [:lt.objs.sidebar.command/refresh! :lt.objs.sidebar.command/focus!
-                    :lt.objs.sidebar.command/exec-active!
-                    :lt.objs.sidebar.command/post-select-pop
-                    :lt.objs.sidebar.command/soft-focus!
-                    :lt.objs.sidebar.command/cancel!
-                    :lt.objs.sidebar.command/focus-on-show
-                    :lt.objs.sidebar.command/exec-command]
-  :sidebar.docs.search [:lt.plugins.doc/sidebar.doc.search.exec
-                        :lt.plugins.doc/doc.search.results
-                        :lt.plugins.doc/focus!
-                        :lt.plugins.doc/set-item
-                        :lt.plugins.doc/clear!
-                        :lt.plugins.doc/no-client
-                        :lt.plugins.doc/cur-from-last-editor
-                        ]
-  :sidebar.workspace [:lt.objs.sidebar.workspace/sidebar-menu
-                      :lt.objs.sidebar.workspace/on-menu
-                      :lt.objs.sidebar.workspace/on-drop
-                      :lt.objs.sidebar.workspace/recent! :lt.objs.sidebar.workspace/tree!]
-  :recent-workspace [:lt.objs.sidebar.workspace/on-menu
-                     :lt.objs.sidebar.workspace/recent-menu
-                     :lt.objs.sidebar.workspace/recent.delete!
-                     :lt.objs.sidebar.workspace/recent.select!]
-  :status-bar-item [:lt.objs.status-bar/on-show!
-                             :lt.objs.status-bar/on-hide!
-                             :lt.objs.status-bar/init-status-bar]
-  :status.console-toggle [:lt.objs.console/status-bar-console-toggle
-                             :lt.objs.console/status-bar-console-hide
-                             :lt.objs.console/status-bar-console-show]
-  :tab-label [:lt.objs.menu/menu!
-              :lt.objs.tabs/tab-label-menu+
-              :lt.objs.tabs/on-close-tab-label]
-  :tabs [:lt.objs.tabs/on-destroy-objs :lt.objs.tabs/active-tab-num :lt.objs.tabs/prev-tab :lt.objs.tabs/next-tab :lt.objs.tabs/tab-close :lt.objs.tabs/repaint-tab-updated
-         :lt.objs.tabs/tabset-bottom!
-         :lt.objs.tabs/right! :lt.objs.tabs/left! :lt.objs.tabs/bottom!]
-  :tabset [:lt.objs.tabs/set-width-final! :lt.objs.tabs/tabset-active
-           :lt.objs.tabs/next-tab :lt.objs.tabs/unset-dragging
-           :lt.objs.tabs/repaint-tab-updated :lt.objs.tabs/width!
-           :lt.objs.tabs/tab-close :lt.objs.tabs/prev-tab
-           :lt.objs.tabs/reanim-on-drop :lt.objs.tabs/no-anim-on-drag
-           :lt.objs.tabs/active-tab-num :lt.objs.tabs/tabset-menu+
-           :lt.objs.tabs/set-dragging :lt.objs.menu/menu!]
-  :tabset.tab [:lt.objs.tabs/on-destroy-remove
-               :lt.objs.tabs/tab-active
-               :lt.objs.tabs/show-close-button]
-  :tcp.client [:lt.objs.clients.tcp/send!]
-  :tree-item [:lt.objs.sidebar.workspace/rename-submit
-              :lt.objs.sidebar.workspace/rename-focus
-              :lt.objs.sidebar.workspace/start-rename
-              :lt.objs.sidebar.workspace/duplicate
-              :lt.objs.sidebar.workspace/rename-cancel
-              :lt.objs.sidebar.workspace/rename-blur]
-  :version [:lt.objs.version/destroy-on-close
-            :lt.objs.version/on-show-refresh-eds]
-  :watchable [:lt.plugins.watches/watch!
-              :lt.plugins.watches/unwatch!
-              :lt.plugins.watches/eval-on-watch-or-unwatch]
-  :window [:lt.objs.clients.tcp/kill-on-closed
-           :lt.objs.menu/set-menu
-           :lt.objs.menu/remove-menu-close
-           ]
-  :worker-thread [:lt.objs.thread/kill!
-                  :lt.objs.thread/send!
-                  :lt.objs.thread/queue!
-                  :lt.objs.thread/connect
-                  :lt.objs.thread/try-send
-                  :lt.objs.thread/message]
-  :workspace [:lt.objs.sidebar.workspace/on-ws-set
-              :lt.objs.sidebar.navigate/watched.delete :lt.objs.workspace/rename!
-              :lt.objs.workspace/clear! :lt.objs.sidebar.navigate/watched.create
-              :lt.objs.sidebar.navigate/populate-on-ws-update
-              :lt.objs.editor.pool/watched.delete :lt.objs.workspace/add-folder!
-              :lt.objs.workspace/serialize-workspace
-              :lt.objs.workspace/remove-file! :lt.objs.editor.pool/watched.rename
-              :lt.objs.workspace/add-file! :lt.objs.sidebar.workspace/on-ws-add
-              :lt.objs.workspace/watch-on-set
-              :lt.objs.sidebar.workspace/on-ws-remove :lt.objs.workspace/set!
-              :lt.objs.sidebar.workspace/watched.delete :lt.objs.workspace/new!
-              :lt.objs.sidebar.workspace/watched.create
-              :lt.objs.editor.pool/watched.update
-              :lt.objs.settings/grab-workspace-behaviors
-              :lt.objs.opener/watch-open-files
-              :lt.objs.sidebar.workspace/watch-open-dirs-paths
-              :lt.objs.workspace/remove-folder!]
-  :workspace.file [:lt.objs.sidebar.workspace/on-open-file
-                   :lt.objs.sidebar.workspace/rename-file
-                   :lt.objs.sidebar.workspace/subfile-menu
-                   :lt.objs.sidebar.workspace/delete-file
-                   :lt.objs.sidebar.workspace/force-delete-file
-                   :lt.objs.sidebar.workspace/on-menu]
-  :workspace.file.root [:lt.objs.sidebar.workspace/on-root-menu]
-  :workspace.folder [:lt.objs.sidebar.workspace/new-folder!
-                     :lt.objs.sidebar.workspace/subfolder-menu
-                     :lt.objs.sidebar.workspace/destroy-sub-tree
-                     :lt.objs.sidebar.workspace/on-open-ls
-                     :lt.objs.sidebar.workspace/delete-folder
-                     :lt.objs.sidebar.workspace/on-close
-                     :lt.objs.sidebar.workspace/rename-folder
-                     :lt.objs.sidebar.workspace/refresh
-                     :lt.objs.sidebar.workspace/on-menu
-                     :lt.objs.sidebar.workspace/force-delete-folder
-                     :lt.objs.sidebar.workspace/track-and-watch-open-dirs
-                     :lt.objs.sidebar.workspace/untrack-closed-dirs
-                     :lt.objs.sidebar.workspace/new-file!]
-  :workspace.folder.root [:lt.objs.sidebar.workspace/on-root-menu
-                          :lt.objs.sidebar.workspace/on-menu]
-  :workspace.root [:lt.objs.sidebar.workspace/on-remove
-                   :lt.objs.sidebar.workspace/add-ws-folder
-                   :lt.objs.sidebar.workspace/on-clear
-                   :lt.objs.sidebar.workspace/add-ws-file]
-  :ws.client [:lt.objs.clients.ws/send!]}}
+ [:bottombar :lt.objs.bottombar/item-toggled]
+ [:bottombar :lt.objs.bottombar/height!]
+ [:bottombar :lt.objs.bottombar/no-anim-on-drag]
+ [:bottombar :lt.objs.bottombar/reanim-on-drop]
+ [:bottombar :lt.objs.bottombar/show-item]
+ [:bottombar :lt.objs.bottombar/hide-item]
 
+ [:browser :lt.objs.browser/forward!]
+ [:browser :lt.objs.browser/init!]
+ [:browser :lt.objs.browser/destroy-on-close]
+ [:browser :lt.objs.browser/focus!]
+ [:browser :lt.objs.browser/url-focus!]
+ [:browser :lt.objs.browser/focus-on-show]
+ [:browser :lt.objs.browser/set-client-name]
+ [:browser :lt.objs.browser/rem-client]
+ [:browser :lt.objs.browser/store-history]
+ [:browser :lt.objs.browser/refresh!]
+ [:browser :lt.objs.browser/set-active]
+ [:browser :lt.objs.browser/navigate!]
+ [:browser :lt.objs.browser/active-context]
+ [:browser :lt.objs.browser/inactive-context]
+ [:browser :lt.objs.browser/window-load-click-handler]
+ [:browser :lt.objs.browser/window-load-key-handler]
+ [:browser :lt.objs.browser/window-load-lttools]
+ [:browser :lt.objs.browser/menu!]
+ [:browser :lt.objs.browser/menu+]
+ [:browser :lt.objs.browser/back!]
+
+ [:client :lt.objs.clients/on-connect-drain]
+ [:client :lt.objs.clients/queue!]
+ [:client :lt.objs.clients/try-send]
+
+ [:client.local :lt.objs.clients.local/send!]
+
+ [:client.placeholder :lt.objs.clients/remove-placeholder-on-swapped]
+
+ [:client.selector :lt.objs.connector/on-close!]
+ [:client.selector :lt.objs.connector/on-selected]
+
+ [:clients :lt.objs.clients/raise-on-object]
+
+ [:clients.devtools :lt.objs.clients.devtools/clear-queue-on-connect]
+ [:clients.devtools :lt.objs.clients.devtools/console-log]
+ [:clients.devtools :lt.objs.clients.devtools/handle-message]
+ [:clients.devtools :lt.objs.clients.devtools/clear-console]
+ [:clients.devtools :lt.objs.clients.devtools/connect!]
+ [:clients.devtools :lt.objs.clients.devtools/script-parsed]
+ [:clients.devtools :lt.objs.clients.devtools/reconnect]
+ [:clients.devtools :lt.objs.clients.devtools/disconnect]
+ [:clients.devtools :lt.objs.clients.devtools/print-messages]
+
+ [:command.options :lt.objs.sidebar.command/options-escape!]
+
+ [:command.selector :lt.objs.sidebar.command/escape!]
+ [:command.selector :lt.objs.sidebar.command/select-hidden]
+ [:command.selector :lt.objs.sidebar.command/select-command]
+
+ [:console :lt.objs.console/on-close]
+ [:console :lt.objs.menu/menu!]
+ [:console :lt.objs.console/menu+]
+
+ [:context :lt.objs.context/log]
+
+ [:docable :lt.plugins.doc/editor.doc.show!]
+ [:docable :lt.plugins.doc/doc-menu+]
+
+ [:docs :lt.objs.docs/on-close-destroy]
+
+ [:document :lt.objs.document/try-close-root-document]
+ [:document :lt.objs.document/close-root-document]
+ [:document :lt.objs.document/set-linked-doc-options {}]
+
+ [:document.linked :lt.objs.document/close-linked-document]
+
+ [:editor :lt.objs.document/close-document-on-editor-close]
+ [:editor :lt.objs.editor/active-on-focus]
+ [:editor :lt.objs.editor/on-tags-added]
+ [:editor :lt.objs.editor/on-tags-removed]
+ [:editor :lt.objs.editor/inactive-on-blur]
+ [:editor :lt.objs.editor/context-on-active]
+ [:editor :lt.objs.editor/focus]
+ [:editor :lt.objs.editor/context-on-inactive]
+ [:editor :lt.objs.editor/refresh-on-show]
+ [:editor :lt.objs.editor/destroy-on-close]
+ [:editor :lt.objs.sidebar.clients/track-active-client]
+ [:editor :lt.plugins.auto-complete/intra-buffer-string-hints]
+ [:editor :lt.plugins.auto-complete/textual-hints]
+ [:editor :lt.plugins.auto-paren/close-pair]
+ [:editor :lt.objs.editor.pool/track-active]
+ [:editor :lt.objs.editor.pool/ed-close]
+ [:editor :lt.objs.editor/menu!]
+ [:editor :lt.objs.editor.pool/warn-on-active]
+ [:editor :lt.objs.editor/refresh!]
+ [:editor :lt.objs.editor.pool/line-comment-options {}]
+ [:editor :lt.plugins.auto-paren/repeat-pair]
+ [:editor :lt.plugins.auto-complete/async-hint-tokens]
+ [:editor :lt.objs.editor/copy-paste-menu+]
+ [:editor :lt.plugins.auto-paren/try-remove-pair]
+ [:editor :lt.plugins.auto-paren/open-pair]
+ [:editor :lt.plugins.auto-complete/show-hint]
+ [:editor :lt.objs.editor/not-read-only]
+ [:editor :lt.objs.opener/untrack-closed]
+ [:editor :lt.objs.opener/unwatch-closed]
+ [:editor :lt.objs.editor/hide-line-numbers]
+ [:editor :lt.objs.editor/hide-fold-gutter]
+ [:editor :lt.objs.editor/no-wrap]
+ [:editor :lt.objs.settings/default-keymap-diffs]
+ [:editor :lt.objs.settings/user-keymap-diffs]
+ [:editor :lt.objs.settings/default-behavior-diffs]
+ [:editor :lt.objs.settings/user-behavior-diffs]
+ [:editor :lt.objs.style/remove-theme]
+ [:editor :lt.objs.style/set-theme "default"]
+ [:editor :lt.objs.editor/tab-settings false 2 2]
+ [:editor :lt.plugins.auto-complete/remove-on-move-line]
+ [:editor :lt.plugins.auto-complete/remove-on-scroll-inactive]
+ [:editor :lt.plugins.auto-complete/auto-show-on-input]
+
+ [:editor.active :lt.objs.status-bar/report-cursor-location]
+
+ [:editor.behaviors :lt.objs.settings/on-behaviors-editor-save]
+ [:editor.behaviors :lt.objs.settings/eval-settings]
+ [:editor.behaviors :lt.objs.langs.behaviors/behavior-hints]
+ [:editor.behaviors :lt.objs.langs.behaviors/show-info-on-move]
+ [:editor.behaviors :lt.objs.langs.behaviors/on-changed]
+ [:editor.behaviors :lt.objs.langs.behaviors/parsed]
+ [:editor.behaviors :lt.objs.langs.behaviors/behavior-hint-pattern]
+ [:editor.behaviors :lt.plugins.auto-complete/auto-show-on-input]
+
+ [:editor.behaviors.helper :lt.objs.langs.behaviors/helper.show!]
+ [:editor.behaviors.helper :lt.objs.langs.behaviors/helper.clear!]
+
+ [:editor.behaviors.workspace :lt.objs.settings/workspace-save]
+ [:editor.behaviors.workspace :lt.objs.editor.file/dirty-on-change]
+
+ [:editor.file-backed :lt.objs.opener/save-as-rename!]
+ [:editor.file-backed :lt.objs.editor.file/remove-trailing-whitespace]
+ [:editor.file-backed :lt.objs.editor.file/dirty-on-change]
+ [:editor.file-backed :lt.objs.editor.file/file-save]
+ [:editor.file-backed :lt.objs.opener/save-as]
+ [:editor.file-backed :lt.objs.editor.file/preserve-line-endings]
+ [:editor.file-backed :lt.objs.editor.file/last-char-newline]
+
+ [:editor.force.unwrap :lt.objs.editor/no-wrap]
+
+ [:editor.force.wrap :lt.objs.editor/wrap]
+
+ [:editor.inline-result :lt.objs.eval/underline-results]
+ [:editor.inline-result :lt.objs.eval/inline-results]
+ [:editor.inline-result :lt.objs.eval/inline-exceptions]
+
+ [:editor.keymap :lt.objs.settings/on-keymap-editor-save]
+ [:editor.keymap :lt.objs.settings/eval-settings]
+ [:editor.keymap :lt.objs.langs.keymap/keymap-hints]
+ [:editor.keymap :lt.objs.langs.keymap/show-info-on-move]
+ [:editor.keymap :lt.objs.langs.keymap/on-changed]
+ [:editor.keymap :lt.objs.langs.keymap/parsed]
+ [:editor.keymap :lt.objs.langs.keymap/keymap-hint-pattern]
+ [:editor.keymap :lt.plugins.auto-complete/auto-show-on-input]
+
+ [:editor.keymap.helper :lt.objs.langs.keymap/helper.show!]
+
+ [:editor.markdown :lt.objs.editor/wrap]
+
+ [:editor.plaintext :lt.objs.editor/wrap]
+
+ [:editor.pool :lt.objs.editor.pool/options-changed]
+ [:editor.pool :lt.objs.editor.pool/line-numbers-changed]
+ [:editor.pool :lt.objs.editor.pool/theme-changed]
+
+ [:editor.read-only :lt.objs.editor/read-only]
+
+ [:editor.transient :lt.objs.editor.file/dirty-on-change]
+ [:editor.transient :lt.objs.opener/transient-save]
+ [:editor.transient :lt.objs.opener/save-as]
+
+ [:evaler :lt.objs.eval/alert-on-no-client]
+
+ [:files :lt.objs.opener/save-failed]
+ [:files :lt.objs.files/file-types [{:exts [:c], :mime "text/x-c", :tags [:editor.c], :name "C"} {:exts [:cpp :mm :cc], :mime "text/x-c++src", :tags [:editor.cpp], :name "C++"} {:exts [:h], :mime "text/x-c++hdr", :tags [:editor.cpph], :name "C++ Header"} {:exts [:cs], :mime "text/x-csharpr", :tags [:editor.csharp], :name "C#"} {:exts [:coffee], :mime "text/x-coffeescript", :tags [:editor.coffee], :name "CoffeeScript"} {:exts [:cl :lisp], :mime "text/x-common-lisp", :tags [:editor.common-lisp], :name "Common Lisp"} {:exts [:diff :patch], :mime "text/x-diff", :tags [:editor.diff], :name "Diff"} {:exts [:edn], :mime "text/x-clojure", :tags [:editor.clj :editor.edn], :name "EDN"} {:exts [:erl], :mime "text/x-erlang", :tags [:editor.erlang], :name "Erlang"} {:exts [:go], :mime "text/x-go", :tags [:editor.go], :name "Go"} {:exts [:groovy], :mime "text/x-groovy", :tags [:editor.groovy], :name "Groovy"} {:exts [:haml], :mime "text/x-haml", :tags [:editor.haml], :name "HAML"} {:exts [:hs], :mime "text/x-haskell", :tags [:editor.haskell], :name "Haskell"} {:exts [:hx], :mime "text/x-haxe", :tags [:editor.haxe], :name "Haxe"} {:exts [:html :htm], :mime "htmlmixed", :tags [:editor.html], :name "HTML"} {:exts [:ini], :mime "text/x-ini", :tags [:editor.ini], :name "INI"} {:exts [:java], :mime "text/x-java", :tags [:editor.java], :name "Java"} {:exts [:jl], :mime "text/x-julia", :tags [:editor.julia], :name "Julia"} {:exts [:latex :tex], :mime "text/x-stex", :tags [:editor.latex], :name "LaTeX"} {:exts [:less], :mime "text/x-less", :tags [:editor.less], :name "LESS"} {:exts [:behaviors], :mime "text/x-clojurescript", :tags [:editor.behaviors], :name "Light Table Behaviors"} {:exts [:keymap], :mime "text/x-clojurescript", :tags [:editor.keymap], :name "Light Table Keymap"} {:exts [:ls], :mime "text/x-livescript", :tags [:editor.livescript], :name "LiveScript"} {:exts [:lua], :mime "text/x-lua", :tags [:editor.lua], :name "Lua"} {:exts [:md :markdown], :mime "text/x-markdown", :tags [:editor.markdown], :name "Markdown"} {:exts [], :mime "text/x-mysql", :tags [:editor.sql :editor.mysql], :name "MySQL"} {:exts [:ocaml :ml], :mime "text/x-ocaml", :tags [:editor.ocaml], :name "OCaml"} {:exts [:pas], :mime "text/x-pascal", :tags [:editor.pascal], :name "Pascal"} {:exts [:pl], :mime "text/x-perl", :tags [:editor.perl], :name "Perl"} {:exts [:php], :mime "text/x-php", :tags [:editor.php], :name "PHP"} {:exts [:txt], :mime "plaintext", :tags [:editor.plaintext], :name "Plain Text"} {:exts [:py :pyw], :mime "text/x-python", :tags [:editor.python], :name "Python"} {:exts [:r], :mime "text/x-rsrc", :tags [:editor.r], :name "R"} {:exts [:rb], :mime "text/x-ruby", :tags [:editor.ruby], :name "Ruby"} {:exts [:rs], :mime "text/x-rustsrc", :tags [:editor.rust], :name "Rust"} {:exts [:sass], :mime "text/x-sass", :tags [:editor.sass], :name "Sass"} {:exts [:scala], :mime "text/x-scala", :tags [:editor.scala], :name "Scala"} {:exts [:ss :scm :sch], :mime "text/x-scheme", :tags [:editor.scheme], :name "Scheme"} {:exts [:sh :bash :profile :bash_profile :bashrc :zsh :zshrc], :mime "text/x-sh", :tags [:editor.shell], :name "Shell"} {:exts [:smarty], :mime "text/x-smarty", :tags [:editor.smarty], :name "Smarty"} {:exts [:sparql], :mime "text/x-sparql-query", :tags [:editor.sparql], :name "SPARQL"} {:exts [:sql], :mime "text/x-sql", :tags [:editor.sql], :name "SQL"} {:exts [:ts], :mime "text/x-typescript", :tags [:editor.typescript], :name "TypeScript"} {:exts [:vb], :mime "text/x-vb", :tags [:editor.visualbasic], :name "VB"} {:exts [:xml], :mime "application/xml", :tags [:editor.xml], :name "XML"} {:exts [:yml :yaml], :mime "text/x-yaml", :tags [:editor.yaml], :name "YAML"}]]
+
+ [:filter-list :lt.objs.sidebar.command/select!]
+ [:filter-list :lt.objs.sidebar.command/filter-inactive]
+ [:filter-list :lt.objs.sidebar.command/filter-list.focus!]
+ [:filter-list :lt.objs.sidebar.command/change!]
+ [:filter-list :lt.objs.sidebar.command/clear!]
+ [:filter-list :lt.objs.sidebar.command/update-lis]
+ [:filter-list :lt.objs.sidebar.command/set-on-select]
+ [:filter-list :lt.objs.sidebar.command/move-selection]
+ [:filter-list :lt.objs.sidebar.command/set-selection!]
+ [:filter-list :lt.objs.sidebar.command/filter-active]
+
+ [:find-bar :lt.objs.find/clear!]
+ [:find-bar :lt.objs.find/next!]
+ [:find-bar :lt.objs.find/show!]
+ [:find-bar :lt.objs.find/focus!]
+ [:find-bar :lt.objs.find/hide!]
+ [:find-bar :lt.objs.find/prev!]
+ [:find-bar :lt.objs.find/replace!]
+ [:find-bar :lt.objs.find/search!]
+
+ [:frame.client :lt.objs.browser/html-eval]
+ [:frame.client :lt.objs.browser/cljs-exec]
+ [:frame.client :lt.objs.browser/handle-refresh!]
+ [:frame.client :lt.objs.browser/handle-send!]
+ [:frame.client :lt.objs.browser/css-eval]
+ [:frame.client :lt.objs.browser/js-eval]
+ [:frame.client :lt.objs.browser/js-eval-file]
+ [:frame.client :lt.objs.browser/handle-close!]
+ [:frame.client :lt.objs.browser/change-live]
+
+ [:hinter :lt.plugins.auto-complete/select]
+ [:hinter :lt.plugins.auto-complete/escape!]
+ [:hinter :lt.plugins.auto-complete/select-unknown]
+ [:hinter :lt.plugins.auto-complete/line-change]
+
+ [:inline.doc :lt.plugins.doc/clear]
+
+ [:inline.exception :lt.objs.eval/ex-menu+]
+ [:inline.exception :lt.objs.eval/ex-clear]
+ [:inline.exception :lt.objs.menu/menu!]
+ [:inline.exception :lt.objs.eval/destroy-on-cleared]
+ [:inline.exception :lt.objs.eval/ex-shrink-on-double-click]
+ [:inline.exception :lt.objs.eval/copy-exception]
+
+ [:inline.result :lt.objs.eval/shrink-on-double-click]
+ [:inline.result :lt.objs.menu/menu!]
+ [:inline.result :lt.objs.eval/result-menu+]
+ [:inline.result :lt.objs.eval/expand-on-click]
+ [:inline.result :lt.objs.eval/clear-mark]
+ [:inline.result :lt.objs.eval/move-mark]
+ [:inline.result :lt.objs.eval/changed]
+ [:inline.result :lt.objs.eval/update!]
+ [:inline.result :lt.objs.eval/destroy-on-cleared]
+ [:inline.result :lt.objs.eval/copy-result]
+
+ [:inline.underline-result :lt.objs.eval/result-menu+]
+ [:inline.underline-result :lt.objs.eval/ex-clear]
+ [:inline.underline-result :lt.objs.eval/destroy-on-cleared]
+
+ [:inline.watch :lt.plugins.watches/clear!]
+
+ [:inspector.object :lt.objs.clients.devtools/clear-inspector-object]
+
+ [:jump-stack :lt.objs.jump-stack/jump-stack.push]
+ [:jump-stack :lt.objs.jump-stack/jump-stack.pop]
+
+ [:navigate.selector :lt.objs.sidebar.navigate/escape!]
+ [:navigate.selector :lt.objs.sidebar.navigate/pop-transient-on-select]
+ [:navigate.selector :lt.objs.sidebar.navigate/open-on-select]
+
+ [:navigator :lt.objs.sidebar.navigate/focus!]
+ [:navigator :lt.objs.sidebar.navigate/focus-on-show]
+ [:navigator :lt.objs.sidebar.navigate/workspace-files]
+ [:navigator :lt.objs.sidebar.navigate/set-file-limit 8000]
+
+ [:object :lt.objs.clients/on-destroy-remove-cb]
+
+ [:opener :lt.objs.opener/open-from-info]
+ [:opener :lt.objs.opener/open-transient-editor]
+ [:opener :lt.objs.opener/open-standard-editor]
+ [:opener :lt.objs.opener/track-open-files]
+ [:opener :lt.objs.opener/watch-on-open]
+ [:opener :lt.objs.opener/check-read-only]
+ [:opener :lt.objs.opener/existing-path-opens-linked-doc false]
+
+ [:options-input :lt.objs.sidebar.command/op-select!]
+ [:options-input :lt.objs.sidebar.command/options-escape!]
+ [:options-input :lt.objs.sidebar.command/op-clear!]
+ [:options-input :lt.objs.sidebar.command/op-focus!]
+
+ [:plugin-manager :lt.objs.plugins/on-close]
+ [:plugin-manager :lt.objs.plugins/search-server-plugins]
+ [:plugin-manager :lt.objs.plugins/save-user-plugin-dependencies]
+ [:plugin-manager :lt.objs.plugins/render-installed-plugins]
+ [:plugin-manager :lt.objs.plugins/render-server-plugins]
+ [:plugin-manager :lt.objs.plugins/submit-plugin]
+ [:plugin-manager :lt.objs.plugins/draw-plugins-on-updated]
+ [:plugin-manager :lt.objs.plugins/get-latest-metadata-sha]
+ [:plugin-manager :lt.objs.plugins/check-metadata-sha]
+ [:plugin-manager :lt.objs.plugins/check-local-metadata-cache]
+
+ [:plugin.file :lt.objs.editor.file/on-save :build]
+
+ [:popup :lt.objs.popup/refocus-on-close]
+ [:popup :lt.objs.popup/close!]
+ [:popup :lt.objs.popup/on-click-destroy]
+ [:popup :lt.objs.popup/change-active-button]
+ [:popup :lt.objs.popup/exec-active]
+
+ [:recent-workspace :lt.objs.sidebar.workspace/on-menu]
+ [:recent-workspace :lt.objs.sidebar.workspace/recent-menu]
+ [:recent-workspace :lt.objs.sidebar.workspace/recent.delete!]
+ [:recent-workspace :lt.objs.sidebar.workspace/recent.select!]
+
+ [:searcher :lt.objs.search/clear!]
+ [:searcher :lt.objs.search/search!]
+ [:searcher :lt.objs.search/done-searching]
+ [:searcher :lt.objs.search/next!]
+ [:searcher :lt.objs.search/prev!]
+ [:searcher :lt.objs.search/replace!]
+ [:searcher :lt.objs.search/on-result]
+ [:searcher :lt.objs.search/focus]
+ [:searcher :lt.objs.search/on-close]
+
+ [:sidebar :lt.objs.sidebar/item-toggled]
+ [:sidebar :lt.objs.sidebar/width!]
+ [:sidebar :lt.objs.sidebar/open!]
+ [:sidebar :lt.objs.sidebar/close!]
+ [:sidebar :lt.objs.sidebar/no-anim-on-drag]
+ [:sidebar :lt.objs.sidebar/reanim-on-drop]
+ [:sidebar :lt.objs.sidebar/pop-transient]
+
+ [:sidebar.clients :lt.objs.sidebar.clients/unset-client]
+ [:sidebar.clients :lt.objs.sidebar.clients/selecting!]
+ [:sidebar.clients :lt.objs.sidebar.clients/focus!]
+ [:sidebar.clients :lt.objs.sidebar.clients/hide-on-select]
+ [:sidebar.clients :lt.objs.sidebar.clients/done-selecting]
+
+ [:sidebar.command :lt.objs.sidebar.command/refresh!]
+ [:sidebar.command :lt.objs.sidebar.command/focus!]
+ [:sidebar.command :lt.objs.sidebar.command/exec-active!]
+ [:sidebar.command :lt.objs.sidebar.command/post-select-pop]
+ [:sidebar.command :lt.objs.sidebar.command/soft-focus!]
+ [:sidebar.command :lt.objs.sidebar.command/cancel!]
+ [:sidebar.command :lt.objs.sidebar.command/focus-on-show]
+ [:sidebar.command :lt.objs.sidebar.command/exec-command]
+
+ [:sidebar.docs.search :lt.plugins.doc/sidebar.doc.search.exec]
+ [:sidebar.docs.search :lt.plugins.doc/doc.search.results]
+ [:sidebar.docs.search :lt.plugins.doc/focus!]
+ [:sidebar.docs.search :lt.plugins.doc/set-item]
+ [:sidebar.docs.search :lt.plugins.doc/clear!]
+ [:sidebar.docs.search :lt.plugins.doc/no-client]
+ [:sidebar.docs.search :lt.plugins.doc/cur-from-last-editor]
+
+ [:sidebar.workspace :lt.objs.sidebar.workspace/sidebar-menu]
+ [:sidebar.workspace :lt.objs.sidebar.workspace/on-menu]
+ [:sidebar.workspace :lt.objs.sidebar.workspace/on-drop]
+ [:sidebar.workspace :lt.objs.sidebar.workspace/recent!]
+ [:sidebar.workspace :lt.objs.sidebar.workspace/tree!]
+
+ [:status-bar-item :lt.objs.status-bar/on-show!]
+ [:status-bar-item :lt.objs.status-bar/on-hide!]
+ [:status-bar-item :lt.objs.status-bar/init-status-bar]
+
+ [:status.console-toggle :lt.objs.console/status-bar-console-toggle]
+ [:status.console-toggle :lt.objs.console/status-bar-console-hide]
+ [:status.console-toggle :lt.objs.console/status-bar-console-show]
+
+ [:tab-label :lt.objs.menu/menu!]
+ [:tab-label :lt.objs.tabs/tab-label-menu+]
+ [:tab-label :lt.objs.tabs/on-close-tab-label]
+
+ [:tabs :lt.objs.tabs/on-destroy-objs]
+ [:tabs :lt.objs.tabs/active-tab-num]
+ [:tabs :lt.objs.tabs/prev-tab]
+ [:tabs :lt.objs.tabs/next-tab]
+ [:tabs :lt.objs.tabs/tab-close]
+ [:tabs :lt.objs.tabs/repaint-tab-updated]
+ [:tabs :lt.objs.tabs/tabset-bottom!]
+ [:tabs :lt.objs.tabs/right!]
+ [:tabs :lt.objs.tabs/left!]
+ [:tabs :lt.objs.tabs/bottom!]
+
+ [:tabset :lt.objs.tabs/set-width-final!]
+ [:tabset :lt.objs.tabs/tabset-active]
+ [:tabset :lt.objs.tabs/next-tab]
+ [:tabset :lt.objs.tabs/unset-dragging]
+ [:tabset :lt.objs.tabs/repaint-tab-updated]
+ [:tabset :lt.objs.tabs/width!]
+ [:tabset :lt.objs.tabs/tab-close]
+ [:tabset :lt.objs.tabs/prev-tab]
+ [:tabset :lt.objs.tabs/reanim-on-drop]
+ [:tabset :lt.objs.tabs/no-anim-on-drag]
+ [:tabset :lt.objs.tabs/active-tab-num]
+ [:tabset :lt.objs.tabs/tabset-menu+]
+ [:tabset :lt.objs.tabs/set-dragging]
+ [:tabset :lt.objs.menu/menu!]
+
+ [:tabset.tab :lt.objs.tabs/on-destroy-remove]
+ [:tabset.tab :lt.objs.tabs/tab-active]
+ [:tabset.tab :lt.objs.tabs/show-close-button]
+
+ [:tcp.client :lt.objs.clients.tcp/send!]
+
+ [:tree-item :lt.objs.sidebar.workspace/rename-submit]
+ [:tree-item :lt.objs.sidebar.workspace/rename-focus]
+ [:tree-item :lt.objs.sidebar.workspace/start-rename]
+ [:tree-item :lt.objs.sidebar.workspace/duplicate]
+ [:tree-item :lt.objs.sidebar.workspace/rename-cancel]
+ [:tree-item :lt.objs.sidebar.workspace/rename-blur]
+
+ [:version :lt.objs.version/destroy-on-close]
+ [:version :lt.objs.version/on-show-refresh-eds]
+
+ [:watchable :lt.plugins.watches/watch!]
+ [:watchable :lt.plugins.watches/unwatch!]
+ [:watchable :lt.plugins.watches/eval-on-watch-or-unwatch]
+
+ [:window :lt.objs.clients.tcp/kill-on-closed]
+ [:window :lt.objs.menu/set-menu]
+ [:window :lt.objs.menu/remove-menu-close]
+
+ [:worker-thread :lt.objs.thread/kill!]
+ [:worker-thread :lt.objs.thread/send!]
+ [:worker-thread :lt.objs.thread/queue!]
+ [:worker-thread :lt.objs.thread/connect]
+ [:worker-thread :lt.objs.thread/try-send]
+ [:worker-thread :lt.objs.thread/message]
+
+ [:workspace :lt.objs.sidebar.workspace/on-ws-set]
+ [:workspace :lt.objs.sidebar.navigate/watched.delete]
+ [:workspace :lt.objs.workspace/rename!]
+ [:workspace :lt.objs.workspace/clear!]
+ [:workspace :lt.objs.sidebar.navigate/watched.create]
+ [:workspace :lt.objs.sidebar.navigate/populate-on-ws-update]
+ [:workspace :lt.objs.editor.pool/watched.delete]
+ [:workspace :lt.objs.workspace/add-folder!]
+ [:workspace :lt.objs.workspace/serialize-workspace]
+ [:workspace :lt.objs.workspace/remove-file!]
+ [:workspace :lt.objs.editor.pool/watched.rename]
+ [:workspace :lt.objs.workspace/add-file!]
+ [:workspace :lt.objs.sidebar.workspace/on-ws-add]
+ [:workspace :lt.objs.workspace/watch-on-set]
+ [:workspace :lt.objs.sidebar.workspace/on-ws-remove]
+ [:workspace :lt.objs.workspace/set!]
+ [:workspace :lt.objs.sidebar.workspace/watched.delete]
+ [:workspace :lt.objs.workspace/new!]
+ [:workspace :lt.objs.sidebar.workspace/watched.create]
+ [:workspace :lt.objs.editor.pool/watched.update]
+ [:workspace :lt.objs.settings/grab-workspace-behaviors]
+ [:workspace :lt.objs.opener/watch-open-files]
+ [:workspace :lt.objs.sidebar.workspace/watch-open-dirs-paths]
+ [:workspace :lt.objs.workspace/remove-folder!]
+
+ [:workspace.file :lt.objs.sidebar.workspace/on-open-file]
+ [:workspace.file :lt.objs.sidebar.workspace/rename-file]
+ [:workspace.file :lt.objs.sidebar.workspace/subfile-menu]
+ [:workspace.file :lt.objs.sidebar.workspace/delete-file]
+ [:workspace.file :lt.objs.sidebar.workspace/force-delete-file]
+ [:workspace.file :lt.objs.sidebar.workspace/on-menu]
+
+ [:workspace.file.root :lt.objs.sidebar.workspace/on-root-menu]
+
+ [:workspace.folder :lt.objs.sidebar.workspace/new-folder!]
+ [:workspace.folder :lt.objs.sidebar.workspace/subfolder-menu]
+ [:workspace.folder :lt.objs.sidebar.workspace/destroy-sub-tree]
+ [:workspace.folder :lt.objs.sidebar.workspace/on-open-ls]
+ [:workspace.folder :lt.objs.sidebar.workspace/delete-folder]
+ [:workspace.folder :lt.objs.sidebar.workspace/on-close]
+ [:workspace.folder :lt.objs.sidebar.workspace/rename-folder]
+ [:workspace.folder :lt.objs.sidebar.workspace/refresh]
+ [:workspace.folder :lt.objs.sidebar.workspace/on-menu]
+ [:workspace.folder :lt.objs.sidebar.workspace/force-delete-folder]
+ [:workspace.folder :lt.objs.sidebar.workspace/track-and-watch-open-dirs]
+ [:workspace.folder :lt.objs.sidebar.workspace/untrack-closed-dirs]
+ [:workspace.folder :lt.objs.sidebar.workspace/new-file!]
+
+ [:workspace.folder.root :lt.objs.sidebar.workspace/on-root-menu]
+ [:workspace.folder.root :lt.objs.sidebar.workspace/on-menu]
+
+ [:workspace.root :lt.objs.sidebar.workspace/on-remove]
+ [:workspace.root :lt.objs.sidebar.workspace/add-ws-folder]
+ [:workspace.root :lt.objs.sidebar.workspace/on-clear]
+ [:workspace.root :lt.objs.sidebar.workspace/add-ws-file]
+
+ [:ws.client :lt.objs.clients.ws/send!]
+]

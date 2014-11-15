@@ -61,10 +61,71 @@
   (let [final (behavior-diff diff {:+ @object/tags })]
     (reset! object/tags (:+ final))))
 
+(defn keyword->str [kw]
+  (if (keyword? kw)
+    (subs (str kw) 1)
+    kw))
+
+(defn flat-behaviors->map [flat]
+  (let [adds (js-obj)
+        removes (js-obj)]
+    (doseq [[tag behavior :as all] flat
+            :let [[coll behavior] (if (= (aget (keyword->str behavior) 0) "-")
+                                    [removes (subs (keyword->str behavior) 1)]
+                                    [adds (keyword->str behavior)])
+                  tag (keyword->str tag)]]
+      (when-not (aget coll tag)
+        (aset coll tag (array)))
+      (.push (aget coll tag) (if (> (count all) 2)
+                               (conj (seq (subvec all 2)) (keyword behavior))
+                               (keyword behavior))))
+    {:+ (js->clj adds :keywordize-keys true)
+     :- (js->clj removes :keywordize-keys true)}))
+
+
+(defn map->flat-behaviors [behaviors-map]
+  (let [flat (array)]
+    ;;Handle the adds
+    (doseq [[tag behs] (:+ behaviors-map)
+            :let [tag-vec [tag]]
+            beh behs
+            :let [beh (if (coll? beh)
+                        beh
+                        [beh])]]
+      (.push flat (into tag-vec beh)))
+    ;;Handle the subtracts
+    (doseq [[tag behs] (:- behaviors-map)
+            beh behs
+            :let [beh (if (coll? beh)
+                        beh
+                        [beh])
+                  tag-vec [tag (keyword (str "-" (keyword->str (first beh))))]]]
+      (.push flat (into tag-vec (rest beh))))
+    (->> (js->clj flat)
+         (sort-by first)
+         (vec))))
+
 (defn parse-file [file final]
-  (-> (files/open-sync file)
-      :content
-      (safe-read file)))
+  (let [behs (-> (files/open-sync file)
+                 :content
+                 (safe-read file))]
+    (cond
+     (map? behs) behs
+     (vector? behs) (flat-behaviors->map behs)
+     :else (console/error (str "Invalid behaviors file: " file ". Behaviors must be either a vector or a map.")))))
+
+(defn pprint-flat-behaviors [flat]
+  (-> (reduce (fn [result cur]
+                (let [new-tag (first cur)]
+                  {:str (str (:str result)
+                             (if-not (= new-tag (:tag result))
+                               "\n")
+                             "\n " (pr-str cur))
+                   :tag new-tag}))
+              {:tag (-> flat first first) :str "["}
+              flat)
+      (:str)
+      (str "\n]")))
 
 (defn behavior-diffs-in [path]
   (when (files/exists? path)
@@ -322,10 +383,56 @@
           :reaction (fn [this]
                       (tabs/rem! this)))
 
+
+(defn flat-keymap->map [flat]
+  (let [adds (js-obj)
+        removes (js-obj)]
+    (doseq [[tag key :as all] flat
+            :let [[coll key] (if (and (= (aget (keyword->str key) 0) "-")
+                                      (> (count (keyword->str key)) 1))
+                                    [removes (subs (keyword->str key) 1)]
+                                    [adds (keyword->str key)])
+                  remove? (identical? coll removes)
+                  tag (keyword->str tag)]]
+      (when-not (aget coll tag)
+        (aset coll tag (if remove?
+                         (array)
+                         (js-obj))))
+      (if remove?
+        (.push (aget coll tag) key)
+        (aset (aget coll tag) key (subvec all 2))))
+    {:+ (into {} (for [[tag keys] (js->clj adds)]
+                   [(keyword tag) keys]))
+     :- (into {} (for [[tag keys] (js->clj removes)]
+                   [(keyword tag) keys]))}))
+
+(defn map->flat-keymap [keymap]
+  (let [flat (array)]
+    ;;Handle the adds
+    (doseq [[tag keys] (:+ keymap)
+            [key commands] keys
+            :let [tag-vec [tag key]]]
+      (.push flat (into tag-vec commands)))
+    ;;Handle the subtracts
+    (doseq [[tag keys] (:- keymap)
+            key keys
+            :let [[key command] (if (map? keys)
+                                  key
+                                  [key []])
+                  tag-vec [tag (str "-" key)]]]
+      (.push flat (into tag-vec commands)))
+    (->> (js->clj flat)
+         (sort-by first)
+         (vec))))
+
 (defn parse-key-file [file final]
-  (-> (files/open-sync file)
-      :content
-      (safe-read file)))
+  (let [keys (-> (files/open-sync file)
+                 :content
+                 (safe-read file))]
+    (cond
+     (map? keys) keys
+     (vector? keys) (flat-keymap->map keys)
+     :else (console/error (str "Invalid keymap file: " file ". Keymaps must be either a vector or a map.")))))
 
 (defn keymap-diffs-in [path]
   (when (files/exists? path)

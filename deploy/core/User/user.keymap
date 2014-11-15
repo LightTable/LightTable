@@ -10,7 +10,7 @@
 ;; of all the commands you can execute, start typing a word related to the thing you
 ;; want to do in between the square brackets (e.g. type "editor").
 
-{:+ {:app {}
-
-     :editor {"alt-w" [:editor.watch.watch-selection]
-              "alt-shift-w" [:editor.watch.unwatch]}}}
+[
+ [:editor "alt-w" :editor.watch.watch-selection]
+ [:editor "alt-shift-w" :editor.watch.unwatch]
+]

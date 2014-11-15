@@ -1,86 +1,104 @@
-{:+ {:app {"pmeta-r" [:refresh-connected-browser]
-           "pmeta-shift-n" [:window.new]
-           "pmeta-o" [:navigate-workspace-transient]
-           "pmeta-shift-o" [:open-file]
-           "pmeta-shift-f" [:searcher.show]
-           "ctrl-shift-d" [:docs.search.show]
-           "pmeta-n" [:new-file]
-           "ctrl-space" [:show-commandbar-transient]
-           "pmeta-shift-=" [:window.zoom-in]
-           "pmeta--" [:window.zoom-out]}
-     :editor {"pmeta-enter" [:eval-editor-form]
-              "pmeta-shift-enter" [:eval-editor]
-              "pmeta-s" [:save]
-              "pmeta-shift-s" [:save-as]
-              "pmeta-l" [:goto-line]
-              "ctrl-." [:editor.jump-to-definition-at-cursor]
-              "ctrl-," [:editor.unjump]
-              "ctrl-d" [:editor.doc.toggle]
-              "ctrl-=" [:editor.fold-code]}
-     :editor.keys.normal {"\"" [(:editor.repeat-pair "\"")]
-                          "'" [(:editor.repeat-pair "'")]
-                          "(" [(:editor.open-pair "(")]
-                          ")" [(:editor.close-pair ")")]
-                          "pmeta-f" [:find.fill-selection
-                                     :find.show]
-                          "tab" [:auto-complete]
-                          "pmeta-g" [:find.next]
-                          "pmeta-shift-g" [:find.prev]
-                          "[" [(:editor.open-pair "[")]
-                          "{" [(:editor.open-pair "{")]
-                          "]" [(:editor.close-pair "]")]
-                          "}" [(:editor.close-pair "}")]
-                          "backspace" [:editor.backspace-pair
-                                       :editor.backspace-indent]}
-     :editor.keys.hinting.active {"enter" [:passthrough]}
-     :tabs {"pmeta-w" [:tabs.close]
-            "pmeta-shift-[" [:tabs.prev]
-            "pmeta-shift-]" [:tabs.next]
-            "ctrl-tab" [:tabs.next]
-            "ctrl-shift-tab" [:tabs.prev]
-            "pmeta-1" [(:tabs.goto 0)]
-            "pmeta-2" [(:tabs.goto 1)]
-            "pmeta-3" [(:tabs.goto 2)]
-            "pmeta-4" [(:tabs.goto 3)]
-            "pmeta-5" [(:tabs.goto 4)]
-            "pmeta-6" [(:tabs.goto 5)]
-            "pmeta-7" [(:tabs.goto 6)]
-            "pmeta-8" [(:tabs.goto 7)]
-            "pmeta-9" [(:tabs.goto :last)]
-            }
-     :popup {"left" [(:popup.move-active 1)],
-             "shift-tab" [(:popup.move-active -1)],
-             "esc" [(:popup.escape)],
-             "tab" [(:popup.move-active 1)],
-             "enter" [(:popup.exec-active)],
-             "right" [(:popup.move-active -1)]}
-     :popup.input {"left" [:passthrough],
-                   "right" [:passthrough]}
-     :plugin-manager.search {"enter" [:plugin-manager.search]}
-     :sidebar.clients {"esc" [:hide-connect]}
-     :sidebar.doc.search.input {"enter" [:docs.search.exec]
-                                "esc" [:docs.search.hide]}
-     :searcher.search {"enter" [:searcher.search]}
-     :searcher.replace {"pmeta-enter" [:searcher.replace-all]}
-     :searcher.location {"enter" [:searcher.search]}
-     :find-bar {"shift-enter" [:find.prev],
-                "esc" [:find.clear :find.hide],
-                "pmeta-g" [:find.next]
-                "pmeta-shift-g" [:find.prev]
-                "enter" [:find.next]}
-     :find-bar.replace {"pmeta-enter" [:find.replace-all],
-                        "pmeta-g" [:find.next]
-                        "pmeta-shift-g" [:find.prev]
-                        "esc" [:find.clear :find.hide],
-                        "enter" [:find.replace]}
-     :browser { "pmeta-l" [:browser.url-bar.focus] }
-     :browser.url-bar {"enter" [:browser.url-bar.navigate!]
-                       "esc" [:browser.focus-content]},
-     :filter-list.input {"down" [(:filter-list.input.move-selection 1)],
-                         "esc" [(:filter-list.input.escape! :force)],
-                         "enter" [:filter-list.input.select!],
-                         "up" [(:filter-list.input.move-selection -1)]}
-     :options-input {"esc" [:options-input.escape!],
-                     "enter" [:options-input.select!]}
-     :tree.rename {"esc" [:workspace.rename.cancel!]
-                   "enter" [:workspace.rename.submit!]}}}
+[
+ [:app "pmeta-shift-f" :searcher.show]
+ [:app "ctrl-space" :show-commandbar-transient]
+ [:app "pmeta-shift-n" :window.new]
+ [:app "pmeta-shift-o" :open-file]
+ [:app "pmeta--" :window.zoom-out]
+ [:app "pmeta-n" :new-file]
+ [:app "ctrl-shift-d" :docs.search.show]
+ [:app "pmeta-o" :navigate-workspace-transient]
+ [:app "pmeta-shift-=" :window.zoom-in]
+ [:app "pmeta-r" :refresh-connected-browser]
+
+ [:browser "pmeta-l" :browser.url-bar.focus]
+
+ [:browser.url-bar "esc" :browser.focus-content]
+ [:browser.url-bar "enter" :browser.url-bar.navigate!]
+
+ [:editor "pmeta-enter" :eval-editor-form]
+ [:editor "ctrl-d" :editor.doc.toggle]
+ [:editor "ctrl-," :editor.unjump]
+ [:editor "ctrl-." :editor.jump-to-definition-at-cursor]
+ [:editor "pmeta-shift-s" :save-as]
+ [:editor "pmeta-l" :goto-line]
+ [:editor "pmeta-shift-enter" :eval-editor]
+ [:editor "ctrl-=" :editor.fold-code]
+ [:editor "pmeta-s" :save]
+
+ [:editor.keys.hinting.active "enter" :passthrough]
+
+ [:editor.keys.normal "\"" (:editor.repeat-pair "\"")]
+ [:editor.keys.normal "pmeta-shift-g" :find.prev]
+ [:editor.keys.normal "'" (:editor.repeat-pair "'")]
+ [:editor.keys.normal "(" (:editor.open-pair "(")]
+ [:editor.keys.normal ")" (:editor.close-pair ")")]
+ [:editor.keys.normal "pmeta-f" :find.fill-selection :find.show]
+ [:editor.keys.normal "pmeta-g" :find.next]
+ [:editor.keys.normal "tab" :auto-complete]
+ [:editor.keys.normal "[" (:editor.open-pair "[")]
+ [:editor.keys.normal "{" (:editor.open-pair "{")]
+ [:editor.keys.normal "]" (:editor.close-pair "]")]
+ [:editor.keys.normal "}" (:editor.close-pair "}")]
+ [:editor.keys.normal "backspace" :editor.backspace-pair :editor.backspace-indent]
+
+ [:filter-list.input "down" (:filter-list.input.move-selection 1)]
+ [:filter-list.input "esc" (:filter-list.input.escape! :force)]
+ [:filter-list.input "enter" :filter-list.input.select!]
+ [:filter-list.input "up" (:filter-list.input.move-selection -1)]
+
+ [:find-bar "pmeta-shift-g" :find.prev]
+ [:find-bar "shift-enter" :find.prev]
+ [:find-bar "pmeta-g" :find.next]
+ [:find-bar "esc" :find.clear :find.hide]
+ [:find-bar "enter" :find.next]
+
+ [:find-bar.replace "pmeta-enter" :find.replace-all]
+ [:find-bar.replace "pmeta-shift-g" :find.prev]
+ [:find-bar.replace "pmeta-g" :find.next]
+ [:find-bar.replace "esc" :find.clear :find.hide]
+ [:find-bar.replace "enter" :find.replace]
+
+ [:options-input "esc" :options-input.escape!]
+ [:options-input "enter" :options-input.select!]
+
+ [:plugin-manager.search "enter" :plugin-manager.search]
+
+ [:popup "left" (:popup.move-active 1)]
+ [:popup "shift-tab" (:popup.move-active -1)]
+ [:popup "esc" (:popup.escape)]
+ [:popup "tab" (:popup.move-active 1)]
+ [:popup "enter" (:popup.exec-active)]
+ [:popup "right" (:popup.move-active -1)]
+
+ [:popup.input "left" :passthrough]
+ [:popup.input "right" :passthrough]
+
+ [:searcher.location "enter" :searcher.search]
+
+ [:searcher.replace "pmeta-enter" :searcher.replace-all]
+
+ [:searcher.search "enter" :searcher.search]
+
+ [:sidebar.clients "esc" :hide-connect]
+
+ [:sidebar.doc.search.input "esc" :docs.search.hide]
+ [:sidebar.doc.search.input "enter" :docs.search.exec]
+
+ [:tabs "pmeta-8" (:tabs.goto 7)]
+ [:tabs "pmeta-9" (:tabs.goto :last)]
+ [:tabs "ctrl-shift-tab" :tabs.prev]
+ [:tabs "ctrl-tab" :tabs.next]
+ [:tabs "pmeta-shift-[" :tabs.prev]
+ [:tabs "pmeta-1" (:tabs.goto 0)]
+ [:tabs "pmeta-shift-]" :tabs.next]
+ [:tabs "pmeta-2" (:tabs.goto 1)]
+ [:tabs "pmeta-3" (:tabs.goto 2)]
+ [:tabs "pmeta-4" (:tabs.goto 3)]
+ [:tabs "pmeta-5" (:tabs.goto 4)]
+ [:tabs "pmeta-6" (:tabs.goto 5)]
+ [:tabs "pmeta-7" (:tabs.goto 6)]
+ [:tabs "pmeta-w" :tabs.close]
+
+ [:tree.rename "esc" :workspace.rename.cancel!]
+ [:tree.rename "enter" :workspace.rename.submit!]
+]
