@@ -64,12 +64,11 @@
 
 (defn error [e]
   (status-bar/console-class "error")
-  (log (str (if (.-stack e)
-              (.-stack e)
-              (let [pr-e (pr-str e)]
-                (if (not= pr-e "[object Object]")
-                  pr-e
-                  (str e)))))
+  (log (str (cond
+             (.-stack e) (.-stack e)
+             (string? e) e
+             (not= (pr-str e) "[object Object]") (pr-str e)
+             :else (str e)))
        "error"))
 
 (.on js/process "uncaughtException" #(error %))
