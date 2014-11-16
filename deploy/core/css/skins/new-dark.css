@@ -595,42 +595,56 @@ input {
   display: inline-block;
   white-space: pre;
 }
+.behavior-helper-line {
+  z-index: 10 !important;
+}
 .behavior-helper-result {
+  padding-left: 10px;
+  margin: 0;
+  z-index: 10;
+  display: inline-block;
+  width: 0;
+  height: 10px;
+  overflow: visible;
+}
+.behavior-helper-result div {
+  z-index: 10;
   white-space: nowrap;
   display: inline-block;
   padding-top: 0px;
   padding-bottom: 0px;
-  overflow: hidden;
   margin-left: 0px;
-  padding-left: 20px;
+  padding-left: 0px;
   box-sizing: border-box;
   background: none;
   color: #7ffffd;
 }
 .behavior-helper-result div {
+  display: inline-block;
   white-space: nowrap;
   width: -webkit-fit-content;
   background: #3e6b6b;
-  padding: 0px 5px;
+  padding: 2px 5px;
   border-radius: 0px;
   margin-top: 0px;
+  border-radius: 3px;
 }
 .behavior-helper-result div > * {
   border-radius: 0px;
   padding: 0px !important;
+  vertical-align: middle;
 }
 .behavior-helper-result h2 {
-  display: block;
+  display: inline-block;
   width: -webkit-fit-content;
   white-space: nowrap;
 }
 .behavior-helper-result div > span.param {
   display: inline-block;
-  margin-right: 8px;
-  margin-bottom: 3px;
+  margin-left: 8px;
   padding: 2px 5px !important;
-  margin-top: 5px;
   border: 1px solid #7ffffd;
+  border-radius: 3px;
 }
 .behavior-helper-result div > span.spacer {
   display: inline-block;
@@ -645,11 +659,15 @@ input {
 .behavior-helper-result .example {
   display: inline-block;
   width: auto;
-  vertical-align: top;
-  padding: 0;
+  vertical-align: middle;
+  padding: 0 !important;
   margin: 0;
   margin-left: 5px;
   border: none;
+  color: #7ffffd;
+}
+.behavior-helper-result .active .example {
+  color: #3e6b6b;
 }
 .plugin-manager .version {
   margin-left: 10px;
