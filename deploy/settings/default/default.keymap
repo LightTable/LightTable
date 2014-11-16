@@ -29,7 +29,6 @@
 
  [:editor.keys.normal "\"" (:editor.repeat-pair "\"")]
  [:editor.keys.normal "pmeta-shift-g" :find.prev]
- [:editor.keys.normal "'" (:editor.repeat-pair "'")]
  [:editor.keys.normal "(" (:editor.open-pair "(")]
  [:editor.keys.normal ")" (:editor.close-pair ")")]
  [:editor.keys.normal "pmeta-f" :find.fill-selection :find.show]
