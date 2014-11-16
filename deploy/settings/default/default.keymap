@@ -27,17 +27,10 @@
 
  [:editor.keys.hinting.active "enter" :passthrough]
 
- [:editor.keys.normal "\"" (:editor.repeat-pair "\"")]
  [:editor.keys.normal "pmeta-shift-g" :find.prev]
- [:editor.keys.normal "(" (:editor.open-pair "(")]
- [:editor.keys.normal ")" (:editor.close-pair ")")]
  [:editor.keys.normal "pmeta-f" :find.fill-selection :find.show]
  [:editor.keys.normal "pmeta-g" :find.next]
  [:editor.keys.normal "tab" :auto-complete]
- [:editor.keys.normal "[" (:editor.open-pair "[")]
- [:editor.keys.normal "{" (:editor.open-pair "{")]
- [:editor.keys.normal "]" (:editor.close-pair "]")]
- [:editor.keys.normal "}" (:editor.close-pair "}")]
  [:editor.keys.normal "backspace" :editor.backspace-pair :editor.backspace-indent]
 
  [:filter-list.input "down" (:filter-list.input.move-selection 1)]
