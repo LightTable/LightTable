@@ -18,7 +18,7 @@
                 :tags #{:statusbar}
                 :items (sorted-set-by #(-> % deref :order))
                 :init (fn [this]
-                        [:div#status-bar
+                        [:div#statusbar-container
                          ]))
 
 (def container (object/create ::statusbar))
@@ -68,7 +68,7 @@
                 :height 34
                 :order 0
                 :init (fn [this]
-                        [:ul#statusbar ;; @NOTE: This naming becomes awkward, can these be merged? The other containers are themselves containers around a .content, right?
+                        [:ul#statusbar
                          (map-bound #(object/->content (deref %)) this {:path [:items]})]
                         ))
 
