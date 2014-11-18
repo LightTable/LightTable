@@ -447,10 +447,10 @@ input {
   color: #ccc;
   border-color: #888;
 }
-#status {
+#statusbar {
   color: #bbb;
 }
-#status .console-toggle {
+#statusbar .console-toggle {
   cursor: default;
   background: #404040;
   color: #ccc;
@@ -462,24 +462,24 @@ input {
   margin-left: 0px;
   border-radius: 2px;
 }
-#status .console-toggle:hover {
+#statusbar .console-toggle:hover {
   background: #666;
   color: #f4f4f4;
 }
-#status .console-toggle.dirty {
+#statusbar .console-toggle.dirty {
   background: #505d6b;
   color: #c7e6ff;
   display: inline-block;
 }
-#status .console-toggle.error {
+#statusbar .console-toggle.error {
   color: #ffa6a6;
   background: #73404c;
 }
-#status .log .error {
+#statusbar .log .error {
   color: #ffa6a6;
   background: #73404c;
 }
-#status .log .tip {
+#statusbar .log .tip {
   color: #c7e6ff;
 }
 #find-bar input {

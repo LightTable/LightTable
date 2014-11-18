@@ -277,13 +277,13 @@ body { -webkit-user-select: none; }
 
 #status-bar { position:absolute; bottom:0; left:0; right:0; }
 
-#status { position:relative; box-sizing:border-box; padding:7px 10px; vertical-align:middle;}
-#status li { float:right; display:inline; margin-left:15px;}
-#status li.left { float:left; margin-left:0;}
-#status li.left + li.left { float:left; margin-left:5px;}
-#status .log img { vertical-align:middle; }
-#status .log .message { max-width: 80vw; display:inline-block; overflow:hidden; vertical-align:middle; white-space:nowrap; margin-left:0px; padding:0px 5px; border-radius:2px; }
-#status .pos { display:inline-block; min-width:0px; text-align:right;}
+#statusbar { position:relative; box-sizing:border-box; padding:7px 10px; vertical-align:middle;}
+#statusbar li { float:right; display:inline; margin-left:15px;}
+#statusbar li.left { float:left; margin-left:0;}
+#statusbar li.left + li.left { float:left; margin-left:5px;}
+#statusbar .log img { vertical-align:middle; }
+#statusbar .log .message { max-width: 80vw; display:inline-block; overflow:hidden; vertical-align:middle; white-space:nowrap; margin-left:0px; padding:0px 5px; border-radius:2px; }
+#statusbar .pos { display:inline-block; min-width:0px; text-align:right;}
 .load-wrapper { display:inline-block; height:18px; width:20px; vertical-align:middle; margin-right:5px; }
 .load-wrapper .img { display:inline-block; width:17px; height:17px; vertical-align:middle; }
 

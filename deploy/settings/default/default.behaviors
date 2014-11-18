@@ -479,9 +479,9 @@
  [:statusbar-item :lt.objs.statusbar/on-hide!]
  [:statusbar-item :lt.objs.statusbar/init-statusbar]
 
- [:status.console-toggle :lt.objs.console/statusbar-console-toggle]
- [:status.console-toggle :lt.objs.console/statusbar-console-hide]
- [:status.console-toggle :lt.objs.console/statusbar-console-show]
+ [:statusbar.console-toggle :lt.objs.console/statusbar-console-toggle]
+ [:statusbar.console-toggle :lt.objs.console/statusbar-console-hide]
+ [:statusbar.console-toggle :lt.objs.console/statusbar-console-show]
 
  [:tab-label :lt.objs.menu/menu!]
  [:tab-label :lt.objs.tabs/tab-label-menu+]

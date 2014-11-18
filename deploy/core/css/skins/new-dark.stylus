@@ -212,13 +212,13 @@ input { color: $highlight-fg; background:$highlight-bg; }
 #right-bar .clients .connector li:hover h2 {color: $highlight-fg; }
 #right-bar .clients .connector li:hover {background: $highlight-bg; color: $fg; border-color: $pane-border; }
 
-#status { color: $hidden-fg; }
-#status .console-toggle { cursor:default; background:$hidden-bg; color:$fg; min-width:12px; padding:0 4px; width:auto; display:none; text-align:center; margin-left:0px; border-radius:2px; }
-#status .console-toggle:hover { background:$dark-highlight-bg; color:$highlight-fg; }
-#status .console-toggle.dirty { background:$accent-background; color:$accent-foreground; display: inline-block; }
-#status .console-toggle.error { color:$error-fg; background:$error-bg; }
-#status .log .error { color:$error-fg; background:$error-bg; }
-#status .log .tip { color: $accent-foreground; }
+#statusbar { color: $hidden-fg; }
+#statusbar .console-toggle { cursor:default; background:$hidden-bg; color:$fg; min-width:12px; padding:0 4px; width:auto; display:none; text-align:center; margin-left:0px; border-radius:2px; }
+#statusbar .console-toggle:hover { background:$dark-highlight-bg; color:$highlight-fg; }
+#statusbar .console-toggle.dirty { background:$accent-background; color:$accent-foreground; display: inline-block; }
+#statusbar .console-toggle.error { color:$error-fg; background:$error-bg; }
+#statusbar .log .error { color:$error-fg; background:$error-bg; }
+#statusbar .log .tip { color: $accent-foreground; }
 
 #find-bar input { border-top:2px solid $bg; background:$multi; }
 #find-bar input + input { border-left:2px solid $bg; }
