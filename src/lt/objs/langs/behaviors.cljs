@@ -159,7 +159,8 @@
                   :triggers #{:clear!}
                   :reaction (fn [this]
                                   (when (:mark @this)
-                                    (editor/-line-class (:ed @this) (:line @this) :text "behavior-helper-line")
+                                    (when (and (:ed @this) @(:ed @this))
+                                      (editor/-line-class (:ed @this) (:line @this) :text "behavior-helper-line"))
                                     (object/raise (:mark @this) :clear!))
                                   (object/merge! this {:content nil})
                                   (object/merge! this {:mark nil
