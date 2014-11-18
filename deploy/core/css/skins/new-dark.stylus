@@ -118,7 +118,7 @@ input { color: $highlight-fg; background:$highlight-bg; }
 
 .sortable-placeholder { background:$multi; border:2px solid $bg; }
 
-#bottom-bar .content { background:$bg; border-top:0px solid $border; }
+#bottombar .content { background:$bg; border-top:0px solid $border; }
 .console > li, .console td { color:$accent-foreground; }
 .console > li + li { border-top:2px solid $bg; }
 .console > li.error + li { border-color:$bg;}
