@@ -182,7 +182,7 @@
                                         (cmd/exec! :console-tab))}))))
 
 ;; @FIXME: rename to status-bar ?
-(behavior ::status-bar-console-toggle
+(behavior ::statusbar-console-toggle
           :triggers #{:toggle}
           :reaction (fn [this]
                       (object/raise bottombar/bottombar :toggle console)
@@ -192,7 +192,7 @@
                       ))
 
 ;; @FIXME: rename to status-bar ?
-(behavior ::status-bar-console-show
+(behavior ::statusbar-console-show
           :triggers #{:show!}
           :reaction (fn [this]
                       (object/raise bottombar/bottombar :show! console)
@@ -202,7 +202,7 @@
                       ))
 
 ;; @FIXME: rename to status-bar ?
-(behavior ::status-bar-console-hide
+(behavior ::statusbar-console-hide
           :triggers #{:hide!}
           :reaction (fn [this]
                       (object/raise bottombar/bottombar :hide! console)))

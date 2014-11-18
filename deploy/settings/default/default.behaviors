@@ -47,8 +47,8 @@
  [:app :lt.objs.plugins/plugin-behavior-diffs]
  [:app :lt.objs.plugins/plugin-keymap-diffs]
  [:app :lt.objs.plugins/behaviors.refreshed-load-keys]
- [:app :lt.objs.status-bar/init-status-bar]
- [:app :lt.objs.status-bar/show-status-bar]
+ [:app :lt.objs.statusbar/init-statusbar]
+ [:app :lt.objs.statusbar/show-statusbar]
  [:app :lt.objs.workspace/init-workspace-cache-dir]
  [:app :lt.objs.metrics/init-metrics]
  [:app :lt.objs.keyboard/chord-timeout 1000]
@@ -206,7 +206,7 @@
  [:editor :lt.plugins.auto-complete/remove-on-scroll-inactive]
  [:editor :lt.plugins.auto-complete/auto-show-on-input]
 
- [:editor.active :lt.objs.status-bar/report-cursor-location]
+ [:editor.active :lt.objs.statusbar/report-cursor-location]
 
  [:editor.behaviors :lt.objs.settings/on-behaviors-editor-save]
  [:editor.behaviors :lt.objs.settings/eval-settings]
@@ -475,13 +475,13 @@
  [:sidebar.workspace :lt.objs.sidebar.workspace/recent!]
  [:sidebar.workspace :lt.objs.sidebar.workspace/tree!]
 
- [:status-bar-item :lt.objs.status-bar/on-show!]
- [:status-bar-item :lt.objs.status-bar/on-hide!]
- [:status-bar-item :lt.objs.status-bar/init-status-bar]
+ [:statusbar-item :lt.objs.statusbar/on-show!]
+ [:statusbar-item :lt.objs.statusbar/on-hide!]
+ [:statusbar-item :lt.objs.statusbar/init-statusbar]
 
- [:status.console-toggle :lt.objs.console/status-bar-console-toggle]
- [:status.console-toggle :lt.objs.console/status-bar-console-hide]
- [:status.console-toggle :lt.objs.console/status-bar-console-show]
+ [:status.console-toggle :lt.objs.console/statusbar-console-toggle]
+ [:status.console-toggle :lt.objs.console/statusbar-console-hide]
+ [:status.console-toggle :lt.objs.console/statusbar-console-show]
 
  [:tab-label :lt.objs.menu/menu!]
  [:tab-label :lt.objs.tabs/tab-label-menu+]
