@@ -4,7 +4,7 @@
             [lt.objs.files :as files]
             [lt.objs.bottombar :as bottombar]
             [lt.objs.command :as cmd]
-            [lt.objs.status-bar :as status-bar]
+            [lt.objs.statusbar :as statusbar]
             [lt.objs.tabs :as tabs]
             [clojure.string :as string]
             [lt.util.dom :refer [$ append empty parents] :as dom]
@@ -38,7 +38,7 @@
   (when (> (count (dom/children $console)) (dec console-limit))
     (dom/remove (aget (dom/children $console) 0)))
   (when-not (bottombar/active? console)
-    (status-bar/dirty))
+    (statusbar/dirty))
   (append $console msg))
 
 (defn write-to-log [thing]
@@ -63,7 +63,7 @@
          nil)))))
 
 (defn error [e]
-  (status-bar/console-class "error")
+  (statusbar/console-class "error")
   (log (str (cond
              (.-stack e) (.-stack e)
              (string? e) e
@@ -112,7 +112,7 @@
      (when str-content
        (write-to-log str-content))
      (when class
-       (status-bar/console-class class))
+       (statusbar/console-class class))
      (write $console (->item thing class))
      (dom/scroll-top $console 10000000000)
      nil)))
@@ -181,27 +181,27 @@
                                         (cmd/exec! :toggle-console)
                                         (cmd/exec! :console-tab))}))))
 
-;; @FIXME: rename to status-bar ?
+;; @FIXME: rename to statusbar ?
 (behavior ::statusbar-console-toggle
           :triggers #{:toggle}
           :reaction (fn [this]
                       (object/raise bottombar/bottombar :toggle console)
                       (when (bottombar/active? console)
                         (dom/scroll-top (object/->content console) 10000000000)
-                        (status-bar/clean))
+                        (statusbar/clean))
                       ))
 
-;; @FIXME: rename to status-bar ?
+;; @FIXME: rename to statusbar ?
 (behavior ::statusbar-console-show
           :triggers #{:show!}
           :reaction (fn [this]
                       (object/raise bottombar/bottombar :show! console)
                       (when (bottombar/active? console)
                         (dom/scroll-top (object/->content console) 10000000000)
-                        (status-bar/clean))
+                        (statusbar/clean))
                       ))
 
-;; @FIXME: rename to status-bar ?
+;; @FIXME: rename to statusbar ?
 (behavior ::statusbar-console-hide
           :triggers #{:hide!}
           :reaction (fn [this]
@@ -214,7 +214,7 @@
               :desc "Console: Open the console in a tab"
               :exec (fn []
                       (when (not= :tab (:current-ui @console)) ; Running the command when tab is already opened in a tab was creating another new tab each time.
-                        (object/raise status-bar/console-toggle :hide!)
+                        (object/raise statusbar/console-toggle :hide!)
                         (object/merge! console {:current-ui :tab})
                         (tabs/add! console)
                       ))})
@@ -225,8 +225,8 @@
               :hidden true
               :exec (fn []
                       (if (= (:current-ui @console) :tab)
-                        (do (tabs/active! console) (status-bar/clean))
-                        (object/raise status-bar/console-toggle :show!)))})
+                        (do (tabs/active! console) (statusbar/clean))
+                        (object/raise statusbar/console-toggle :show!)))})
 
 (cmd/command {:command :console.hide
               :desc "Console: Hide console"
@@ -234,14 +234,14 @@
               :exec (fn []
                       (if (= (:current-ui @console) :tab)
                         (object/raise console :close)
-                        (object/raise status-bar/console-toggle :hide!)))})
+                        (object/raise statusbar/console-toggle :hide!)))})
 
 (cmd/command {:command :toggle-console
               :desc "Console: Toggle console"
               :exec (fn []
                       (if (= (:current-ui @console) :tab)
-                        (do (tabs/active! console) (status-bar/clean))
-                        (object/raise status-bar/console-toggle :toggle)))})
+                        (do (tabs/active! console) (statusbar/clean))
+                        (object/raise statusbar/console-toggle :toggle)))})
 
 (cmd/command {:command :clear-console
               :desc "Console: Clear console"
