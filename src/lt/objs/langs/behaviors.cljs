@@ -55,7 +55,6 @@
      :pos pos}))
 
 (defn user-behavior-completions [token _ _]
-   (println "token: " (pr-str token))
    (if (and token (= (subs token 0 1) ":"))
      (map #(do #js {:text (str (:name %)) :completion (str (:name %))}) (vals @object/behaviors))
      (map #(if-not (:desc %)
@@ -91,13 +90,7 @@
                             behavior-info (@object/behaviors behavior)
                             token-type (pos->token-type pos)
                             completions-set (completions token-type)]
-                        (println (count hints))
-                        (println "token type" pos token-type)
-                        ;;                                 (if-not completions-set
-                        ;;                                   hints
-                        (completions-set token behavior-info param-pos token)
-                        ;;                                   )
-                        )))
+                        (completions-set token behavior-info param-pos token))))
 
 (behavior ::show-info-on-move
                   :triggers #{:move}
