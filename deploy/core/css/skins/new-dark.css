@@ -279,37 +279,37 @@ input {
 .filter-list li:hover em {
   color: #c7e6ff;
 }
-#left-bar .content {
+#side .content {
   background: #3b3f41;
   box-shadow: 0 0 10px #000;
 }
-#left-bar ::-webkit-scrollbar-thumb {
+#side ::-webkit-scrollbar-thumb {
   background: #606970;
   border: 1px solid #606970;
 }
-#left-bar .workspace ul.buttons li:hover:not(.sep) {
+#side .workspace ul.buttons li:hover:not(.sep) {
   color: #f4f4f4;
   background: #616161;
 }
-#left-bar .workspace li:hover > div > p {
+#side .workspace li:hover > div > p {
   color: #f4f4f4;
 }
-#left-bar .workspace li p:hover {
+#side .workspace li p:hover {
   background: #616161;
   color: #f4f4f4;
 }
-#left-bar .workspace .recent > div > ul > li + li {
+#side .workspace .recent > div > ul > li + li {
   border-top: 0px solid #888;
 }
-#left-bar .workspace .recent > div > ul > li:hover {
+#side .workspace .recent > div > ul > li:hover {
   border-color: #888;
   background: #616161;
   color: #f4f4f4;
 }
-#left-bar .workspace .recent > div > ul > li:hover + li {
+#side .workspace .recent > div > ul > li:hover + li {
   border-top-color: #888;
 }
-#left-bar .workspace .recent h2:hover {
+#side .workspace .recent h2:hover {
   background: #616161;
   color: #f4f4f4;
 }
@@ -859,7 +859,7 @@ input {
   padding: 5px;
   padding-bottom: 5px;
 }
-#left-bar .workspace ul.root {
+#side .workspace ul.root {
   top: 0px;
 }
 #right-bar .filter-list input {
