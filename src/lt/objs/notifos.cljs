@@ -12,7 +12,7 @@
   (let [m (if (string? m)
             m
             (pr-str m))]
-    (object/merge! statusbar/status-loader (merge {:message m :class ""} opts))))
+    (object/merge! statusbar/statusbar-loader (merge {:message m :class ""} opts))))
 
 (declare cur-timeout)
 

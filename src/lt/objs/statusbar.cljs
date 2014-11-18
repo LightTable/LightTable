@@ -14,14 +14,14 @@
 ;; statusbar container
 ;;**********************************************************
 
-(object/object* ::statusbar
+(object/object* ::statusbar-container
                 :tags #{:statusbar}
                 :items (sorted-set-by #(-> % deref :order))
                 :init (fn [this]
                         [:div#statusbar-container
                          ]))
 
-(def container (object/create ::statusbar))
+(def container (object/create ::statusbar-container))
 
 (defn add-container
   "Add an object to the statusbar container. When you wish the object to be displayed or hidden,
