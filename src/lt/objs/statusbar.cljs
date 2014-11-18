@@ -93,8 +93,6 @@
 (defn ->cursor-str [{:keys [pos]}]
   [:span.pos (str "" (inc (:line pos)) " / " (inc (:ch pos)))])
 
-(declare status-cursor)
-
 (behavior ::update-cursor-location
                   :triggers #{:update!}
                   :reaction (fn [this pos]
@@ -108,13 +106,14 @@
                         (statusbar-item (bound this ->cursor-str) "")
                         ))
 
+(def statusbar-cursor (object/create ::statusbar.cursor))
+(add-statusbar-item statusbar-cursor)
+
 (behavior ::report-cursor-location
                   :triggers #{:move :active}
                   :reaction (fn [this]
                               (object/raise statusbar-cursor :update! (ed/->cursor this))))
 
-(def statusbar-cursor (object/create ::statusbar.cursor))
-(add-statusbar-item statusbar-cursor)
 
 ;;**********************************************************
 ;; loader
@@ -157,8 +156,8 @@
                         (statusbar-item (log this) "left")
                         ))
 
-(def status-loader (object/create ::statusbar.loader))
-(add-status-item status-loader)
+(def statusbar-loader (object/create ::statusbar.loader))
+(add-statusbar-item statusbar-loader)
 
 (defn loader-set []
   (object/merge! statusbar-loader {:loaders 0}))
@@ -187,10 +186,10 @@
                 :dirty 0
                 :tags [:statusbar.console-toggle]
                 :init (fn [this]
-                        (status-item (toggle-span this) "")))
+                        (statusbar-item (toggle-span this) "")))
 
 (def console-toggle (object/create ::statusbar.console-toggle))
-(add-status-item console-toggle)
+(add-statusbar-item console-toggle)
 
 (defn dirty []
   (object/update! console-toggle [:dirty] inc))
