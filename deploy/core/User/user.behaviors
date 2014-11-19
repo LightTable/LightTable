@@ -24,5 +24,8 @@
 
  ;; Behaviors specific to a user-defined object
  [:user.hello :lt.plugins.user/on-close-destroy]
+
+ ;; To subtract a behavior, prefix the name with '-' e.g.
+ ;;  [:app :-lt.objs.intro/show-intro]
 ]
 
