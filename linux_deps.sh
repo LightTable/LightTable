@@ -7,16 +7,17 @@
 
 buildVer=0.7.0
 
-# Check if lein is installed
 lein version >/dev/null 2>&1 || { echo >&2 "Please install leiningen before running this script."; exit 1; }
 if [ "$(echo `lein version` | grep 'Leiningen 1.\|2.0')" ]; then 
-	echo "ERROR: lein version must be 2.1 or above. Do a lein upgrade first"; exit 1;
+    echo "ERROR: lein version must be 2.1 or above. Do a 'lein upgrade' first";
+    exit 1;
 fi
 
-which curl &> /dev/null
+curlBinary=curl
+which $curlBinary &> /dev/null
 retCode=$?
 if [ $retCode -ne 0 ]; then
-    echo "ERROR: curl not found. Please install curl before running this script."
+    echo "ERROR: $curlBinary not found. Please install $curlBinary before running this script."
     exit $retCode
 fi
 
@@ -40,9 +41,9 @@ sha1sum --check $node_webkit_tarball_sha1
 retCode=$?
 if [ $retCode -ne 0 ]; then
     if [ ! -f $node_webkit_tarball_sha1 ]; then
-	echo "ERROR: File not found: $node_webkit_tarball_sha1"
-	echo "INFO:  Create sha1 file using:"
-	echo "    sha1sum $node_webkit_tarball > $node_webkit_tarball_sha1"
+        echo "ERROR: File not found: $node_webkit_tarball_sha1"
+        echo "INFO:  Create sha1 file using:"
+        echo "    sha1sum $node_webkit_tarball > $node_webkit_tarball_sha1"
     fi
     exit $retCode
 fi
