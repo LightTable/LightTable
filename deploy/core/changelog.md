@@ -1,7 +1,14 @@
 #Changes
 
+##0.7.1
+
+* FIX: styling issues in the searcher
+* FIX: roll back to an older version of node-webkit as a result of freezing issues when compiling certain plugins
+* FIX: Give the auto-close keymap behavior a description: `Editor: auto-close parens/brackets/quotes/pairs`
+
 ##0.7.0
 
+* CHANGED: parens are not auto-closed by default anymore, add `[:app :lt.objs.settings/pair-keymap-diffs]` to your behaviors to get it back.
 * CHANGED: Move to the MIT License (one-more-minute)
 * CHANGED: Remove plugin server and use Github as the plugin-metadata repository (ibdknox)
 * CHANGED: New flat syntax for behaviors and keymaps that allows much better copying and pasting
