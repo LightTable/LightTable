@@ -141,15 +141,13 @@
     (let [{:keys [behaviors dir]} plug
           file (files/join dir behaviors)
           file (files/real-path file)
-          behs (-> (files/open-sync file)
-                   (:content)
-                   (settings/safe-read file))
+          behs (settings/parse-file file)
           force? (get (::force-reload @manager) file)]
       (when force?
         (swap! manager update-in [::force-reload] disj file))
       (when behs
         (walk/prewalk (fn [x]
-                        (when (list? x)
+                        (when (coll? x)
                           (alter-meta! x assoc ::dir dir ::force-reload force?))
                         x)
                       behs)
