@@ -34,9 +34,16 @@ if [ ! -e "$node_webkit_tarball" ]; then
     curl -o $node_webkit_tarball \
 	https://d35ac8ww5dfjyg.cloudfront.net/playground/bins/$buildVer/LightTableLinux$bits_tarball.tar.gz
 fi
-sha1sum --check $node_webkit_tarball.sha1
+
+node_webkit_tarball_sha1=$node_webkit_tarball.sha1
+sha1sum --check $node_webkit_tarball_sha1
 retCode=$?
 if [ $retCode -ne 0 ]; then
+    if [ ! -f $node_webkit_tarball_sha1 ]; then
+	echo "ERROR: File not found: $node_webkit_tarball_sha1"
+	echo "INFO:  Create sha1 file using:"
+	echo "    sha1sum $node_webkit_tarball > $node_webkit_tarball_sha1"
+    fi
     exit $retCode
 fi
 
