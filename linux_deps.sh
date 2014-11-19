@@ -5,7 +5,7 @@
 # stop on error:
 # set -e
 
-buildVer=0.7.0
+buildVer=0.7.1
 
 lein version >/dev/null 2>&1 || { echo >&2 "Please install leiningen before running this script."; exit 1; }
 if [ "$(echo `lein version` | grep 'Leiningen 1.\|2.0')" ]; then 
