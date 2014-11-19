@@ -13,4 +13,7 @@
 [
  [:editor "alt-w" :editor.watch.watch-selection]
  [:editor "alt-shift-w" :editor.watch.unwatch]
+
+ ;; To subtract a binding, prefix the key with '-'  e.g.
+ ;;  [:app "-ctrl-shift-d" :docs.search.show]
 ]
