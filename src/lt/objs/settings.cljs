@@ -497,6 +497,8 @@
                         "}" ['(:editor.close-pair "}")]}})
 
 (behavior ::pair-keymap-diffs
+          :desc "Editor: auto-close parens/brackets/quotes/pairs"
+          :type :user
           :triggers #{:keymap.diffs.user+}
           :reaction (fn [this diffs]
                       (concat diffs (list {:+ pair-keybindings}))))
