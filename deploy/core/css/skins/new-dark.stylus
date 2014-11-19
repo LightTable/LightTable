@@ -73,6 +73,7 @@ a {text-decoration:none; color: $fg; }
 .button:hover, .button:focus, button:hover, button:focus, button.active { background:$button-active-bg !important; color: $button-active-fg; }
 input { color: $highlight-fg; background:$highlight-bg; }
 
+
 ::-webkit-scrollbar { width: 7px; height: 7px; }
 ::-webkit-scrollbar-track { border-radius: 2px; }
 ::-webkit-scrollbar-thumb { border-radius: 2px; }
@@ -84,7 +85,7 @@ input { color: $highlight-fg; background:$highlight-bg; }
 ::-webkit-scrollbar-thumb { background: $scrollbar; border:1px solid $scrollbar; }
 ::-webkit-scrollbar-thumb:hover { background: $medium-highlight-bg; border:1px solid $medium-highlight-bg; }
 ::-webkit-scrollbar-corner { background:transparent; }
-::selection { background: $placeholder-fg; }
+::selection { background: #99ccff; }
 
 .inline-result { background: $dark-accent-background; color:$accent-foreground; }
 

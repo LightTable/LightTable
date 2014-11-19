@@ -309,7 +309,7 @@ body { -webkit-user-select: none; }
 #side .tab-settings .filter-list input:focus + * { display:block; }
 
 .search-results { overflow:hidden; position:relative; box-sizing:border-box; }
-.search-results input { width:100%; }
+.search-results input { width:100%; margin:2px 0; }
 .search-results .res { position:absolute; overflow:auto; left:10px; right:10px; top:10px; bottom:130px; }
 .search-results .searcher { margin-bottom:10px; margin-top:10px; position:absolute; left:10px; right:10px; bottom:0px; }
 .search-results .res li { background:transparent; padding:7px 0; margin-bottom:5px; border-bottom:0px solid #444; }
@@ -320,7 +320,7 @@ body { -webkit-user-select: none; }
 .search-results p { white-space:nowrap; cursor:default;}
 .search-results .line { display:inline-block; margin-right:5px; padding:0 5px; }
 .search-results div div { position:relative; }
-.search-results  button { position:absolute; right:-3px; padding:5px 10px; border-radius:0px; }
+.search-results  button { position:absolute; right:0px; margin:2px 0; padding:5px 10px; border-radius:0px; }
 
 .struct-tree { overflow:auto; height:100%; }
 .struct-tree span { margin:0 2px; }
