@@ -1,6 +1,11 @@
 #!/usr/bin/env bash
 
-buildVer=0.6.7
+# debugging:
+# set -x
+# stop on error:
+# set -e
+
+buildVer=0.7.0
 
 # Check if lein is installed
 lein version >/dev/null 2>&1 || { echo >&2 "Please install leiningen before running this script."; exit 1; }
