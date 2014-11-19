@@ -715,6 +715,7 @@
                       (when-not (files/exists? user-plugins-dir)
                         (files/mkdir user-plugins-dir))
                       (object/raise app/app :create-user-plugin)
+                      (object/raise app/app :flatten-map-settings)
                       ;;load enabled plugins
                       (object/merge! app/app {::plugins (available-plugins)})))
 

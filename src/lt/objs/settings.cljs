@@ -8,7 +8,7 @@
             [lt.objs.console :as console]
             [lt.objs.notifos :as notifos]
             [lt.objs.editor :as editor]
-            [lt.objs.editor.pool :as pool2]
+            [lt.objs.editor.pool :as pool]
             [lt.objs.workspace :as workspace]
             [clojure.string :as string]
             [lt.objs.sidebar.command :as scmd]
@@ -319,6 +319,36 @@
                               (files/copy (files/lt-home (files/join "core" "User" path))
                                           full-path)))))))
 
+(declare map->flat-keymap)
+
+(defn convert-file
+  "If the given keymap or behaviors file is in the old map format,
+  backs it up and converts it to the flattened vec format."
+  [file]
+  (let [config (-> (files/open-sync file)
+                   :content
+                   (safe-read file))]
+
+    (when (map? config)
+      (let [backup-file (str file ".bak")
+            _ (files/copy file backup-file)
+            convert-fn (case (files/ext file)
+                         "keymap" map->flat-keymap
+                         "behaviors" map->flat-behaviors
+                         identity)
+            body (str ";; Your file has been converted to the new flat format.\n"
+                      ";; Conversion does not preserve comments or indentation.\n"
+                      ";; File is backed up at " backup-file "\n"
+                      (pprint-flat-behaviors (convert-fn config)))]
+        (files/save file body)))))
+
+(behavior ::flatten-map-settings
+          :triggers #{:flatten-map-settings}
+          :reaction (fn [app]
+                      (doseq [file (filter #(contains? #{"keymap" "behaviors"} (files/ext %))
+                                           (files/full-path-ls user-plugin-dir))]
+                        (convert-file file))))
+
 ;;*********************************************************
 ;; Commands
 ;;*********************************************************
@@ -377,6 +407,11 @@
               :desc "Settings: Add User plugin to workspace"
               :exec (fn []
                       (object/raise workspace/current-ws :add.folder! user-plugin-dir))})
+
+(cmd/command {:command :convert-to-flat-format
+              :desc "Settings: Convert current file to flat format"
+              :exec (fn []
+                      (convert-file (get-in @(pool/last-active) [:info :path])))})
 
 (behavior ::on-close-remove
           :triggers #{:close}
@@ -480,4 +515,4 @@
 
 ;;This call to tag-behaviors is necessary as there are no behaviors loaded when the
 ;;app is first run.
-(object/tag-behaviors :app [::initial-behaviors ::create-user-plugin ::load-behaviors ::default-behavior-diffs ::user-behavior-diffs ::default-keymap-diffs ::user-keymap-diffs])
+(object/tag-behaviors :app [::initial-behaviors ::create-user-plugin ::flatten-map-settings ::load-behaviors ::default-behavior-diffs ::user-behavior-diffs ::default-keymap-diffs ::user-keymap-diffs])
