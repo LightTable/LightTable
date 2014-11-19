@@ -409,7 +409,6 @@
  [:plugin-manager :lt.objs.plugins/save-user-plugin-dependencies]
  [:plugin-manager :lt.objs.plugins/render-installed-plugins]
  [:plugin-manager :lt.objs.plugins/render-server-plugins]
- [:plugin-manager :lt.objs.plugins/submit-plugin]
  [:plugin-manager :lt.objs.plugins/draw-plugins-on-updated]
  [:plugin-manager :lt.objs.plugins/get-latest-metadata-sha]
  [:plugin-manager :lt.objs.plugins/check-metadata-sha]

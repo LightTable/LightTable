@@ -26,7 +26,6 @@
 
 (def plugins-dir (files/lt-home "plugins"))
 (def user-plugins-dir (files/lt-user-dir "plugins"))
-(def plugins-url "http://plugins.lighttable.com")
 (def ^:dynamic *plugin-dir* nil)
 
 (declare manager)

@@ -105,7 +105,7 @@
          (sort-by first)
          (vec))))
 
-(defn parse-file [file final]
+(defn parse-file [file]
   (let [behs (-> (files/open-sync file)
                  :content
                  (safe-read file))]
@@ -425,7 +425,7 @@
          (sort-by first)
          (vec))))
 
-(defn parse-key-file [file final]
+(defn parse-key-file [file]
   (let [keys (-> (files/open-sync file)
                  :content
                  (safe-read file))]
