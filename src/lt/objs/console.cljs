@@ -49,6 +49,7 @@
   [:li {:class class} l])
 
 (defn log
+  ([l] (log l nil))
   ([l class] (log l class nil))
   ([l class str-content]
    (when-not (= "" l)
