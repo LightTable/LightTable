@@ -10,11 +10,12 @@
 (def fpath (js/require "path"))
 (def wrench (load/node-module "wrench"))
 (def os (js/require "os"))
-(def app (.-App (js/require "nw.gui")))
-(def data-path (let [path (.-dataPath app)]
-                 (if (array? path)
-                   (first path)
-                   path)))
+;; (def app (.-App (js/require "nw.gui")))
+;; (def data-path (let [path (.-dataPath app)]
+;;                  (if (array? path)
+;;                    (first path)
+;;                    path)))
+(def data-path "Userness/")
 
 (defn typelist->index [cur types]
   (let [full (map (juxt :name identity) types)

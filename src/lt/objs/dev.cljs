@@ -5,7 +5,7 @@
             [lt.objs.notifos :as notifos]
             [lt.objs.command :as cmd]))
 
-(def win (.Window.get (js/require "nw.gui")))
+;; (def win (.Window.get (js/require "nw.gui")))
 
 (cmd/command {:command :dev-inspector
               :desc "Dev: Open web inspector"

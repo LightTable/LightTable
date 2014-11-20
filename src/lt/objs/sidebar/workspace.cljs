@@ -7,6 +7,7 @@
             [lt.objs.opener :as opener]
             [lt.objs.popup :as popup]
             [lt.objs.sidebar :as sidebar]
+            [lt.objs.dialogs :as dialogs]
             [lt.util.dom :as dom]
             [lt.util.cljs :refer [->dottedkw]]
             [crate.binding :refer [bound subatom]]
@@ -14,7 +15,7 @@
   (:require-macros [lt.macros :refer [behavior defui]]))
 
 (def active-dialog nil)
-(def gui (js/require "nw.gui"))
+;; (def gui (js/require "nw.gui"))
 
 (defn menu-item [opts]
   (let [mi (.-MenuItem gui)]
@@ -483,12 +484,10 @@
                        (object/raise tree event (dom/val me))))))
 
 (defn open-folder []
-  (set! active-dialog (input :nwdirectory :workspace.add.folder!))
-  (dom/trigger active-dialog :click))
+  (dialogs/dir tree :workspace.add.folder!))
 
 (defn open-file []
-  (set! active-dialog (input :blah :workspace.add.file!))
-  (dom/trigger active-dialog :click))
+  (dialogs/file tree :workspace.add.file!))
 
 (defui button [name action]
   [:li name]

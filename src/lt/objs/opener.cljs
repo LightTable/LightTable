@@ -7,6 +7,7 @@
             [lt.objs.sidebar.command :as cmd]
             [lt.objs.editor.file :as fed]
             [lt.objs.workspace :as workspace]
+            [lt.objs.dialogs :as dialogs]
             [lt.objs.popup :as popup]
             [lt.objs.tabs :as tabs]
             [lt.objs.app :as app]
@@ -228,8 +229,7 @@
 (cmd/command {:command :open-file
               :desc "File: Open file"
               :exec (fn []
-                      (set! active-dialog (open-input opener))
-                      (dom/trigger active-dialog :click))})
+                      (dialogs/file opener :open!))})
 
 (cmd/command {:command :open-path
               :desc "File: Open path"

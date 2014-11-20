@@ -23,7 +23,7 @@
 (def request (load/node-module "request"))
 (def tar (load/node-module "tar"))
 (def home-path (files/lt-home ""))
-(def get-proxy (.-App.getProxyForURL (js/require "nw.gui")))
+;; (def get-proxy (.-App.getProxyForURL (js/require "nw.gui")))
 
 (defn tar-path [v]
   (if (cache/fetch :edge)
@@ -168,8 +168,9 @@
 
 (defn check-all []
   (-> {}
-      (check-nw-version)
-      (notify)))
+;;       (check-nw-version)
+;;       (notify)
+      ))
 
 ;;*********************************************************
 ;; Behaviors
@@ -185,8 +186,8 @@
                   :type :user
                   :desc "App: Automatically check for updates"
                   :reaction (fn [this]
-                              (when-let [proxy (proxy?)]
-                                (.defaults request (clj->js {:proxy proxy})))
+;;                               (when-let [proxy (proxy?)]
+;;                                 (.defaults request (clj->js {:proxy proxy})))
                               (when (= (app/window-number) 0)
                                 (set! js/localStorage.fetchedVersion nil))
                               (check-version)

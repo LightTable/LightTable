@@ -8,17 +8,18 @@
             [clojure.string :as string])
   (:require-macros [lt.macros :refer [behavior]]))
 
-(def gui (js/require "nw.gui"))
+;; (def gui (js/require "nw.gui"))
 
 (defn create-menu
   ([] (create-menu nil))
   ([type]
-   (let [m (.-Menu gui)]
-     (if type
-       (m. (js-obj "type" type))
-       (m.)))))
+;;    (let [m (.-Menu gui)]
+;;      (if type
+;;        (m. (js-obj "type" type))
+;;        (m.)))
+   ))
 
-(def menu-instance (create-menu))
+;; (def menu-instance (create-menu))
 
 (declare submenu)
 
@@ -167,39 +168,39 @@
                                            (cmd-item "About Light Table" :version))]}
                 ]))
 
-(behavior ::create-menu
-           :triggers #{:init}
-           :reaction (fn [this]
-                       (when (platform/mac?)
-                         (set! (.-menu app/win) nil))
-                       (main-menu)))
+;; (behavior ::create-menu
+;;            :triggers #{:init}
+;;            :reaction (fn [this]
+;;                        (when (platform/mac?)
+;;                          (set! (.-menu app/win) nil))
+;;                        (main-menu)))
 
-(behavior ::recreate-menu
-                  :debounce 20
-                  :triggers #{:app.keys.load :init}
-                  :reaction (fn [app]
-                              (when (platform/mac?)
-                                (main-menu))))
+;; (behavior ::recreate-menu
+;;                   :debounce 20
+;;                   :triggers #{:app.keys.load :init}
+;;                   :reaction (fn [app]
+;;                               (when (platform/mac?)
+;;                                 (main-menu))))
 
-(behavior ::set-menu
-                  :triggers #{:focus :init}
-                  :reaction (fn [this]
-                              (when (or (platform/mac?)
-                                        (not (.-menu app/win)))
-                                (set! (.-menu app/win) menubar))))
+;; (behavior ::set-menu
+;;                   :triggers #{:focus :init}
+;;                   :reaction (fn [this]
+;;                               (when (or (platform/mac?)
+;;                                         (not (.-menu app/win)))
+;;                                 (set! (.-menu app/win) menubar))))
 
-(behavior ::remove-menu-close
-                  :triggers #{:closed :blur}
-                  :reaction (fn [this]
-                               (when (platform/mac?)
-                                 (set! (.-menu app/win) nil))
-                              ))
+;; (behavior ::remove-menu-close
+;;                   :triggers #{:closed :blur}
+;;                   :reaction (fn [this]
+;;                                (when (platform/mac?)
+;;                                  (set! (.-menu app/win) nil))
+;;                               ))
 
-(behavior ::menu!
-                  :triggers #{:menu!}
-                  :reaction (fn [this e]
-                              (let [items (sort-by :order (filter identity (object/raise-reduce this :menu+ [] e)))]
-                                (-> (menu items)
-                                    (show-menu (.-clientX e) (.-clientY e))))
-                              (dom/prevent e)
-                              (dom/stop-propagation e)))
+;; (behavior ::menu!
+;;                   :triggers #{:menu!}
+;;                   :reaction (fn [this e]
+;;                               (let [items (sort-by :order (filter identity (object/raise-reduce this :menu+ [] e)))]
+;;                                 (-> (menu items)
+;;                                     (show-menu (.-clientX e) (.-clientY e))))
+;;                               (dom/prevent e)
+;;                               (dom/stop-propagation e)))
