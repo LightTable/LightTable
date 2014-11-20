@@ -34,6 +34,9 @@ node_webkit_tarball=$binariesDir/node-webkit/LightTableLinux$bits_cpu-$buildVer.
 if [ ! -e "$node_webkit_tarball" ]; then
     curl -o $node_webkit_tarball \
 	https://d35ac8ww5dfjyg.cloudfront.net/playground/bins/$buildVer/LightTableLinux$bits_tarball.tar.gz
+
+    # Remove binaries from the previous $buildVer
+    rm -rf $deployDir
 fi
 
 node_webkit_tarball_sha1=$node_webkit_tarball.sha1
@@ -50,7 +53,7 @@ fi
 
 tar -xzf $node_webkit_tarball
 
-# $deployDir doesn't exist when building for the 1st time
+# $deployDir doesn't exist during 1st build of the current $buildVer
 if [ -e $deployDir ]; then
     cp -ar $deployDir/* LightTable
     rm -rf $deployDir
