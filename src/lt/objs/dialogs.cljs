@@ -1,28 +1,19 @@
 (ns lt.objs.dialogs
   (:require [lt.object :as object]
-            [lt.util.dom :as dom])
+            [lt.util.dom :as dom]
+            [lt.objs.app :as app])
   (:require-macros [lt.macros :refer [behavior defui]]))
 
-(def active-input nil)
-
-(defui input [obj type event]
-  [:input {:type "file" type true :style "display:none;"}]
-  :change (fn []
-            (this-as me
-                     (when-not (empty? (dom/val me))
-                       (object/raise obj event (dom/val me))))))
-
-(defn trigger []
-  (dom/trigger active-input :click))
+(def ipc (js/require "ipc"))
 
 (defn dir [obj event]
-  (set! active-input (input obj :nwdirectory event))
-  (trigger))
+  (when-let [files (.sendSync ipc "openFolderDialog")]
+    (object/raise obj event (first files))))
 
 (defn file [obj event]
-  (set! active-input (input obj :b event))
-  (trigger))
+  (when-let [files (.sendSync ipc "openFileDialog")]
+    (object/raise obj event (first files))))
 
 (defn save-as [obj event]
-  (set! active-input (input obj :nwsaveas event))
-  (trigger))
+  (when-let [files (.sendSync ipc "openSaveDialog")]
+    (object/raise obj event (first files))))

@@ -8,17 +8,17 @@
             )
   (:require-macros [lt.macros :refer [behavior defui]]))
 
-(def gui (js/require "nw.gui"))
-(def win (.Window.get gui))
+;; (def gui (js/require "nw.gui"))
+;; (def win (.Window.get gui))
 
 (def fullscreen? false)
 
-(.on win "enter-fullscreen" (fn []
-                              (set! fullscreen? true)
-                              (add-class ($ :body) :fullscreen)))
-(.on win "leave-fullscreen" (fn []
-                              (set! fullscreen? false)
-                              (remove-class ($ :body) :fullscreen)))
+;; (.on win "enter-fullscreen" (fn []
+;;                               (set! fullscreen? true)
+;;                               (add-class ($ :body) :fullscreen)))
+;; (.on win "leave-fullscreen" (fn []
+;;                               (set! fullscreen? false)
+;;                               (remove-class ($ :body) :fullscreen)))
 
 (defn close []
   (.close win))

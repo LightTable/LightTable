@@ -15,7 +15,7 @@
         [lt.util.cljs :only [js->clj]])
   (:require-macros [lt.macros :refer [behavior]]))
 
-(def gui (js/require "nw.gui"))
+;; (def gui (js/require "nw.gui"))
 
 (defn ->cm-ed [e]
   (if (satisfies? IDeref e)

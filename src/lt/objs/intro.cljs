@@ -58,7 +58,7 @@
                   :reaction (fn [this]
                               (when-not (cli/args)
                                 (let [intro (object/create ::intro)]
-                                  (.focus app/win)
+;;                                   (.focus app/win)
                                   (dom/focus (dom/$ :body))
                                   (tabs/add! intro)
                                   (tabs/active! intro)))))

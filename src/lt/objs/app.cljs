@@ -7,8 +7,10 @@
             [lt.util.dom :refer [$] :as dom])
   (:require-macros [lt.macros :refer [behavior]]))
 
-(def gui (js/require "nw.gui"))
-(def win (.Window.get gui))
+;; (def gui (js/require "nw.gui"))
+;; (def win (.Window.get gui))
+
+(def remote (js/require "remote"))
 (def closing true)
 (def default-zoom 0)
 
@@ -18,7 +20,7 @@
       0
       (js/parseInt n))))
 
-(set! (.-ltid win) (window-number))
+;; (set! (.-ltid win) (window-number))
 
 (defn prevent-close []
   (set! closing false))
@@ -45,6 +47,7 @@
   (object/raise app :pre-init)
   (object/raise app :init)
   (object/raise app :post-init)
+  (js/console.log "about to show")
   (object/raise app :show))
 
 (defn fetch [k]
@@ -110,28 +113,28 @@
                               (when closing
                                 (close true))))
 
-(behavior ::store-position-on-close
-                  :triggers #{:closed :refresh}
-                  :reaction (fn [this]
-                              (when-not (.-isFullscreen win)
-                                (set! js/localStorage.x (.-x win))
-                                (set! js/localStorage.y (.-y win))
-                                (set! js/localStorage.width (.-width win))
-                                (set! js/localStorage.height (.-height win))
-                                (set! js/localStorage.fullscreen (.-isFullscreen win)))))
+;; (behavior ::store-position-on-close
+;;                   :triggers #{:closed :refresh}
+;;                   :reaction (fn [this]
+;;                               (when-not (.-isFullscreen win)
+;;                                 (set! js/localStorage.x (.-x win))
+;;                                 (set! js/localStorage.y (.-y win))
+;;                                 (set! js/localStorage.width (.-width win))
+;;                                 (set! js/localStorage.height (.-height win))
+;;                                 (set! js/localStorage.fullscreen (.-isFullscreen win)))))
 
-(behavior ::restore-fullscreen
-                  :triggers #{:show}
-                  :reaction (fn [this]
-                                (when (= js/localStorage.fullscreen "true")
-                                  (.enterFullscreen win))))
+;; (behavior ::restore-fullscreen
+;;                   :triggers #{:show}
+;;                   :reaction (fn [this]
+;;                                 (when (= js/localStorage.fullscreen "true")
+;;                                   (.enterFullscreen win))))
 
-(behavior ::restore-position-on-init
-                  :triggers #{:show}
-                  :reaction (fn [this]
-                              (when-not (empty? (.-width js/localStorage))
-                                (.resizeTo win (ensure-greater js/localStorage.width 400) (ensure-greater js/localStorage.height 400))
-                                (.moveTo win (ensure-greater js/localStorage.x 0) (ensure-greater js/localStorage.y 0)))))
+;; (behavior ::restore-position-on-init
+;;                   :triggers #{:show}
+;;                   :reaction (fn [this]
+;;                               (when-not (empty? (.-width js/localStorage))
+;;                                 (.resizeTo win (ensure-greater js/localStorage.width 400) (ensure-greater js/localStorage.height 400))
+;;                                 (.moveTo win (ensure-greater js/localStorage.x 0) (ensure-greater js/localStorage.y 0)))))
 
 (behavior ::on-show-bind-navigate
                   :triggers #{:show}
@@ -165,7 +168,7 @@
                   :triggers #{:show}
                   :reaction (fn [this]
                               ;(dom/focus (dom/$ :body))
-                              (.focus win)
+;;                               (.focus win)
                               ))
 
 (defn run-commands [this & commands]
@@ -188,13 +191,13 @@
           :reaction run-commands)
 
 (behavior ::run-on-init
-                  :triggers #{:init}
-                  :desc "App: Run commands on init"
-                  :params [{:label "commands"
-                            :type :list
-                            :items cmd/completions}]
-                  :type :user
-                  :reaction run-commands)
+          :triggers #{:init}
+          :desc "App: Run commands on init"
+          :params [{:label "commands"
+                    :type :list
+                    :items cmd/completions}]
+          :type :user
+          :reaction run-commands)
 
 (behavior ::run-post-init
                   :triggers #{:post-init}
@@ -205,15 +208,15 @@
                   :type :user
                   :reaction run-commands)
 
-(behavior ::set-default-zoom-level
-          :triggers #{:init}
-          :desc "App: Set the default zoom level"
-                  :params [{:label "default-zoom-level"
-                            :type :number}]
-                  :type :user
-                  :reaction (fn [this default]
-                              (set! default-zoom default)
-                              (set! (.-zoomLevel win) default)))
+;; (behavior ::set-default-zoom-level
+;;           :triggers #{:init}
+;;           :desc "App: Set the default zoom level"
+;;                   :params [{:label "default-zoom-level"
+;;                             :type :number}]
+;;                   :type :user
+;;                   :reaction (fn [this default]
+;;                               (set! default-zoom default)
+;;                               (set! (.-zoomLevel win) default)))
 
 ;;*********************************************************
 ;; Object
@@ -227,18 +230,18 @@
 
 (def app (object/create ::app))
 
-(when (= 0 (window-number))
-  (store! :window-id 0))
+;; (when (= 0 (window-number))
+;;   (store! :window-id 0))
 
-(.on win "close" (fn [] (object/raise app :close!)))
+;; (.on win "close" (fn [] (object/raise app :close!)))
 
-(.on (.-App gui) "open" (fn [path] (object/raise app :open! path)))
+;; (.on (.-App gui) "open" (fn [path] (object/raise app :open! path)))
 
-(.on win "blur" (fn []
-                 (object/raise app :blur)))
+;; (.on win "blur" (fn []
+;;                  (object/raise app :blur)))
 
-(.on win "focus" (fn []
-                  (object/raise app :focus)))
+;; (.on win "focus" (fn []
+;;                   (object/raise app :focus)))
 
 
 (set! (.-onbeforeunload js/window) (fn []
