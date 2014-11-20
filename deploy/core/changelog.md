@@ -8,6 +8,7 @@
 
 ##0.7.0
 
+* CHANGED: Enter doesn't select a completion by default anymore, just tab. Add `[:editor.keys.hinting.active "-enter" [:passthrough]]` to your keymap get it back.
 * CHANGED: parens are not auto-closed by default anymore, add `[:app :lt.objs.settings/pair-keymap-diffs]` to your behaviors to get it back.
 * CHANGED: Move to the MIT License (one-more-minute)
 * CHANGED: Remove plugin server and use Github as the plugin-metadata repository (ibdknox)
