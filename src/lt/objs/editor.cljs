@@ -15,8 +15,6 @@
         [lt.util.cljs :only [js->clj]])
   (:require-macros [lt.macros :refer [behavior]]))
 
-;; (def gui (js/require "nw.gui"))
-
 (defn ->cm-ed [e]
   (if (satisfies? IDeref e)
     (:ed @e)
@@ -642,7 +640,7 @@
           :reaction (fn [this e]
                       (let [items (sort-by :order (object/raise-reduce this :menu+ []))]
                         (-> (menu/menu items)
-                            (menu/show-menu (.-clientX e) (.-clientY e))))
+                            (menu/show-menu)))
                       (dom/prevent e)
                       (dom/stop-propagation e)
                       ))

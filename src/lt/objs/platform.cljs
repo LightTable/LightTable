@@ -4,6 +4,12 @@
             [lt.util.dom :as dom])
   (:require-macros [lt.macros :refer [behavior]]))
 
+(def clipboard (js/require "clipboard"))
+(def shell (js/require "shell"))
+
+(defn get-data-path []
+  (.getDataPath app))
+
 (defn normalize [plat]
   (condp = plat
     "win32" :windows
@@ -11,17 +17,23 @@
     "darwin" :mac))
 
 (defn open [path]
-  (.Shell.openExternal (js/require "nw.gui") path))
+  (.openItem shell path))
+
+(defn open-url [path]
+  (.openExternal shell path))
+
+(defn show-item [path]
+  (.showItemInFolder shell path))
 
 (defn copy
   "Copies given text to platform's clipboard"
   [text]
-  (.set (.Clipboard.get (js/require "nw.gui")) text "text"))
+  (.writeText clipboard text))
 
 (defn paste
   "Returns text of last copy to platform's clipboard"
   []
-  (.get (.Clipboard.get (js/require "nw.gui")) "text"))
+  (.readText clipboard))
 
 (def platform (normalize (.-platform js/process)))
 

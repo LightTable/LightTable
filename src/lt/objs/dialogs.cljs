@@ -4,16 +4,20 @@
             [lt.objs.app :as app])
   (:require-macros [lt.macros :refer [behavior defui]]))
 
-(def ipc (js/require "ipc"))
+(def remote (js/require "remote"))
+(def dialog (.require remote "dialog"))
 
 (defn dir [obj event]
-  (when-let [files (.sendSync ipc "openFolderDialog")]
-    (object/raise obj event (first files))))
+  (let [files (.showOpenDialog dialog #js {:properties #js ["openDirectory"]})]
+    (when files
+      (object/raise obj event (first files)))))
 
 (defn file [obj event]
-  (when-let [files (.sendSync ipc "openFileDialog")]
-    (object/raise obj event (first files))))
+  (let [files (.showOpenDialog dialog #js {:properties #js ["openFile"]})]
+    (when files
+      (object/raise obj event (first files)))))
 
 (defn save-as [obj event]
-  (when-let [files (.sendSync ipc "openSaveDialog")]
-    (object/raise obj event (first files))))
+  (let [files (.showSaveDialog dialog #js {:properties #js ["createDirectory"]})]
+    (when files
+      (object/raise obj event (first files)))))
