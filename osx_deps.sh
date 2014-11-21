@@ -10,7 +10,7 @@ fi
 #remove the previously built plugins, binary, and executable
 rm -rf deploy/plugins
 rm -rf deploy/LightTable.app
-rm deploy/light
+rm -rf deploy/light
 
 #get the LightTable.app binary
 curl -O http://d35ac8ww5dfjyg.cloudfront.net/playground/bins/0.6.2/LightTableMac.zip
