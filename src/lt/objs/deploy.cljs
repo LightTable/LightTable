@@ -104,9 +104,10 @@
                              (fn []
                                (move-tmp)
                                (notifos/done-working)
+                               (set! version (assoc version :version ver))
                                (popup/popup! {:header "Light Table has been updated!"
                                               :body (str "Light Table has been updated to " ver "! Just
-                                                        restart to get the latest and greatest.")
+                                                         restart to get the latest and greatest.")
                                               :buttons [{:label "ok"}]}))))))
 
 (defn version-url []
@@ -133,7 +134,6 @@
                               (not= js/localStorage.fetchedVersion data)))
                    (do
                      (set! js/localStorage.fetchedVersion data)
-                     (set! version (assoc version :version data))
                      (should-update-popup data))
                    (when notify?
                      (notifos/set-msg! (str "At latest version: " (:version version)))))))))
