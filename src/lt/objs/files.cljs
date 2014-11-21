@@ -13,8 +13,8 @@
 (def os (js/require "os"))
 (def remote (js/require "remote"))
 (def app (.require remote "app"))
-;; (def data-path (.getDataPath app))
-(def data-path (.resolve fpath "Userness/"))
+(def data-path (.getDataPath app))
+;; (def data-path (.resolve fpath "Userness/"))
 
 (defn typelist->index [cur types]
   (let [full (map (juxt :name identity) types)

@@ -43,7 +43,6 @@
   (object/raise app :pre-init)
   (object/raise app :init)
   (object/raise app :post-init)
-  (js/console.log "about to show")
   (object/raise app :show))
 
 (defn fetch [k]

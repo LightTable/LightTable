@@ -1,22 +1,5 @@
 {
-	"name": "LightTable",
-	"main": "core/LightTable.html",
-	"js-flags": "--harmony",
-	"single-instance": true,
-	"no-edit-menu": true,
-	"webkit": {
-		"plugin": true
-		},
-		"chromium-args" : "--enable-smooth-scrolling --disable-accelerated-video --enable-webgl --enable-webaudio --ignore-gpu-blacklist --force-compositing-mode --remote-debugging-port=10138 --harmony",
-		"window": {
-			"icon": "core/img/lticon.png",
-			"width": 1024,
-			"height": 700,
-			"min_height": 400,
-			"min_width": 400,
-			"position": "center",
-			"show": false,
-			"toolbar": false,
-			"frame": true
-		}
-	}
+  "name": "LightTable",
+  "version": "0.8.0",
+  "main": "core/main.js"
+}
