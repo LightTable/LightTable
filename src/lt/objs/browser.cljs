@@ -39,10 +39,7 @@
   (str "browser" (object/->id this)))
 
 (defn to-frame [this]
-  (let [id (if (string? this)
-             this
-             (browser-id this))]
-    (aget js/window.frames id)))
+  (dom/$ :webview (object/->content this)))
 
 (defn handle-cb [cbid command data]
   (object/raise clients/clients :message [cbid command data]))
@@ -91,7 +88,7 @@
            (object/raise this :refresh!)))
 
 (defui iframe [this]
-  [:iframe {:src (bound (subatom this :url)) :id (browser-id this) :nwfaketop "true" :nwdisable "true"}]
+  [:webview {:src (bound (subatom this :url)) :id (browser-id this)}]
   :focus (fn []
            (object/raise this :active))
   :blur (fn []
@@ -144,7 +141,6 @@
                   :triggers #{:navigate!}
                   :reaction (fn [this n]
                               (let [bar (dom/$ :input (object/->content this))
-                                    frame (to-frame this)
                                     url (check-http (or n (dom/val bar)))]
                                 (notifos/working)
                                 (object/merge! this {:url url :urlvalue url :loading-counter (inc (:loading-counter @this 0))}))))
@@ -175,40 +171,34 @@
 (behavior ::focus!
                   :triggers #{:focus!}
                   :reaction (fn [this]
-                              (dom/focus (dom/$ :iframe (object/->content this)))))
+                              (dom/focus (dom/$ :webview (object/->content this)))))
 
 (behavior ::back!
-                  :triggers #{:back!}
-                  :reaction (fn [this]
-                              (let [frame (to-frame this)]
-                                (when (> (:history-pos @this) 0)
-                                  (object/update! this [:history-pos] dec)
-                                  (object/raise this :navigate! (-> (:history @this)
-                                                                    (get (:history-pos @this))))))))
+          :triggers #{:back!}
+          :reaction (fn [this]
+                      (let [frame (to-frame this)]
+                        (.goBack frame))))
 
 (behavior ::forward!
-                  :triggers #{:forward!}
-                  :reaction (fn [this]
-                              (let [frame (to-frame this)]
-                                (when (< (:history-pos @this) (dec (count (:history @this))))
-                                  (object/update! this [:history-pos] inc)
-                                  (object/raise this :navigate! (-> (:history @this)
-                                                                    (get (:history-pos @this))))))))
+          :triggers #{:forward!}
+          :reaction (fn [this]
+                      (let [frame (to-frame this)]
+                        (.goForward frame))))
 
 (behavior ::refresh!
-                  :triggers #{:refresh!}
-                  :reaction (fn [this]
-                              (let [frame (to-frame this)]
-                                (.location.reload frame))))
+          :triggers #{:refresh!}
+          :reaction (fn [this]
+                      (let [frame (to-frame this)]
+                        (.reload frame))))
 
 (behavior ::menu!
-                  :triggers #{:menu!}
-                  :reaction (fn [this e]
-                       (let [items (sort-by :order (object/raise-reduce this :menu+ []))]
-                                (-> (menu/menu items)
-                                    (menu/show-menu (.-clientX e) (.-clientY e))))
-                       (dom/prevent e)
-                       (dom/stop-propagation e)))
+          :triggers #{:menu!}
+          :reaction (fn [this e]
+                      (let [items (sort-by :order (object/raise-reduce this :menu+ []))]
+                        (-> (menu/menu items)
+                            (menu/show-menu)))
+                      (dom/prevent e)
+                      (dom/stop-propagation e)))
 
 (behavior ::menu+
                   :triggers #{:menu+}
@@ -240,73 +230,74 @@
 
                        ))
 
-(behavior ::window-load-click-handler
-                  :triggers #{:window.loaded}
-                  :reaction (fn [this window loc]
-                              (.document.addEventListener window "blur"
-                                                          (fn [e]
-                                                            (object/raise this :inactive e)))
-                              (.document.addEventListener window "contextmenu"
-                                                          (fn [e]
-                                                            (when-not (.-defaultPrevented e)
-                                                              (object/raise this :menu! e))))
-                              (.document.addEventListener window "click"
-                                                          (fn [e]
-                                                            (object/raise this :active)
-                                                            (when (and
-                                                                   (= (.-target.nodeName e) "A")
-                                                                   (or (and (platform/mac?) (.-metaKey e))
-                                                                       (.-ctrlKey e)))
-                                                              (.preventDefault e)
-                                                              (.stopPropagation e)
-                                                              (cmd/exec! :add-browser-tab (.-target.href e))))
-                                                          )))
+;; (behavior ::window-load-click-handler
+;;                   :triggers #{:window.loaded}
+;;                   :reaction (fn [this window loc]
+;;                               (.document.addEventListener window "blur"
+;;                                                           (fn [e]
+;;                                                             (object/raise this :inactive e)))
+;;                               (.document.addEventListener window "contextmenu"
+;;                                                           (fn [e]
+;;                                                             (when-not (.-defaultPrevented e)
+;;                                                               (object/raise this :menu! e))))
+;;                               (.document.addEventListener window "click"
+;;                                                           (fn [e]
+;;                                                             (object/raise this :active)
+;;                                                             (when (and
+;;                                                                    (= (.-target.nodeName e) "A")
+;;                                                                    (or (and (platform/mac?) (.-metaKey e))
+;;                                                                        (.-ctrlKey e)))
+;;                                                               (.preventDefault e)
+;;                                                               (.stopPropagation e)
+;;                                                               (cmd/exec! :add-browser-tab (.-target.href e))))
+;;                                                           )))
 
-(behavior ::window-load-key-handler
-                  :triggers #{:window.loaded}
-                  :reaction (fn [this window loc]
-                              (let [script (.document.createElement window "script")]
-                                (set! (.-type script) "text/javascript")
-                                (set! (.-innerHTML script) (:content (files/open-sync "core/node_modules/lighttable/util/keyevents.js")))
-                                (.document.head.appendChild window script)
-                                (aset (aget window "Mousetrap") "handleKey"
-                                      (fn [key char e]
-                                        (when (keyboard/capture key char e)
-                                          (dom/prevent e)
-                                          (dom/stop-propagation e))))
-                                )))
+;; (behavior ::window-load-key-handler
+;;                   :triggers #{:window.loaded}
+;;                   :reaction (fn [this window loc]
+;;                               (let [script (.document.createElement window "script")]
+;;                                 (set! (.-type script) "text/javascript")
+;;                                 (set! (.-innerHTML script) (:content (files/open-sync "core/node_modules/lighttable/util/keyevents.js")))
+;;                                 (.document.head.appendChild window script)
+;;                                 (aset (aget window "Mousetrap") "handleKey"
+;;                                       (fn [key char e]
+;;                                         (when (keyboard/capture key char e)
+;;                                           (dom/prevent e)
+;;                                           (dom/stop-propagation e))))
+;;                                 )))
 
-(behavior ::window-load-lttools
-                  :triggers #{:window.loaded}
-                  :reaction (fn [this window loc]
-                              (set! (.-lttools window) utils)))
+;; (behavior ::window-load-lttools
+;;                   :triggers #{:window.loaded}
+;;                   :reaction (fn [this window loc]
+;;                               (set! (.-lttools window) utils)))
 
 (behavior ::init!
                   :triggers #{:init}
                   :reaction (fn [this]
                               (let [frame (dom/$ :iframe (object/->content this))
                                     bar (dom/$ :input (object/->content this))]
-                                (set! (.-onload frame) (fn []
-                                                         (let [loc (.-contentWindow.location.href frame)]
-                                                           (object/raise this :window.loaded (.-contentWindow frame) loc)
-                                                           (set! (.-contentWindow.onhashchange frame) (fn []
-                                                                                                        (dom/val bar (.-contentWindow.location.href frame))))
-                                                           (devtools/clear-scripts!)
-                                                           (dom/val bar loc)
-                                                           (object/raise this :navigate loc)))))))
+;;                                 (set! (.-onload frame) (fn []
+;;                                                          (let [loc (.-contentWindow.location.href frame)]
+;;                                                            (object/raise this :window.loaded (.-contentWindow frame) loc)
+;;                                                            (set! (.-contentWindow.onhashchange frame) (fn []
+;;                                                                                                         (dom/val bar (.-contentWindow.location.href frame))))
+;;                                                            (devtools/clear-scripts!)
+;;                                                            (dom/val bar loc)
+;;                                                            (object/raise this :navigate loc))))
+                                )))
 
-(behavior ::set-client-name
-                  :triggers #{:navigate}
-                  :reaction (fn [this loc]
-                              (let [title (.-document.title (to-frame this))
-                                    title (if-not (empty? title)
-                                            title
-                                            "browser")]
-                                (object/merge! this {:name title})
-                                (tabs/refresh! this)
-                                (dotimes [x (:loading-counter @this)]
-                                  (notifos/done-working))
-                                (object/merge! (:client @this) {:name loc}))))
+;; (behavior ::set-client-name
+;;                   :triggers #{:navigate}
+;;                   :reaction (fn [this loc]
+;;                               (let [title (.-document.title (to-frame this))
+;;                                     title (if-not (empty? title)
+;;                                             title
+;;                                             "browser")]
+;;                                 (object/merge! this {:name title})
+;;                                 (tabs/refresh! this)
+;;                                 (dotimes [x (:loading-counter @this)]
+;;                                   (notifos/done-working))
+;;                                 (object/merge! (:client @this) {:name loc}))))
 
 (behavior ::set-active
                   :triggers #{:active :show}
@@ -377,7 +368,7 @@
                   :triggers #{:editor.eval.css!}
                   :reaction (fn [this msg]
                               (let [info (:data msg)
-                                    frame (to-frame (:frame-id @this))
+                                    frame (to-frame (:frame @this))
                                     node-name (string/replace (:name info) #"\." "-")
                                     node (.document.querySelector frame (str "#" node-name))
                                     neue (crate/html [:style {:type "text/css" :id node-name} (:code info)])]

@@ -7,20 +7,16 @@
             [lt.util.dom :refer [$] :as dom])
   (:require-macros [lt.macros :refer [behavior]]))
 
-;; (def gui (js/require "nw.gui"))
-;; (def win (.Window.get gui))
-
 (def remote (js/require "remote"))
+(def app (.require remote "app"))
+(def ipc (js/require "ipc"))
+(def win (.getCurrentWindow remote))
+(def frame (js/require "web-frame"))
 (def closing true)
-(def default-zoom 0)
+(def default-zoom 1)
 
 (defn window-number []
-  (let [n (last (string/split js/window.location.search "="))]
-    (if (empty? n)
-      0
-      (js/parseInt n))))
-
-;; (set! (.-ltid win) (window-number))
+  (.-id win))
 
 (defn prevent-close []
   (set! closing false))
@@ -78,20 +74,11 @@
     (max x cap)))
 
 (defn zoom-level []
-  (when (not= (.-zoomLevel win) 0)
-    (.-zoomLevel win)))
+  (when (not= (.getZoomFactor frame) 0)
+    (.getZoomFactor frame)))
 
 (defn open-window []
-  (let [id (store-swap! :window-id inc)
-        w (.Window.open gui (str "LightTable.html?id=" id) (clj->js {:toolbar false
-                                                                     :icon "core/img/lticon.png"
-                                                                     :new-instance true
-                                                                     :min_height 400
-                                                                     :min_width 400
-                                                                     :frame true
-                                                                     :show false}))]
-    (set! (.-ltid w) id)
-    w))
+  (.send ipc "createWindow"))
 
 ;;*********************************************************
 ;; Behaviors
@@ -121,7 +108,7 @@
 ;;                                 (set! js/localStorage.y (.-y win))
 ;;                                 (set! js/localStorage.width (.-width win))
 ;;                                 (set! js/localStorage.height (.-height win))
-;;                                 (set! js/localStorage.fullscreen (.-isFullscreen win)))))
+;;                                 (set! js/localStorage.fullscreen (.isFullScreen win)))))
 
 ;; (behavior ::restore-fullscreen
 ;;                   :triggers #{:show}
@@ -164,13 +151,6 @@
                       (dom/remove-class (dom/$ :body) :active)
                       (dom/add-class (dom/$ :body) :inactive)))
 
-(behavior ::initial-focus
-                  :triggers #{:show}
-                  :reaction (fn [this]
-                              ;(dom/focus (dom/$ :body))
-;;                               (.focus win)
-                              ))
-
 (defn run-commands [this & commands]
   (when (seq commands)
     (let [commands (if (-> commands first vector?)
@@ -208,15 +188,15 @@
                   :type :user
                   :reaction run-commands)
 
-;; (behavior ::set-default-zoom-level
-;;           :triggers #{:init}
-;;           :desc "App: Set the default zoom level"
-;;                   :params [{:label "default-zoom-level"
-;;                             :type :number}]
-;;                   :type :user
-;;                   :reaction (fn [this default]
-;;                               (set! default-zoom default)
-;;                               (set! (.-zoomLevel win) default)))
+(behavior ::set-default-zoom-level
+          :triggers #{:init}
+          :desc "App: Set the default zoom level"
+          :params [{:label "default-zoom-level"
+                    :type :number}]
+          :type :user
+          :reaction (fn [this default]
+                      (set! default-zoom default)
+                      (cmd/exec! :window.zoom-reset)))
 
 ;;*********************************************************
 ;; Object
@@ -230,18 +210,11 @@
 
 (def app (object/create ::app))
 
-;; (when (= 0 (window-number))
-;;   (store! :window-id 0))
+(.on ipc "blur" (fn []
+                  (object/raise app :blur)))
 
-;; (.on win "close" (fn [] (object/raise app :close!)))
-
-;; (.on (.-App gui) "open" (fn [path] (object/raise app :open! path)))
-
-;; (.on win "blur" (fn []
-;;                  (object/raise app :blur)))
-
-;; (.on win "focus" (fn []
-;;                   (object/raise app :focus)))
+(.on ipc "focus" (fn []
+                  (object/raise app :focus)))
 
 
 (set! (.-onbeforeunload js/window) (fn []
@@ -265,19 +238,20 @@
 (cmd/command {:command :window.zoom-in
               :desc "Window: Zoom in"
               :exec (fn []
-                      (set! (.-zoomLevel win) (+ (.-zoomLevel win) 0.5))
+                      (.setZoomFactor frame (+ (.getZoomFactor frame) 0.2))
                       )})
 
 (cmd/command {:command :window.zoom-out
               :desc "Window: Zoom out"
               :exec (fn []
-                      (set! (.-zoomLevel win) (- (.-zoomLevel win) 0.5))
+                      (when (> (.getZoomFactor frame) 0)
+                        (.setZoomFactor frame (- (.getZoomFactor frame) 0.2)))
                       )})
 
 (cmd/command {:command :window.zoom-reset
               :desc "Window: Zoom reset"
               :exec (fn []
-                      (set! (.-zoomLevel win) default-zoom)
+                      (.setZoomFactor frame default-zoom)
                       )})
 
 

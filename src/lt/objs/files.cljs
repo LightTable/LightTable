@@ -9,13 +9,12 @@
 (def fs (js/require "fs"))
 (def fpath (js/require "path"))
 (def wrench (load/node-module "wrench"))
+(def shell (js/require "shell"))
 (def os (js/require "os"))
-;; (def app (.-App (js/require "nw.gui")))
-;; (def data-path (let [path (.-dataPath app)]
-;;                  (if (array? path)
-;;                    (first path)
-;;                    path)))
-(def data-path "Userness/")
+(def remote (js/require "remote"))
+(def app (.require remote "app"))
+;; (def data-path (.getDataPath app))
+(def data-path (.resolve fpath "Userness/"))
 
 (defn typelist->index [cur types]
   (let [full (map (juxt :name identity) types)
@@ -239,6 +238,9 @@
       (object/raise files-obj :files.save.error path e)
       (when cb (cb e))
       )))
+
+(defn trash! [path]
+  (.moveItemTotrash shell path))
 
 (defn delete! [path]
   (if (dir? path)

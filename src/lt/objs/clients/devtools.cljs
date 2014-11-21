@@ -19,7 +19,7 @@
 
 (def cbs (atom {}))
 (def id (atom 0))
-(def devtools-url "http://localhost:10138/json")
+(def devtools-url "http://localhost:8315/json")
 
 (defn next-id []
   (swap! id inc))
@@ -197,6 +197,14 @@
                 :tags #{:clients.devtools})
 
 (def local (object/create ::devtools-client))
+
+(.on app/ipc "devtools-opened" (fn []
+                                 (object/raise local :disconnect)
+                                 ))
+
+(.on app/ipc "devtools-closed" (fn []
+                                 (object/raise local :reconnect!)
+                                 ))
 
 ;;*********************************************************
 ;; Behaviors

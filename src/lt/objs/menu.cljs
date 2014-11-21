@@ -8,24 +8,21 @@
             [clojure.string :as string])
   (:require-macros [lt.macros :refer [behavior]]))
 
-;; (def gui (js/require "nw.gui"))
+(def remote (js/require "remote"))
+(def Menu (.require remote "menu"))
+(def MenuItem (.require remote "menu-item"))
 
 (defn create-menu
   ([] (create-menu nil))
   ([type]
-;;    (let [m (.-Menu gui)]
-;;      (if type
-;;        (m. (js-obj "type" type))
-;;        (m.)))
-   ))
-
-;; (def menu-instance (create-menu))
+     (if type
+       (Menu. (js-obj "type" type))
+       (Menu.))))
 
 (declare submenu)
 
 (defn menu-item [opts]
-  (let [mi (.-MenuItem gui)
-        opts (if-not (:submenu opts)
+  (let [opts (if-not (:submenu opts)
                opts
                (assoc opts :submenu (submenu (:submenu opts))))
         opts2 (if (:click opts)
@@ -38,7 +35,7 @@
                                       (catch js/global.Error e
                                         (.error js/console e)))))
                opts)]
-    (mi. (clj->js opts))))
+    (MenuItem. (clj->js opts))))
 
 (defn submenu [items]
   (let [menu (create-menu)]
@@ -47,66 +44,73 @@
       (.append menu (menu-item i)))
     menu))
 
-(defn clear! [menu]
-  (let [m (or menu menu-instance)]
-    (dotimes [i (.-items.length m)]
-      (.removeAt m 0))))
-
 (defn menu [items]
-  (clear! menu-instance)
-  (doseq [i items]
-    (.append menu-instance (menu-item i)))
-  menu-instance)
+  (let [menu-instance (Menu.)]
+    (doseq [i items]
+      (.append menu-instance (menu-item i)))
+    menu-instance))
 
-(defn zoom-adjust [zoom v]
-  (cond
-   (= 0 zoom) v
-   (> zoom 0) (int (* v (+ 1 (* zoom 0.20))))
-   (< zoom 0) (int (* v (/ -1 (+ -1 (* zoom 0.27)))))))
-
-(defn show-menu [m x y]
-  (let [[x y] (if-let [zoom (app/zoom-level)]
-                [(zoom-adjust zoom x) (zoom-adjust zoom y)]
-                [x y])]
-    (.popup m x y)))
+(defn show-menu [m]
+  (.popup m (.getCurrentWindow remote)))
 
 (dom/on (dom/$ :body) :contextmenu (fn [e]
                                      (dom/prevent e)
                                      (dom/stop-propagation e)
                                      false))
 
-(def menubar
-  (create-menu "menubar"))
-
 (defn set-menubar [items]
-  (clear! menubar)
-  (doseq [i items
-          :when i]
-    (.append menubar (menu-item i)))
-  (when-not (.-menu app/win)
-    (set! (.-menu app/win) menubar)))
+  (let [menubar (Menu.)]
+    (doseq [i items
+            :when i]
+      (.append menubar (menu-item i)))
+    (Menu.setApplicationMenu menubar)))
 
+(def key-mappings {"cmd" "Command"
+                   "shift" "Shift"
+                   "ctrl" "Control"
+                   "alt" "Alt"})
 
 (defn command->menu-binding [cmd]
   (let [ks (first (keyboard/cmd->current-binding cmd))
-        multi-part? (next (string/split ks " "))
-        ks (string/split ks "-")]
-    (when (and (seq ks) (not multi-part?))
-      {:key (if (= "space" (last ks))
-              " "
-              (last ks))
-       :modifiers (when (> (count ks) 1)
-                    (string/join "-" (butlast ks)))})))
+        parts (string/split ks " ")
+        parts (for [part parts
+                      :let [ks (for [key (string/split part "-")]
+                                 (or (key-mappings key) key))]]
+                (string/join "+" ks))]
+    (when (seq parts)
+      {:accelerator (string/join " " parts)})))
 
 (defn cmd-item
   ([label cmd] (cmd-item label cmd {}))
   ([label cmd opts]
    (merge
     {:label label
-     :click (fn [] (cmd/exec! cmd))}
+     :click (when-not (:selector opts)
+              (fn [] (cmd/exec! cmd)))}
     opts
     (command->menu-binding cmd))))
 
+(defn unknown-menu []
+  (set-menubar [
+                (when (platform/mac?)
+                  {:label "" :submenu [(cmd-item "About Light Table" :version)
+                                       {:type "separator"}
+                                       {:label "Hide Light Table" :accelerator "Command-H" :selector "hide:"}
+                                       {:label "Hide Others" :accelerator "Command-Alt-H" :selector "hideOtherApplications:"}
+                                       {:type "separator"}
+                                       (cmd-item "Quit Light Table" :quit {:accelerator "Command-Q"})]})
+                {:label "Edit" :submenu [(cmd-item "Undo" :editor.undo {:selector "undo:" :accelerator "CommandOrControl+Z"})
+                                         (cmd-item "Redo" :editor.redo {:selector "redo:" :accelerator "Command+Shift+Z"})
+                                         {:type "separator"}
+                                         (cmd-item "Cut" :editor.cut {:selector "cut:" :accelerator "CommandOrControl+X"})
+                                         (cmd-item "Copy" :editor.copy {:selector "copy:" :accelerator "CommandOrControl+C"})
+                                         (cmd-item "Paste" :editor.paste {:selector "paste:" :accelerator "CommandOrControl+V"})
+                                         (cmd-item "Select All" :editor.select-all {:selector "selectAll:" :accelerator "CommandOrControl+A"})
+                                         ]}
+                {:label "Window" :submenu [(cmd-item "Minimize" :window.minimize {:selector "performMiniaturize:" :accelerator "Command+M"})
+                                           (cmd-item "Close window" :window.close {:selector "performClose:" :accelerator "Command+W"})]}
+                {:label "Help" :submenu []}
+                ]))
 
 (defn main-menu []
   (set-menubar [
@@ -132,13 +136,13 @@
                                          (cmd-item "Close file" :tabs.close {:key "w"})
                                          ]}
                 (if (platform/mac?)
-                  {:label "Edit" :submenu [(cmd-item "Undo" :editor.undo {:selector "undo:" :key "z"})
-                                           (cmd-item "Redo" :editor.redo {:selector "redo:" :key "z" :modifiers "cmd-shift"})
+                  {:label "Edit" :submenu [(cmd-item "Undo" :editor.undo {:selector "undo:" :accelerator "CommandOrControl+Z"})
+                                           (cmd-item "Redo" :editor.redo {:selector "redo:" :accelerator "CommandOrControl+Shift+Z"})
                                            {:type "separator"}
-                                           (cmd-item "Cut" :editor.cut {:selector "cut:" :key "x"})
-                                           (cmd-item "Copy" :editor.copy {:selector "copy:" :key "c"})
-                                           (cmd-item "Paste" :editor.paste {:selector "paste:" :key "v"})
-                                           (cmd-item "Select All" :editor.select-all {:selector "selectAll:" :key "a"})
+                                           (cmd-item "Cut" :editor.cut {:selector "cut:" :accelerator "CommandOrControl+X"})
+                                           (cmd-item "Copy" :editor.copy {:selector "copy:" :accelerator "CommandOrControl+C"})
+                                           (cmd-item "Paste" :editor.paste {:selector "paste:" :accelerator "CommandOrControl+V"})
+                                           (cmd-item "Select All" :editor.select-all {:selector "selectAll:" :accelerator "CommandOrControl+A"})
                                            ]}
                   {:label "Edit" :submenu [(cmd-item "Undo" :editor.undo)
                                            (cmd-item "Redo" :editor.redo)
@@ -156,7 +160,8 @@
                                          {:type "separator"}
                                          (cmd-item "Language docs" :docs.search.show)
                                          {:type "separator"}
-                                         (cmd-item "Console" :toggle-console)]}
+                                         (cmd-item "Console" :toggle-console)
+                                         (cmd-item "Developer Tools" :dev-inspector)]}
 
                 {:label "Window" :submenu [(cmd-item "Minimize" :window.minimize)
                                            (cmd-item "Maximize" :window.maximize)
@@ -168,39 +173,38 @@
                                            (cmd-item "About Light Table" :version))]}
                 ]))
 
-;; (behavior ::create-menu
-;;            :triggers #{:init}
-;;            :reaction (fn [this]
-;;                        (when (platform/mac?)
-;;                          (set! (.-menu app/win) nil))
-;;                        (main-menu)))
+(behavior ::create-menu
+           :triggers #{:init}
+           :reaction (fn [this]
+                       (when (platform/mac?)
+                         (set! (.-menu app/win) nil)
+                         )
+                       (main-menu)))
 
-;; (behavior ::recreate-menu
-;;                   :debounce 20
-;;                   :triggers #{:app.keys.load :init}
-;;                   :reaction (fn [app]
-;;                               (when (platform/mac?)
-;;                                 (main-menu))))
+(behavior ::recreate-menu
+                  :debounce 20
+                  :triggers #{:app.keys.load :init}
+                  :reaction (fn [app]
+                              (when (platform/mac?)
+                                (main-menu))))
 
-;; (behavior ::set-menu
-;;                   :triggers #{:focus :init}
-;;                   :reaction (fn [this]
-;;                               (when (or (platform/mac?)
-;;                                         (not (.-menu app/win)))
-;;                                 (set! (.-menu app/win) menubar))))
+(behavior ::set-menu
+                  :triggers #{:focus :init}
+                  :reaction (fn [this]
+                              (when (platform/mac?)
+                                (main-menu))))
 
-;; (behavior ::remove-menu-close
-;;                   :triggers #{:closed :blur}
-;;                   :reaction (fn [this]
-;;                                (when (platform/mac?)
-;;                                  (set! (.-menu app/win) nil))
-;;                               ))
+(behavior ::remove-menu-close
+                  :triggers #{:closed :blur}
+                  :reaction (fn [this]
+                               (when (platform/mac?)
+                                 (unknown-menu))))
 
-;; (behavior ::menu!
-;;                   :triggers #{:menu!}
-;;                   :reaction (fn [this e]
-;;                               (let [items (sort-by :order (filter identity (object/raise-reduce this :menu+ [] e)))]
-;;                                 (-> (menu items)
-;;                                     (show-menu (.-clientX e) (.-clientY e))))
-;;                               (dom/prevent e)
-;;                               (dom/stop-propagation e)))
+(behavior ::menu!
+                  :triggers #{:menu!}
+                  :reaction (fn [this e]
+                              (let [items (sort-by :order (filter identity (object/raise-reduce this :menu+ [] e)))]
+                                (-> (menu items)
+                                    (show-menu)))
+                              (dom/prevent e)
+                              (dom/stop-propagation e)))

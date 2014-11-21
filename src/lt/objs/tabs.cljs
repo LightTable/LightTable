@@ -142,9 +142,9 @@
     item))
 
 (defui tabbed-item [active item]
-  [:div.content {:style {:display (bound active #(if (= % @item)
-                                                   ""
-                                                   "none"))}}
+  [:div.content {:style {:visibility (bound active #(if (= % @item)
+                                                      "visible"
+                                                      "hidden"))}}
    (bound item #(when % (object/->content %)))])
 
 (defui vertical-grip [this]
