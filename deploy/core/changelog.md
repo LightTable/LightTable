@@ -1,5 +1,11 @@
 #Changes
 
+##0.7.2
+
+* FIX: Behavior ordering issue that caused plugin weirdness and menus disappearing (ibdknox)
+* FIX: allow single arity logs (one-more-minute)
+* FIX: changelog additions (cldwalker)
+
 ##0.7.1
 
 * FIX: styling issues in the searcher
