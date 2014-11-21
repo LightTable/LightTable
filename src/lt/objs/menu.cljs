@@ -77,7 +77,10 @@
                       :let [ks (for [key (string/split part "-")]
                                  (or (key-mappings key) key))]]
                 (string/join "+" ks))]
-    (when (seq parts)
+    ;;OSX can only take single key accelerators
+    (when (and (seq parts)
+               (or (not (platform/mac?))
+                   (= (count parts) 1)))
       {:accelerator (string/join " " parts)})))
 
 (defn cmd-item
@@ -95,10 +98,10 @@
                 (when (platform/mac?)
                   {:label "" :submenu [(cmd-item "About Light Table" :version)
                                        {:type "separator"}
-                                       {:label "Hide Light Table" :accelerator "Command-H" :selector "hide:"}
-                                       {:label "Hide Others" :accelerator "Command-Alt-H" :selector "hideOtherApplications:"}
+                                       {:label "Hide Light Table" :accelerator "Command+H" :selector "hide:"}
+                                       {:label "Hide Others" :accelerator "Command+Alt+H" :selector "hideOtherApplications:"}
                                        {:type "separator"}
-                                       (cmd-item "Quit Light Table" :quit {:accelerator "Command-Q"})]})
+                                       (cmd-item "Quit Light Table" :quit {:accelerator "Command+Q"})]})
                 {:label "Edit" :submenu [(cmd-item "Undo" :editor.undo {:selector "undo:" :accelerator "CommandOrControl+Z"})
                                          (cmd-item "Redo" :editor.redo {:selector "redo:" :accelerator "Command+Shift+Z"})
                                          {:type "separator"}
@@ -120,7 +123,7 @@
                                        {:label "Hide Light Table" :key "h" :selector "hide:"}
                                        {:label "Hide Others" :key "h" :modifiers "cmd-alt" :selector "hideOtherApplications:"}
                                        {:type "separator"}
-                                       (cmd-item "Quit Light Table" :quit {:key "q"})]})
+                                       (cmd-item "Quit Light Table" :quit {:accelerator "Command+Q"})]})
                 {:label "File" :submenu [(cmd-item "New file" :new-file {:key "n"})
                                          (cmd-item "Open file" :open-file {:key "o" :modifiers "cmd-shift"})
                                          {:label "Open folder" :click #(do
