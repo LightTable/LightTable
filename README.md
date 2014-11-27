@@ -9,9 +9,10 @@ Prebuilt binaries are available through [lighttable.com](http://lighttable.com).
 ## Documentation
 
 * See [docs.lighttable.com](http://docs.lighttable.com/) for official user documentation and tutorials.
-* See the [community wiki](https://github.com/LightTable/LightTable/wiki) which includes a [User FAQ](https://github.com/LightTable/LightTable/wiki/FAQ) and a [For Users page](https://github.com/LightTable/LightTable/wiki/For-Users) which links to additional resources.
-* For a typical workflow in Light Table, read [this doc](doc/workflow.md).
+* See the [community wiki](https://github.com/LightTable/LightTable/wiki) which includes a [User FAQ](https://github.com/LightTable/LightTable/wiki/FAQ) and a [For Users page](https://github.com/LightTable/LightTable/wiki/For-Users) for additional links.
+* For a typical Light Table workflow, [read this](doc/workflow.md).
 * To understand how Light Table works, read about its [BOT architecture](doc/BOT.md).
+* If you're a user coming from vim or emacs see the [For Vim Users](https://github.com/LightTable/LightTable/wiki/For-Vim-Users) and [For Emacs Users](https://github.com/LightTable/LightTable/wiki/For-Emacs-Users) guides.
 
 ## Plugins
 
@@ -23,7 +24,9 @@ Want to ask a question or just say hi? Please do :). Our mailing list is the [Li
 
 ## For Developers
 
-If you're interested in developing Light Table, [install a developer version of Light Table](doc/developer-install.md). For more, read [CONTRIBUTING.md](CONTRIBUTING.md) and [For Developers](https://github.com/LightTable/LightTable/wiki/For-Developers).
+LightTable is primarily written in [ClojureScript](http://clojure.org/clojurescript). If you aren't familiar with it, check out [David Nolen's tutorial](https://github.com/swannodette/lt-cljs-tutorial).
+
+In order to develop for Light Table, you will need to [install a developer version of Light Table](doc/developer-install.md). For more information, read [CONTRIBUTING.md](https://github.com/LightTable/LightTable/blob/master/CONTRIBUTING.md#code-contributions) and [For Developers](https://github.com/LightTable/LightTable/wiki/For-Developers).
 
 
 ## License
