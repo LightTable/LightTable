@@ -17,6 +17,10 @@ Prebuilt binaries are available through [lighttable.com](http://lighttable.com).
 
 Light Table has a powerful plugin system that allows almost any aspect of the editor to be extended and customized. With over [100+ plugins](https://github.com/LightTable/plugin-metadata), the community is able to offer eval support for new languages, create domain-specific IDEs and much more. If you're interested in writing your own plugin, see the [Write a Plugin](http://docs.lighttable.com/#write-a-plugin) and [Submit a Plugin](http://docs.lighttable.com/#submit-a-plugin) docs. For an example ClojureScript plugin, see [LightTable-Declassifier](https://github.com/LightTable/LightTable-Declassifier).
 
+## Community
+
+Want to ask a question or just say hi? Please do :). Our mailing list is the [Light Table Google group](https://groups.google.com/forum/#!forum/light-table-discussion). We also hang out in `#lighttable` on Freenode IRC.
+
 ## For Developers
 
 If you're interested in developing Light Table, [install a developer version of Light Table](doc/developer-install.md). For more, read [CONTRIBUTING.md](CONTRIBUTING.md) and [For Developers](https://github.com/LightTable/LightTable/wiki/For-Developers).
