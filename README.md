@@ -1,6 +1,6 @@
 # Light Table [![Build Status](https://travis-ci.org/LightTable/LightTable.svg?branch=master)](https://travis-ci.org/LightTable/LightTable)
 
-Light Table is a next generation code editor that connects you to your creation with instant feedback. Light Table is very customizable and can display anything that a browser can.
+Light Table is a next generation code editor that connects you to your creation with instant feedback. Light Table is very customizable and can display anything a [Chromium browser](http://www.chromium.org/) can.
 
 ## Downloads
 
