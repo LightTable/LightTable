@@ -8,7 +8,7 @@
             [lt.objs.console :as console]
             [lt.objs.notifos :as notifos]
             [lt.objs.editor :as editor]
-            [lt.objs.editor.pool :as pool2]
+            [lt.objs.editor.pool :as pool]
             [lt.objs.workspace :as workspace]
             [clojure.string :as string]
             [lt.objs.sidebar.command :as scmd]
@@ -61,10 +61,71 @@
   (let [final (behavior-diff diff {:+ @object/tags })]
     (reset! object/tags (:+ final))))
 
-(defn parse-file [file final]
-  (-> (files/open-sync file)
-      :content
-      (safe-read file)))
+(defn keyword->str [kw]
+  (if (keyword? kw)
+    (subs (str kw) 1)
+    kw))
+
+(defn flat-behaviors->map [flat]
+  (let [adds (js-obj)
+        removes (js-obj)]
+    (doseq [[tag behavior :as all] flat
+            :let [[coll behavior] (if (= (aget (keyword->str behavior) 0) "-")
+                                    [removes (subs (keyword->str behavior) 1)]
+                                    [adds (keyword->str behavior)])
+                  tag (keyword->str tag)]]
+      (when-not (aget coll tag)
+        (aset coll tag (array)))
+      (.push (aget coll tag) (if (> (count all) 2)
+                               (conj (seq (subvec all 2)) (keyword behavior))
+                               (keyword behavior))))
+    {:+ (js->clj adds :keywordize-keys true)
+     :- (js->clj removes :keywordize-keys true)}))
+
+
+(defn map->flat-behaviors [behaviors-map]
+  (let [flat (array)]
+    ;;Handle the adds
+    (doseq [[tag behs] (:+ behaviors-map)
+            :let [tag-vec [tag]]
+            beh behs
+            :let [beh (if (coll? beh)
+                        beh
+                        [beh])]]
+      (.push flat (into tag-vec beh)))
+    ;;Handle the subtracts
+    (doseq [[tag behs] (:- behaviors-map)
+            beh behs
+            :let [beh (if (coll? beh)
+                        beh
+                        [beh])
+                  tag-vec [tag (keyword (str "-" (keyword->str (first beh))))]]]
+      (.push flat (into tag-vec (rest beh))))
+    (->> (js->clj flat)
+         (sort-by first)
+         (vec))))
+
+(defn parse-file [file]
+  (let [behs (-> (files/open-sync file)
+                 :content
+                 (safe-read file))]
+    (cond
+     (map? behs) behs
+     (vector? behs) (flat-behaviors->map behs)
+     :else (console/error (str "Invalid behaviors file: " file ". Behaviors must be either a vector or a map.")))))
+
+(defn pprint-flat-behaviors [flat]
+  (-> (reduce (fn [result cur]
+                (let [new-tag (first cur)]
+                  {:str (str (:str result)
+                             (if-not (= new-tag (:tag result))
+                               "\n")
+                             "\n " (pr-str cur))
+                   :tag new-tag}))
+              {:tag (-> flat first first) :str "["}
+              flat)
+      (:str)
+      (str "\n]")))
 
 (defn behavior-diffs-in [path]
   (when (files/exists? path)
@@ -258,6 +319,36 @@
                               (files/copy (files/lt-home (files/join "core" "User" path))
                                           full-path)))))))
 
+(declare map->flat-keymap)
+
+(defn convert-file
+  "If the given keymap or behaviors file is in the old map format,
+  backs it up and converts it to the flattened vec format."
+  [file]
+  (let [config (-> (files/open-sync file)
+                   :content
+                   (safe-read file))]
+
+    (when (map? config)
+      (let [backup-file (str file ".bak")
+            _ (files/copy file backup-file)
+            convert-fn (case (files/ext file)
+                         "keymap" map->flat-keymap
+                         "behaviors" map->flat-behaviors
+                         identity)
+            body (str ";; Your file has been converted to the new flat format.\n"
+                      ";; Conversion does not preserve comments or indentation.\n"
+                      ";; File is backed up at " backup-file "\n"
+                      (pprint-flat-behaviors (convert-fn config)))]
+        (files/save file body)))))
+
+(behavior ::flatten-map-settings
+          :triggers #{:flatten-map-settings}
+          :reaction (fn [app]
+                      (doseq [file (filter #(contains? #{"keymap" "behaviors"} (files/ext %))
+                                           (files/full-path-ls user-plugin-dir))]
+                        (convert-file file))))
+
 ;;*********************************************************
 ;; Commands
 ;;*********************************************************
@@ -317,15 +408,66 @@
               :exec (fn []
                       (object/raise workspace/current-ws :add.folder! user-plugin-dir))})
 
+(cmd/command {:command :convert-to-flat-format
+              :desc "Settings: Convert current file to flat format"
+              :exec (fn []
+                      (convert-file (get-in @(pool/last-active) [:info :path])))})
+
 (behavior ::on-close-remove
           :triggers #{:close}
           :reaction (fn [this]
                       (tabs/rem! this)))
 
-(defn parse-key-file [file final]
-  (-> (files/open-sync file)
-      :content
-      (safe-read file)))
+
+(defn flat-keymap->map [flat]
+  (let [adds (js-obj)
+        removes (js-obj)]
+    (doseq [[tag key :as all] flat
+            :let [[coll key] (if (and (= (aget (keyword->str key) 0) "-")
+                                      (> (count (keyword->str key)) 1))
+                                    [removes (subs (keyword->str key) 1)]
+                                    [adds (keyword->str key)])
+                  remove? (identical? coll removes)
+                  tag (keyword->str tag)]]
+      (when-not (aget coll tag)
+        (aset coll tag (if remove?
+                         (array)
+                         (js-obj))))
+      (if remove?
+        (.push (aget coll tag) key)
+        (aset (aget coll tag) key (subvec all 2))))
+    {:+ (into {} (for [[tag keys] (js->clj adds)]
+                   [(keyword tag) keys]))
+     :- (into {} (for [[tag keys] (js->clj removes)]
+                   [(keyword tag) keys]))}))
+
+(defn map->flat-keymap [keymap]
+  (let [flat (array)]
+    ;;Handle the adds
+    (doseq [[tag keys] (:+ keymap)
+            [key commands] keys
+            :let [tag-vec [tag key]]]
+      (.push flat (into tag-vec commands)))
+    ;;Handle the subtracts
+    (doseq [[tag keys] (:- keymap)
+            key keys
+            :let [[key command] (if (map? keys)
+                                  key
+                                  [key []])
+                  tag-vec [tag (str "-" key)]]]
+      (.push flat (into tag-vec command)))
+    (->> (js->clj flat)
+         (sort-by first)
+         (vec))))
+
+(defn parse-key-file [file]
+  (let [keys (-> (files/open-sync file)
+                 :content
+                 (safe-read file))]
+    (cond
+     (map? keys) keys
+     (vector? keys) (flat-keymap->map keys)
+     :else (console/error (str "Invalid keymap file: " file ". Keymaps must be either a vector or a map.")))))
 
 (defn keymap-diffs-in [path]
   (when (files/exists? path)
@@ -345,6 +487,22 @@
           :reaction (fn [this diffs]
                       (concat diffs (keymap-diffs-in user-plugin-dir))))
 
+(def pair-keybindings
+  {:editor.keys.normal {"\"" ['(:editor.repeat-pair "\"")]
+                        "(" ['(:editor.open-pair "(")]
+                        ")" ['(:editor.close-pair ")")]
+                        "[" ['(:editor.open-pair "[")]
+                        "{" ['(:editor.open-pair "{")]
+                        "]" ['(:editor.close-pair "]")]
+                        "}" ['(:editor.close-pair "}")]}})
+
+(behavior ::pair-keymap-diffs
+          :desc "Editor: auto-close parens/brackets/quotes/pairs"
+          :type :user
+          :triggers #{:keymap.diffs.user+}
+          :reaction (fn [this diffs]
+                      (concat diffs (list {:+ pair-keybindings}))))
+
 (behavior ::on-behaviors-editor-save
           :triggers #{:saved}
           :reaction (fn [editor]
@@ -359,4 +517,4 @@
 
 ;;This call to tag-behaviors is necessary as there are no behaviors loaded when the
 ;;app is first run.
-(object/tag-behaviors :app [::initial-behaviors ::create-user-plugin ::load-behaviors ::default-behavior-diffs ::user-behavior-diffs ::default-keymap-diffs ::user-keymap-diffs])
+(object/tag-behaviors :app [::initial-behaviors ::create-user-plugin ::flatten-map-settings ::load-behaviors ::default-behavior-diffs ::user-behavior-diffs ::default-keymap-diffs ::user-keymap-diffs])

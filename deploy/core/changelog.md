@@ -1,5 +1,66 @@
 #Changes
 
+##0.7.2
+
+* FIX: Behavior ordering issue that caused plugin weirdness and menus disappearing (ibdknox)
+* FIX: allow single arity logs (one-more-minute)
+* FIX: changelog additions (cldwalker)
+
+##0.7.1
+
+* FIX: styling issues in the searcher
+* FIX: roll back to an older version of node-webkit as a result of freezing issues when compiling certain plugins
+* FIX: Give the auto-close keymap behavior a description: `Editor: auto-close parens/brackets/quotes/pairs`
+
+##0.7.0
+
+* CHANGED: Enter doesn't select a completion by default anymore, just tab. Add `[:editor.keys.hinting.active "-enter" [:passthrough]]` to your keymap get it back.
+* CHANGED: parens are not auto-closed by default anymore, add `[:app :lt.objs.settings/pair-keymap-diffs]` to your behaviors to get it back.
+* CHANGED: Move to the MIT License (one-more-minute)
+* CHANGED: Remove plugin server and use Github as the plugin-metadata repository (ibdknox)
+* CHANGED: New flat syntax for behaviors and keymaps that allows much better copying and pasting
+* CHANGED: Move all Light Table websites to Github pages
+* FIX: Linux run script portability (gruns)
+* FIX: Fix CodeMirror search failing with RegExp (blandinw)
+* FIX: Better websocket-based eval (ibdknox)
+* FIX: Allow custom colors for rainbow parens (Victor Cottin)
+* FIX: download via https (dkinzer)
+* FIX: editor conversion in the editor API (one-more-minute)
+* FIX: Note hotkeys for OSX (gekkoe)
+* FIX: Jump stack fixes (cldwalker)
+* FIX: diff ordering was slightly wrong (ibdknox)
+* FIX: prevent errors without lines from throwing (ibdknox)
+* FIX: show notifications for errors without editor locations (ibdknox)
+* FIX: emacs find fixes (joshuafcole)
+* FIX: fix connector failing to connect (mortalapeman)
+* FIX: use menu behaviors for all menus (ibdknox)
+* FIX: search no longer randomly searches on keyup/keydown (ibdknox)
+* FIX: prevent tab labels from leaking (ibdknox)
+* FIX: remove unused/non-existent behaviors (cldwalker)
+* FIX: remove all CLJS compiler warnings (brabadu cldwalker joshuafcole)
+* FIX: fix Haxe extension (cldwalker)
+* FIX: prevent the same folder/file from being added to the workspace twice (brabadu)
+* FIX: fix regexp replace (ibdknox)
+* FIX: lots of error reporting fixes (ibdknox cldwalker)
+* FIX: much better completion/helper interaction for behaviors and commands
+* README FIX: tons of readme updates (cldwalker)
+* ADDED: You can now open multiple copies of a single file (cldwalker)
+* ADDED: duplicate file action to workspace menu (seancaffery)
+* ADDED: when wrapping with parens, select the result (one-more-minute)
+* ADDED: copy exception menu item for inline exceptions (joshuafcole)
+* ADDED: copy support for the console (joshuafcole)
+* ADDED: menu for inline results (mortalapeman)
+* ADDED: show plugins directory in about tab (cldwalker)
+* ADDED: allow command shortcutting (ibdknox)
+* ADDED: `File: Open another view of current file` command
+* ADDED: indent-level aware backspace (one-more-minute)
+* ADDED: user plugin (cldwalker)
+* ADDED: `Settings: User script` command (cldwalker)
+* ADDED: Allow folding at a location (ndr-qef)
+* ADDED: auto convert old behaviors/keymaps to the flat syntax (cldwalker)
+* UPDATED: CodeMirror
+* UPDATED: Latest node-webkit
+
 ##0.6.7
 
 * FIX: Workspace behaviors do not correctly take effect on startup (mortalapeman)

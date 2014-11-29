@@ -73,6 +73,7 @@ a {text-decoration:none; color: $fg; }
 .button:hover, .button:focus, button:hover, button:focus, button.active { background:$button-active-bg !important; color: $button-active-fg; }
 input { color: $highlight-fg; background:$highlight-bg; }
 
+
 ::-webkit-scrollbar { width: 7px; height: 7px; }
 ::-webkit-scrollbar-track { border-radius: 2px; }
 ::-webkit-scrollbar-thumb { border-radius: 2px; }
@@ -84,7 +85,7 @@ input { color: $highlight-fg; background:$highlight-bg; }
 ::-webkit-scrollbar-thumb { background: $scrollbar; border:1px solid $scrollbar; }
 ::-webkit-scrollbar-thumb:hover { background: $medium-highlight-bg; border:1px solid $medium-highlight-bg; }
 ::-webkit-scrollbar-corner { background:transparent; }
-::selection { background: $placeholder-fg; }
+::selection { background: #99ccff; }
 
 .inline-result { background: $dark-accent-background; color:$accent-foreground; }
 
@@ -118,7 +119,7 @@ input { color: $highlight-fg; background:$highlight-bg; }
 
 .sortable-placeholder { background:$multi; border:2px solid $bg; }
 
-#bottom-bar .content { background:$bg; border-top:0px solid $border; }
+#bottombar .content { background:$bg; border-top:0px solid $border; }
 .console > li, .console td { color:$accent-foreground; }
 .console > li + li { border-top:2px solid $bg; }
 .console > li.error + li { border-color:$bg;}
@@ -156,16 +157,16 @@ input { color: $highlight-fg; background:$highlight-bg; }
 .filter-list .selected, .filter-list li:hover { color:$highlight-fg; background: $highlight-bg;}
 .filter-list .selected em, .filter-list li:hover em { color:$accent-foreground; }
 
-#left-bar .content { background:$bg; box-shadow: 0 0 10px $shadow; }
-#left-bar ::-webkit-scrollbar-thumb { background: $scrollbar; border:1px solid $scrollbar; }
+#side .content { background:$bg; box-shadow: 0 0 10px $shadow; }
+#side ::-webkit-scrollbar-thumb { background: $scrollbar; border:1px solid $scrollbar; }
 
-#left-bar .workspace ul.buttons li:hover:not(.sep) { color:$highlight-fg; background:$highlight-bg; }
-#left-bar .workspace li:hover > div > p { color: $highlight-fg; }
-#left-bar .workspace li p:hover { background: $highlight-bg; color:$highlight-fg; }
-#left-bar .workspace .recent > div > ul > li + li { border-top:0px solid $pane-border; }
-#left-bar .workspace .recent > div > ul > li:hover { border-color: $pane-border; background:$highlight-bg; color: $highlight-fg; }
-#left-bar .workspace .recent > div > ul > li:hover + li { border-top-color: $pane-border; }
-#left-bar .workspace .recent h2:hover { background: $highlight-bg; color:$highlight-fg; }
+#side .workspace ul.buttons li:hover:not(.sep) { color:$highlight-fg; background:$highlight-bg; }
+#side .workspace li:hover > div > p { color: $highlight-fg; }
+#side .workspace li p:hover { background: $highlight-bg; color:$highlight-fg; }
+#side .workspace .recent > div > ul > li + li { border-top:0px solid $pane-border; }
+#side .workspace .recent > div > ul > li:hover { border-color: $pane-border; background:$highlight-bg; color: $highlight-fg; }
+#side .workspace .recent > div > ul > li:hover + li { border-top-color: $pane-border; }
+#side .workspace .recent h2:hover { background: $highlight-bg; color:$highlight-fg; }
 
 #right-bar .content { background:$bg; }
 #right-bar .command h2:hover { background:$highlight-bg; color:$highlight-fg; }
@@ -212,13 +213,13 @@ input { color: $highlight-fg; background:$highlight-bg; }
 #right-bar .clients .connector li:hover h2 {color: $highlight-fg; }
 #right-bar .clients .connector li:hover {background: $highlight-bg; color: $fg; border-color: $pane-border; }
 
-#status { color: $hidden-fg; }
-#status .console-toggle { cursor:default; background:$hidden-bg; color:$fg; min-width:12px; padding:0 4px; width:auto; display:none; text-align:center; margin-left:0px; border-radius:2px; }
-#status .console-toggle:hover { background:$dark-highlight-bg; color:$highlight-fg; }
-#status .console-toggle.dirty { background:$accent-background; color:$accent-foreground; display: inline-block; }
-#status .console-toggle.error { color:$error-fg; background:$error-bg; }
-#status .log .error { color:$error-fg; background:$error-bg; }
-#status .log .tip { color: $accent-foreground; }
+#statusbar { color: $hidden-fg; }
+#statusbar .console-toggle { cursor:default; background:$hidden-bg; color:$fg; min-width:12px; padding:0 4px; width:auto; display:none; text-align:center; margin-left:0px; border-radius:2px; }
+#statusbar .console-toggle:hover { background:$dark-highlight-bg; color:$highlight-fg; }
+#statusbar .console-toggle.dirty { background:$accent-background; color:$accent-foreground; display: inline-block; }
+#statusbar .console-toggle.error { color:$error-fg; background:$error-bg; }
+#statusbar .log .error { color:$error-fg; background:$error-bg; }
+#statusbar .log .tip { color: $accent-foreground; }
 
 #find-bar input { border-top:2px solid $bg; background:$multi; }
 #find-bar input + input { border-left:2px solid $bg; }
@@ -257,14 +258,17 @@ input { color: $highlight-fg; background:$highlight-bg; }
 .jshinterrors  { display:inline-block; box-sizing:border-box; padding:2px 10px; border-radius:0px; background:$error-bg; color:$error-fg; }
 .hintwrapper .spacer { display:inline-block; white-space:pre; }
 
-.behavior-helper-result {white-space:nowrap; display:inline-block; padding-top:0px; padding-bottom:0px; overflow:hidden; margin-left:0px; padding-left:20px; box-sizing:border-box; background:none; color:$usage-fg; }
-.behavior-helper-result div { white-space:nowrap; width:-webkit-fit-content; background:$usage-bg; padding:0px 5px; border-radius:0px; margin-top:0px; }
-.behavior-helper-result div > * { border-radius:0px; padding:0px !important; }
-.behavior-helper-result h2 { display:block; width:-webkit-fit-content; white-space:nowrap; }
-.behavior-helper-result div > span.param { display:inline-block; margin-right:8px; margin-bottom:3px; padding:2px 5px !important; margin-top:5px; border:1px solid $usage-fg; }
+.behavior-helper-line { z-index:10 !important; }
+.behavior-helper-result { padding-left:10px; margin:0; z-index:10; display:inline-block; width:0; height:10px; overflow:visible; }
+.behavior-helper-result div { z-index:10; white-space:nowrap; display:inline-block; padding-top:0px; padding-bottom:0px; margin-left:0px; padding-left:0px; box-sizing:border-box; background:none; color:$usage-fg; }
+.behavior-helper-result div { display:inline-block; white-space:nowrap; width:-webkit-fit-content; background:$usage-bg; padding:2px 5px; border-radius:0px; margin-top:0px; border-radius:3px; }
+.behavior-helper-result div > * { border-radius:0px; padding:0px !important; vertical-align:middle; }
+.behavior-helper-result h2 { display:inline-block; width:-webkit-fit-content; white-space:nowrap; }
+.behavior-helper-result div > span.param { display:inline-block; margin-left:8px; padding:2px 5px !important; border:1px solid $usage-fg; border-radius:3px; }
 .behavior-helper-result div > span.spacer { display:inline-block; margin:0 5px; }
 .behavior-helper-result .active { background: $usage-fg; color:$usage-bg; border-radius:0px; display:inline-block; }
-.behavior-helper-result .example { display:inline-block; width:auto; vertical-align:top; padding:0; margin:0; margin-left:5px; border:none; }
+.behavior-helper-result .example { display:inline-block; width:auto; vertical-align:middle; padding:0 !important; margin:0; margin-left:5px; border:none; color:$usage-fg; }
+.behavior-helper-result .active .example { color: $usage-bg; }
 
 .plugin-manager .version { margin-left:10px; color:$hidden-fg;  }
 .plugin-manager h3 { color: $hidden-fg; }
@@ -313,7 +317,7 @@ input { color: $highlight-fg; background:$highlight-bg; }
 #multi .list li { height:29px; padding:6px 10px; font-size: 9pt; text-align:left; }
 #multi .content { background:$multi; margin:0; top:29px; left:0; right:0; padding:5px; padding-bottom:5px; }
 
-#left-bar .workspace ul.root { top:0px; }
+#side .workspace ul.root { top:0px; }
 #right-bar .filter-list input { padding:6px 10px; font-size:10pt; margin-top:0; border-radius:0px; }
 #right-bar .filter-list ul { top:35px; bottom:10px; }
 #right-bar .content { padding:0 15px; padding-bottom:10px; }

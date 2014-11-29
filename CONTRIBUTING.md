@@ -26,8 +26,9 @@ Hello! Thanks for your interest in Light Table. Things you can do to make Light 
 * `Improving docs`: Check out [these documentation issues](https://github.com/LightTable/docs.lighttable.com/issues). Reading the [official docs](http://docs.lighttable.com/) and checking for errors, typos, etc. would also be great.
 
 ## Code Contributions
+_By contributing code to Light Table, you are agreeing to release it under the MIT License._
 
-If it's your first time contributing, we'd love to have you :). Be sure to check out our [contributing tutorial](https://github.com/LightTable/LightTable/wiki/First-Contribution). We require contributors to agree to the [Contributor's Agreement](https://docs.google.com/a/kodowa.com/forms/d/1ME_PT6qLKUcALUEz1h1yerLF7vP_Rnohpb9RvMLDALg/viewform). It's as easy as a CLA can be; it's just a form that instantly enables you to contribute.
+If it's your first time contributing, we'd love to have you :). Be sure to check out our [contributing tutorial](https://github.com/LightTable/LightTable/wiki/First-Contribution).
 
 When contributing:
 

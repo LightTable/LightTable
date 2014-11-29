@@ -1,4 +1,13 @@
 language: clojure
-
+lein: lein
+script: "! lein cljsbuild once 2>&1 | grep WARNING:"
+jdk:
+- oraclejdk8
 notifications:
-    - email: false
+  irc: "chat.freenode.net#lighttable"
+  email:
+  - gabriel.horner@gmail.com
+  - ibdknox@gmail.com
+  - mike.j.innes@gmail.com
+  - joshuafcole@gmail.com
+  - jamie@scattered-thoughts.net

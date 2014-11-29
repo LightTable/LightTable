@@ -36,8 +36,10 @@
              (swap! settings merge setts))))
 
 (behavior ::init
-          :triggers #{:init}
+          :triggers #{:deploy}
           :reaction (fn [this]
                       (when-not (files/exists? cache-path)
                         (files/mkdir cache-path))
                       (init)))
+
+(object/tag-behaviors :app [::init])
