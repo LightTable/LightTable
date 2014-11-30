@@ -26,8 +26,8 @@
           (parse argv))
       (js->clj :keywordize-keys true)))
 
-(defn open-paths [paths add?]
-  (doseq [[path line] paths
+(defn open-paths [path-line-pairs add?]
+  (doseq [[path line] path-line-pairs
           :when (not= path (.-execPath js/process))]
     (if (files/exists? path)
       (if (files/dir? path)
@@ -60,32 +60,33 @@
 ;;*********************************************************
 
 (behavior ::open-on-args
-                  :triggers #{:show}
+                  :triggers #{:post-init}
+                  :desc "App: Process commandline arguments"
                   :reaction (fn [this]
                               (when (args)
                                 (let [args-str (or (app/extract! (args-key (app/window-number)))
                                                    (first (app/args)))
                                       args (parse-args (rebuild-argv args-str))
-                                      paths-line-no (map #(string/split (files/resolve (:dir args) %) #":")
-                                                         (filter valid-path? (:_ args)))
-                                      paths (map first paths-line-no)
+                                      path-line-pairs (map #(let [[_ path line] (re-find #"^(.*?):?(\d+)?$" %)]
+                                                              [(files/resolve (:dir args) path) line])
+                                                           (filter valid-path? (:_ args)))
+                                      paths (map first path-line-pairs)
                                       open-dir? (some files/dir? paths)]
                                   (when open-dir?
                                     (object/merge! workspace/current-ws {:initialized? true}))
-                                  (open-paths paths-line-no (:add args))))))
+                                  (open-paths path-line-pairs (:add args))))))
 
 (behavior ::open!
                   :triggers #{:open!}
+                  :desc "App: Open a path from a file manager e.g. Finder"
                   :reaction (fn [this path]
                               (when (= (app/fetch :focusedWindow) (app/window-number))
                                 (let [args (parse-args (rebuild-argv path))
-                                      paths-line-no (map #(string/split (files/resolve (:dir args) %) #":")
-                                                         (filter valid-path? (:_ args)))
-                                      paths (map first paths-line-no)
+                                      paths (map #(files/resolve (:dir args) %) (filter valid-path? (:_ args)))
                                       open-dir? (some files/dir? paths)]
                                   (if (or (:new args)
                                           (and open-dir? (not (:add args))))
                                     (let [winid (inc (app/fetch :window-id))]
                                       (app/store! (args-key winid) path)
                                       (app/open-window))
-                                    (open-paths paths-line-no (:add args)))))))
+                                    (open-paths (map vector paths) (:add args)))))))
