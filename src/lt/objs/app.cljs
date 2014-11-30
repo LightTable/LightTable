@@ -8,7 +8,7 @@
   (:require-macros [lt.macros :refer [behavior]]))
 
 (def remote (js/require "remote"))
-(def app (.require remote "app"))
+(def atom-app (.require remote "app"))
 (def ipc (js/require "ipc"))
 (def win (.getCurrentWindow remote))
 (def frame (js/require "web-frame"))
