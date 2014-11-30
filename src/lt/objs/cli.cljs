@@ -60,33 +60,33 @@
 ;;*********************************************************
 
 (behavior ::open-on-args
-                  :triggers #{:post-init}
-                  :desc "App: Process commandline arguments"
-                  :reaction (fn [this]
-                              (when (args)
-                                (let [args-str (or (app/extract! (args-key (app/window-number)))
-                                                   (first (app/args)))
-                                      args (parse-args (rebuild-argv args-str))
-                                      path-line-pairs (map #(let [[_ path line] (re-find #"^(.*?):?(\d+)?$" %)]
-                                                              [(files/resolve (:dir args) path) line])
-                                                           (filter valid-path? (:_ args)))
-                                      paths (map first path-line-pairs)
-                                      open-dir? (some files/dir? paths)]
-                                  (when open-dir?
-                                    (object/merge! workspace/current-ws {:initialized? true}))
-                                  (open-paths path-line-pairs (:add args))))))
+          :triggers #{:post-init}
+          :desc "App: Process commandline arguments"
+          :reaction (fn [this]
+                      (when (args)
+                        (let [args-str (or (app/extract! (args-key (app/window-number)))
+                                           (first (app/args)))
+                              args (parse-args (rebuild-argv args-str))
+                              path-line-pairs (map #(let [[_ path line] (re-find #"^(.*?):?(\d+)?$" %)]
+                                                      [(files/resolve (:dir args) path) line])
+                                                   (filter valid-path? (:_ args)))
+                              paths (map first path-line-pairs)
+                              open-dir? (some files/dir? paths)]
+                          (when open-dir?
+                            (object/merge! workspace/current-ws {:initialized? true}))
+                          (open-paths path-line-pairs (:add args))))))
 
 (behavior ::open!
-                  :triggers #{:open!}
-                  :desc "App: Open a path from a file manager e.g. Finder"
-                  :reaction (fn [this path]
-                              (when (= (app/fetch :focusedWindow) (app/window-number))
-                                (let [args (parse-args (rebuild-argv path))
-                                      paths (map #(files/resolve (:dir args) %) (filter valid-path? (:_ args)))
-                                      open-dir? (some files/dir? paths)]
-                                  (if (or (:new args)
-                                          (and open-dir? (not (:add args))))
-                                    (let [winid (inc (app/fetch :window-id))]
-                                      (app/store! (args-key winid) path)
-                                      (app/open-window))
-                                    (open-paths (map vector paths) (:add args)))))))
+          :triggers #{:open!}
+          :desc "App: Open a path from a file manager e.g. Finder"
+          :reaction (fn [this path]
+                      (when (= (app/fetch :focusedWindow) (app/window-number))
+                        (let [args (parse-args (rebuild-argv path))
+                              paths (map #(files/resolve (:dir args) %) (filter valid-path? (:_ args)))
+                              open-dir? (some files/dir? paths)]
+                          (if (or (:new args)
+                                  (and open-dir? (not (:add args))))
+                            (let [winid (inc (app/fetch :window-id))]
+                              (app/store! (args-key winid) path)
+                              (app/open-window))
+                            (open-paths (map vector paths) (:add args)))))))
