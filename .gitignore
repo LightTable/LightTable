@@ -21,3 +21,5 @@ deploy/ltbin
 deploy/nw.pak
 deploy/light
 .nrepl-port
+
+node_modules/
