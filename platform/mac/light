@@ -23,11 +23,17 @@ LTAPPCLI=$APP_DIR/LightTable.app/Contents/MacOS/node-webkit
 PWD=`pwd`
 ARGS="$@"
 
-CORRECTED=${ARGS//-/<d>}
-CORRECTED=${CORRECTED// /<s>}
+for arg in "$@"
+do
+    ESCAPED=${arg// /<ps>}
+    CORRECTED="$CORRECTED<s>$ESCAPED"
+done
+
+CORRECTED=${CORRECTED//-/<d>}
+
 
 if [ $# != 0 ]; then
-    LTCLI=true $LTAPPCLI "<d><d>dir=$PWD<s>$CORRECTED" &
+    LTCLI=true $LTAPPCLI "<d><d>dir=$PWD$CORRECTED" &
 else
     LTCLI=true $LTAPPCLI &
 fi
