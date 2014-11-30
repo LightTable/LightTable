@@ -476,7 +476,7 @@
 (command {:command :quit
           :desc "Window: Quit Light Table"
           :exec (fn []
-                  (app/close))})
+                  (app/quit))})
 
 
 (command {:command :passthrough

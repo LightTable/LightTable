@@ -23,6 +23,7 @@
 
 (declare app)
 
+;; TODO: This should close the app *or* close the window.
 (defn close
   ([] (close false))
   ([force?]
@@ -30,6 +31,9 @@
      (object/raise app :closing)
      (object/raise app :closed))
    (.close win force?)))
+
+(defn quit []
+  (.quit atom-app))
 
 (defn refresh []
   (js/window.location.reload true))
@@ -252,5 +256,3 @@
               :exec (fn []
                       (.setZoomFactor frame default-zoom)
                       )})
-
-
