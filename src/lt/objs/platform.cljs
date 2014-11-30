@@ -4,6 +4,8 @@
             [lt.util.dom :as dom])
   (:require-macros [lt.macros :refer [behavior]]))
 
+(def atom-shell true)
+
 (def clipboard (js/require "clipboard"))
 (def shell (js/require "shell"))
 
