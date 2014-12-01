@@ -43,7 +43,7 @@
           :triggers #{:menu+}
           :reaction (fn [this items]
                       (conj items
-                            {:label "Show docs"
+                            {:label "Toggle docs"
                              :order 0.1
                              :enabled (not (editor/selection? this))
                              :click (fn []
