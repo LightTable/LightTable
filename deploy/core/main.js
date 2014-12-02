@@ -2,6 +2,7 @@ var app = require('app');  // Module to control application life.
 var BrowserWindow = require('browser-window');  // Module to create native browser window.
 var dialog = require("dialog");
 var ipc = require("ipc");
+var fs = require('fs');
 
 // Report crashes to our server.
 // require('crash-reporter').tart();
@@ -18,8 +19,10 @@ app.on('window-all-closed', function() {
     app.quit();
 });
 
+var browserWindowOptions = require(__dirname + '/../package.json').browserWindowOptions;
+
 function createWindow() {
-  var window = new BrowserWindow({width: 800, height: 600});
+  var window = new BrowserWindow(browserWindowOptions);
   windows[window.id] = window;
   window.on("focus", function() {
     window.webContents.send("focus", "focus");
