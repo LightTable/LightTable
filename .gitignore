@@ -13,7 +13,6 @@ deploy/core/node_modules/lighttable/bootstrap.js*
 .lein-env
 .lein-plugins/
 *.so
-lib
 deploy/LightTable
 deploy/LightTable.app
 deploy/credits.html
