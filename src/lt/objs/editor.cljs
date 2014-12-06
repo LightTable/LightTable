@@ -421,7 +421,7 @@
 ;; Object
 ;;*********************************************************
 
-(load/js "core/node_modules/codemirror/codemirror.js" :sync)
+(load/js "core/node_modules/codemirror/lib/codemirror.js" :sync)
 
 (object* ::editor
          :tags #{:editor :editor.inline-result :editor.keys.normal}
@@ -676,14 +676,17 @@
 (behavior ::init-codemirror
           :triggers #{:init}
           :reaction (fn [this]
-                      (load/js "core/node_modules/codemirror/matchbracket.js" :sync)
-                      (load/js "core/node_modules/codemirror/comment.js" :sync)
-                      (load/js "core/node_modules/codemirror/active-line.js" :sync)
+                      (load/js "core/node_modules/codemirror/addon/edit/matchbrackets.js" :sync)
+                      (load/js "core/node_modules/codemirror/addon/comment/comment.js" :sync)
+                      (load/js "core/node_modules/codemirror/addon/selection/active-line.js" :sync)
+                      ;; TODO: use addon/mode/overlay.js
                       (load/js "core/node_modules/codemirror/overlay.js" :sync)
-                      (load/js "core/node_modules/codemirror/scrollpastend.js" :sync)
-                      (load/js "core/node_modules/codemirror/fold.js" :sync)
-                      (load/js "core/node_modules/codemirror/sublime.js" :sync)
-                      (doseq [mode (files/ls "core/node_modules/codemirror/modes")
-                              :when (= (files/ext mode) "js")]
-                        (load/js (str "core/node_modules/codemirror/modes/" mode) :sync))
+                      (load/js "core/node_modules/codemirror/addon/scroll/scrollpastend.js" :sync)
+                      (doseq [file (files/ls "core/node_modules/codemirror/addon/fold")
+                              :when (= (files/ext file) "js")]
+                        (load/js (str "core/node_modules/codemirror/addon/fold/" file) :sync))
+                      (load/js "core/node_modules/codemirror/keymap/sublime.js" :sync)
+                      (doseq [path (files/filter-walk #(and (= (files/ext %) "js") (not (.endsWith % "test.js")))
+                                                      "core/node_modules/codemirror/mode")]
+                        (load/js path :sync))
                       (aset js/CodeMirror.keyMap.basic "Tab" expand-tab)))

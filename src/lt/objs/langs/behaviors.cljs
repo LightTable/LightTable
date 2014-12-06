@@ -10,6 +10,7 @@
   (:require-macros [lt.macros :refer [behavior background defui]]))
 
 (def flat-parser (background (fn [obj-id contents]
+                               ;; TODO: Use addon/runmode
                                (let [StringStream (-> (js/require (str js/ltpath "/core/node_modules/codemirror/stringstream.js"))
                                                       (.-StringStream))
                                      parser (-> (js/require (str js/ltpath "/core/node_modules/lighttable/background/behaviorsParser.js"))
