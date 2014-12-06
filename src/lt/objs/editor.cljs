@@ -673,6 +673,9 @@
                              :click (fn []
                                       (select-all this))})))
 
+(def mode-blacklist "Modes to not load on startup"
+  #{"clojure" "css" "htmlembedded" "htmlmixed" "javascript" "python"})
+
 (behavior ::init-codemirror
           :triggers #{:init}
           :reaction (fn [this]
@@ -686,7 +689,11 @@
                               :when (= (files/ext file) "js")]
                         (load/js (str "core/node_modules/codemirror/addon/fold/" file) :sync))
                       (load/js "core/node_modules/codemirror/keymap/sublime.js" :sync)
-                      (doseq [path (files/filter-walk #(and (= (files/ext %) "js") (not (.endsWith % "test.js")))
+                      (doseq [path (files/filter-walk #(and (= (files/ext %) "js")
+                                                            (not (some (fn [m] (.startsWith % (str "core/node_modules/codemirror/mode/" m "/")))
+                                                                       mode-blacklist))
+                                                            ;; Remove test files
+                                                            (not (.endsWith % "test.js")))
                                                       "core/node_modules/codemirror/mode")]
                         (load/js path :sync))
                       (aset js/CodeMirror.keyMap.basic "Tab" expand-tab)))

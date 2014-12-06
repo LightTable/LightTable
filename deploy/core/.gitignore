@@ -4,9 +4,3 @@ node_modules/codemirror/keymap/vim.js
 node_modules/codemirror/theme/
 node_modules/codemirror/test/
 node_modules/codemirror/bin/
-node_modules/codemirror/mode/htmlembedded/
-node_modules/codemirror/mode/htmlmixed/
-node_modules/codemirror/mode/clojure/
-node_modules/codemirror/mode/javascript/
-node_modules/codemirror/mode/python/
-node_modules/codemirror/mode/css/
