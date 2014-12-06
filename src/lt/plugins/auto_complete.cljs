@@ -90,7 +90,7 @@
       false)))
 
 (def w (background (fn [obj-id m]
-                     (let [StringStream (-> (js/require (str js/ltpath "/core/node_modules/codemirror_addons/stringstream.js"))
+                     (let [StringStream (-> (js/require (str js/ltpath "/core/node_modules/codemirror/addon/runmode/runmode.node.js"))
                                             (.-StringStream))
                            stream (fn [s]
                                     (StringStream. s))
