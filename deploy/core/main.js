@@ -15,8 +15,7 @@ app.commandLine.appendSwitch('remote-debugging-port', '8315');
 
 // Quit when all windows are closed.
 app.on('window-all-closed', function() {
-  if (process.platform != 'darwin')
-    app.quit();
+  app.quit();
 });
 
 var browserWindowOptions = require(__dirname + '/../package.json').browserWindowOptions;
@@ -37,6 +36,14 @@ function createWindow() {
     window.webContents.send("devtools-closed", "closed");
   });
 
+  windowClosing = false;
+  window.on("close", function(e) {
+    if (!windowClosing) {
+      e.preventDefault();
+      window.webContents.send("app", "close!");
+    }
+  });
+
   // and load the index.html of the app.
   window.loadUrl('file://' + __dirname + '/LightTable.html?id=' + window.id);
 
@@ -44,6 +51,7 @@ function createWindow() {
   window.on('closed', function() {
     windows[window.id] = null;
   });
+
   return window;
 }
 
@@ -54,13 +62,21 @@ app.on('ready', function() {
     createWindow();
   });
 
+  ipc.on("closeWindow", function(event, id) {
+    // This feels like a bad hack
+    windowClosing = true;
+    if(id && windows[id]) {
+      windows[id].close();
+    }
+    windowClosing = false;
+  });
+
   ipc.on("toggleDevTools", function(event, windowId) {
     console.log("here");
     if(windowId && windows[windowId]) {
       windows[windowId].toggleDevTools();
     }
   });
-
 
   createWindow();
 });

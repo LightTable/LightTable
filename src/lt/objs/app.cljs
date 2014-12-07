@@ -29,7 +29,11 @@
    (when force?
      (object/raise app :closing)
      (object/raise app :closed))
-   (.close win force?)))
+   (if force?
+     (.send ipc "closeWindow" (window-number))
+     (.close win))))
+
+(.on ipc "app" #(object/raise app (keyword %)))
 
 (defn refresh []
   (js/window.location.reload true))
@@ -252,5 +256,3 @@
               :exec (fn []
                       (.setZoomFactor frame default-zoom)
                       )})
-
-
