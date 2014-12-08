@@ -88,9 +88,7 @@
         (recur (rest parts) (conj acc (string/join "." parts)))))))
 
 (defn ext [path]
-  (let [i (.lastIndexOf path ".")]
-    (when (> i 0)
-      (subs path (inc i) (count path)))))
+  (.extname fpath path))
 
 (defn without-ext [path]
   (let [i (.lastIndexOf path ".")]
