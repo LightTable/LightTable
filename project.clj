@@ -18,9 +18,3 @@
   :plugins [[lein-cljsbuild "1.0.1"]]
   :source-paths ["src/"]
   )
-
-
-
-
-
-
