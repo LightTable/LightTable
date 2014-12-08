@@ -120,8 +120,8 @@
                 (when (platform/mac?)
                   {:label "" :submenu [(cmd-item "About Light Table" :version)
                                        {:type "separator"}
-                                       {:label "Hide Light Table" :key "h" :selector "hide:"}
-                                       {:label "Hide Others" :key "h" :modifiers "cmd-alt" :selector "hideOtherApplications:"}
+                                       {:label "Hide Light Table" :accelerator "Command+H" :selector "hide:"}
+                                       {:label "Hide Others" :accelerator "Command+Alt+H" :selector "hideOtherApplications:"}
                                        {:type "separator"}
                                        (cmd-item "Quit Light Table" :quit {:accelerator "Command+Q"})]})
                 {:label "File" :submenu [(cmd-item "New file" :new-file {:key "n"})
