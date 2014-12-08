@@ -369,3 +369,6 @@
       (let [cur (first to-walk)
             neue (filterv func (full-path-ls cur))]
         (recur (concat (rest to-walk) (dirs cur)) (concat found neue))))))
+
+(when-not (exists? (lt-user-dir))
+  (mkdir (lt-user-dir)))
