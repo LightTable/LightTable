@@ -27,7 +27,8 @@ function createWindow() {
     window.webContents.send("focus", "focus");
   });
   window.on("blur", function() {
-    window.webContents.send("blur", "blur");
+    if (window.webContents)
+      window.webContents.send("blur", "blur");
   });
   window.on("devtools-opened", function() {
     window.webContents.send("devtools-opened", "opened");
