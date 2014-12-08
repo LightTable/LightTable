@@ -323,9 +323,9 @@
      (join h (or path separator)))))
 
 (defn lt-home
-  ([] pwd)
+  ([] load/dir)
   ([path]
-   (join pwd path)))
+   (join (lt-home) path)))
 
 (defn lt-user-dir [path]
   (if js/process.env.LT_USER_DIR
@@ -369,4 +369,3 @@
       (let [cur (first to-walk)
             neue (filterv func (full-path-ls cur))]
         (recur (concat (rest to-walk) (dirs cur)) (concat found neue))))))
-
