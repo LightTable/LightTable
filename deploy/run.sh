@@ -9,4 +9,4 @@ pushd "${DIR}/../shell"
 	grunt download-atom-shell
 popd
 
-"${DIR}/../shell/atom-shell/Atom.app/Contents/MacOS/Atom" .
+"${DIR}/../shell/atom-shell/Atom.app/Contents/MacOS/Atom" $DIR
