@@ -14,6 +14,7 @@
             [lt.objs.notifos :as notifos]
             [lt.objs.files :as files]
             [lt.util.dom :as dom]
+            [lt.util.ipc :as ipc]
             [lt.util.cljs :refer [->dottedkw]])
   (:use [crate.binding :only [bound map-bound]])
   (:use-macros [crate.def-macros :only [defpartial]]
@@ -23,8 +24,6 @@
 ;; transient docs
 ;;**********************************************************
 
-(def active-dialog nil)
-
 (defui open-input [this]
   [:input {:type "file"}]
   :change (fn []
@@ -32,12 +31,9 @@
                      (when-not (empty? (dom/val me))
                        (object/raise this :open! (dom/val me))))))
 
-(defui save-input [this path]
-  [:input {:type "file" :nwsaveas (or path true)}]
-  :change (fn []
-            (this-as me
-                     (when-not (empty? (dom/val me))
-                       (object/raise this :save-as! (dom/val me))))))
+(defn save-input [this path]
+  (ipc/call this :save-as!
+            :dialog.showSaveDialog ipc/win {:defaultPath path}))
 
 (defn path->info [path]
   (when path
@@ -65,37 +61,36 @@
                                     info (:info @this)
                                     fname (:name info)
                                     ext (when-let [e (:exts info)]
-                                          (str "." (name (first e))))
-                                    s (save-input this (files/join path (str fname ext)))]
-                                (set! active-dialog s)
-                                (dom/trigger s :click))))
+                                          (str "." (name (first e))))]
+                                (save-input this (files/join path (str fname ext))))))
 
 (behavior ::save-as-rename!
                   :triggers #{:save-as-rename!}
                   :reaction (fn [this]
-                              (dom/trigger (save-input this (-> @this :info :path)) :click)))
+                              (save-input this (-> @this :info :path))))
 
 (behavior ::save-as
                   :triggers #{:save-as!}
                   :reaction (fn [this path]
-                              (let [type (files/path->type path)
-                                    prev-tags (-> @this :info :tags)
-                                    mode (files/path->mode path)
-                                    neue-doc (doc/create {:doc (editor/get-doc this)
-                                                          :line-ending files/line-ending
-                                                          :mtime (files/stats path)
-                                                          :mime mode})]
-                                (when (:doc @this)
-                                  (object/raise (:doc @this) :close.force))
-                                (doc/register-doc neue-doc path)
-                                (object/update! this [:info] merge (path->info path))
-                                (object/merge! this {:dirty true
-                                                     :doc neue-doc})
-                                (editor/set-mode this mode)
-                                (object/remove-tags this (conj prev-tags :editor.transient))
-                                (object/add-tags this (conj (:tags type) :editor.file-backed))
-                                (object/raise this :save-as)
-                                (object/raise this :save))))
+                              (when (not (empty? path))
+                                (let [type (files/path->type path)
+                                      prev-tags (-> @this :info :tags)
+                                      mode (files/path->mode path)
+                                      neue-doc (doc/create {:doc (editor/get-doc this)
+                                                            :line-ending files/line-ending
+                                                            :mtime (files/stats path)
+                                                            :mime mode})]
+                                  (when (:doc @this)
+                                    (object/raise (:doc @this) :close.force))
+                                  (doc/register-doc neue-doc path)
+                                  (object/update! this [:info] merge (path->info path))
+                                  (object/merge! this {:dirty true
+                                                       :doc neue-doc})
+                                  (editor/set-mode this mode)
+                                  (object/remove-tags this (conj prev-tags :editor.transient))
+                                  (object/add-tags this (conj (:tags type) :editor.file-backed))
+                                  (object/raise this :save-as)
+                                  (object/raise this :save)))))
 
 (behavior ::check-read-only
                   :desc "Opener: check if file is read only"
