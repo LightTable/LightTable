@@ -24,12 +24,10 @@
 ;; transient docs
 ;;**********************************************************
 
-(defui open-input [this]
-  [:input {:type "file"}]
-  :change (fn []
-            (this-as me
-                     (when-not (empty? (dom/val me))
-                       (object/raise this :open! (dom/val me))))))
+(defn open-input [this & [ev dir?]]
+  (ipc/call this (or ev :open!)
+            :dialog.showOpenDialog ipc/win {:properties [(if dir? :openDirectory :openFile)
+                                                         :multiSelections]}))
 
 (defn save-input [this path]
   (ipc/call this :save-as!
@@ -141,6 +139,12 @@
           :reaction (fn [this bool]
                       (object/merge! this {:open-linked-doc bool})))
 
+(behavior ::open-dialog
+          :triggers #{:open-dialog!}
+          :reaction (fn [opener paths]
+                      (doseq [path paths :when path]
+                        (object/raise opener :open! path))))
+
 (behavior ::open-standard-editor
                   :triggers #{:open!}
                   :reaction (fn [obj path]
@@ -211,7 +215,7 @@
                 :tags #{:opener}
                 :triggers #{}
                 :open-files #{}
-                :behaviors [::open-standard-editor]
+                :behaviors [::open-standard-editor ::open-dialog]
                 :init (fn [this]))
 
 (def opener (object/create ::opener))
@@ -224,7 +228,7 @@
 (cmd/command {:command :open-file
               :desc "File: Open file"
               :exec (fn []
-                      (dialogs/file opener :open!))})
+                      (open-input opener :open-dialog!))})
 
 (cmd/command {:command :open-path
               :desc "File: Open path"
