@@ -73,7 +73,6 @@ app.on('ready', function() {
   });
 
   ipc.on("toggleDevTools", function(event, windowId) {
-    console.log("here");
     if(windowId && windows[windowId]) {
       windows[windowId].toggleDevTools();
     }
