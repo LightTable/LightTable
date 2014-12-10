@@ -112,7 +112,9 @@ app.on('ready', function() {
           var argList = [":lt.util.ipc/callback", target, method];
           catargs(argList, arguments);
           var wc = win(wid).webContents;
-          wc.send.apply(wc, argList);
+          if (wc) {
+            wc.send.apply(wc, argList);
+          }
         }
       };
       mod[func].apply(mod, args);
