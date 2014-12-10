@@ -4,7 +4,8 @@
             [lt.objs.context :as ctx]
             [clojure.string :as string]
             [lt.util.js :refer [now]]
-            [lt.util.dom :refer [$] :as dom])
+            [lt.util.dom :refer [$] :as dom]
+            [lt.util.ipc :as ipc])
   (:require-macros [lt.macros :refer [behavior]]))
 
 (def remote (js/require "remote"))
@@ -213,12 +214,11 @@
 
 (def app (object/create ::app))
 
-(.on ipc "blur" (fn []
-                  (object/raise app :blur)))
+(ipc/callback app :blur
+  [ipc/win :on] :blur)
 
-(.on ipc "focus" (fn []
-                  (object/raise app :focus)))
-
+(ipc/callback app :focus
+  [ipc/win :on] :focus)
 
 (set! (.-onbeforeunload js/window) (fn []
                                     "This will navigate the main LT window and all work will be lost, are you sure you want to do this?"))

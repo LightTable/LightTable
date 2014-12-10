@@ -23,19 +23,6 @@ var browserWindowOptions = require(__dirname + '/../package.json').browserWindow
 function createWindow() {
   var window = new BrowserWindow(browserWindowOptions);
   windows[window.id] = window;
-  window.on("focus", function() {
-    window.webContents.send("focus", "focus");
-  });
-  window.on("blur", function() {
-    if (window.webContents)
-      window.webContents.send("blur", "blur");
-  });
-  window.on("devtools-opened", function() {
-    window.webContents.send("devtools-opened", "opened");
-  });
-  window.on("devtools-closed", function() {
-    window.webContents.send("devtools-closed", "closed");
-  });
 
   windowClosing = false;
   window.on("close", function(e) {

@@ -11,6 +11,7 @@
             [lt.util.dom :as dom]
             [lt.util.js :refer [every wait ->clj]]
             [lt.util.cljs :refer [js->clj]]
+            [lt.util.ipc :as ipc]
             [crate.binding :refer [bound subatom]]
             [clojure.string :as string])
   (:require-macros [lt.macros :refer [behavior defui]]))
@@ -198,13 +199,11 @@
 
 (def local (object/create ::devtools-client))
 
-(.on app/ipc "devtools-opened" (fn []
-                                 (object/raise local :disconnect)
-                                 ))
+(ipc/callback local :disconnect
+  [ipc/win :on] :devtools-opened)
 
-(.on app/ipc "devtools-closed" (fn []
-                                 (object/raise local :reconnect!)
-                                 ))
+(ipc/callback local :reconnect!
+  [ipc/win :on] :devtools-closed)
 
 ;;*********************************************************
 ;; Behaviors
