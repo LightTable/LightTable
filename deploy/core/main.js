@@ -19,6 +19,7 @@ app.on('window-all-closed', function() {
 });
 
 var browserWindowOptions = require(__dirname + '/../package.json').browserWindowOptions;
+browserWindowOptions.icon = __dirname + '/' + browserWindowOptions.icon;
 
 function createWindow() {
   var window = new BrowserWindow(browserWindowOptions);

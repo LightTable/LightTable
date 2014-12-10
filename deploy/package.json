@@ -3,7 +3,7 @@
   "version": "0.8.0",
   "main": "core/main.js",
   "browserWindowOptions": {
-    "icon": "core/img/lticon.png",
+    "icon": "img/lticon.png",
     "width": 1024,
     "height": 700,
     "min-width": 400,
