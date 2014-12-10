@@ -25,13 +25,13 @@
 ;;**********************************************************
 
 (defn open-input [this & [ev dir?]]
-  (ipc/call this (or ev :open!)
-            :dialog.showOpenDialog ipc/win {:properties [(if dir? :openDirectory :openFile)
-                                                         :multiSelections]}))
+  (ipc/callback this (or ev :open!)
+    :dialog.showOpenDialog ipc/win {:properties [(if dir? :openDirectory :openFile)
+                                                 :multiSelections]}))
 
 (defn save-input [this path]
-  (ipc/call this :save-as!
-            :dialog.showSaveDialog ipc/win {:defaultPath path}))
+  (ipc/callback this :save-as!
+    :dialog.showSaveDialog ipc/win {:defaultPath path}))
 
 (defn path->info [path]
   (when path

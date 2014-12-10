@@ -21,7 +21,7 @@
     (fn [id method & args]
       (apply object/raise (object/by-id id) (keyword method) args)))
 
-(defn call [target method func & args]
+(defn callback [target method func & args]
   (let [[mod func] (if (coll? func)
                      (map name func)
                      (clojure.string/split (name func) "."))]
