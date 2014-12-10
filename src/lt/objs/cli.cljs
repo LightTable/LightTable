@@ -11,11 +11,11 @@
   (:require-macros [lt.macros :refer [behavior]]))
 
 (defn rebuild-argv [argstr]
-  (-> (subs argstr (.indexOf argstr "<d><d>dir"))
-      (string/replace "<d>" "-")
-      (string/replace "<s>" " ")
-      (string/split " ")
-      (to-array)))
+  (to-array
+    (map #(string/replace % "<d>" "-")
+      (map #(string/replace % "<s>" " ")
+        (-> (subs argstr (.indexOf argstr "<d><d>dir"))
+          (string/split #"<S>"))))))
 
 (defn parse-args [argv]
   (-> (.. (node-module "optimist")
