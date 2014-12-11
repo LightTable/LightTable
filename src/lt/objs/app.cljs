@@ -132,11 +132,11 @@
                   :triggers #{:show}
                   :reaction (fn [this]
                               (dom/on ($ :#canvas) :click (fn [e]
-                                                            ;;TODO: when prevent default has been called don't do this.
-                                                            (when (= (.-target.nodeName e) "A")
+                                                            (when (and (= (.-target.nodeName e) "A")
+                                                                       (not (.-defaultPrevented e)))
                                                               (dom/prevent e)
                                                               (when-let [href (.-target.href e)]
-                                                                (.Shell.openExternal gui href)
+                                                                (platform/open-url href)
                                                                 (.focus win)))))))
 
 (behavior ::track-focus
