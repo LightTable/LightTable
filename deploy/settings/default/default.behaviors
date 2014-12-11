@@ -29,6 +29,7 @@
  [:app :lt.objs.menu/remove-menu-close]
  [:app :lt.objs.app/refresh]
  [:app :lt.objs.app/on-show-bind-navigate]
+ [:app :lt.objs.app/add-platform-class]
  [:app :lt.objs.editor.pool/stop-reload-dirty]
  [:app :lt.objs.menu/set-menu]
  [:app :lt.plugins.auto-complete/init]

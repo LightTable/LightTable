@@ -1,5 +1,6 @@
 (ns lt.objs.app
   (:require [lt.object :as object]
+            [lt.objs.platform :as platform]
             [lt.objs.command :as cmd]
             [lt.objs.context :as ctx]
             [clojure.string :as string]
@@ -201,6 +202,12 @@
           :reaction (fn [this default]
                       (set! default-zoom default)
                       (cmd/exec! :window.zoom-reset)))
+
+(behavior ::add-platform-class
+                  :triggers #{:init}
+                  :reaction (fn [this]
+                              (dom/add-class (dom/$ :body) (name platform/platform))
+                              ))
 
 ;;*********************************************************
 ;; Object
