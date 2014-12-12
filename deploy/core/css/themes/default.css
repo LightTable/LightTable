@@ -28,6 +28,8 @@
 .cm-s-default span.cm-def {color:#acf;}
 .cm-s-default span.cm-builtin {color: #aec;}
 .cm-s-default span.cm-header {color: #aec;}
+.cm-s-default span.cm-quote {color: #add;}
+.cm-s-default span.cm-link {color: #aec;}
 .cm-s-default span.cm-property {color: #aaa; }
 .cm-s-default span.cm-operator {color: #aaa; }
 .cm-s-default span.cm-keyword {color: #aec; }
