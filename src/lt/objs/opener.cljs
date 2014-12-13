@@ -38,11 +38,14 @@
     (let [type (files/path->type path)]
       {:name (files/basename path) :type-name (:name type) :path path :mime (:mime type) :tags (:tags type)})))
 
+(def untitled-count (atom 0))
+
 (behavior ::open-transient-editor
                   :triggers #{:new!}
                   :reaction (fn [this path dirty?]
                               (let [last (pool/last-active)
-                                    info (merge {:mime "plaintext" :tags [:editor.plaintext] :name "untitled"}
+                                    info (merge {:mime "plaintext" :tags [:editor.plaintext] :name (str "untitled-"
+                                                                                                        (swap! untitled-count inc))}
                                                 (path->info path))
                                     ed (pool/create info)]
                                 (object/add-tags ed [:editor.transient])
