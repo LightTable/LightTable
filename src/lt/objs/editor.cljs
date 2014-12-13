@@ -698,3 +698,20 @@
                                                       "core/node_modules/codemirror/mode")]
                         (load/js path :sync))
                       (aset js/CodeMirror.keyMap.basic "Tab" expand-tab)))
+
+(behavior ::load-addon
+          :triggers #{:object.instant-load}
+          :desc "App: Load CodeMirror addon path(s)"
+          :params [{:label "path(s)"
+                    :example "edit/matchtags.js"}]
+          :type :user
+          :reaction (fn [this path]
+                      (let [paths (map #(files/join (files/lt-home)
+                                                    "core/node_modules/codemirror/addon" %)
+                                       (if (coll? path) path [path]))]
+                        (object/call-behavior-reaction :lt.objs.plugins/load-js
+                                                       this
+                                                       (filter #(= (files/ext %) "js") paths))
+                        (object/call-behavior-reaction :lt.objs.plugins/load-css
+                                                       this
+                                                       (filter #(= (files/ext %) "css") paths)))))
