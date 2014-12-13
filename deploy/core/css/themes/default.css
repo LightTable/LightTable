@@ -66,3 +66,7 @@
 .CodeMirror-hints input { display:none; }
 .CodeMirror-hints .selected { background: #616161; color: #f4f4f4; }
 .CodeMirror-hints ul::-webkit-scrollbar-thumb { background: #606970; border-color: #606970; }
+
+.CodeMirror.cm-keymap-fat-cursor div.CodeMirror-cursors {
+  z-index: 3;
+}
