@@ -106,6 +106,7 @@
   (util-inspect thing false 2))
 
 (defn verbatim
+  ([thing] (verbatim thing nil))
   ([thing class]
    (verbatim thing class nil))
   ([thing class str-content]
