@@ -24,6 +24,7 @@ browserWindowOptions.icon = __dirname + '/' + browserWindowOptions.icon;
 function createWindow() {
   var window = new BrowserWindow(browserWindowOptions);
   windows[window.id] = window;
+  window.focus();
 
   windowClosing = false;
   window.on("close", function(e) {
