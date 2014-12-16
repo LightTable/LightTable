@@ -327,10 +327,12 @@
   ([path]
    (join (lt-home) path)))
 
-(defn lt-user-dir [path]
-  (if js/process.env.LT_USER_DIR
-    (join js/process.env.LT_USER_DIR (or path ""))
-    (join data-path path)))
+(defn lt-user-dir
+  ([] (lt-user-dir ""))
+  ([path]
+   (if js/process.env.LT_USER_DIR
+     (join js/process.env.LT_USER_DIR path)
+     (join data-path path))))
 
 (defn walk-up-find [start find]
   (let [roots (get-roots)]
@@ -369,6 +371,3 @@
       (let [cur (first to-walk)
             neue (filterv func (full-path-ls cur))]
         (recur (concat (rest to-walk) (dirs cur)) (concat found neue))))))
-
-(when-not (exists? (lt-user-dir))
-  (mkdir (lt-user-dir)))
