@@ -9,7 +9,7 @@
 (def shell (js/require "shell"))
 
 (defn get-data-path []
-  (.getDataPath app))
+  (.getDataPath (.require (js/require "remote") "app")))
 
 (defn normalize [plat]
   (condp = plat

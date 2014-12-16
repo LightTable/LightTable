@@ -3,6 +3,7 @@
   (:require [lt.object :as object]
             [lt.util.load :as load]
             [clojure.string :as string]
+            [lt.objs.platform :as platform]
             [lt.util.js :refer [now]])
   (:require-macros [lt.macros :refer [behavior]]))
 
@@ -11,10 +12,7 @@
 (def wrench (load/node-module "wrench"))
 (def shell (js/require "shell"))
 (def os (js/require "os"))
-(def remote (js/require "remote"))
-(def app (.require remote "app"))
-(def data-path (.getDataPath app))
-;; (def data-path (.resolve fpath "Userness/"))
+(def data-path (platform/get-data-path))
 
 (defn typelist->index [cur types]
   (let [full (map (juxt :name identity) types)
