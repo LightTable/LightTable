@@ -23,7 +23,9 @@
 (def request (load/node-module "request"))
 (def tar (load/node-module "tar"))
 (def home-path (files/lt-home ""))
+;; TODO: get-proxy
 ;; (def get-proxy (.-App.getProxyForURL (js/require "nw.gui")))
+(def get-proxy)
 
 (defn tar-path [v]
   (if (cache/fetch :edge)

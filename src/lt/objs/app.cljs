@@ -40,10 +40,6 @@
 (defn refresh []
   (js/window.location.reload true))
 
-(defn args []
-  (when-not (= 0 (.-App.argv.length gui))
-    (seq (.-App.argv gui))))
-
 (defn init []
   (object/raise app :deploy)
   (object/raise app :pre-init)
