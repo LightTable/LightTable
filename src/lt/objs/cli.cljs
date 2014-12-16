@@ -7,15 +7,9 @@
             [lt.util.load :refer [node-module]]
             [lt.util.cljs :refer [js->clj]]
             [clojure.string :as string]
+            [lt.util.ipc :as ipc]
             [lt.objs.opener :as opener])
   (:require-macros [lt.macros :refer [behavior]]))
-
-(defn rebuild-argv [argstr]
-  (-> (subs argstr (.indexOf argstr "<d><d>dir"))
-      (string/replace "<d>" "-")
-      (string/replace "<s>" " ")
-      (string/split " ")
-      (to-array)))
 
 (defn parse-args [argv]
   (-> (.. (node-module "optimist")
@@ -40,8 +34,8 @@
             (object/raise workspace/current-ws :add.file! path))))
       (object/raise opener/opener :new! path))))
 
-(defn args-key [winid]
-  (str "window" winid "args"))
+;; (defn args-key [winid]
+;;   (str "window" winid "args"))
 
 (defn args []
 ;;   (or (app/fetch (args-key (app/window-number)))
@@ -49,7 +43,7 @@
   )
 
 (defn is-lt-binary? [path]
-  (#{"ltbin" "node-webkit" "LightTable.exe" "LightTable"} (string/trim (files/basename path))))
+  (#{"ltbin" "Atom" "deploy" "LightTable.exe" "LightTable"} (string/trim (files/basename path))))
 
 (defn valid-path? [path]
   (and (string? path)
@@ -60,23 +54,19 @@
 ;; Behaviors
 ;;*********************************************************
 
-; (behavior ::open-on-args
-;           :triggers #{:post-init}
-;           :desc "App: Process commandline arguments"
-;           :reaction (fn [this]
-;                       (when (args)
-;                         (let [args-str (or (app/extract! (args-key (app/window-number)))
-;                                            (first (app/args)))
-;                               args (parse-args (rebuild-argv args-str))
-;                               path-line-pairs (map #(let [[_ path line] (re-find #"^(.*?):?(\d+)?$" %)]
-;                                                       [(files/resolve (:dir args) path) line])
-;                                                    (filter valid-path? (:_ args)))
-;                               paths (map first path-line-pairs)
-;                               open-dir? (some files/dir? paths)]
-;                           (when open-dir?
-;                             (object/merge! workspace/current-ws {:initialized? true}))
-;                           (open-paths path-line-pairs (:add args))))))
-;
+(defn process-argv [argv]
+  (let [args (parse-args argv)
+        path-line-pairs (map #(let [[_ path line] (re-find #"^(.*?):?(\d+)?$" %)]
+                                [(files/resolve (:dir args) path) line])
+                             (filter valid-path? (:_ args)))
+        paths (map first path-line-pairs)
+        open-dir? (some files/dir? paths)]
+    (when open-dir?
+      (object/merge! workspace/current-ws {:initialized? true}))
+    (open-paths path-line-pairs (:add args))))
+
+(ipc/on "argv" process-argv)
+
 ; (behavior ::open!
 ;           :triggers #{:open!}
 ;           :desc "App: Open a path from a file manager e.g. Finder"

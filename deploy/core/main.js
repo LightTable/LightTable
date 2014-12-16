@@ -51,6 +51,10 @@ app.on('ready', function() {
     createWindow();
   });
 
+  ipc.on("loadedWindow", function(event, id) {
+    windows[id].webContents.send('argv', process.argv);
+  });
+
   ipc.on("closeWindow", function(event, id) {
     // This feels like a bad hack
     windowClosing = true;

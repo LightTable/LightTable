@@ -61,11 +61,6 @@
                                    (pr-str v)
                                    v)))
 
-(defn extract! [k]
-  (let [v (fetch k)]
-    (store! k nil)
-    v))
-
 (defn store-swap! [k f]
   (let [neue (f (fetch k))]
     (store! k neue)
@@ -104,6 +99,11 @@
                               (object/raise this :close)
                               (when closing
                                 (close true))))
+
+(behavior ::notify-loaded-window
+          :triggers #{:show}
+          :reaction (fn [this]
+                      (ipc/send "loadedWindow" (window-number))))
 
 ;; (behavior ::store-position-on-close
 ;;                   :triggers #{:closed :refresh}
