@@ -11,7 +11,6 @@
 
 (def remote (js/require "remote"))
 (def atom-app (.require remote "app"))
-(def ipc (js/require "ipc"))
 (def win (.getCurrentWindow remote))
 (def frame (js/require "web-frame"))
 (def closing true)
@@ -32,10 +31,10 @@
      (object/raise app :closing)
      (object/raise app :closed))
    (if force?
-     (.send ipc "closeWindow" (window-number))
+     (ipc/send "closeWindow" (window-number))
      (.close win))))
 
-(.on ipc "app" #(object/raise app (keyword %)))
+(ipc/on "app" #(object/raise app (keyword %)))
 
 (defn refresh []
   (js/window.location.reload true))
@@ -77,7 +76,7 @@
     (.getZoomFactor frame)))
 
 (defn open-window []
-  (.send ipc "createWindow"))
+  (ipc/send "createWindow"))
 
 ;;*********************************************************
 ;; Behaviors
