@@ -101,28 +101,30 @@
           :reaction (fn [this]
                       (ipc/send "loadedWindow" (window-number))))
 
-;; (behavior ::store-position-on-close
-;;                   :triggers #{:closed :refresh}
-;;                   :reaction (fn [this]
-;;                               (when-not (.-isFullscreen win)
-;;                                 (set! js/localStorage.x (.-x win))
-;;                                 (set! js/localStorage.y (.-y win))
-;;                                 (set! js/localStorage.width (.-width win))
-;;                                 (set! js/localStorage.height (.-height win))
-;;                                 (set! js/localStorage.fullscreen (.isFullScreen win)))))
+(behavior ::store-position-on-close
+          :triggers #{:closed :refresh}
+          :reaction (fn [this]
+                      (when-not (.isFullScreen win)
+                        (let [[width height] (.getSize win)]
+                          (set! js/localStorage.width width)
+                          (set! js/localStorage.height height))
+                        (let [[x y] (.getPosition win)]
+                          (set! js/localStorage.x x)
+                          (set! js/localStorage.y y)))
+                      (set! js/localStorage.fullscreen (.isFullScreen win))))
 
-;; (behavior ::restore-fullscreen
-;;                   :triggers #{:show}
-;;                   :reaction (fn [this]
-;;                                 (when (= js/localStorage.fullscreen "true")
-;;                                   (.enterFullscreen win))))
+(behavior ::restore-fullscreen
+          :triggers #{:show}
+          :reaction (fn [this]
+                      (when (= js/localStorage.fullscreen "true")
+                        (.setFullScreen win true))))
 
-;; (behavior ::restore-position-on-init
-;;                   :triggers #{:show}
-;;                   :reaction (fn [this]
-;;                               (when-not (empty? (.-width js/localStorage))
-;;                                 (.resizeTo win (ensure-greater js/localStorage.width 400) (ensure-greater js/localStorage.height 400))
-;;                                 (.moveTo win (ensure-greater js/localStorage.x 0) (ensure-greater js/localStorage.y 0)))))
+(behavior ::restore-position-on-init
+          :triggers #{:show}
+          :reaction (fn [this]
+                      (when js/localStorage.width
+                        (.setSize win (ensure-greater js/localStorage.width 400) (ensure-greater js/localStorage.height 400))
+                        (.setPosition win (ensure-greater js/localStorage.x 0) (ensure-greater js/localStorage.y 0)))))
 
 (behavior ::on-show-bind-navigate
                   :triggers #{:show}
