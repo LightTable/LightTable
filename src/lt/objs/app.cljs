@@ -52,7 +52,10 @@
     (when (not= "null" v)
       (js/JSON.parse v))))
 
-(defn store! [k v]
+(defn store!
+  "Store key and value in localStorage. If value is a string, fetch must be used
+  to get back the original value from localStorage."
+  [k v]
   (aset js/localStorage (name k) (if (string? v)
                                    (pr-str v)
                                    v)))
@@ -106,11 +109,11 @@
           :reaction (fn [this]
                       (when-not (.isFullScreen win)
                         (let [[width height] (.getSize win)]
-                          (set! js/localStorage.width width)
-                          (set! js/localStorage.height height))
+                          (store! :width width)
+                          (store! :height height))
                         (let [[x y] (.getPosition win)]
-                          (set! js/localStorage.x x)
-                          (set! js/localStorage.y y)))
+                          (store! :x x)
+                          (store! :y y)))
                       (set! js/localStorage.fullscreen (.isFullScreen win))))
 
 (behavior ::restore-fullscreen
