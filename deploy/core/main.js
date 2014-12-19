@@ -1,30 +1,22 @@
-var app = require('app');  // Module to control application life.
-var BrowserWindow = require('browser-window');  // Module to create native browser window.
-var dialog = require("dialog");
-var ipc = require("ipc");
-var fs = require('fs');
-var optimist = require('optimist');
-var parsedArgs;
+"use strict";
 
-// Report crashes to our server.
-// require('crash-reporter').tart();
+var app = require('app'),  // Module to control application life.
+    BrowserWindow = require('browser-window'),  // Module to create native browser window.
+    dialog = require("dialog"),
+    ipc = require("ipc"),
+    fs = require('fs'),
+    optimist = require('optimist');
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the javascript object is GCed.
 var windows = {};
 
-app.commandLine.appendSwitch('remote-debugging-port', '8315');
-
-// Quit when all windows are closed.
-app.on('window-all-closed', function() {
-  app.quit();
-});
-
-var packageJSON = require(__dirname + '/../package.json'),
-    browserWindowOptions = packageJSON.browserWindowOptions;
-browserWindowOptions.icon = __dirname + '/' + browserWindowOptions.icon;
+var packageJSON = require(__dirname + '/../package.json');
+var parsedArgs, windowClosing; // vars used by multiple functions
 
 function createWindow() {
+  var browserWindowOptions = packageJSON.browserWindowOptions;
+  browserWindowOptions.icon = __dirname + '/' + browserWindowOptions.icon;
   var window = new BrowserWindow(browserWindowOptions);
   windows[window.id] = window;
   window.focus();
@@ -46,11 +38,9 @@ function createWindow() {
   });
 
   return window;
-}
+};
 
-// This method will be called when atom-shell has done everything
-// initialization and ready for creating browser windows.
-app.on('ready', function() {
+function onReady() {
   ipc.on("createWindow", function(event, info) {
     createWindow();
   });
@@ -112,7 +102,7 @@ app.on('ready', function() {
                                             mod, func, args,
                                             target, method) {
     if (win(wid)) {
-      data = {win: win(wid)};
+      var data = {win: win(wid)};
       mod = modulify(mod, data);
       args = argify(args, data);
 
@@ -131,7 +121,7 @@ app.on('ready', function() {
   });
 
   createWindow();
-});
+};
 
 function parseArgs() {
   optimist.usage("Light Table " + packageJSON.version + "\n" +
@@ -149,4 +139,20 @@ function parseArgs() {
     process.exit(0);
   }
 }
-parseArgs();
+
+function start() {
+  app.commandLine.appendSwitch('remote-debugging-port', '8315');
+
+  // This method will be called when atom-shell has done everything
+  // initialization and ready for creating browser windows.
+  app.on('ready', onReady);
+
+  // Quit when all windows are closed.
+  app.on('window-all-closed', function() {
+    app.quit();
+  });
+
+  parseArgs();
+};
+
+start();
