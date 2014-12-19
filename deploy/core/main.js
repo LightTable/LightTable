@@ -3,6 +3,8 @@ var BrowserWindow = require('browser-window');  // Module to create native brows
 var dialog = require("dialog");
 var ipc = require("ipc");
 var fs = require('fs');
+var optimist = require('optimist');
+var parsedArgs;
 
 // Report crashes to our server.
 // require('crash-reporter').tart();
@@ -18,7 +20,8 @@ app.on('window-all-closed', function() {
   app.quit();
 });
 
-var browserWindowOptions = require(__dirname + '/../package.json').browserWindowOptions;
+var packageJSON = require(__dirname + '/../package.json'),
+    browserWindowOptions = packageJSON.browserWindowOptions;
 browserWindowOptions.icon = __dirname + '/' + browserWindowOptions.icon;
 
 function createWindow() {
@@ -53,7 +56,7 @@ app.on('ready', function() {
   });
 
   ipc.on("initWindow", function(event, id) {
-    windows[id].webContents.send('argv', process.argv);
+    windows[id].webContents.send('cli', parsedArgs);
   });
 
   ipc.on("closeWindow", function(event, id) {
@@ -129,3 +132,21 @@ app.on('ready', function() {
 
   createWindow();
 });
+
+function parseArgs() {
+  optimist.usage("Light Table " + packageJSON.version + "\n" +
+                 // TODO: Use a consistent name for executables or vary executable
+                 // name per platform. $0 currently gives an unwieldy name
+                 "Usage: light [options] [path ...]\n\n"+
+                 "Paths are either a file or a directory.\n"+
+                 "Files can take a line number e.g. file:line.");
+  optimist.alias('h', 'help').boolean('h').describe('h', 'Print help');
+  optimist.alias('a', 'add').boolean('a').describe('a', 'Add path(s) to workspace');
+  parsedArgs = optimist.parse(process.argv);
+
+  if (parsedArgs.help) {
+    optimist.showHelp();
+    process.exit(0);
+  }
+}
+parseArgs();

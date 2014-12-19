@@ -4,21 +4,11 @@
             [lt.objs.files :as files]
             [lt.objs.workspace :as workspace]
             [lt.objs.command :as cmd]
-            [lt.util.load :refer [node-module]]
             [lt.util.cljs :refer [js->clj]]
             [clojure.string :as string]
             [lt.util.ipc :as ipc]
             [lt.objs.opener :as opener])
   (:require-macros [lt.macros :refer [behavior]]))
-
-(defn parse-args [argv]
-  (-> (.. (node-module "optimist")
-          (options (js-obj "n" (js-obj "boolean" true "alias" "new")
-                           "a" (js-obj "boolean" true "alias" "add")
-                           "w" (js-obj "boolean" true "alias" "wait")
-                           "h" (js-obj "boolean" true "alias" "help")))
-          (parse argv))
-      (js->clj :keywordize-keys true)))
 
 (defn open-paths [path-line-pairs add?]
   (doseq [[path line] path-line-pairs
@@ -44,6 +34,8 @@
 
 (def parsed-args "Map of commandline options parsed by optimist. :_ contains non-option args." nil)
 
+(ipc/on "cli" #(set! parsed-args (js->clj % :keywordize-keys true)))
+
 ;; (defn args-key [winid]
 ;;   (str "window" winid "args"))
 
@@ -54,8 +46,6 @@
 ;;*********************************************************
 ;; Behaviors
 ;;*********************************************************
-
-(ipc/on "argv" #(set! parsed-args (parse-args %)))
 
 (behavior ::open-on-args
           :triggers #{:post-init}
@@ -68,7 +58,7 @@
                             open-dir? (some files/dir? paths)]
                         (when open-dir?
                           (object/merge! workspace/current-ws {:initialized? true}))
-                        (open-paths path-line-pairs true))))
+                        (open-paths path-line-pairs (:add parsed-args)))))
 
 ; (behavior ::open!
 ;           :triggers #{:open!}
