@@ -11,7 +11,7 @@
  [:app :lt.objs.editor.pool/stop-close-dirty]
  [:app :lt.objs.clients/close-clients-on-closed]
  [:app :lt.objs.app/restore-position-on-init]
- [:app :lt.objs.app/notify-loaded-window]
+ [:app :lt.objs.app/notify-init-window]
  [:app :lt.objs.cli/open-on-args]
  [:app :lt.objs.editor.pool/init-syntax-selector]
  [:app :lt.objs.cli/open!]

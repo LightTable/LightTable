@@ -34,14 +34,6 @@
             (object/raise workspace/current-ws :add.file! path))))
       (object/raise opener/opener :new! path))))
 
-;; (defn args-key [winid]
-;;   (str "window" winid "args"))
-
-(defn args []
-;;   (or (app/fetch (args-key (app/window-number)))
-;;       (and (= (app/window-number) 0) (first (app/args))))
-  )
-
 (defn is-lt-binary? [path]
   (#{"ltbin" "Atom" "deploy" "LightTable.exe" "LightTable"} (string/trim (files/basename path))))
 
@@ -50,22 +42,33 @@
        (not (empty? path))
        (not (is-lt-binary? path))))
 
+(def parsed-args "Map of commandline options parsed by optimist. :_ contains non-option args." nil)
+
+;; (defn args-key [winid]
+;;   (str "window" winid "args"))
+
+(defn args []
+  ;; TODO:   (or (app/fetch (args-key (app/window-number)))
+  (and (= (app/window-number) 1) (seq (filter valid-path? (:_ parsed-args)))))
+
 ;;*********************************************************
 ;; Behaviors
 ;;*********************************************************
 
-(defn process-argv [argv]
-  (let [args (parse-args argv)
-        path-line-pairs (map #(let [[_ path line] (re-find #"^(.*?):?(\d+)?$" %)]
-                                [(files/resolve (:dir args) path) line])
-                             (filter valid-path? (:_ args)))
-        paths (map first path-line-pairs)
-        open-dir? (some files/dir? paths)]
-    (when open-dir?
-      (object/merge! workspace/current-ws {:initialized? true}))
-    (open-paths path-line-pairs (:add args))))
+(ipc/on "argv" #(set! parsed-args (parse-args %)))
 
-(ipc/on "argv" process-argv)
+(behavior ::open-on-args
+          :triggers #{:post-init}
+          :desc "App: Process commandline arguments"
+          :reaction (fn [this]
+                      (let [path-line-pairs (map #(let [[_ path line] (re-find #"^(.*?):?(\d+)?$" %)]
+                                                    [(files/resolve (:dir parsed-args) path) line])
+                                                 (filter valid-path? (:_ parsed-args)))
+                            paths (map first path-line-pairs)
+                            open-dir? (some files/dir? paths)]
+                        (when open-dir?
+                          (object/merge! workspace/current-ws {:initialized? true}))
+                        (open-paths path-line-pairs true))))
 
 ; (behavior ::open!
 ;           :triggers #{:open!}

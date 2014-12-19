@@ -52,7 +52,7 @@ app.on('ready', function() {
     createWindow();
   });
 
-  ipc.on("loadedWindow", function(event, id) {
+  ipc.on("initWindow", function(event, id) {
     windows[id].webContents.send('argv', process.argv);
   });
 

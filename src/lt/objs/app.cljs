@@ -98,10 +98,10 @@
                               (when closing
                                 (close true))))
 
-(behavior ::notify-loaded-window
-          :triggers #{:show}
+(behavior ::notify-init-window
+          :triggers #{:init}
           :reaction (fn [this]
-                      (ipc/send "loadedWindow" (window-number))))
+                      (ipc/send "initWindow" (window-number))))
 
 (behavior ::store-position-on-close
           :triggers #{:closed :refresh}
