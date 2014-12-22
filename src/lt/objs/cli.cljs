@@ -36,12 +36,15 @@
 
 (ipc/on "cli" #(set! parsed-args (js->clj % :keywordize-keys true)))
 
-;; (defn args-key [winid]
-;;   (str "window" winid "args"))
+(def open-files "Files to open from a file manager" nil)
 
-(defn args []
-  ;; TODO:   (or (app/fetch (args-key (app/window-number)))
-  (and (= (app/window-number) 1) (seq (filter valid-path? (:_ parsed-args)))))
+(ipc/on "openFile" #(set! open-files (js->clj %)))
+
+(defn args
+  "Returns truthy for any arguments passed from the commandline or from a file manager"
+  []
+  (or (seq (filter valid-path? (:_ parsed-args)))
+      (seq open-files)))
 
 ;;*********************************************************
 ;; Behaviors
@@ -60,17 +63,9 @@
                           (object/merge! workspace/current-ws {:initialized? true}))
                         (open-paths path-line-pairs (:add parsed-args)))))
 
-; (behavior ::open!
-;           :triggers #{:open!}
-;           :desc "App: Open a path from a file manager e.g. Finder"
-;           :reaction (fn [this path]
-;                       (when (= (app/fetch :focusedWindow) (app/window-number))
-;                         (let [args (parse-args (rebuild-argv path))
-;                               paths (map #(files/resolve (:dir args) %) (filter valid-path? (:_ args)))
-;                               open-dir? (some files/dir? paths)]
-;                           (if (or (:new args)
-;                                   (and open-dir? (not (:add args))))
-;                             (let [winid (inc (app/fetch :window-id))]
-;                               (app/store! (args-key winid) path)
-;                               (app/open-window))
-;                             (open-paths (map vector paths) (:add args)))))))
+(behavior ::open!
+          :triggers #{:post-init}
+          :desc "App: Open path(s) from a file manager e.g. Finder"
+          :reaction (fn [this]
+                      (when (= 1 (app/window-number))
+                        (open-paths (map vector open-files) (:add parsed-args)))))

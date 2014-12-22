@@ -10,6 +10,7 @@ var app = require('app'),  // Module to control application life.
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the javascript object is GCed.
 var windows = {};
+var openFiles = []; // Track files for open-file event
 
 var packageJSON = require(__dirname + '/../package.json');
 var parsedArgs, windowClosing; // vars used by multiple functions
@@ -47,6 +48,7 @@ function onReady() {
 
   ipc.on("initWindow", function(event, id) {
     windows[id].webContents.send('cli', parsedArgs);
+    windows[id].webContents.send('openFile', openFiles);
   });
 
   ipc.on("closeWindow", function(event, id) {
@@ -152,6 +154,9 @@ function start() {
     app.quit();
   });
 
+  app.on('open-file', function(event, path) {
+    openFiles.push(path);
+  });
   parseArgs();
 };
 
