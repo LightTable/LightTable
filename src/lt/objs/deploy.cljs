@@ -190,7 +190,7 @@
                   :reaction (fn [this]
 ;;                               (when-let [proxy (proxy?)]
 ;;                                 (.defaults request (clj->js {:proxy proxy})))
-                              (when (= (app/window-number) 0)
+                              (when (app/first-window?)
                                 (set! js/localStorage.fetchedVersion nil))
                               (check-version)
                               (every version-timeout check-version)))

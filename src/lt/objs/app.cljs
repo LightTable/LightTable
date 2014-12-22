@@ -19,6 +19,9 @@
 (defn window-number []
   (.-id win))
 
+(defn first-window? []
+  (= 1 (window-number)))
+
 (defn prevent-close []
   (set! closing false))
 

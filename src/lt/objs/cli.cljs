@@ -41,10 +41,12 @@
 (ipc/on "openFile" #(set! open-files (js->clj %)))
 
 (defn args
-  "Returns truthy for any arguments passed from the commandline or from a file manager"
+  "Returns truthy if LT opened with any path arguments. Only returns truthy on first window
+  since subsequent windows don't open path arguments."
   []
-  (or (seq (filter valid-path? (:_ parsed-args)))
-      (seq open-files)))
+  (and (app/first-window?)
+       (or (seq (filter valid-path? (:_ parsed-args)))
+           (seq open-files))))
 
 ;;*********************************************************
 ;; Behaviors
@@ -54,18 +56,19 @@
           :triggers #{:post-init}
           :desc "App: Process commandline arguments"
           :reaction (fn [this]
-                      (let [path-line-pairs (map #(let [[_ path line] (re-find #"^(.*?):?(\d+)?$" %)]
+                      (when (app/first-window?)
+                        (let [path-line-pairs (map #(let [[_ path line] (re-find #"^(.*?):?(\d+)?$" %)]
                                                     [(files/resolve (:dir parsed-args) path) line])
                                                  (filter valid-path? (:_ parsed-args)))
                             paths (map first path-line-pairs)
                             open-dir? (some files/dir? paths)]
                         (when open-dir?
                           (object/merge! workspace/current-ws {:initialized? true}))
-                        (open-paths path-line-pairs (:add parsed-args)))))
+                        (open-paths path-line-pairs (:add parsed-args))))))
 
 (behavior ::open!
           :triggers #{:post-init}
           :desc "App: Open path(s) from a file manager e.g. Finder"
           :reaction (fn [this]
-                      (when (= 1 (app/window-number))
+                      (when (app/first-window?)
                         (open-paths (map vector open-files) (:add parsed-args)))))

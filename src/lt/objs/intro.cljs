@@ -51,23 +51,22 @@
                          ]))
 
 (behavior ::show-intro
-                  :triggers #{:post-init}
-                  :type :user
-                  :exclusive [::show-new-file]
-                  :desc "App: Open the welcome screen when Light Table starts"
-                  :reaction (fn [this]
-                              (when-not (cli/args)
-                                (let [intro (object/create ::intro)]
-;;                                   (.focus app/win)
-                                  (dom/focus (dom/$ :body))
-                                  (tabs/add! intro)
-                                  (tabs/active! intro)))))
+          :triggers #{:post-init}
+          :type :user
+          :exclusive [::show-new-file]
+          :desc "App: Open the welcome screen when Light Table starts"
+          :reaction (fn [this]
+                      (when-not (cli/args)
+                        (let [intro (object/create ::intro)]
+                          (dom/focus (dom/$ :body))
+                          (tabs/add! intro)
+                          (tabs/active! intro)))))
 
 (behavior ::show-new-file
-                  :triggers #{:post-init}
-                  :type :user
-                  :exclusive [::show-intro]
-                  :desc "App: Open a new file when Light Table starts"
-                  :reaction (fn [this]
-                              (when-not (cli/args)
-                                (cmd/exec! :new-file))))
+          :triggers #{:post-init}
+          :type :user
+          :exclusive [::show-intro]
+          :desc "App: Open a new file when Light Table starts"
+          :reaction (fn [this]
+                      (when-not (cli/args)
+                        (cmd/exec! :new-file))))
