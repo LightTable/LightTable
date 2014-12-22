@@ -15,6 +15,7 @@
  [:app :lt.objs.cli/open-on-args]
  [:app :lt.objs.editor.pool/init-syntax-selector]
  [:app :lt.objs.cli/open!]
+ [:app :lt.objs.cli/open-after-startup!]
  [:app :lt.objs.thread/shutdown-worker-on-close]
  [:app :lt.objs.animations/animate-on-init]
  [:app :lt.objs.app/store-position-on-close]

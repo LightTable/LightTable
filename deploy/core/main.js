@@ -154,8 +154,19 @@ function start() {
     app.quit();
   });
 
+  // open-file operates in two modes - before and after startup.
+  // On startup and before a window has opened, event paths are
+  // saved and then opened once windows are available.
+  // After startup, event paths are sent to available windows.
   app.on('open-file', function(event, path) {
-    openFiles.push(path);
+    if (Object.keys(windows).length > 0) {
+      Object.keys(windows).forEach(function(id) {
+        windows[id].webContents.send('openFileAfterStartup', path);
+      });
+    }
+    else {
+      openFiles.push(path);
+    }
   });
   parseArgs();
 };

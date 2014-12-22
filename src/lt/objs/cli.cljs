@@ -39,6 +39,7 @@
 (def open-files "Files to open from a file manager" nil)
 
 (ipc/on "openFile" #(set! open-files (js->clj %)))
+(ipc/on "openFileAfterStartup" #(object/raise app/app :open! %))
 
 (defn args
   "Returns truthy if LT opened with any path arguments. Only returns truthy on first window
@@ -68,7 +69,14 @@
 
 (behavior ::open!
           :triggers #{:post-init}
-          :desc "App: Open path(s) from a file manager e.g. Finder"
+          :desc "App: Open path(s) from a file manager e.g. Finder on startup"
           :reaction (fn [this]
                       (when (app/first-window?)
                         (open-paths (map vector open-files) (:add parsed-args)))))
+
+(behavior ::open-after-startup!
+          :triggers #{:open!}
+          :desc "App: Open path(s) from a file manager after startup"
+          :reaction (fn [this path]
+                      (when (= (app/fetch :focusedWindow) (app/window-number))
+                        (open-paths [[path]] (:add parsed-args)))))
