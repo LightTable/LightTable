@@ -125,7 +125,7 @@ if [ "$OS" == "mac" ]; then
   FULL_PLIST="$(pwd)/$RELEASE_DIR/$PLIST"
 
   # TODO: Port keys from previous plist
-  defaults write $FULL_PLIST CFBundleIconFile 'app/core/img/lticon.png'
+  defaults write $FULL_PLIST CFBundleIconFile 'app/core/img/app.icns'
   defaults write $FULL_PLIST CFBundleDisplayName 'Light Table'
   defaults write $FULL_PLIST CFBundleIdentifier 'com.kodowa.LightTable'
   # TODO: Fix enabling causes LSOpenURLsWithRole() failed ... error -10810
