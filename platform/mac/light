@@ -19,17 +19,4 @@ then
 	exit 1
 fi
 
-LTAPPCLI=$APP_DIR/LightTable.app/Contents/MacOS/node-webkit
-PWD=`pwd`
-ARGS="$@"
-
-CORRECTED=${ARGS//-/<d>}
-CORRECTED=${CORRECTED// /<s>}
-
-if [ $# != 0 ]; then
-    LTCLI=true $LTAPPCLI "<d><d>dir=$PWD<s>$CORRECTED" &
-else
-    LTCLI=true $LTAPPCLI &
-fi
-
-open -a LightTable
+LTCLI=true "${APP_DIR}/LightTable.app/Contents/MacOS/Atom" --dir=`pwd` "$@" &
