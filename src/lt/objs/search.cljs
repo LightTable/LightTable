@@ -85,7 +85,7 @@
           (ctx/out! :searcher.replace)))
 
 (defui replace-all-button [this]
-  [:button.replace "all"]
+  [:button.replace "Replace All"]
   :click (fn [e]
            (cmd/exec! :searcher.replace-all)))
 

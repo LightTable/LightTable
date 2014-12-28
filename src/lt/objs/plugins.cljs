@@ -755,8 +755,8 @@
 
 (behavior ::load-js
           :triggers #{:object.instant-load}
-          :desc "App: Load a javascript file"
-          :params [{:label "path"}]
+          :desc "App: Load javascript file(s)"
+          :params [{:label "path(s)"}]
           :type :user
           :reaction (fn [this path]
                       (binding [*plugin-dir* (::dir object/*behavior-meta*)
@@ -780,15 +780,16 @@
 
 (behavior ::load-css
           :triggers #{:object.instant}
-          :desc "App: Load a css file"
-          :params [{:label "path"}]
+          :desc "App: Load css file(s)"
+          :params [{:label "path(s)"}]
           :type :user
           :reaction (fn [this path]
-                      (let [path (adjust-path path)]
-                        (when (or load/*force-reload*
-                                  (not (get (::loaded-files @this) path)))
-                          (object/update! this [::loaded-files] #(conj (or % #{}) path))
-                          (load/css path)))))
+                      (let [paths (map adjust-path (if (coll? path) path [path]))]
+                        (doseq [path paths]
+                          (when (or load/*force-reload*
+                                    (not (get (::loaded-files @this) path)))
+                            (object/update! this [::loaded-files] #(conj (or % #{}) path))
+                            (load/css path))))))
 
 (behavior ::load-keymap
           :triggers #{:object.instant}

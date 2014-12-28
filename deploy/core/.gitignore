@@ -1,0 +1,6 @@
+node_modules/codemirror/doc/
+node_modules/codemirror/keymap/emacs.js
+node_modules/codemirror/keymap/vim.js
+node_modules/codemirror/theme/
+node_modules/codemirror/test/
+node_modules/codemirror/bin/

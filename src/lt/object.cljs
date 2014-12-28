@@ -122,6 +122,13 @@
   (let [reactions (-> @obj :listeners k)]
     (raise* obj reactions args k)))
 
+(defn call-behavior-reaction
+  "For a given behavior keyword id, call its :reaction fn with given args"
+  [id & args]
+  (let [behavior-fn (:reaction (->behavior id))]
+    (assert behavior-fn)
+    (apply behavior-fn args)))
+
 (defn update-listeners
   ([obj] (update-listeners obj nil))
   ([obj instants]
