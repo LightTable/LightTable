@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 set -e
 
-# Ensure we start in assumed directory
-cd "$(dirname "${BASH_SOURCE[0]}")"
-
 # Create LightTable release using our local Atom Shell installation
 # (Mac, Linux, or Cygwin)
+
+# Ensure we start in project root
+cd "$(dirname "${BASH_SOURCE[0]}")"; cd ..
 
 #----------------------------------------------------------------------
 # Get OS-specific Atom details
@@ -52,8 +52,6 @@ DEFAULT_VERSION=`echo $META | cut -d' ' -f3 | tr -d '"'`
 : ${VERSION:="$DEFAULT_VERSION"}
 
 BUILDS=builds
-mkdir -p $BUILDS
-
 RELEASE="$NAME-$VERSION-$OS"
 RELEASE_DIR="$BUILDS/$RELEASE"
 RELEASE_ZIP="$BUILDS/${RELEASE}.zip"
@@ -66,52 +64,15 @@ rm -rf $RELEASE_DIR $RELEASE_ZIP
 #----------------------------------------------------------------------
 
 echo "Creating $RELEASE_DIR ..."
-
-cp -R $ATOM_DIR $RELEASE_DIR
-rm -f $RELEASE_DIR/version
-rm -f $RELEASE_DIR/LICENSE
+mkdir -p $RELEASE_DIR
+cp -R $ATOM_DIR/Atom.app $RELEASE_DIR/
 
 mkdir $RELEASE_RSRC/app
 cp -R deploy/core $RELEASE_RSRC/app/
 cp deploy/package.json $RELEASE_RSRC/app/
 cp -R deploy/settings $RELEASE_RSRC/app/
-
-
-#----------------------------------------------------------------------
-# Fetch plugins and copy into output location
-#----------------------------------------------------------------------
-
-# TODO: Handle node/node
-PLUGINS=("Clojure,0.1.0" "CSS,0.0.6" "HTML,0.0.2" "Javascript,0.1.2"
-         "Paredit,0.0.4" "Python,0.0.5" "Rainbow,0.0.8")
-
-PLUGINS_DIR="$RELEASE_RSRC/app/plugins"
-mkdir -p $PLUGINS_DIR
-# Plugins cache
-mkdir -p deploy/plugins
-
-pushd deploy/plugins
-  for plugin in "${PLUGINS[@]}" ; do
-      NAME="${plugin%%,*}"
-      VERSION="${plugin##*,}"
-      if [ -d $NAME ]; then
-        echo "Updating plugin $NAME $VERSION..."
-        cd $NAME
-        git checkout --quiet master
-        git pull --quiet
-        git checkout --quiet $VERSION
-        cd -
-      else
-        echo "Cloning plugin $NAME $VERSION..."
-        git clone "https://github.com/LightTable/$NAME"
-        cd $NAME
-        git checkout --quiet $VERSION
-        cd -
-      fi
-      cp -R $NAME $PLUGINS_DIR/
-      rm -rf "$PLUGINS_DIR/$NAME/.git"
-  done
-popd
+cp -R deploy/plugins "${RELEASE_RSRC}"/app/
+rm -rf "${RELEASE_RSRC}"/app/plugins/*/.git
 
 #----------------------------------------------------------------------
 # Polishing
