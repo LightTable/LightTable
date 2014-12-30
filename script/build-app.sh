@@ -93,6 +93,9 @@ if [ "$OS" == "mac" ]; then
 
   mv $RELEASE_DIR/Atom.app $RELEASE_DIR/LightTable.app
 
+  # Sign app to avoid endless “accept incoming connections” dialogs
+  codesign --force --deep --sign - $RELEASE_DIR/LightTable.app
+
 elif [ "$OS" == "linux" ]; then
 
   mv $RELEASE_DIR/atom $RELEASE_DIR/LightTable
