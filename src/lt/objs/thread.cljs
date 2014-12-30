@@ -57,16 +57,19 @@
                   :reaction (fn [app]
                               (object/raise worker :kill!)))
 
-(defn node-exe []
-  (if (platform/win?)
-    "/plugins/node/node.exe"
-    "/plugins/node/node"))
-
+;; Provides a forked thread, mainly for use with background macro. Parent thread
+;; sends messages to child thread. Child thread performs work and sends results
+;; back to parent thread.
 (object/object* ::worker-thread
                 :tags #{:worker-thread}
                 :queue []
                 :init (fn [this]
-                        (let [worker (.fork cp (files/lt-home "/core/node_modules/lighttable/background/threadworker.js") (clj->js ["--harmony"]) (clj->js {:execPath (files/lt-home (node-exe)) :silent true}))]
+                        (let [worker (.fork cp (files/lt-home "/core/node_modules/lighttable/background/threadworker.js")
+                                            (clj->js ["--harmony"])
+                                            (clj->js {:execPath js/process.execPath
+                                                      :silent true
+                                                      :env {"ATOM_SHELL_INTERNAL_RUN_AS_NODE" 1}
+                                                      :cwd files/pwd}))]
                           (.on (.-stdout worker) "data" (fn [data]
                                                           (console/loc-log {:file "thread"
                                                                             :line "stdout"
