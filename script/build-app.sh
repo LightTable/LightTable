@@ -89,8 +89,7 @@ if [ "$OS" == "mac" ]; then
   defaults write $FULL_PLIST CFBundleIconFile 'app/core/img/app.icns'
   defaults write $FULL_PLIST CFBundleDisplayName 'Light Table'
   defaults write $FULL_PLIST CFBundleIdentifier 'com.kodowa.LightTable'
-  # TODO: Fix enabling causes LSOpenURLsWithRole() failed ... error -10810
-  # defaults write $FULL_PLIST CFBundleName 'LightTable'
+  defaults write $FULL_PLIST CFBundleName 'LightTable'
 
   mv $RELEASE_DIR/Atom.app $RELEASE_DIR/LightTable.app
 
