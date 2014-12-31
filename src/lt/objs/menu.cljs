@@ -12,13 +12,6 @@
 (def Menu (.require remote "menu"))
 (def MenuItem (.require remote "menu-item"))
 
-(defn create-menu
-  ([] (create-menu nil))
-  ([type]
-     (if type
-       (Menu. (js-obj "type" type))
-       (Menu.))))
-
 (declare submenu)
 
 (defn menu-item [opts]
@@ -38,7 +31,7 @@
     (MenuItem. (clj->js opts))))
 
 (defn submenu [items]
-  (let [menu (create-menu)]
+  (let [menu (Menu.)]
     (doseq [i items
             :when i]
       (.append menu (menu-item i)))
@@ -124,19 +117,19 @@
                                        {:label "Hide Others" :accelerator "Command+Alt+H" :selector "hideOtherApplications:"}
                                        {:type "separator"}
                                        (cmd-item "Quit Light Table" :quit {:accelerator "Command+Q"})]})
-                {:label "File" :submenu [(cmd-item "New file" :new-file {:key "n"})
-                                         (cmd-item "Open file" :open-file {:key "o" :modifiers "cmd-shift"})
+                {:label "File" :submenu [(cmd-item "New file" :new-file)
+                                         (cmd-item "Open file" :open-file)
                                          {:label "Open folder" :click #(do
                                                                          (cmd/exec! :workspace.show :force)
                                                                          (cmd/exec! :workspace.add-folder))}
                                          (cmd-item "Open recent workspace" :workspace.show-recents {})
-                                         (cmd-item "Save file" :save {:key "s"})
-                                         (cmd-item "Save file as.." :save-as {:key "s" :modifiers "cmd-shift"})
+                                         (cmd-item "Save file" :save)
+                                         (cmd-item "Save file as.." :save-as)
                                          {:type "separator"}
-                                         (cmd-item "New window" :window.new {:key "n" :modifiers "cmd-shift"})
-                                         (cmd-item "Close window" :window.close {:key "w" :modifiers "cmd-shift"})
+                                         (cmd-item "New window" :window.new)
+                                         (cmd-item "Close window" :window.close)
                                          {:type "separator"}
-                                         (cmd-item "Close file" :tabs.close {:key "w"})
+                                         (cmd-item "Close file" :tabs.close)
                                          ]}
                 (if (platform/mac?)
                   {:label "Edit" :submenu [(cmd-item "Undo" :editor.undo {:selector "undo:" :accelerator "CommandOrControl+Z"})
