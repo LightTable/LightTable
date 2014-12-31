@@ -170,37 +170,37 @@
                 ]))
 
 (behavior ::create-menu
-           :triggers #{:init}
-           :reaction (fn [this]
-                       (when (platform/mac?)
-                         (set! (.-menu app/win) nil)
-                         )
-                       (main-menu)))
+          :triggers #{:init}
+          :reaction (fn [this]
+                      (when (platform/mac?)
+                        (set! (.-menu app/win) nil)
+                        )
+                      (main-menu)))
 
 (behavior ::recreate-menu
-                  :debounce 20
-                  :triggers #{:app.keys.load :init}
-                  :reaction (fn [app]
-                              (when (platform/mac?)
-                                (main-menu))))
+          :debounce 20
+          :triggers #{:app.keys.load}
+          :reaction (fn [app]
+                      (when (platform/mac?)
+                        (main-menu))))
 
 (behavior ::set-menu
-                  :triggers #{:focus :init}
-                  :reaction (fn [this]
-                              (when (platform/mac?)
-                                (main-menu))))
+          :triggers #{:focus}
+          :reaction (fn [this]
+                      (when (platform/mac?)
+                        (main-menu))))
 
 (behavior ::remove-menu-close
-                  :triggers #{:closed :blur}
-                  :reaction (fn [this]
-                               (when (platform/mac?)
-                                 (unknown-menu))))
+          :triggers #{:closed :blur}
+          :reaction (fn [this]
+                      (when (platform/mac?)
+                        (unknown-menu))))
 
 (behavior ::menu!
-                  :triggers #{:menu!}
-                  :reaction (fn [this e]
-                              (let [items (sort-by :order (filter identity (object/raise-reduce this :menu+ [] e)))]
-                                (-> (menu items)
-                                    (show-menu)))
-                              (dom/prevent e)
-                              (dom/stop-propagation e)))
+          :triggers #{:menu!}
+          :reaction (fn [this e]
+                      (let [items (sort-by :order (filter identity (object/raise-reduce this :menu+ [] e)))]
+                        (-> (menu items)
+                            (show-menu)))
+                      (dom/prevent e)
+                      (dom/stop-propagation e)))
