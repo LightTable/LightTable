@@ -14,7 +14,6 @@
             [lt.objs.notifos :as notifos]
             [lt.objs.files :as files]
             [lt.util.dom :as dom]
-            [lt.util.ipc :as ipc]
             [lt.util.cljs :refer [->dottedkw]])
   (:use [crate.binding :only [bound map-bound]])
   (:use-macros [crate.def-macros :only [defpartial]]
@@ -23,15 +22,6 @@
 ;;**********************************************************
 ;; transient docs
 ;;**********************************************************
-
-(defn open-input [this & [ev dir?]]
-  (ipc/callback this (or ev :open!)
-    :dialog.showOpenDialog ipc/win {:properties [(if dir? :openDirectory :openFile)
-                                                 :multiSelections]}))
-
-(defn save-input [this path]
-  (ipc/callback this :save-as!
-    :dialog.showSaveDialog ipc/win {:defaultPath path}))
 
 (defn path->info [path]
   (when path
@@ -63,12 +53,12 @@
                                     fname (:name info)
                                     ext (when-let [e (:exts info)]
                                           (str "." (name (first e))))]
-                                (save-input this (files/join path (str fname ext))))))
+                                (dialogs/save-as this :save-as! (files/join path (str fname ext))))))
 
 (behavior ::save-as-rename!
                   :triggers #{:save-as-rename!}
                   :reaction (fn [this]
-                              (save-input this (-> @this :info :path))))
+                              (dialogs/save-as this :save-as! (-> @this :info :path))))
 
 (behavior ::save-as
                   :triggers #{:save-as!}
@@ -142,12 +132,6 @@
           :reaction (fn [this bool]
                       (object/merge! this {:open-linked-doc bool})))
 
-(behavior ::open-dialog
-          :triggers #{:open-dialog!}
-          :reaction (fn [opener paths]
-                      (doseq [path paths :when path]
-                        (object/raise opener :open! path))))
-
 (behavior ::open-standard-editor
                   :triggers #{:open!}
                   :reaction (fn [obj path]
@@ -218,7 +202,7 @@
                 :tags #{:opener}
                 :triggers #{}
                 :open-files #{}
-                :behaviors [::open-standard-editor ::open-dialog]
+                :behaviors [::open-standard-editor]
                 :init (fn [this]))
 
 (def opener (object/create ::opener))
@@ -231,7 +215,7 @@
 (cmd/command {:command :open-file
               :desc "File: Open file"
               :exec (fn []
-                      (open-input opener :open-dialog!))})
+                      (dialogs/file opener :open!))})
 
 (cmd/command {:command :open-path
               :desc "File: Open path"

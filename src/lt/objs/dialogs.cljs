@@ -8,16 +8,15 @@
 (def dialog (.require remote "dialog"))
 
 (defn dir [obj event]
-  (let [files (.showOpenDialog dialog #js {:properties #js ["openDirectory"]})]
-    (when files
-      (object/raise obj event (first files)))))
+  (let [files (.showOpenDialog dialog app/win #js {:properties #js ["openDirectory" "multiSelections"]})]
+    (doseq [file files]
+      (object/raise obj event file))))
 
 (defn file [obj event]
-  (let [files (.showOpenDialog dialog #js {:properties #js ["openFile"]})]
-    (when files
-      (object/raise obj event (first files)))))
+  (let [files (.showOpenDialog dialog app/win #js {:properties #js ["openFile" "multiSelections"]})]
+    (doseq [file files]
+      (object/raise obj event file))))
 
-(defn save-as [obj event]
-  (let [files (.showSaveDialog dialog #js {:properties #js ["createDirectory"]})]
-    (when files
-      (object/raise obj event (first files)))))
+(defn save-as [obj event path]
+  (when-let [file (.showSaveDialog dialog app/win #js {:defaultPath path})]
+    (object/raise obj event file)))
