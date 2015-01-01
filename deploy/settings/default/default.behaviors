@@ -276,6 +276,7 @@
                                     {:exts [:diff :patch], :mime "text/x-diff", :tags [:editor.diff], :name "Diff"}
                                     {:exts [:edn], :mime "text/x-clojure", :tags [:editor.clj :editor.edn], :name "EDN"}
                                     {:exts [:erl], :mime "text/x-erlang", :tags [:editor.erlang], :name "Erlang"}
+                                    {:exts [:feature], :mime "text/x-feature", :tags [:editor.gherkin], :name "gherkin"}
                                     {:exts [:go], :mime "text/x-go", :tags [:editor.go], :name "Go"}
                                     {:exts [:groovy], :mime "text/x-groovy", :tags [:editor.groovy], :name "Groovy"}
                                     {:exts [:haml], :mime "text/x-haml", :tags [:editor.haml], :name "HAML"}
