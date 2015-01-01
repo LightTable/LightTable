@@ -78,18 +78,13 @@ rm -rf "${RELEASE_RSRC}"/app/plugins/*/.git
 # Polishing
 #----------------------------------------------------------------------
 
-# Copy over platform-specific files e.g. executables
-cp $PLATFORM_DIR/* $RELEASE_DIR/
-
 if [ "$OS" == "mac" ]; then
 
-  FULL_PLIST="$(pwd)/$RELEASE_DIR/$PLIST"
+  cp $PLATFORM_DIR/light $RELEASE_DIR/
+  cp $PLATFORM_DIR/Info.plist $RELEASE_DIR/$PLIST
 
-  # TODO: Port keys from previous plist
-  defaults write $FULL_PLIST CFBundleIconFile 'app/core/img/app.icns'
-  defaults write $FULL_PLIST CFBundleDisplayName 'Light Table'
-  defaults write $FULL_PLIST CFBundleIdentifier 'com.kodowa.LightTable'
-  defaults write $FULL_PLIST CFBundleName 'LightTable'
+  FULL_PLIST="$(pwd)/$RELEASE_DIR/$PLIST"
+  defaults write $FULL_PLIST CFBundleShortVersionString $VERSION
 
   mv $RELEASE_DIR/Atom.app $RELEASE_DIR/LightTable.app
 
@@ -97,6 +92,8 @@ if [ "$OS" == "mac" ]; then
   codesign --force --deep --sign - $RELEASE_DIR/LightTable.app
 
 elif [ "$OS" == "linux" ]; then
+
+  cp $PLATFORM_DIR/LightTable $RELEASE_DIR/
 
   mv $RELEASE_DIR/atom $RELEASE_DIR/LightTable
 
