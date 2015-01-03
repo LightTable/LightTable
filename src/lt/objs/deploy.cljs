@@ -29,8 +29,8 @@
 
 (defn tar-path [v]
   (if (cache/fetch :edge)
-    (str "http://temp2.kodowa.com.s3.amazonaws.com/playground/releases/" v ".tar.gz")
-    (str "https://d35ac8ww5dfjyg.cloudfront.net/playground/releases/" v ".tar.gz")))
+    (str "https://api.github.com/repos/LightTable/LightTable/tarball/master")
+    (str "https://api.github.com/repos/LightTable/LightTable/tarball/" v)))
 
 (def version-regex #"^\d+\.\d+\.\d+(-.*)?$")
 
@@ -67,12 +67,6 @@
 (defn is-newer? [v1 v2]
   (compare-versions (str->version v1) (str->version v2)))
 
-(defn exec-path []
-  (.-execPath js/process))
-
-(defn mac-resources-path [p]
-  (.resolve fs-path (exec-path) (files/join "../../../../../Resources" p)))
-
 (defn download-file [from to cb]
   (let [options (js-obj "url" from
                         "headers" (js-obj "User-Agent" "Light Table"))
@@ -84,8 +78,8 @@
 (defn download-zip [ver cb]
   (let [n (notifos/working (str "Downloading version " ver " .."))]
     (download-file (tar-path ver) (str home-path "/tmp.tar.gz") (fn [e r body]
-                                                               (notifos/done-working)
-                                                               (cb e r body)))))
+                                                                  (notifos/done-working)
+                                                                  (cb e r body)))))
 
 (defn untar [from to cb]
   (let [t (.createReadStream fs from)]
@@ -95,8 +89,9 @@
         (on "end" cb))))
 
 (defn move-tmp []
-  (doseq [file (files/full-path-ls (str home-path "/tmp/"))]
-    (.cp shell "-rf" file home-path))
+  (let [parent-dir (first (files/full-path-ls (str home-path "/tmp/")))]
+    (doseq [file (files/full-path-ls (str parent-dir "/deploy/"))]
+      (.cp shell "-rf" file home-path)))
   (.rm shell "-rf" (str home-path "/tmp*")))
 
 (defn fetch-and-deploy [ver]
@@ -112,10 +107,7 @@
                                                          restart to get the latest and greatest.")
                                               :buttons [{:label "ok"}]}))))))
 
-(defn version-url []
-  (if (cache/fetch :edge)
-    "http://app.kodowa.com/latest-version/nw-edge"
-    "http://app.kodowa.com/latest-version/nw"))
+(def tags-url "https://api.github.com/repos/LightTable/LightTable/tags")
 
 (defn should-update-popup [data]
   (popup/popup! {:header "There's a newer version of Light Table!"
@@ -125,20 +117,28 @@
                             :action (fn []
                                       (fetch-and-deploy data))}]}))
 
+(defn ->latest-version [body]
+  (->> (js/JSON.parse body)
+       ;; Ensure only version tags
+       (keep #(when (re-find version-regex (.-name %)) (.-name %)))
+       sort
+       last))
+
 (defn check-version [& [notify?]]
-  (fetch/xhr (version-url) {}
+  (fetch/xhr tags-url {}
              (fn [data]
-               (when (re-seq version-regex data)
-                 (if (and (not= data "")
-                          (not= data (:version version))
-                          (is-newer? (:version version) data)
-                          (or notify?
-                              (not= js/localStorage.fetchedVersion data)))
-                   (do
-                     (set! js/localStorage.fetchedVersion data)
-                     (should-update-popup data))
-                   (when notify?
-                     (notifos/set-msg! (str "At latest version: " (:version version)))))))))
+               (let [latest-version (->latest-version data)]
+                 (when (re-find version-regex latest-version)
+                   (if (and (not= latest-version "")
+                            (not= latest-version (:version version))
+                            (is-newer? (:version version) latest-version)
+                            (or notify?
+                                (not= js/localStorage.fetchedVersion latest-version)))
+                     (do
+                       (set! js/localStorage.fetchedVersion latest-version)
+                       (should-update-popup latest-version))
+                     (when notify?
+                       (notifos/set-msg! (str "At latest version: " (:version version))))))))))
 
 (defn binary-version []
   (aget js/process.versions "node-webkit"))
