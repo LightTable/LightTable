@@ -6,9 +6,9 @@ Light Table is a next generation code editor that connects you to your creation 
 
 Prebuilt binaries are available through [lighttable.com](http://lighttable.com). To build and use a developer version of Light Table [see these instructions](doc/developer-install.md).
 
-### OS/X 10.10 (Yosemite)
+### Note for OS/X 10.10 (Yosemite) Users
 
-Plese note that a bug in node-webkit currently causes performance problems in Light Table on OS/X Yosemite. Yosemite users can build Light Table for the forthcoming version based on aotm-shell by [following these instructions](https://groups.google.com/d/msg/light-table-discussion/PfQ6kCKrj84/hMNG7flMoZkJ), but please note that the atom-shell version is not yet stable.
+Please note that a bug in node-webkit currently causes performance problems in Light Table on OS/X Yosemite. Yosemite users can build Light Table for the forthcoming version based on atom-shell by [following these instructions](https://groups.google.com/d/msg/light-table-discussion/PfQ6kCKrj84/hMNG7flMoZkJ), but please note that the atom-shell version is not yet stable.
 
 ## Documentation
 
