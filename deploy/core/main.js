@@ -22,6 +22,16 @@ function createWindow() {
   windows[window.id] = window;
   window.focus();
 
+  window.on("blur", function() {
+    window.webContents.send("app", "blur");
+  });
+  window.on("devtools-opened", function() {
+    window.webContents.send("devtools", "disconnect");
+  });
+  window.on("devtools-closed", function() {
+    window.webContents.send("devtools", "reconnect!");
+  });
+
   windowClosing = false;
   window.on("close", function(e) {
     if (!windowClosing) {
@@ -49,6 +59,9 @@ function onReady() {
   ipc.on("initWindow", function(event, id) {
     windows[id].webContents.send('cli', parsedArgs);
     windows[id].webContents.send('openFile', openFiles);
+    windows[id].on("focus", function() {
+      windows[id].webContents.send("app", "focus");
+    });
   });
 
   ipc.on("closeWindow", function(event, id) {
@@ -63,62 +76,6 @@ function onReady() {
   ipc.on("toggleDevTools", function(event, windowId) {
     if(windowId && windows[windowId]) {
       windows[windowId].toggleDevTools();
-    }
-  });
-
-  // Generic IPC callback utilities
-
-  function win(wid) {
-    return wid && windows[wid];
-  }
-
-  function catargs(a, args) {
-    for (var i = 0; i < args.length; i++) {
-      a[a.length] = args[i];
-    }
-    return a;
-  }
-
-  function argify1(arg, data) {
-    if (arg == ":lt.util.ipc/win") {
-      return data.win;
-    }
-    return arg;
-  }
-
-  function modulify(arg, data) {
-    arg = argify1(arg, data);
-    if (typeof arg == 'string')
-      arg = require(arg);
-    return arg;
-  }
-
-  function argify(args, data) {
-    for (var i = 0; i < args.length; i++) {
-      args[i] = argify1(args[i], data);
-    }
-    return args;
-  }
-
-  ipc.on(":lt.util.ipc/callback", function(e, wid,
-                                            mod, func, args,
-                                            target, method) {
-    if (win(wid)) {
-      var data = {win: win(wid)};
-      mod = modulify(mod, data);
-      args = argify(args, data);
-
-      args[args.length] = function() {
-        if (win(wid)) {
-          var argList = [":lt.util.ipc/callback", target, method];
-          catargs(argList, arguments);
-          var wc = win(wid).webContents;
-          if (wc) {
-            wc.send.apply(wc, argList);
-          }
-        }
-      };
-      mod[func].apply(mod, args);
     }
   });
 

@@ -37,8 +37,6 @@
      (ipc/send "closeWindow" (window-number))
      (.close win))))
 
-(ipc/on "app" #(object/raise app (keyword %)))
-
 (defn refresh []
   (js/window.location.reload true))
 
@@ -224,11 +222,8 @@
 
 (def app (object/create ::app))
 
-(ipc/callback app :blur
-  [ipc/win :on] :blur)
-
-(ipc/callback app :focus
-  [ipc/win :on] :focus)
+;; Handles events e.g. focus, blur and close
+(ipc/on "app" #(object/raise app (keyword %)))
 
 (set! (.-onbeforeunload js/window) (fn []
                                     "This will navigate the main LT window and all work will be lost, are you sure you want to do this?"))

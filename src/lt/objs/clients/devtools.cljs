@@ -199,11 +199,8 @@
 
 (def local (object/create ::devtools-client))
 
-(ipc/callback local :disconnect
-  [ipc/win :on] :devtools-opened)
-
-(ipc/callback local :reconnect!
-  [ipc/win :on] :devtools-closed)
+;; Handle events e.g. disconnect and reconnect!
+(ipc/on "devtools" #(object/raise local (keyword %)))
 
 ;;*********************************************************
 ;; Behaviors
