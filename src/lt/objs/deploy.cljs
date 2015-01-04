@@ -18,7 +18,6 @@
 
 (def shell (load/node-module "shelljs"))
 (def fs (js/require "fs"))
-(def fs-path (js/require "path"))
 (def zlib (js/require "zlib"))
 (def request (load/node-module "request"))
 (def tar (load/node-module "tar"))
@@ -64,7 +63,9 @@
                   (= (:minor v2) (:minor v1))
                   (< (:patch v2) (:patch v1)))))))
 
-(defn is-newer? [v1 v2]
+(defn is-newer?
+  "Returns true if second version is newer/greater than first version."
+  [v1 v2]
   (compare-versions (str->version v1) (str->version v2)))
 
 (defn download-file [from to cb]
@@ -117,7 +118,9 @@
                             :action (fn []
                                       (fetch-and-deploy data))}]}))
 
-(defn ->latest-version [body]
+(defn ->latest-version
+  "Returns latest LT version for github api tags endpoint."
+  [body]
   (->> (js/JSON.parse body)
        ;; Ensure only version tags
        (keep #(when (re-find version-regex (.-name %)) (.-name %)))
@@ -140,8 +143,11 @@
                      (when notify?
                        (notifos/set-msg! (str "At latest version: " (:version version))))))))))
 
-(defn binary-version []
-  (aget js/process.versions "node-webkit"))
+(defn binary-version
+  "Binary/atom-shell version. The two versions are in sync since binaries updates
+  only occur with atom-shell updates."
+  []
+  (aget js/process.versions "atom-shell"))
 
 (defui button [label & [cb]]
        [:div.button.right label]
@@ -155,44 +161,30 @@
                                  Light Table website so you can download the updated version."
                  :buttons [{:label "Download latest"
                             :action (fn []
-                                      (.Shell.openExternal (js/require "nw.gui") "http://www.lighttable.com")
-                                      (popup/remain-open)
-                                      )}]}))
-
-(defn check-nw-version [obj]
-  (assoc obj :nw-version (is-newer? (binary-version) (:nw version))))
-
-(defn notify [obj]
-  (let [{:keys [nw-version]} obj]
-    (cond
-     nw-version (alert-binary-update)
-     :else obj)))
-
-(defn check-all []
-  (-> {}
-;;       (check-nw-version)
-;;       (notify)
-      ))
+                                      (platform/open-url "http://www.lighttable.com")
+                                      (popup/remain-open))}]}))
 
 ;;*********************************************************
 ;; Behaviors
 ;;*********************************************************
 
 (behavior ::check-deploy
-                  :triggers #{:deploy}
-                  :reaction (fn [this]
-                              (check-all)))
+          :triggers #{:deploy}
+          :reaction (fn [this]
+                      ;; Latest :atom-shell version changes after LT auto-updates and user restarts
+                      (when (is-newer? (binary-version) (:atom-shell version))
+                        (alert-binary-update))))
 
 (behavior ::check-version
-                  :triggers #{:init}
-                  :type :user
-                  :desc "App: Automatically check for updates"
-                  :reaction (fn [this]
-;;                               (when-let [proxy (proxy?)]
-;;                                 (.defaults request (clj->js {:proxy proxy})))
-                              (when (app/first-window?)
-                                (set! js/localStorage.fetchedVersion nil))
-                              (check-version)
-                              (every version-timeout check-version)))
+          :triggers #{:init}
+          :type :user
+          :desc "App: Automatically check for updates"
+          :reaction (fn [this]
+                      ;;                               (when-let [proxy (proxy?)]
+                      ;;                                 (.defaults request (clj->js {:proxy proxy})))
+                      (when (app/first-window?)
+                        (set! js/localStorage.fetchedVersion nil))
+                      (check-version)
+                      (every version-timeout check-version)))
 
 (object/tag-behaviors :app [::check-deploy])
