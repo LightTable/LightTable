@@ -15,8 +15,6 @@
             [clojure.string :as string])
   (:require-macros [lt.macros :refer [behavior defui]]))
 
-(def active-dialog nil)
-
 (defn files-and-folders [path]
   (let [fs (workspace/files-and-folders path)]
     {:files (mapv #(object/create ::workspace.file %) (:files fs))

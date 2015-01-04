@@ -10,7 +10,6 @@
   (:require-macros [lt.macros :refer [behavior]]))
 
 (def remote (js/require "remote"))
-(def atom-app (.require remote "app"))
 (def win (.getCurrentWindow remote))
 (def frame (js/require "web-frame"))
 (def closing true)

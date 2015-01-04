@@ -83,7 +83,7 @@ function onReady() {
 };
 
 function parseArgs() {
-  optimist.usage("Light Table " + packageJSON.version + "\n" +
+  optimist.usage("\nLight Table " + app.getVersion() + "\n" +
                  // TODO: Use a consistent name for executables or vary executable
                  // name per platform. $0 currently gives an unwieldy name
                  "Usage: light [options] [path ...]\n\n"+
