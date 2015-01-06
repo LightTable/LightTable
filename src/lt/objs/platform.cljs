@@ -5,6 +5,7 @@
 
 (def atom-shell true)
 
+(def fs (js/require "fs"))
 (def clipboard (js/require "clipboard"))
 (def shell (js/require "shell"))
 
@@ -17,11 +18,16 @@
     "linux" :linux
     "darwin" :mac))
 
-(defn open [path]
-  (.openItem shell path))
-
 (defn open-url [path]
   (.openExternal shell path))
+
+(defn open
+  "If the given path exists, open it with the desktop's default manner.
+  Otherwise, open it as an external protocol e.g. a url."
+  [path]
+  (if (.existsSync fs path)
+    (.openItem shell path)
+    (open-url path)))
 
 (defn show-item [path]
   (.showItemInFolder shell path))
