@@ -25,11 +25,7 @@ elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
   OS="linux"
   EXE="atom"
   RESOURCES="resources"
-  if [ $(getconf LONG_BIT) == "64" ]; then
-    PLATFORM_DIR="platform/linux64"
-  else
-    PLATFORM_DIR="platform/linux"
-  fi
+  PLATFORM_DIR="platform/linux"
 
 elif [ "$(expr substr $(uname -s) 1 10)" == "MINGW32_NT" ]; then
   OS="windows"
