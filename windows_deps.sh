@@ -8,7 +8,7 @@ fi
 
 ZIPFILE=LightTableWin.zip
 echo "### Fetching binaries ###"
-curl -O http://d35ac8ww5dfjyg.cloudfront.net/playground/bins/0.6.0/$ZIPFILE
+curl -O https://d35ac8ww5dfjyg.cloudfront.net/playground/bins/0.6.0/$ZIPFILE
 unzip $ZIPFILE
 rm $ZIPFILE
 cp -ar deploy/* LightTable
