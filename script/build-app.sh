@@ -26,9 +26,9 @@ elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
   EXE="atom"
   RESOURCES="resources"
   if [ $(getconf LONG_BIT) == "64" ]; then
-    PLATFORM_DIR="platform/linux"
-  else
     PLATFORM_DIR="platform/linux64"
+  else
+    PLATFORM_DIR="platform/linux"
   fi
 
 elif [ "$(expr substr $(uname -s) 1 10)" == "MINGW32_NT" ]; then
@@ -55,7 +55,7 @@ BUILDS=builds
 RELEASE="$NAME-$VERSION-$OS"
 RELEASE_DIR="$BUILDS/$RELEASE"
 RELEASE_ZIP="$BUILDS/${RELEASE}.zip"
-RELEASE_RSRC="$(pwd)/$RELEASE_DIR/$RESOURCES"
+RELEASE_RSRC="$RELEASE_DIR/$RESOURCES"
 
 rm -rf $RELEASE_DIR $RELEASE_ZIP
 
@@ -65,7 +65,9 @@ rm -rf $RELEASE_DIR $RELEASE_ZIP
 
 echo "Creating $RELEASE_DIR ..."
 mkdir -p $RELEASE_DIR
-cp -R $ATOM_DIR/Atom.app $RELEASE_DIR/
+cp -R $ATOM_DIR/* $RELEASE_DIR
+rm -f $RELEASE_DIR/version
+cp LICENSE.md $RELEASE_DIR/LICENSE
 
 mkdir $RELEASE_RSRC/app
 cp -R deploy/core $RELEASE_RSRC/app/
@@ -93,7 +95,7 @@ if [ "$OS" == "mac" ]; then
 
 elif [ "$OS" == "linux" ]; then
 
-  cp $PLATFORM_DIR/LightTable $RELEASE_DIR/
+  cp $PLATFORM_DIR/light $RELEASE_DIR/
 
   mv $RELEASE_DIR/atom $RELEASE_DIR/LightTable
 
