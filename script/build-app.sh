@@ -27,7 +27,7 @@ elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
   RESOURCES="resources"
   PLATFORM_DIR="platform/linux"
 
-elif [ "$(expr substr $(uname -s) 1 10)" == "MINGW32_NT" ]; then
+elif [ "$(expr substr $(uname -s) 1 9)" == "CYGWIN_NT" ]; then
   OS="windows"
   EXE="atom.exe"
   RESOURCES="resources"
@@ -96,12 +96,6 @@ elif [ "$OS" == "linux" ]; then
   mv $RELEASE_DIR/atom $RELEASE_DIR/LightTable
 
 elif [ "$OS" == "windows" ]; then
-
-  winresourcer --operation=Update \
-               --exeFile=$RELEASE_DIR/atom.exe \
-               --resourceType=Icongroup \
-               --resourceName:1 \
-               --resourceFile:$RELEASE_RSRC/app/core/img/lticon.png
 
   mv $RELEASE_DIR/atom.exe $RELEASE_DIR/LightTable.exe
 
