@@ -303,6 +303,7 @@
                                     {:exts [:r], :mime "text/x-rsrc", :tags [:editor.r], :name "R"}
                                     {:exts [:rb], :mime "text/x-ruby", :tags [:editor.ruby], :name "Ruby"}
                                     {:exts [:rs], :mime "text/x-rustsrc", :tags [:editor.rust], :name "Rust"}
+                                    {:exts [:rst], :mime "text/x-rst", :tags [:editor.restructuredtext], :name "reStructuredText"}
                                     {:exts [:sass], :mime "text/x-sass", :tags [:editor.sass], :name "Sass"}
                                     {:exts [:scala], :mime "text/x-scala", :tags [:editor.scala], :name "Scala"}
                                     {:exts [:ss :scm :sch], :mime "text/x-scheme", :tags [:editor.scheme], :name "Scheme"}
