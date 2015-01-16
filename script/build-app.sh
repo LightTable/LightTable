@@ -50,10 +50,10 @@ DEFAULT_VERSION=`echo $META | cut -d' ' -f3 | tr -d '"'`
 BUILDS=builds
 RELEASE="$NAME-$VERSION-$OS"
 RELEASE_DIR="$BUILDS/$RELEASE"
-RELEASE_ZIP="$BUILDS/${RELEASE}.zip"
+RELEASE_TARBALL="$BUILDS/${RELEASE}.tar.gz"
 RELEASE_RSRC="$RELEASE_DIR/$RESOURCES"
 
-rm -rf $RELEASE_DIR $RELEASE_ZIP
+rm -rf $RELEASE_DIR $RELEASE_TARBALL
 
 #----------------------------------------------------------------------
 # Copy Atom installation and app directory into output location
@@ -102,11 +102,11 @@ elif [ "$OS" == "windows" ]; then
 fi
 
 #----------------------------------------------------------------------
-# Create zip
+# Create tarball
 #----------------------------------------------------------------------
 
-if [ "$1" == "-z" ]; then
-  zip -r $RELEASE_ZIP $RELEASE_DIR
+if [ "$1" == "--tarball" ]; then
+  tar -zcvf $RELEASE_TARBALL $RELEASE_DIR
 fi
 
 echo DONE!
