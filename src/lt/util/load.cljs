@@ -4,8 +4,6 @@
 (def fpath (js/require "path"))
 (def fs (js/require "fs"))
 
-(def pwd (.resolve fpath "."))
-
 (def dir (str js/__dirname "/.."))
 
 (def ^:dynamic *force-reload* false)

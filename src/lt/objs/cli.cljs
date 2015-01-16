@@ -62,7 +62,7 @@
           :reaction (fn [this]
                       (when (app/first-window?)
                         (let [path-line-pairs (map #(let [[_ path line] (re-find #"^(.*?):?(\d+)?$" %)]
-                                                    [(files/resolve (:dir parsed-args) path) line])
+                                                    [(files/resolve files/cwd path) line])
                                                  (filter valid-path? argv))
                             paths (map first path-line-pairs)
                             open-dir? (some files/dir? paths)]

@@ -57,7 +57,7 @@
 (def line-ending (.-EOL os))
 (def separator (.-sep fpath))
 (def available-drives #{})
-(def pwd (.resolve fpath "."))
+(def cwd "Directory process is started in" (js/process.cwd))
 
 (when (= separator "\\")
   (.exec (js/require "child_process") "wmic logicaldisk get name"

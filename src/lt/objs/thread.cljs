@@ -69,7 +69,7 @@
                                             (clj->js {:execPath js/process.execPath
                                                       :silent true
                                                       :env {"ATOM_SHELL_INTERNAL_RUN_AS_NODE" 1}
-                                                      :cwd files/pwd}))]
+                                                      :cwd files/cwd}))]
                           (.on (.-stdout worker) "data" (fn [data]
                                                           (console/loc-log {:file "thread"
                                                                             :line "stdout"
