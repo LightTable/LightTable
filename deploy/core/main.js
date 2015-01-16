@@ -10,10 +10,10 @@ var app = require('app'),  // Module to control application life.
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the javascript object is GCed.
 var windows = {};
-var openFiles = []; // Track files for open-file event
+global.browserOpenFiles = []; // Track files for open-file event
 
 var packageJSON = require(__dirname + '/../package.json');
-var parsedArgs, windowClosing; // vars used by multiple functions
+var windowClosing; // vars used by multiple functions
 
 function createWindow() {
   var browserWindowOptions = packageJSON.browserWindowOptions;
@@ -57,8 +57,7 @@ function onReady() {
   });
 
   ipc.on("initWindow", function(event, id) {
-    windows[id].webContents.send('cli', parsedArgs);
-    windows[id].webContents.send('openFile', openFiles);
+    // Moving this to createWindow() causes js loading issues
     windows[id].on("focus", function() {
       windows[id].webContents.send("app", "focus");
     });
@@ -91,9 +90,9 @@ function parseArgs() {
                  "Files can take a line number e.g. file:line.");
   optimist.alias('h', 'help').boolean('h').describe('h', 'Print help');
   optimist.alias('a', 'add').boolean('a').describe('a', 'Add path(s) to workspace');
-  parsedArgs = optimist.parse(process.argv);
+  global.browserParsedArgs = optimist.parse(process.argv);
 
-  if (parsedArgs.help) {
+  if (global.browserParsedArgs.help) {
     optimist.showHelp();
     process.exit(0);
   }
@@ -123,7 +122,7 @@ function start() {
       });
     }
     else {
-      openFiles.push(path);
+      global.browserOpenFiles.push(path);
     }
   });
   parseArgs();

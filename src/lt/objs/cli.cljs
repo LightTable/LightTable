@@ -10,6 +10,8 @@
             [lt.objs.opener :as opener])
   (:require-macros [lt.macros :refer [behavior]]))
 
+(def remote (js/require "remote"))
+
 (defn open-paths [path-line-pairs add?]
   (doseq [[path line] path-line-pairs
           :when (not= path (.-execPath js/process))]
@@ -32,13 +34,14 @@
        (not (empty? path))
        (not (is-lt-binary? path))))
 
-(def parsed-args "Map of commandline options parsed by optimist. :_ contains non-option args." nil)
+(def parsed-args "Map of commandline options parsed by optimist"
+  (js->clj (.getGlobal remote "browserParsedArgs") :keywordize-keys true))
 
-(ipc/on "cli" #(set! parsed-args (js->clj % :keywordize-keys true)))
+(def open-files "Files to open from a file manager"
+  (js->clj (.getGlobal remote "browserOpenFiles")))
 
-(def open-files "Files to open from a file manager" nil)
+(def argv "Arguments used to start LightTable" (js->clj (.-argv (.-process remote))))
 
-(ipc/on "openFile" #(set! open-files (js->clj %)))
 (ipc/on "openFileAfterStartup" #(object/raise app/app :open! %))
 
 (defn args
@@ -46,7 +49,7 @@
   since subsequent windows don't open path arguments."
   []
   (and (app/first-window?)
-       (or (seq (filter valid-path? (:_ parsed-args)))
+       (or (seq (filter valid-path? argv))
            (seq open-files))))
 
 ;;*********************************************************
@@ -60,7 +63,7 @@
                       (when (app/first-window?)
                         (let [path-line-pairs (map #(let [[_ path line] (re-find #"^(.*?):?(\d+)?$" %)]
                                                     [(files/resolve (:dir parsed-args) path) line])
-                                                 (filter valid-path? (:_ parsed-args)))
+                                                 (filter valid-path? argv))
                             paths (map first path-line-pairs)
                             open-dir? (some files/dir? paths)]
                         (when open-dir?
