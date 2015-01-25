@@ -715,3 +715,15 @@
                         (object/call-behavior-reaction :lt.objs.plugins/load-css
                                                        this
                                                        (filter #(= (files/ext %) "css") paths)))))
+
+(behavior ::set-rulers
+          :triggers #{:object.instant}
+          :type :user
+          :desc "Editor: Set CodeMirror rulers"
+          :params [{:label "Vector of rulers"
+                    :example "[{:color \"#cfc\" :column 100 :lineStyle \"dashed\"}]"}]
+          :reaction (fn [this rulers]
+                      (when-not (.getOption (->cm-ed this) "rulers")
+                        (load/js "core/node_modules/codemirror/addon/display/rulers.js" :sync))
+                      (let [rulers (or rulers [{:lineStyle "dashed" :color "#aff" :column 80}])]
+                        (set-options this {:rulers (clj->js rulers)}))))
