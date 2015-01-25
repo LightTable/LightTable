@@ -13,7 +13,6 @@ var windows = {};
 global.browserOpenFiles = []; // Track files for open-file event
 
 var packageJSON = require(__dirname + '/../package.json');
-var windowClosing; // vars used by multiple functions
 
 function createWindow() {
   var browserWindowOptions = packageJSON.browserWindowOptions;
@@ -39,14 +38,6 @@ function createWindow() {
     window.webContents.send("devtools", "reconnect!");
   });
 
-  windowClosing = false;
-  window.on("close", function(e) {
-    if (!windowClosing) {
-      e.preventDefault();
-      window.webContents.send("app", "close!");
-    }
-  });
-
   // and load the index.html of the app.
   window.loadUrl('file://' + __dirname + '/LightTable.html?id=' + window.id);
 
@@ -68,15 +59,6 @@ function onReady() {
     windows[id].on("focus", function() {
       windows[id].webContents.send("app", "focus");
     });
-  });
-
-  ipc.on("closeWindow", function(event, id) {
-    // This feels like a bad hack
-    windowClosing = true;
-    if(id && windows[id]) {
-      windows[id].close();
-    }
-    windowClosing = false;
   });
 
   ipc.on("toggleDevTools", function(event, windowId) {

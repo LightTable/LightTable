@@ -32,9 +32,7 @@
    (when force?
      (object/raise app :closing)
      (object/raise app :closed))
-   (if force?
-     (ipc/send "closeWindow" (window-number))
-     (.close win))))
+   (.close win)))
 
 (defn refresh []
   (js/window.location.reload true))
