@@ -22,9 +22,16 @@ function createWindow() {
   windows[window.id] = window;
   window.focus();
 
-  window.on("blur", function() {
-    window.webContents.send("app", "blur");
-  });
+  if (process.platform == 'win32') {
+    window.on("blur", function() {
+      if (window.webContents)
+        window.webContents.send("app", "blur");
+    });
+  } else {
+    window.on("blur", function() {
+      window.webContents.send("app", "blur");
+    });
+  }
   window.on("devtools-opened", function() {
     window.webContents.send("devtools", "disconnect");
   });
