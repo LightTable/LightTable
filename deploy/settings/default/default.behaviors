@@ -306,6 +306,7 @@
                                     {:exts [:rst], :mime "text/x-rst", :tags [:editor.restructuredtext], :name "reStructuredText"}
                                     {:exts [:sass], :mime "text/x-sass", :tags [:editor.sass], :name "Sass"}
                                     {:exts [:scala], :mime "text/x-scala", :tags [:editor.scala], :name "Scala"}
+                                    {:exts [:SConstruct :SConscript], :mime "text/x-python", :tags [:editor.python], :name "SCons"}
                                     {:exts [:ss :scm :sch], :mime "text/x-scheme", :tags [:editor.scheme], :name "Scheme"}
                                     {:exts [:sh :bash :profile :bash_profile :bashrc :zsh :zshrc], :mime "text/x-sh", :tags [:editor.shell], :name "Shell"}
                                     {:exts [:smarty], :mime "text/x-smarty", :tags [:editor.smarty], :name "Smarty"}
