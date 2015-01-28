@@ -19,4 +19,4 @@ else
   exit 1
 fi
 
-$CLI deploy "$@"
+LT_DEV_CLI=true $CLI deploy "$@"

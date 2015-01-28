@@ -26,14 +26,6 @@
             (object/raise workspace/current-ws :add.file! path))))
       (object/raise opener/opener :new! path))))
 
-(defn is-lt-binary? [path]
-  (#{"ltbin" "Atom" "deploy" "LightTable.exe" "LightTable"} (string/trim (files/basename path))))
-
-(defn valid-path? [path]
-  (and (string? path)
-       (not (empty? path))
-       (not (is-lt-binary? path))))
-
 (def parsed-args "Map of commandline options parsed by optimist"
   (js->clj (.getGlobal remote "browserParsedArgs") :keywordize-keys true))
 
@@ -45,11 +37,11 @@
 (ipc/on "openFileAfterStartup" #(object/raise app/app :open! %))
 
 (defn args
-  "Returns truthy if LT opened with any path arguments. Only returns truthy on first window
-  since subsequent windows don't open path arguments."
+  "Returns path arguments passed to executable or nil if none given. Only returns
+  on first window since subsequent windows don't open path arguments."
   []
   (and (app/first-window?)
-       (or (seq (filter valid-path? argv))
+       (or (seq (if js/process.env.LT_DEV_CLI (subvec argv 2) (rest argv)))
            (seq open-files))))
 
 ;;*********************************************************
@@ -58,26 +50,19 @@
 
 (behavior ::open-on-args
           :triggers #{:post-init}
-          :desc "App: Process commandline arguments"
+          :desc "App: Process commandline or file manager arguments"
           :reaction (fn [this]
                       (when (app/first-window?)
                         (let [path-line-pairs (map #(let [[_ path line] (re-find #"^(.*?):?(\d+)?$" %)]
-                                                    [(files/resolve files/cwd path) line])
-                                                 (filter valid-path? argv))
-                            paths (map first path-line-pairs)
-                            open-dir? (some files/dir? paths)]
-                        (when open-dir?
-                          (object/merge! workspace/current-ws {:initialized? true}))
-                        (open-paths path-line-pairs (:add parsed-args))))))
+                                                      [(files/resolve files/cwd path) line])
+                                                   (args))
+                              paths (map first path-line-pairs)
+                              open-dir? (some files/dir? paths)]
+                          (when open-dir?
+                            (object/merge! workspace/current-ws {:initialized? true}))
+                          (open-paths path-line-pairs (:add parsed-args))))))
 
 (behavior ::open!
-          :triggers #{:post-init}
-          :desc "App: Open path(s) from a file manager e.g. Finder on startup"
-          :reaction (fn [this]
-                      (when (app/first-window?)
-                        (open-paths (map vector open-files) (:add parsed-args)))))
-
-(behavior ::open-after-startup!
           :triggers #{:open!}
           :desc "App: Open path(s) from a file manager after startup"
           :reaction (fn [this path]
