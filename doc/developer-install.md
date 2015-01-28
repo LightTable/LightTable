@@ -43,3 +43,7 @@ Once you've built LightTable, run it in one of the following ways:
   * As an application: `builds/lighttable-0.8.0-linux/LightTable`
 * Windows
   * As an application: `builds/lighttable-0.8.0-windows/LightTable.exe`
+
+You can also run LightTable with `script/light.sh`. This script allows you to
+skip running `script/build-app.sh`. While it's useful as a dev convenience,
+final changes should be QAed with a fresh build from `script/build-app.sh`.
