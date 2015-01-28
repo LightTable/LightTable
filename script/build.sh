@@ -20,9 +20,9 @@ cd "$(dirname "${BASH_SOURCE[0]}")"; cd ..
 
 # Ensure we have current version of atom-shell
 pushd shell
-  npm install -g grunt-cli
+  npm install grunt-cli
   npm install
-  grunt download-atom-shell
+  node_modules/.bin/grunt download-atom-shell
 popd
 
 # Build the core cljs

@@ -10,8 +10,7 @@ First install or update [leiningen](http://leiningen.org/).
 You can also install it with your package manager but be sure to get version
 2.x. Windows users can use this [installer](https://raw.github.com/technomancy/leiningen/stable/bin/lein.bat).
 
-Then install [node and npm](http://nodejs.org/download/). Be sure you can
-globally install npm packages without sudo. For OSX, this means using homebrew to install node.
+Then install [node and npm](http://nodejs.org/download/).
 
 # Build
 
