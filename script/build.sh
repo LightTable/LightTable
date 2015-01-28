@@ -28,7 +28,7 @@ popd
 # Build the core cljs
 
 # Workaround for #1025 windows bug
-if [ "$(expr substr $(uname -s) 1 9)" == "CYGWIN_NT" ]; then
+if [ "$(echo $(uname -s) | cut -c 1-9)" == "CYGWIN_NT" ]; then
   sed -i 's/:source-map/;;:source-map/' project.clj
 fi
 lein cljsbuild clean && lein cljsbuild once
