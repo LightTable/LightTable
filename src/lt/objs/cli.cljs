@@ -59,7 +59,8 @@
                               paths (map first path-line-pairs)
                               open-dir? (some files/dir? paths)]
                           (when open-dir?
-                            (object/merge! workspace/current-ws {:initialized? true}))
+                            (object/merge! workspace/current-ws {:initialized? true})
+                            (cmd/exec! :workspace.show))
                           (open-paths path-line-pairs (:add parsed-args))))))
 
 (behavior ::open!
