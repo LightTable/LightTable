@@ -32,3 +32,8 @@ In order to develop for Light Table, you will need to [install a developer versi
 ## License
 
 All files in this project are under the [LICENSE.md](LICENSE.md) license unless otherwise stated in the file or by a dependency's license file.
+
+## Credits
+
+Big thanks to all our [contributors](https://github.com/LightTable/LightTable/graphs/contributors)!
+Thanks of course to Kodowa for all they have done for Light Table and also to Cognitect for providing friday contributions for one of the core team members.
