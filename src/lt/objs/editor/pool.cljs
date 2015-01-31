@@ -581,8 +581,14 @@
               :exec (fn []
                       (when-let [ed (last-active)]
                         (if (editor/option ed "lineWrapping")
-                          (object/add-tags ed [:editor.force.unwrap])
-                          (object/add-tags ed [:editor.force.wrap]))))})
+                          (do
+                            (object/remove-tags ed [:editor.force.wrap])
+                            (object/add-tags ed [:editor.force.unwrap])
+                            (notifos/set-msg! "Wrapping off" {:timeout 2000}))
+                          (do
+                            (object/remove-tags ed [:editor.force.unwrap])
+                            (object/add-tags ed [:editor.force.wrap])
+                            (notifos/set-msg! "Wrapping on" {:timeout 2000})))))})
 
 (cmd/command {:command :editor.undo
               :desc "Editor: Undo"
