@@ -29,6 +29,9 @@
  [:editor "pmeta-s" :save]
  [:editor "ctrl-/" :toggle-comment-selection]
  [:editor "alt-c" :toggle-console]
+ [:editor "alt-down" :editor.sublime.swapLineDown]
+ [:editor "alt-up" :editor.sublime.swapLineUp]
+ [:editor "alt-d" :editor.sublime.duplicateLine]
 
  [:editor.keys.hinting.active "enter" :passthrough]
 
