@@ -12,7 +12,7 @@
  [:app "f11" :window.fullscreen]
 
  [:browser "pmeta-l" :browser.url-bar.focus]
- [:editor "ctrl-b" :add-browser-tab]
+ [:app "ctrl-b" :add-browser-tab]
  
 
  [:browser.url-bar "esc" :browser.focus-content]
