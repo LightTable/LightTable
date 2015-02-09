@@ -15,6 +15,9 @@
 (def closing true)
 (def default-zoom 1)
 
+(defn app-url []
+  (.-location.href js/window))
+
 (defn window-number []
   (.-id win))
 
