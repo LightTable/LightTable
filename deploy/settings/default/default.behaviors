@@ -268,6 +268,7 @@
 
  [:files :lt.objs.opener/save-failed]
  [:files :lt.objs.files/file-types [{:exts [:apl :dyalog], :mime "text/apl", :tags [:editor.apl], :name "APL"}
+                                    ;; No extension since .conf is an overloaded extension
                                     {:exts [], :mime "text/x-asterisk", :tags [:editor.asterisk], :name "Asterisk Dialplan"}
                                     {:exts [:c], :mime "text/x-c", :tags [:editor.c], :name "C"}
                                     {:exts [:cpp :mm :cc], :mime "text/x-c++src", :tags [:editor.cpp], :name "C++"}
@@ -279,17 +280,18 @@
                                     {:exts [:cql :cypher :cyp], :mime "application/x-cypher-query", :tags [:editor.cypher], :name "Cypher"}
                                     {:exts [:d], :mime "text/x-d", :tags [:editor.d], :name "D"}
                                     {:exts [:diff :patch], :mime "text/x-diff", :tags [:editor.diff], :name "Diff"}
-                                    {:exts [:djt], :mime "text/x-django", :tags [:editor.djangotemplate], :name "Django Template"}
+                                    {:exts [:djt :mustache :jinja], :mime "text/x-django", :tags [:editor.djangotemplate], :name "Django Template"}
                                     {:exts [:dtd], :mime "application/xml-dtd", :tags [:editor.dtd], :name "DTD"}
-                                    {:exts [:dylan :dyl :intr], :mime "text/x-dylan", :tags [:editor.dylan], :name "Dylan"}
+                                    {:exts [:dylan :dyl :intr :lid], :mime "text/x-dylan", :tags [:editor.dylan], :name "Dylan"}
                                     {:exts [:ecl], :mime "text/x-ecl", :tags [:editor.ecl], :name "ECL"}
                                     {:exts [:edn], :mime "text/x-clojure", :tags [:editor.clj :editor.edn], :name "EDN"}
                                     {:exts [:e], :mime "text/x-eiffel", :tags [:editor.eiffel], :name "Eiffel"}
                                     {:exts [:erl], :mime "text/x-erlang", :tags [:editor.erlang], :name "Erlang"}
-                                    {:exts [:fs], :mime "text/x-fsharp", :tags [:editor.fsharp], :name "F#"}
+                                    {:exts [:fs :fsi :fsx], :mime "text/x-fsharp", :tags [:editor.fsharp], :name "F#"}
                                     {:exts [:f :f90 :for :f77], :mime "text/x-fortran", :tags [:editor.fortran], :name "Fortran"}
-                                    {:exts [:s :asm], :mime "text/x-gas", :tags [:editor.gas], :name "Gas"}
+                                    {:exts [:s], :mime "text/x-gas", :tags [:editor.gas], :name "Gas"}
                                     {:exts [:feature], :mime "text/x-feature", :tags [:editor.gherkin], :name "Gherkin"}
+                                    ;; No extension since it conflicts with markdown
                                     {:exts [], :mime "text/x-gfm", :tags [:editor.gfm], :name "GitHub Flavored Markdown"}
                                     {:exts [:go], :mime "text/x-go", :tags [:editor.go], :name "Go"}
                                     {:exts [:groovy], :mime "text/x-groovy", :tags [:editor.groovy], :name "Groovy"}
@@ -297,7 +299,7 @@
                                     {:exts [:hs], :mime "text/x-haskell", :tags [:editor.haskell], :name "Haskell"}
                                     {:exts [:hx], :mime "text/x-haxe", :tags [:editor.haxe], :name "Haxe"}
                                     {:exts [:html :htm], :mime "htmlmixed", :tags [:editor.html], :name "HTML"}
-                                    {:exts [], :mime "message/http", :tags [:editor.http], :name "HTTP"}
+                                    {:exts [:http], :mime "message/http", :tags [:editor.http], :name "HTTP"}
                                     {:exts [:ini], :mime "text/x-ini", :tags [:editor.ini], :name "INI"}
                                     {:exts [:jade], :mime "text/x-jade", :tags [:editor.jade], :name "Jade"}
                                     {:exts [:java], :mime "text/x-java", :tags [:editor.java], :name "Java"}
@@ -310,9 +312,11 @@
                                     {:exts [:ls], :mime "text/x-livescript", :tags [:editor.livescript], :name "LiveScript"}
                                     {:exts [:lua], :mime "text/x-lua", :tags [:editor.lua], :name "Lua"}
                                     {:exts [:md :markdown], :mime "text/x-markdown", :tags [:editor.markdown], :name "Markdown"}
-                                    {:exts [], :mime "text/mirc", :tags [:editor.mirc], :name "mIRC"}
+                                    {:exts [:mrc], :mime "text/mirc", :tags [:editor.mirc], :name "mIRC"}
                                     {:exts [:mo], :mime "text/x-modelica", :tags [:editor.modelica], :name "Modelica"}
+                                    ;; No extension since .sql is used by SQL
                                     {:exts [], :mime "text/x-mysql", :tags [:editor.sql :editor.mysql], :name "MySQL"}
+                                    ;; No extension since .conf is an overloaded extension
                                     {:exts [], :mime "text/nginx", :tags [:editor.nginx], :name "Nginx"}
                                     {:exts [:nt], :mime "text/n-triples", :tags [:editor.ntriples], :name "NTriples"}
                                     {:exts [:ocaml :ml], :mime "text/x-ocaml", :tags [:editor.ocaml], :name "OCaml"}
@@ -343,6 +347,7 @@
                                     {:exts [], :mime "text/x-solr", :tags [:editor.solr], :name "Solr"}
                                     {:exts [:sparql], :mime "text/x-sparql-query", :tags [:editor.sparql], :name "SPARQL"}
                                     {:exts [:sql], :mime "text/x-sql", :tags [:editor.sql], :name "SQL"}
+                                    {:exts [:sv], :mime "text/x-systemverilog", :tags [:editor.systemverilog], :name "System Verilog"}
                                     {:exts [:tcl], :mime "text/x-tcl", :tags [:editor.tcl], :name "Tcl"}
                                     {:exts [:textile], :mime "text/x-textile", :tags [:editor.textile], :name "Textile"}
                                     {:exts [], :mime "text/x-tiddlywiki", :tags [:editor.tiddlywiki], :name "TiddlyWiki"}
