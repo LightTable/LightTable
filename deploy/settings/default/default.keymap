@@ -12,6 +12,8 @@
  [:app "f11" :window.fullscreen]
 
  [:browser "pmeta-l" :browser.url-bar.focus]
+ [:app "ctrl-b" :add-browser-tab]
+ 
 
  [:browser.url-bar "esc" :browser.focus-content]
  [:browser.url-bar "enter" :browser.url-bar.navigate!]
@@ -25,6 +27,11 @@
  [:editor "pmeta-shift-enter" :eval-editor]
  [:editor "ctrl-=" :editor.fold-code]
  [:editor "pmeta-s" :save]
+ [:editor "ctrl-/" :toggle-comment-selection]
+ [:editor "alt-c" :toggle-console]
+ [:editor "alt-down" :editor.sublime.swapLineDown]
+ [:editor "alt-up" :editor.sublime.swapLineUp]
+ [:editor "alt-d" :editor.sublime.duplicateLine]
 
  [:editor.keys.hinting.active "enter" :passthrough]
 
@@ -77,20 +84,22 @@
  [:sidebar.doc.search.input "esc" :docs.search.hide]
  [:sidebar.doc.search.input "enter" :docs.search.exec]
 
- [:tabs "pmeta-8" (:tabs.goto 7)]
- [:tabs "pmeta-9" (:tabs.goto :last)]
  [:tabs "ctrl-shift-tab" :tabs.prev]
  [:tabs "ctrl-tab" :tabs.next]
- [:tabs "pmeta-shift-[" :tabs.prev]
- [:tabs "pmeta-1" (:tabs.goto 0)]
- [:tabs "pmeta-shift-]" :tabs.next]
- [:tabs "pmeta-2" (:tabs.goto 1)]
- [:tabs "pmeta-3" (:tabs.goto 2)]
- [:tabs "pmeta-4" (:tabs.goto 3)]
- [:tabs "pmeta-5" (:tabs.goto 4)]
- [:tabs "pmeta-6" (:tabs.goto 5)]
- [:tabs "pmeta-7" (:tabs.goto 6)]
+ [:tabs "alt-9" (:tabs.goto :last)]
+ [:tabs "alt-1" (:tabs.goto 0)]
+ [:tabs "alt-2" (:tabs.goto 1)]
+ [:tabs "alt-3" (:tabs.goto 2)]
+ [:tabs "alt-4" (:tabs.goto 3)]
+ [:tabs "alt-5" (:tabs.goto 4)]
+ [:tabs "alt-6" (:tabs.goto 5)]
+ [:tabs "alt-7" (:tabs.goto 6)]
+ [:tabs "alt-8" (:tabs.goto 7)]
+ 
  [:tabs "pmeta-w" :tabs.close]
+ 
+ [:app "ctrl-t" :tabset.new]
+ [:app "ctrl-shift-t" :tabset.close]
 
  [:tree.rename "esc" :workspace.rename.cancel!]
  [:tree.rename "enter" :workspace.rename.submit!]
