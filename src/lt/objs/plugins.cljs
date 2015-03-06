@@ -681,6 +681,7 @@
               :desc "Plugins: Show plugin manager"
               :exec (fn []
                       (tabs/add-or-focus! manager)
+                      (dom/focus (dom/$ :input (object/->content manager)))
                       (cmd/exec! :plugin-manager.refresh))})
 
 (cmd/command {:command :plugin-manager.update-outdated
