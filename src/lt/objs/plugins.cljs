@@ -214,7 +214,7 @@
     cache))
 
 (defn save-cache [cache]
-  (files/save metadata-cache (JSON/stringify (clj->js cache))))
+  (files/save metadata-cache (js/JSON.stringify (clj->js cache))))
 
 (defn latest-metadata-sha []
   (fetch/xhr [:get metadata-commits] {}
@@ -250,7 +250,7 @@
   (if (files/exists? metadata-cache)
     (-> (files/open-sync metadata-cache)
         (:content)
-        (JSON/parse)
+        (js/JSON.parse)
         (js->clj :keywordize-keys true))))
 
 (defn search-plugins [plugins search]

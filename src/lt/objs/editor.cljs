@@ -437,7 +437,7 @@
 ;;*********************************************************
 
 
-(behavior ::read-only
+(behavior ::read-only-nocursor
           :triggers #{:init}
           :reaction (fn [obj]
                       (set-options (:ed @obj) {:readOnly "nocursor"})))

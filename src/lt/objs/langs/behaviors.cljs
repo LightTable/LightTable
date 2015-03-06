@@ -1,5 +1,6 @@
 (ns lt.objs.langs.behaviors
   (:require [lt.object :as object]
+            [lt.objs.thread :as thread]
             [lt.objs.context :as ctx]
             [lt.objs.command :as cmd]
             [lt.util.dom :as dom]

@@ -235,7 +235,12 @@
                         (.addEventListener frame "contextmenu" (fn [e]
                                                                  (object/raise this :menu! e)))
                         (.addEventListener frame "did-finish-load" (fn []
-                                                                     (let [loc (.getUrl frame)]
+                                                                     (let [loc (.getUrl frame)
+                                                                           ;; there's a bug in atom-shell where webviews pointed at file:// urls don't
+                                                                           ;; correctly return their location
+                                                                           loc (if (= "about:blank" loc)
+                                                                                 (.-src frame)
+                                                                                 loc)]
                                                                        (devtools/clear-scripts! (:devtools-client @this))
                                                                        (dom/val bar loc)
                                                                        (object/raise this :navigate loc))
@@ -250,7 +255,8 @@
                   :triggers #{:navigate}
                   :reaction (fn [this loc]
                               (let [title (.getTitle (to-frame this))
-                                    title (if-not (empty? title)
+                                    title (if (and (not (empty? title))
+                                                   (not= title "about:blank"))
                                             title
                                             "browser")]
                                 (object/merge! this {:name title})

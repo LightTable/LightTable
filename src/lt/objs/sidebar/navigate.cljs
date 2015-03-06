@@ -1,5 +1,6 @@
 (ns lt.objs.sidebar.navigate
   (:require [lt.object :as object]
+            [lt.objs.thread :as thread]
             [lt.objs.workspace :as workspace]
             [lt.objs.context :as ctx]
             [lt.objs.sidebar.command :as cmd]
