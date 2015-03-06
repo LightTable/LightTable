@@ -25,6 +25,7 @@
  [:editor "pmeta-shift-enter" :eval-editor]
  [:editor "ctrl-=" :editor.fold-code]
  [:editor "pmeta-s" :save]
+ [:editor "pmeta-/" :toggle-comment-selection]
 
  [:editor.keys.hinting.active "enter" :passthrough]
 
