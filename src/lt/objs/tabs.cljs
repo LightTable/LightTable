@@ -324,7 +324,8 @@
 (defn move-tab-to-tabset [obj ts]
   (rem! obj)
   (add! obj ts)
-  (active! obj))
+  (active! obj)
+  (object/raise obj :move))
 
 (defn move-tab [multi elem]
   (let [id (dom/attr elem :obj-id)
@@ -335,7 +336,8 @@
     (add! obj multi)
     (if (> cnt 0)
       (update-tab-order multi (vec (concat (range idx) [cnt] (range idx cnt)))))
-    (active! obj)))
+    (active! obj)
+    (object/raise obj :move)))
 
 ;;*********************************************************
 ;; Behaviors

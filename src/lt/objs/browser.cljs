@@ -126,6 +126,14 @@
 ;; Behaviors
 ;;*********************************************************
 
+(behavior ::reconnect-on-move
+          :triggers #{:move}
+          :reaction (fn [this]
+                      ;;When the tab is moved the webview is destroyed and recreated
+                      ;;this causes devtools connections to die, so we have to
+                      ;;tell it to reconnect
+                      (object/raise (:devtools-client @this) :reconnect!)))
+
 (behavior ::destroy-on-close
                   :triggers #{:close}
                   :reaction (fn [this]

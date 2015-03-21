@@ -111,6 +111,7 @@
  [:browser :lt.objs.browser/active-context]
  [:browser :lt.objs.browser/inactive-context]
  [:browser :lt.objs.browser/update-devtools-client-url]
+ [:browser :lt.objs.browser/reconnect-on-move]
  [:browser :lt.objs.menu/menu!]
  [:browser :lt.objs.browser/menu+]
  [:browser :lt.objs.browser/back!]
