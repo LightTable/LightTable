@@ -367,23 +367,24 @@
                                            (handle-cb (:cb msg) :editor.eval.js.exception result)))))
     (object/raise this :editor.eval.js.change-live! msg)))
 
-(defn must-eval-file? [msg]
+(defn must-eval-file? [devtools msg]
   ;;we eval the whole file if there's no meta, or this file isn't loaded in the current page
   (when (-> msg :data :path)
     (or (not (-> msg :data :meta))
-        (not (devtools/find-script devtools/local (-> msg :data :path))))))
+        (not (devtools/find-script devtools (-> msg :data :path))))))
 
 
 (behavior ::js-eval
                   :triggers #{:editor.eval.js!}
                   :reaction (fn [this msg]
-                              (if (must-eval-file? msg)
-                                (when-let [ed (object/by-id (:cb msg))]
-                                  (let [data (:data msg)
-                                        data (assoc data :code (str (editor/->val ed) "\n\n//# sourceURL=" (-> data :path)))]
-                                    (devtools/eval-in-webview-client (client->devtools this) data (fn [res]
-                                                                                                     (eval-js-form this msg)))))
-                                (eval-js-form this msg))))
+                              (let [devtools (client->devtools this)]
+                                (if (must-eval-file? devtools msg)
+                                  (when-let [ed (object/by-id (:cb msg))]
+                                    (let [data (:data msg)
+                                          data (assoc data :code (str (editor/->val ed) "\n\n//# sourceURL=" (-> data :path)))]
+                                      (devtools/eval-in-webview-client (client->devtools this) data (fn [res]
+                                                                                                      (eval-js-form this msg)))))
+                                  (eval-js-form this msg)))))
 
 ;;*********************************************************
 ;; Commands
