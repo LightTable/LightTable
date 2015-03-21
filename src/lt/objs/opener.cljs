@@ -254,10 +254,6 @@
                       (let [ed (pool/last-active)]
                         (open-linked-path ed opener (get-in @ed [:info :path]) {})))})
 
-(set! js/window.ondragover  (fn [e]
-                              (set! (.-dataTransfer.dropEffect e) "move")
-                              (dom/prevent e)
-                              false))
 
 (set! js/window.ondrop  (fn [e]
                           (try
@@ -270,5 +266,4 @@
                                   (recur (inc i)))))
                             (catch js/Error e
                               (println e)))
-                          (dom/prevent e)
-                          false))
+                          ))

@@ -20,15 +20,26 @@ function createWindow() {
   var window = new BrowserWindow(browserWindowOptions);
   windows[window.id] = window;
   window.focus();
+  window.webContents.on("will-navigate", function(e) {
+      e.preventDefault();
+      window.webContents.send("app", "will-navigate");
+  });
 
   if (process.platform == 'win32') {
     window.on("blur", function() {
       if (window.webContents)
         window.webContents.send("app", "blur");
     });
+    window.on("focus", function() {
+      if (window.webContents)
+        window.webContents.send("app", "focus");
+    });
   } else {
     window.on("blur", function() {
       window.webContents.send("app", "blur");
+    });
+    window.on("focus", function() {
+      window.webContents.send("app", "focus");
     });
   }
   window.on("devtools-opened", function() {
