@@ -5,7 +5,7 @@ module.exports = function(grunt) {
     pkg: grunt.file.readJSON('package.json'),
     "download-electron": {
       version: "0.22.1",
-      outputDir: "./atom-shell",
+      outputDir: "./electron",
       rebuild: true
     }
   });

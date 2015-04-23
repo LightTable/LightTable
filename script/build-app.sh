@@ -1,19 +1,22 @@
 #!/usr/bin/env bash
 set -e
 
-# Create LightTable release using our local Atom Shell installation
+# Create LightTable release using our local Electron installation
 # (Mac, Linux, or Cygwin)
 
 # Ensure we start in project root
 cd "$(dirname "${BASH_SOURCE[0]}")"; cd ..
 
 #----------------------------------------------------------------------
-# Get OS-specific Atom details
+# Get OS-specific Electron details
 #----------------------------------------------------------------------
 
-ATOM_DIR="shell/atom-shell"
+ELECTRON_DIR="shell/electron"
 
 # from: http://stackoverflow.com/a/17072017/142317
+# The download-electron tasks seems to still create an Atom.app executable 
+# so we'll have to reference that until they change it to Electron.app 
+# https://github.com/atom/grunt-download-electron/issues/30
 if [ "$(uname)" == "Darwin" ]; then
   OS="mac"
   EXE="Atom.app/Contents/MacOS/Atom"
@@ -56,12 +59,12 @@ RELEASE_RSRC="$RELEASE_DIR/$RESOURCES"
 rm -rf $RELEASE_DIR $RELEASE_TARBALL
 
 #----------------------------------------------------------------------
-# Copy Atom installation and app directory into output location
+# Copy Electron installation and app directory into output location
 #----------------------------------------------------------------------
 
 echo "Creating $RELEASE_DIR ..."
 mkdir -p $RELEASE_DIR
-cp -R $ATOM_DIR/* $RELEASE_DIR
+cp -R $ELECTRON_DIR/* $RELEASE_DIR
 rm -f $RELEASE_DIR/version
 cp LICENSE.md $RELEASE_DIR/LICENSE
 

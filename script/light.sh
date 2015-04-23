@@ -9,11 +9,11 @@ cd "$(dirname "${BASH_SOURCE[0]}")"; cd ..
 DIR=$(pwd)
 
 if [ "$(uname)" == "Darwin" ]; then
-  CLI="${DIR}/shell/atom-shell/Atom.app/Contents/MacOS/Atom"
+  CLI="${DIR}/shell/electron/Atom.app/Contents/MacOS/Atom"
 elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
-  CLI="${DIR}/shell/atom-shell/atom"
+  CLI="${DIR}/shell/electron/atom"
 elif [ "$(expr substr $(uname -s) 1 9)" == "CYGWIN_NT" ]; then
-  CLI="${DIR}/shell/atom-shell/atom.exe"
+  CLI="${DIR}/shell/electron/atom.exe"
 else
   echo "Cannot detect a supported OS."
   exit 1
