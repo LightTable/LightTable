@@ -14,9 +14,7 @@ cd "$(dirname "${BASH_SOURCE[0]}")"; cd ..
 ELECTRON_DIR="shell/electron"
 
 # from: http://stackoverflow.com/a/17072017/142317
-# The download-electron tasks seems to still create an Atom.app executable 
-# so we'll have to reference that until they change it to Electron.app 
-# https://github.com/atom/grunt-download-electron/issues/30
+# Will need to change Atom.app/atom/atom.exe to Electron.app/exe once we move to ^0.24.0 https://github.com/atom/grunt-download-electron/issues/30
 if [ "$(uname)" == "Darwin" ]; then
   OS="mac"
   EXE="Atom.app/Contents/MacOS/Atom"
