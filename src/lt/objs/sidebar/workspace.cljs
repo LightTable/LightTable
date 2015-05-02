@@ -7,28 +7,13 @@
             [lt.objs.opener :as opener]
             [lt.objs.popup :as popup]
             [lt.objs.sidebar :as sidebar]
+            [lt.objs.dialogs :as dialogs]
+            [lt.objs.menu :as menu]
             [lt.util.dom :as dom]
             [lt.util.cljs :refer [->dottedkw]]
             [crate.binding :refer [bound subatom]]
             [clojure.string :as string])
   (:require-macros [lt.macros :refer [behavior defui]]))
-
-(def active-dialog nil)
-(def gui (js/require "nw.gui"))
-
-(defn menu-item [opts]
-  (let [mi (.-MenuItem gui)]
-    (mi. (clj->js opts))))
-
-(defn menu [items]
-  (let [m (.-Menu gui)
-        menu (m.)]
-    (doseq [i items]
-      (.append menu (menu-item i)))
-    menu))
-
-(defn show-menu [m x y]
-  (.popup m x y))
 
 (defn files-and-folders [path]
   (let [fs (workspace/files-and-folders path)]
@@ -186,8 +171,8 @@
           :triggers #{:menu!}
           :reaction (fn [this e]
                       (let [items (sort-by :order (object/raise-reduce this :menu-items []))]
-                        (-> (menu items)
-                            (show-menu (.-clientX e) (.-clientY e))))))
+                        (-> (menu/menu items)
+                            (menu/show-menu)))))
 
 (behavior ::on-root-menu
           :triggers #{:menu-items}
@@ -483,12 +468,10 @@
                        (object/raise tree event (dom/val me))))))
 
 (defn open-folder []
-  (set! active-dialog (input :nwdirectory :workspace.add.folder!))
-  (dom/trigger active-dialog :click))
+  (dialogs/dir tree :workspace.add.folder!))
 
 (defn open-file []
-  (set! active-dialog (input :blah :workspace.add.file!))
-  (dom/trigger active-dialog :click))
+  (dialogs/file tree :workspace.add.file!))
 
 (defui button [name action]
   [:li name]

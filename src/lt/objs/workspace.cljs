@@ -208,7 +208,7 @@
 (behavior ::reconstitute-last-workspace
                   :triggers #{:post-init}
                   :reaction (fn [app]
-                              (when (and (= (app/window-number) 0)
+                              (when (and (app/first-window?)
                                          (not (:initialized @current-ws)))
                                 (when-let [ws (first (all))]
                                   (open current-ws (-> ws :path (files/basename))))) ;;for backwards compat

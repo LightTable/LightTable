@@ -7,54 +7,42 @@ First install or update [leiningen](http://leiningen.org/).
 3. Set it to be an executable (chmod a+x ~/bin/lein).
 4. Run the Lein script (eg. "./lein" or "sh lein") without quotes.
 
-You can check your package manager. However, be sure you get version 2.x. Windows users can use this [installer](https://raw.github.com/technomancy/leiningen/stable/bin/lein.bat).
+You can also install it with your package manager but be sure to get version
+2.x. Windows users can use this [installer](https://raw.github.com/technomancy/leiningen/stable/bin/lein.bat).
 
-Then we have to do some juggling (unless you fancy building node-webkit from source).
+Then install [node and npm](http://nodejs.org/download/).
 
-On OS X:
+# Build
 
-``` bash
-git clone https://github.com/LightTable/LightTable.git
-cd LightTable
-sh osx_deps.sh
-export LT_HOME=$(pwd)/deploy
-./deploy/light
+To build LightTable from scratch on OSX, Windows Cygwin or Linux:
+
+```bash
+$ git clone https://github.com/LightTable/LightTable.git
+$ cd LightTable
+# Creates a directory in builds/
+$ script/build.sh
 ```
 
-On Linux:
+This will take a few minutes the first time as atom-shell and plugins are downloaded. Subsequent invocations are faster.
+To override the output directory, specify `$VERSION` e.g. `VERSION=0.8.1-pre script/build.sh`.
 
-``` bash
-git clone https://github.com/LightTable/LightTable.git
-cd LightTable
-bash linux_deps.sh
-./deploy/LightTable
-```
+On subsequent builds, use `script/build-app.sh` for quicker builds that don't require updating plugins or atom-shell.
+If any ClojureScript files change, you must run `lein cljsbuild once`.  On Windows, you may need to comment out the :source-map
+line before compiling ClojureScript to get around [issue 1025](https://github.com/LightTable/LightTable/issues/1025).
 
-On Windows (using Cygwin) (note: this may trigger [issue 1025](https://github.com/LightTable/LightTable/issues/1025)):
+# Usage
 
-``` bash
-git clone https://github.com/LightTable/LightTable.git
-cd LightTable
-bash windows_deps.sh
-chmod -R u+rwx deploy/
-./deploy/LightTable
-```
+Once you've built LightTable, run it in one of the following ways:
 
-On Windows (manual):
+* OSX
+  * As a commandline executable: `builds/lighttable-0.8.0-mac/light`
+  * As an application: `open -a $PWD/builds/lighttable-0.8.0-mac/LightTable.app`
+* Linux
+  * As a commandline executable: `builds/lighttable-0.8.0-linux/light`
+  * As an application: `builds/lighttable-0.8.0-linux/LightTable`
+* Windows
+  * As an application: `builds/lighttable-0.8.0-windows/LightTable.exe`
 
-1. Clone the repo https://github.com/LightTable/LightTable.git
-2. Download http://d35ac8ww5dfjyg.cloudfront.net/playground/bins/0.6.0/LightTableWin.zip
-3. Unzip LightTableWin.zip
-4. Copy the following files from the zip into the cloned repo at LightTable/deploy/
-   - ffmpegsumo.dll
-   - icudt.dll
-   - libEGL.dll
-   - libGLESv2.dll
-   - LightTable.exe
-   - nw.pak
-5. You can also either copy the plugins/ folder over too or git clone the ones you want to modify down from github. You'll want at least the Clojure plugin and the Rainbow plugin.
-6. Double click LightTable.exe
-
-# Building
-
-After the initial setup, you can compile the ClojureScript source at any time with `lein cljsbuild once`.
+You can also run LightTable with `script/light.sh`. This script allows you to
+skip running `script/build-app.sh`. While it's useful as a dev convenience,
+final changes should be QAed with a fresh build from `script/build-app.sh`.

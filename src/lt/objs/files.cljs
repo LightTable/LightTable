@@ -3,18 +3,16 @@
   (:require [lt.object :as object]
             [lt.util.load :as load]
             [clojure.string :as string]
+            [lt.objs.platform :as platform]
             [lt.util.js :refer [now]])
   (:require-macros [lt.macros :refer [behavior]]))
 
 (def fs (js/require "fs"))
 (def fpath (js/require "path"))
 (def wrench (load/node-module "wrench"))
+(def shell (js/require "shell"))
 (def os (js/require "os"))
-(def app (.-App (js/require "nw.gui")))
-(def data-path (let [path (.-dataPath app)]
-                 (if (array? path)
-                   (first path)
-                   path)))
+(def data-path (platform/get-data-path))
 
 (defn typelist->index [cur types]
   (let [full (map (juxt :name identity) types)
@@ -59,7 +57,7 @@
 (def line-ending (.-EOL os))
 (def separator (.-sep fpath))
 (def available-drives #{})
-(def pwd (.resolve fpath "."))
+(def cwd "Directory process is started in" (js/process.cwd))
 
 (when (= separator "\\")
   (.exec (js/require "child_process") "wmic logicaldisk get name"
@@ -237,6 +235,9 @@
       (when cb (cb e))
       )))
 
+(defn trash! [path]
+  (.moveItemTotrash shell path))
+
 (defn delete! [path]
   (if (dir? path)
     (.rmdirSyncRecursive wrench path)
@@ -320,14 +321,16 @@
      (join h (or path separator)))))
 
 (defn lt-home
-  ([] pwd)
+  ([] load/dir)
   ([path]
-   (join pwd path)))
+   (join (lt-home) path)))
 
-(defn lt-user-dir [path]
-  (if js/process.env.LT_USER_DIR
-    (join js/process.env.LT_USER_DIR (or path ""))
-    (join data-path path)))
+(defn lt-user-dir
+  ([] (lt-user-dir ""))
+  ([path]
+   (if js/process.env.LT_USER_DIR
+     (join js/process.env.LT_USER_DIR path)
+     (join data-path path))))
 
 (defn walk-up-find [start find]
   (let [roots (get-roots)]
@@ -366,4 +369,3 @@
       (let [cur (first to-walk)
             neue (filterv func (full-path-ls cur))]
         (recur (concat (rest to-walk) (dirs cur)) (concat found neue))))))
-

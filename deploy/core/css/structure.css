@@ -298,7 +298,8 @@ body { -webkit-user-select: none; }
 .docs iframe { width:100%; height:100%; }
 .docs .frame-shade { height:100%; width:100%; background:transparent; position:absolute; display:none; }
 
-#browser iframe { height:-webkit-calc(100% - 35px); width:100%; }
+#browser webview { position:absolute; top:0; left:0; right:0; bottom:35px; }
+#browser nav { position:absolute; bottom:5px; left:0; right:0; }
 #browser .frame-shade { height:-webkit-calc(100% - 35px); width:100%; background:transparent; position:absolute; display:none; }
 #browser input { font-size:10pt; padding-left:10px; background:#444; width:-webkit-calc(100% - 60px); padding:5px 12px; vertical-align:middle;}
 #browser button { width:20px; height:26px; padding:4px 5px; box-sizing:border-box; border-radius:0px; vertical-align:middle; }

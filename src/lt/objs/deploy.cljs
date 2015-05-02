@@ -18,17 +18,18 @@
 
 (def shell (load/node-module "shelljs"))
 (def fs (js/require "fs"))
-(def fs-path (js/require "path"))
 (def zlib (js/require "zlib"))
 (def request (load/node-module "request"))
 (def tar (load/node-module "tar"))
 (def home-path (files/lt-home ""))
-(def get-proxy (.-App.getProxyForURL (js/require "nw.gui")))
+;; TODO: get-proxy
+;; (def get-proxy (.-App.getProxyForURL (js/require "nw.gui")))
+(def get-proxy)
 
 (defn tar-path [v]
   (if (cache/fetch :edge)
-    (str "http://temp2.kodowa.com.s3.amazonaws.com/playground/releases/" v ".tar.gz")
-    (str "https://d35ac8ww5dfjyg.cloudfront.net/playground/releases/" v ".tar.gz")))
+    (str "https://api.github.com/repos/LightTable/LightTable/tarball/master")
+    (str "https://api.github.com/repos/LightTable/LightTable/tarball/" v)))
 
 (def version-regex #"^\d+\.\d+\.\d+(-.*)?$")
 
@@ -62,14 +63,10 @@
                   (= (:minor v2) (:minor v1))
                   (< (:patch v2) (:patch v1)))))))
 
-(defn is-newer? [v1 v2]
+(defn is-newer?
+  "Returns true if second version is newer/greater than first version."
+  [v1 v2]
   (compare-versions (str->version v1) (str->version v2)))
-
-(defn exec-path []
-  (.-execPath js/process))
-
-(defn mac-resources-path [p]
-  (.resolve fs-path (exec-path) (files/join "../../../../../Resources" p)))
 
 (defn download-file [from to cb]
   (let [options (js-obj "url" from
@@ -82,8 +79,8 @@
 (defn download-zip [ver cb]
   (let [n (notifos/working (str "Downloading version " ver " .."))]
     (download-file (tar-path ver) (str home-path "/tmp.tar.gz") (fn [e r body]
-                                                               (notifos/done-working)
-                                                               (cb e r body)))))
+                                                                  (notifos/done-working)
+                                                                  (cb e r body)))))
 
 (defn untar [from to cb]
   (let [t (.createReadStream fs from)]
@@ -93,8 +90,9 @@
         (on "end" cb))))
 
 (defn move-tmp []
-  (doseq [file (files/full-path-ls (str home-path "/tmp/"))]
-    (.cp shell "-rf" file home-path))
+  (let [parent-dir (first (files/full-path-ls (str home-path "/tmp/")))]
+    (doseq [file (files/full-path-ls (str parent-dir "/deploy/"))]
+      (.cp shell "-rf" file home-path)))
   (.rm shell "-rf" (str home-path "/tmp*")))
 
 (defn fetch-and-deploy [ver]
@@ -110,10 +108,7 @@
                                                          restart to get the latest and greatest.")
                                               :buttons [{:label "ok"}]}))))))
 
-(defn version-url []
-  (if (cache/fetch :edge)
-    "http://app.kodowa.com/latest-version/nw-edge"
-    "http://app.kodowa.com/latest-version/nw"))
+(def tags-url "https://api.github.com/repos/LightTable/LightTable/tags")
 
 (defn should-update-popup [data]
   (popup/popup! {:header "There's a newer version of Light Table!"
@@ -123,23 +118,36 @@
                             :action (fn []
                                       (fetch-and-deploy data))}]}))
 
-(defn check-version [& [notify?]]
-  (fetch/xhr (version-url) {}
-             (fn [data]
-               (when (re-seq version-regex data)
-                 (if (and (not= data "")
-                          (not= data (:version version))
-                          (is-newer? (:version version) data)
-                          (or notify?
-                              (not= js/localStorage.fetchedVersion data)))
-                   (do
-                     (set! js/localStorage.fetchedVersion data)
-                     (should-update-popup data))
-                   (when notify?
-                     (notifos/set-msg! (str "At latest version: " (:version version)))))))))
+(defn ->latest-version
+  "Returns latest LT version for github api tags endpoint."
+  [body]
+  (->> (js/JSON.parse body)
+       ;; Ensure only version tags
+       (keep #(when (re-find version-regex (.-name %)) (.-name %)))
+       sort
+       last))
 
-(defn binary-version []
-  (aget js/process.versions "node-webkit"))
+(defn check-version [& [notify?]]
+  (fetch/xhr tags-url {}
+             (fn [data]
+               (let [latest-version (->latest-version data)]
+                 (when (re-find version-regex latest-version)
+                   (if (and (not= latest-version "")
+                            (not= latest-version (:version version))
+                            (is-newer? (:version version) latest-version)
+                            (or notify?
+                                (not= js/localStorage.fetchedVersion latest-version)))
+                     (do
+                       (set! js/localStorage.fetchedVersion latest-version)
+                       (should-update-popup latest-version))
+                     (when notify?
+                       (notifos/set-msg! (str "At latest version: " (:version version))))))))))
+
+(defn binary-version
+  "Binary/atom-shell version. The two versions are in sync since binaries updates
+  only occur with atom-shell updates."
+  []
+  (aget js/process.versions "atom-shell"))
 
 (defui button [label & [cb]]
        [:div.button.right label]
@@ -153,43 +161,30 @@
                                  Light Table website so you can download the updated version."
                  :buttons [{:label "Download latest"
                             :action (fn []
-                                      (.Shell.openExternal (js/require "nw.gui") "http://www.lighttable.com")
-                                      (popup/remain-open)
-                                      )}]}))
-
-(defn check-nw-version [obj]
-  (assoc obj :nw-version (is-newer? (binary-version) (:nw version))))
-
-(defn notify [obj]
-  (let [{:keys [nw-version]} obj]
-    (cond
-     nw-version (alert-binary-update)
-     :else obj)))
-
-(defn check-all []
-  (-> {}
-      (check-nw-version)
-      (notify)))
+                                      (platform/open-url "http://www.lighttable.com")
+                                      (popup/remain-open))}]}))
 
 ;;*********************************************************
 ;; Behaviors
 ;;*********************************************************
 
 (behavior ::check-deploy
-                  :triggers #{:deploy}
-                  :reaction (fn [this]
-                              (check-all)))
+          :triggers #{:deploy}
+          :reaction (fn [this]
+                      ;; Latest :atom-shell version changes after LT auto-updates and user restarts
+                      (when (is-newer? (binary-version) (:atom-shell version))
+                        (alert-binary-update))))
 
 (behavior ::check-version
-                  :triggers #{:init}
-                  :type :user
-                  :desc "App: Automatically check for updates"
-                  :reaction (fn [this]
-                              (when-let [proxy (proxy?)]
-                                (.defaults request (clj->js {:proxy proxy})))
-                              (when (= (app/window-number) 0)
-                                (set! js/localStorage.fetchedVersion nil))
-                              (check-version)
-                              (every version-timeout check-version)))
+          :triggers #{:init}
+          :type :user
+          :desc "App: Automatically check for updates"
+          :reaction (fn [this]
+                      ;;                               (when-let [proxy (proxy?)]
+                      ;;                                 (.defaults request (clj->js {:proxy proxy})))
+                      (when (app/first-window?)
+                        (set! js/localStorage.fetchedVersion nil))
+                      (check-version)
+                      (every version-timeout check-version)))
 
 (object/tag-behaviors :app [::check-deploy])

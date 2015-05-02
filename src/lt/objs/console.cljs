@@ -17,6 +17,8 @@
 (def logs-dir (files/lt-user-dir "logs"))
 (def core-log (try
                 (when-not (files/exists? logs-dir)
+                  (when-not (files/exists? (files/lt-user-dir))
+                    (files/mkdir (files/lt-user-dir)))
                   (files/mkdir logs-dir))
                 (.. (js/require "fs") (createWriteStream (files/join logs-dir (str "window" (app/window-number) ".log"))))
                 (catch js/global.Error e
@@ -106,6 +108,7 @@
   (util-inspect thing false 2))
 
 (defn verbatim
+  ([thing] (verbatim thing nil))
   ([thing class]
    (verbatim thing class nil))
   ([thing class str-content]

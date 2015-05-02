@@ -11,7 +11,6 @@
 
 (def shell (load/node-module "shelljs"))
 (def spawn (.-spawn (js/require "child_process")))
-(def cur-path (.pwd shell))
 (def custom-env (atom {}))
 
 (def procs (atom #{}))
