@@ -24,13 +24,13 @@ if [ "$(uname)" == "Darwin" ]; then
 
 elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
   OS="linux"
-  EXE="atom"
+  EXE="electron"
   RESOURCES="resources"
   PLATFORM_DIR="platform/linux"
 
 elif [ "$(expr substr $(uname -s) 1 9)" == "CYGWIN_NT" ]; then
   OS="windows"
-  EXE="atom.exe"
+  EXE="electron.exe"
   RESOURCES="resources"
   PLATFORM_DIR="platform/win"
 
@@ -85,7 +85,7 @@ if [ "$OS" == "mac" ]; then
   FULL_PLIST="$(pwd)/$RELEASE_DIR/$PLIST"
   defaults write $FULL_PLIST CFBundleShortVersionString $VERSION
 
-  mv $RELEASE_DIR/Atom.app $RELEASE_DIR/LightTable.app
+  mv $RELEASE_DIR/Electron.app $RELEASE_DIR/LightTable.app
 
   # Sign app to avoid endless “accept incoming connections” dialogs
   codesign --force --deep --sign - $RELEASE_DIR/LightTable.app
