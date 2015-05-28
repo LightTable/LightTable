@@ -22,7 +22,7 @@ cd "$(dirname "${BASH_SOURCE[0]}")"; cd ..
 pushd shell
   npm install grunt-cli
   npm install
-  node_modules/.bin/grunt download-atom-shell
+  node_modules/.bin/grunt download-electron
 popd
 
 # Build the core cljs
