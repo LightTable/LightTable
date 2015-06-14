@@ -18,11 +18,11 @@ npm --version >/dev/null 2>&1 || { echo >&2 "Please install npm before running t
 # Ensure we start in project root
 cd "$(dirname "${BASH_SOURCE[0]}")"; cd ..
 
-# Ensure we have current version of atom-shell
+# Ensure we have current version of electron 
 pushd shell
   npm install grunt-cli
   npm install
-  node_modules/.bin/grunt download-atom-shell
+  node_modules/.bin/grunt download-electron
 popd
 
 # Build the core cljs
