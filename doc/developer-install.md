@@ -1,5 +1,7 @@
 # Initial setup
 
+## Install Leiningen and Node.js
+
 First install or update [leiningen](http://leiningen.org/).
 
 1. Download the lein script. For Windows, download lein.bat.
@@ -11,6 +13,28 @@ You can also install it with your package manager but be sure to get version
 2.x. Windows users can use this [installer](https://raw.github.com/technomancy/leiningen/stable/bin/lein.bat).
 
 Then install [node and npm](http://nodejs.org/download/).
+
+## Cygwin on Windows
+
+On Windows (Cygwin), you may need to change */etc/fstab* to fix a directory permission error when building:
+
+> ... change the following line in */etc/fstab* (path in Cygwin):
+> 
+> ```
+> none /cygdrive cygdrive binary,posix=0,user 0 0
+> ```
+> 
+> Add `,noacl` to the line to result in:
+> 
+> ```
+> none /cygdrive cygdrive binary,posix=0,user,noacl 0 0
+> ```
+> 
+> ... [close and re-open] Cygwin Terminal
+
+The issue:
+
+ - ["mkdir: cannot create directory" error running "atom-shell" branch build on Windows 7 · Issue #1918 · LightTable/LightTable](https://github.com/LightTable/LightTable/issues/1918)
 
 # Build
 
