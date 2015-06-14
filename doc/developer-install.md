@@ -16,21 +16,19 @@ Then install [node and npm](http://nodejs.org/download/).
 
 ## Cygwin on Windows
 
-On Windows (Cygwin), you may need to change */etc/fstab* to fix a directory permission error when building:
+On Windows (Cygwin), you may need to change */etc/fstab* (path in Cygwin) to fix a directory permission error when building. Change this line:
 
-> ... change the following line in */etc/fstab* (path in Cygwin):
-> 
-> ```
-> none /cygdrive cygdrive binary,posix=0,user 0 0
-> ```
-> 
-> Add `,noacl` to the line to result in:
-> 
-> ```
-> none /cygdrive cygdrive binary,posix=0,user,noacl 0 0
-> ```
-> 
-> ... [close and re-open] Cygwin Terminal
+```
+none /cygdrive cygdrive binary,posix=0,user 0 0
+```
+
+Add `,noacl` to the line:
+
+```
+none /cygdrive cygdrive binary,posix=0,user,noacl 0 0
+```
+
+Close and re-open Cygwin Terminal.
 
 The issue:
 
