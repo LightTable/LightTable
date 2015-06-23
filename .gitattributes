@@ -1,0 +1,2 @@
+# Disable auto-CRLF for all text files to prevent files being checked-out with CRLF line endings (on Windows)
+* -text
