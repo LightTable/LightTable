@@ -34,6 +34,13 @@ The issue:
 
  - ["mkdir: cannot create directory" error running "atom-shell" branch build on Windows 7 · Issue #1918 · LightTable/LightTable](https://github.com/LightTable/LightTable/issues/1918)
 
+
+## Linux preconditions
+To run atom-shell/electron on Linux you need to have libgconf-2.so.4 installed.
+
+
+Ref: [atom-shell Linux (Arch) build depends on libgconf-2.so.4](https://github.com/LightTable/LightTable/issues/1926)
+
 # Build
 
 To build LightTable from scratch on OSX, Windows Cygwin or Linux:
