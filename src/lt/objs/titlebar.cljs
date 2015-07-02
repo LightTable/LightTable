@@ -1,5 +1,6 @@
 (ns lt.objs.titlebar
   (:require [lt.object :as object]
+            [lt.objs.app :as app]
             [lt.objs.tabs :as tabs]
             [lt.objs.sidebar :as sidebar]
             [lt.objs.sidebar.command :as cmd]
@@ -8,31 +9,17 @@
             )
   (:require-macros [lt.macros :refer [behavior defui]]))
 
-(def gui (js/require "nw.gui"))
-(def win (.Window.get gui))
-
-(def fullscreen? false)
-
-(.on win "enter-fullscreen" (fn []
-                              (set! fullscreen? true)
-                              (add-class ($ :body) :fullscreen)))
-(.on win "leave-fullscreen" (fn []
-                              (set! fullscreen? false)
-                              (remove-class ($ :body) :fullscreen)))
-
 (defn close []
-  (.close win))
+  (.close app/win))
 
 (defn minimize []
-  (.minimize win))
+  (.minimize app/win))
 
 (defn maximize []
-  (.maximize win))
+  (.maximize app/win))
 
 (defn fullscreen []
-  (if-not fullscreen?
-    (.enterFullscreen win)
-    (.leaveFullscreen win)))
+  (.setFullScreen app/win (not (.isFullScreen app/win))))
 
 (defui button [class action label]
        [:span {:class (str "button " (name class))

@@ -707,4 +707,3 @@
               :desc "Editor: Split selection into cursors per line"
               :exec (fn []
                       (cmd/exec! :editor.codemirror.command "splitSelectionByLine"))})
-

@@ -219,4 +219,3 @@
                         ))
 
 (def manager (object/create ::doc-manager))
-

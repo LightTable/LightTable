@@ -11,6 +11,7 @@
             [lt.objs.deploy :as deploy]
             [lt.objs.notifos :as notifos]
             [lt.objs.tabs :as tabs]
+            [lt.objs.platform :as platform]
             [cljs.reader :as reader]
             [fetch.core :as fetch]
             [crate.core :as crate]
@@ -479,7 +480,7 @@
   :click (fn [e]
            (dom/prevent e)
            (dom/stop-propagation e)
-           (.Shell.openExternal app/gui (:url plugin (:source plugin)))))
+           (platform/open-url (:url plugin (:source plugin)))))
 
 (defui update-button [plugin]
   [:span.update]
