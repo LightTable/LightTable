@@ -7,6 +7,7 @@
             [lt.objs.notifos :as notifos]
             [lt.objs.platform :as platform]
             [lt.objs.sidebar.command :as cmd]
+            [lt.objs.console :as console]
             [lt.objs.app :as app]
             [lt.util.load :as load]
             [lt.util.js :refer [every]]
@@ -74,7 +75,13 @@
         out (.createWriteStream fs to)]
     (when-let [proxy (or js/process.env.http_proxy js/process.env.https_proxy)]
       (set! (.-proxy options) proxy))
-    (.pipe (request options cb) out)))
+
+    (-> (.get request options cb)
+        (.on "response" (fn [resp]
+                          (when-not (= (.-statusCode resp) 200)
+                            (notifos/done-working)
+                            (throw (js/Error. (str "Error downloading: " from " status code: " (.-statusCode resp)))))))
+        (.pipe out))))
 
 (defn download-zip [ver cb]
   (let [n (notifos/working (str "Downloading version " ver " .."))]
@@ -88,6 +95,7 @@
         (pipe (.createGunzip zlib))
         (pipe (.Extract tar (js-obj "path" to)))
         (on "end" cb))))
+
 
 (defn move-tmp []
   (let [parent-dir (first (files/full-path-ls (str home-path "/tmp/")))]
