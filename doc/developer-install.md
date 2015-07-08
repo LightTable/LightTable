@@ -1,18 +1,11 @@
 # Initial setup
 
-## Install Leiningen and Node.js
+## Prerequisites 
 
-First install or update [leiningen](http://leiningen.org/).
+- [Leiningen 2.x](http://leiningen.org/)
+- [Node.js and npm](http://nodejs.org/download/)
+- [Cygwin](https://cygwin.com/install.html) (for Windows users)
 
-1. Download the lein script. For Windows, download lein.bat.
-2. Place it on your $PATH where your shell can find it (eg. ~/bin).
-3. Set it to be an executable (chmod a+x ~/bin/lein).
-4. Run the Lein script (eg. "./lein" or "sh lein") without quotes.
-
-You can also install it with your package manager but be sure to get version
-2.x. Windows users can use this [installer](https://raw.github.com/technomancy/leiningen/stable/bin/lein.bat).
-
-Then install [node and npm](http://nodejs.org/download/).
 
 ## Cygwin on Windows
 
