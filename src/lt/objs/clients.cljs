@@ -228,7 +228,8 @@
 (behavior ::queue!
                   :triggers #{:queue!}
                   :reaction (fn [this msg]
-                              (object/update! this [:queue] conj msg)))
+                              (when (nil? (some #{msg} (:queue @this)))
+                                (object/update! this [:queue] conj msg))))
 
 (behavior ::on-connect-drain
                   :triggers #{:connect}
