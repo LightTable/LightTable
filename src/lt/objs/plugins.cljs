@@ -320,7 +320,8 @@
   (let [[repo username] (->> (string/split (:source plugin) "/")
                    (reverse)
                    (filter #(not= % ""))
-                   (take 2))]
+                   (take 2))
+        repo (.replace repo #".git" "")]
     (str "https://api.github.com/repos/" username "/" repo "/tarball/" (:version plugin))))
 
 (defn fetch-and-install [url name cb]
