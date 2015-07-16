@@ -138,24 +138,25 @@
       (deploy/is-newer? (:version plugin) cached))))
 
 (defn plugin-behaviors [plug]
-  (try
-    (let [{:keys [behaviors dir]} plug
-          file (files/join dir behaviors)
-          file (files/real-path file)
-          behs (settings/parse-file file)
-          force? (get (::force-reload @manager) file)]
-      (when force?
-        (swap! manager update-in [::force-reload] disj file))
-      (when behs
-        (walk/prewalk (fn [x]
-                        (when (coll? x)
-                          (alter-meta! x assoc ::dir dir ::force-reload force?))
-                        x)
-                      behs)
-        behs))
-    (catch :default e
-      (console/error (str "Could not load behaviors for plugin: " (:name plug)))
-      {})))
+  (when (seq plug)
+    (try
+     (let [{:keys [behaviors dir]} plug
+           file (files/join dir behaviors)
+           file (files/real-path file)
+           behs (settings/parse-file file)
+           force? (get (::force-reload @manager) file)]
+       (when force?
+         (swap! manager update-in [::force-reload] disj file))
+       (when behs
+         (walk/prewalk (fn [x]
+                         (when (coll? x)
+                           (alter-meta! x assoc ::dir dir ::force-reload force?))
+                         x)
+                       behs)
+         behs))
+     (catch :default e
+       (console/error (str "Could not load behaviors for plugin: " (:name plug)))
+       {}))))
 
 (defn plugin-dependency-graph [plugins]
   (into {}
