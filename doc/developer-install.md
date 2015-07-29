@@ -45,6 +45,14 @@ $ cd LightTable
 $ script/build.sh
 ```
 
+If `npm` complains about unlocking unlocked stuff, run the following commands and start again.
+DO NOT USE against a shared / multi-user environment, this can hardly be undone and will screw other's npm.
+See http://stackoverflow.com/questions/16151018/npm-throws-error-without-sudo
+```bash
+$ sudo chown -R `whoami` ~/.npm
+$ sudo chown -R `whoami` /usr/local/lib/node_modules
+```
+
 This will take a few minutes the first time as atom-shell and plugins are downloaded. Subsequent invocations are faster.
 To override the output directory, specify `$VERSION` e.g. `VERSION=0.8.1-pre script/build.sh`.
 
