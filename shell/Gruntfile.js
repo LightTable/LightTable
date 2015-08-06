@@ -7,9 +7,20 @@ module.exports = function(grunt) {
       version: "0.22.1",
       outputDir: "./electron",
       rebuild: true
+    },
+    compress: {
+      windows: {
+        options : {
+          archive: '../package/LightTableWin.zip'
+        },
+        files: [
+          { expand: true, cwd: '../package/LightTableWin/', src: ['LightTable/**/*'], dest: 'LightTable/' }
+        ]
+      }
     }
   });
 
   grunt.loadNpmTasks('grunt-download-electron');
+  grunt.loadNpmTasks('grunt-contrib-compress');
 
 };
