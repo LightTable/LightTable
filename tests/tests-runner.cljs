@@ -1,10 +1,11 @@
 (ns tests.tests-runner
-  (:require [cemerick.cljs.test :as t :refer-macros [is deftest with-test run-tests testing test-var]]
+  "Namespace used as a test runner. Every other test namespace should be `require`d here,
+  as well as tested through the `testrunner/test-ns` call"
+  (:require [cemerick.cljs.test :as testrunner :refer-macros [is deftest with-test run-tests testing test-var]]
             [tests.dummy]))
 
+;; Enable printing directly to the javascript console
 (enable-console-print!)
 
-(t/test-ns tests.dummy)
-
-;; (deftest test-numbers
-;;   (is (= 1 1)))
+;; Run tests of every namespaces
+(testrunner/test-ns tests.dummy)
