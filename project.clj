@@ -1,7 +1,7 @@
 (defproject lighttable "0.8.0"
   :description "Light Table is a new interactive IDE that lets you modify running programs and embed anything from websites to games. It provides the real time feedback we need to not only answer questions about our code, but to understand how our programs really work."
   :url "http://www.lighttable.com/"
-  :dependencies [[org.clojure/clojure "1.5.1"]
+  :dependencies [[org.clojure/clojure "1.7.0"]
                  [crate "0.2.5"]
                  [fetch "0.2.0" :exclusions [org.clojure/clojure noir]]
                  [org.clojure/clojurescript "0.0-2138"
