@@ -3,8 +3,8 @@
   :url "http://www.lighttable.com/"
   :dependencies [[org.clojure/clojure "1.7.0"]
                  [crate "0.2.5"]
-                 [fetch "0.2.0" :exclusions [org.clojure/clojure noir]]
-                 [org.clojure/clojurescript "0.0-2138"
+                 [fetch "0.2.2" :exclusions [org.clojure/clojure noir]]
+                 [org.clojure/clojurescript "1.7.48"
                   :exclusions [org.apache.ant/ant]]
                  ]
   :jvm-opts ["-Xmx1g" "-XX:+UseConcMarkSweepGC"] ; cljsbuild eats memory
@@ -15,6 +15,6 @@
                                    :output-to "deploy/core/node_modules/lighttable/bootstrap.js"
                                    :output-dir "deploy/core/node_modules/lighttable/cljs/"
                                    :pretty-print true}}]}
-  :plugins [[lein-cljsbuild "1.0.1"]]
+  :plugins [[lein-cljsbuild "1.0.6"]]
   :source-paths ["src/"]
   )

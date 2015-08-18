@@ -1,5 +1,6 @@
 (ns lt.objs.eval
-  (:require [lt.object :as object]
+  (:require [cljs.reader :as reader]
+            [lt.object :as object]
             [lt.objs.canvas :as canvas]
             [lt.objs.editor :as ed]
             [lt.objs.menu :as menu]
