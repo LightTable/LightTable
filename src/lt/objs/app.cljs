@@ -41,15 +41,10 @@
   (js/window.location.reload true))
 
 (defn init []
-  (js/console.log "deploy")
   (object/raise app :deploy)
-  (js/console.log "pre-init")
   (object/raise app :pre-init)
-  (js/console.log "init")
   (object/raise app :init)
-  (js/console.log "post-init")
   (object/raise app :post-init)
-  (js/console.log "show")
   (object/raise app :show))
 
 (defn fetch [k]

@@ -4,6 +4,7 @@
             [lt.objs.command :as cmd]
             [lt.util.dom :as dom]
             [lt.objs.editor :as editor]
+            [lt.objs.thread]
             [clojure.string :as string]
             [lt.util.js :refer [wait]]
             [lt.util.cljs :refer [js->clj]])
