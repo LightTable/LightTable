@@ -70,14 +70,11 @@
 
 (defmacro background [func]
   `(lt.objs.thread/thread*
-    (fn ~(gensym "tfun") []
-      (let [orig# (js/argsArray js/arguments)
-            msg# (.shift orig#)
-            args# (.map orig# cljs.reader/read-string)
+    (fn ~(gensym "tfun") [msg# & body#]
+      (let [args# (map cljs.reader/read-string body#)
             ~'raise (fn [obj# k# v#]
                      (js/_send obj# k# (pr-str v#) "clj"))]
-        (.unshift args# (.-obj msg#))
-        (.apply ~func nil args#)))))
+        (.apply ~func nil `(clj->js (cons (.-obj msg#) args#)))))))
 
 (defmacro aloop [[var arr] & body]
   `(let [arr# ~arr]
