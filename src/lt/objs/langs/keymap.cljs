@@ -6,6 +6,7 @@
             [lt.objs.langs.behaviors :as beh]
             [lt.objs.editor :as editor]
             [clojure.string :as string]
+            [lt.objs.thread]
             [lt.util.cljs :refer [js->clj]])
   (:require-macros [lt.macros :refer [behavior background defui]]))
 

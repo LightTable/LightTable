@@ -8,6 +8,7 @@
             [lt.objs.keyboard :as keyboard]
             [lt.objs.opener :as opener]
             [lt.objs.sidebar :as sidebar]
+            [lt.objs.thread]
             [lt.util.dom :as dom]
             [lt.util.load :as load]
             [lt.util.cljs :as cljs-util]
