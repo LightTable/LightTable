@@ -5,7 +5,14 @@
 
 (def required-keys #{:command :desc :exec})
 
-(defn command [cmd]
+(defn command
+  "Define a command given a map with the following keys:
+
+  * :command (required) - Unique keyword name for command
+  * :desc (required) - Brief description of command
+  * :exec (required)  - Function to invoke when command is called
+  * :hidden - When true, command is hidden from command bar. Not set by default"
+  [cmd]
   (assert (every? cmd required-keys)
           (str "Command doesn't have required keys: " required-keys))
   (object/update! manager [:commands] assoc (:command cmd) cmd)

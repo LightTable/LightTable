@@ -9,13 +9,34 @@
             [lt.util.js :refer [throttle debounce]])
   (:require-macros [lt.macros :refer [behavior with-time aloop]]))
 
-(def obj-id (atom 0))
-(def instances (atom (sorted-map)))
-(def behaviors (atom {}))
-(def object-defs (atom {}))
-(def tags (atom {}))
-(def negated-tags (atom {}))
-(def ^{:dynamic true} *behavior-meta* nil)
+;; HEART of BOT Architecture!
+(def obj-id
+  "Counter to guarantee unique object ids"
+  (atom 0))
+
+(def instances
+  "Map of object ids to objects created by object/create"
+  (atom (sorted-map)))
+
+(def behaviors
+  "Map of behavior names to behaviors created by macros/behavior"
+  (atom {}))
+
+(def object-defs
+  "Map of object template keys to template maps created by object/object*"
+  (atom {}))
+
+(def tags
+  "Map of tags to associated lists of behaviors"
+  (atom {}))
+
+(def negated-tags
+  "Map of tags to dissociated lists of behaviors e.g. :-behavior"
+  (atom {}))
+
+(def ^{:dynamic true} *behavior-meta*
+  "Metadata of current behavior set during raise and raise-reduce"
+  nil)
 
 (defn add [obj]
   (swap! object-defs assoc (::type obj) obj))
@@ -118,7 +139,9 @@
          (safe-report-error e)
          )))))
 
-(defn raise [obj k & args]
+(defn raise
+  "Invoke object's behavior fns for given trigger. Args are passed to behavior fns"
+  [obj k & args]
   (let [reactions (-> @obj :listeners k)]
     (raise* obj reactions args k)))
 
@@ -158,10 +181,14 @@
   (add obj)
   obj)
 
-(defn instances-by-type [type]
+(defn instances-by-type
+  "Return all objects for given type (template name)"
+  [type]
   (filter #(= type (::type (deref %))) (vals @instances)))
 
-(defn merge! [obj m]
+(defn merge!
+  "Merge map into object"
+  [obj m]
   (when (and m (not (map? m)))
     (throw (js/Error. (str "Merge requires a map: " m))))
   (swap! obj merge m))
@@ -188,7 +215,18 @@
       (raise inst :redef))
     id))
 
-(defn object* [name & r]
+(defn object*
+  "Create object template (type) given keyword name and key-value pairs.
+  These pairs serve as default attributes for an object. Following keys
+  have special meaning:
+
+  * :behaviors - Set of object's behaviors
+  * :tags - Set of object's tags
+  * :triggers - Set of object's triggers
+  * :init - Init fn called when object is created. Fn's return value
+            is hiccup html content and saved to :content
+  * :listeners (internal) - Map of triggers to vectors of behaviors"
+  [name & r]
   (-> (apply make-object* name r)
       (store-object*)
       (handle-redef)))
@@ -218,7 +256,10 @@
       (wrap-debounce)
       (store-behavior*)))
 
-(defn raise-reduce [obj k start & args]
+(defn raise-reduce
+  "Reduce over invoked object's behavior fns for given trigger. Start
+  is initial value for reduce and any args are passed to behavior fn"
+  [obj k start & args]
   (let [reactions (-> @obj :listeners k)]
     (reduce (fn [res cur]
               (let [func (:reaction (->behavior cur))
@@ -237,7 +278,9 @@
 
 (declare create)
 
-(defn update! [obj & r]
+(defn update!
+  "Update object with update-in with [:key], fn and args"
+  [obj & r]
   (swap! obj #(apply update-in % r)))
 
 (defn assoc-in! [obj k v]
@@ -251,10 +294,15 @@
    (deref? o) o
    :else (@instances o)))
 
-(defn ->content [obj]
+(defn ->content
+  "Return DOM content associated with object"
+  [obj]
   (:content @obj))
 
-(defn destroy! [obj]
+(defn destroy!
+  "Destroy object by calling its :destroy trigger, removing it from
+  cache and removing associated DOM content"
+  [obj]
   (when-let [inst (->inst obj)]
     (raise inst :destroy)
     (swap! instances dissoc (->id inst))
@@ -266,7 +314,15 @@
   (swap! instances assoc (::id @inst) inst)
   inst)
 
-(defn create [obj-name & args]
+(defn create
+  "Create object given keyword name of object template or an object template
+  and key-value pairs. See object* for special keys.
+  During object creation the following happens to object in order:
+
+  * :init fn is called with given args
+  * :object.instant trigger is raised
+  * :init trigger is raised"
+  [obj-name & args]
   (let [obj (if (keyword? obj-name)
               (@object-defs obj-name)
               obj-name)
@@ -309,11 +365,15 @@
     def|name
     (@object-defs def|name)))
 
-(defn by-id [id]
+(defn by-id
+  "Find object by its unique numerical id"
+  [id]
   (when id
     (@instances id)))
 
-(defn by-tag [tag]
+(defn by-tag
+  "Find objects that have given tag"
+  [tag]
   (sort-by (comp ::id deref)
            (filter #(when-let [ts (:tags (deref %))]
                       (ts tag))
@@ -344,7 +404,9 @@
     (raise obj ::tags-removed ts)
     obj))
 
-(defn tag-behaviors [tag behs]
+(defn tag-behaviors
+  "Associate behaviors to given tag and refresh objects with given tag"
+  [tag behs]
   (swap! tags update-in [tag] #(reduce conj
                                        (or % '())
                                        behs))

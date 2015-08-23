@@ -169,7 +169,9 @@
   (let [content (.readFileSync fs path "utf-8")]
     (string/replace content "\uFEFF" "")))
 
-(defn open [path cb]
+(defn open
+  "Open file and in callback return map with file's content in :content"
+  [path cb]
   (try
     (let [content (bomless-read path)]
       ;;TODO: error handling
@@ -188,7 +190,9 @@
       (when cb (cb nil e)))
     ))
 
-(defn open-sync [path]
+(defn open-sync
+  "Open file and return map with file's content in :content"
+  [path]
   (try
     (let [content (bomless-read path)]
       ;;TODO: error handling
@@ -207,7 +211,9 @@
       nil)
     ))
 
-(defn save [path content & [cb]]
+(defn save
+  "Save path with given content. Optional callback called after save"
+  [path content & [cb]]
   (try
     (.writeFileSync fs path content)
     (object/raise files-obj :files.save path)
@@ -221,7 +227,9 @@
       (when cb (cb e))
       )))
 
-(defn append [path content & [cb]]
+(defn append
+  "Append content to path. Optional callback called after append"
+  [path content & [cb]]
   (try
     (.appendFileSync fs path content)
     (object/raise files-obj :files.save path)
@@ -238,12 +246,16 @@
 (defn trash! [path]
   (.moveItemTotrash shell path))
 
-(defn delete! [path]
+(defn delete!
+  "Delete file or directory"
+  [path]
   (if (dir? path)
     (.rmdirSyncRecursive wrench path)
     (.unlinkSync fs path)))
 
-(defn move! [from to]
+(defn move!
+  "Move file or directory to given path"
+  [from to]
   (if (dir? from)
     (do
       (.copyDirSyncRecursive wrench from to)
@@ -252,15 +264,21 @@
       (save to (:content (open-sync from)))
       (delete! from))))
 
-(defn copy [from to]
+(defn copy
+  "Copy file or directory to given path"
+  [from to]
   (if (dir? from)
     (.copyDirSyncRecursive wrench from to)
     (save to (:content (open-sync from)))))
 
-(defn mkdir [path]
+(defn mkdir
+  "Make given directory"
+  [path]
   (.mkdirSync fs path))
 
-(defn parent [path]
+(defn parent
+  "Return directory of path"
+  [path]
 	(.dirname fpath path))
 
 (defn next-available-name [path]
@@ -276,6 +294,7 @@
           (recur (inc x) (join p (str name (inc x) (when ext (str "." ext))))))))))
 
 (defn ls
+  "Return directory's files"
   ([path] (ls path nil))
   ([path cb]
    (try
@@ -288,7 +307,12 @@
          (cb nil))
        nil))))
 
-(defn ls-sync [path opts]
+(defn ls-sync
+  "Return directory's files applying ignore-pattern. Takes map of options with keys:
+
+  * :files - When set only returns files
+  * :dirs - When set only return directories"
+  [path opts]
   (try
     (let [fs (remove #(re-seq ignore-pattern %) (map (partial ->file|dir path) (.readdirSync fs path)))]
       (cond
@@ -298,7 +322,9 @@
     (catch js/global.Error e
       nil)))
 
-(defn full-path-ls [path]
+(defn full-path-ls
+  "Return directory's files as full paths"
+  [path]
   (try
     (doall (map (partial join path) (.readdirSync fs path)))
     (catch js/Error e
@@ -306,13 +332,16 @@
     (catch js/global.Error e
       (js/lt.objs.console.error e))))
 
-(defn dirs [path]
+(defn dirs
+  "Return directory's directories"
+  [path]
   (try
     (filter dir? (map (partial join path) (.readdirSync fs path)))
     (catch js/Error e)
     (catch js/global.Error e)))
 
 (defn home
+  "Return users' home directory (e.g. ~/) or path under it"
   ([] (home nil))
   ([path]
    (let [h (if (= js/process.platform "win32")
@@ -321,18 +350,24 @@
      (join h (or path separator)))))
 
 (defn lt-home
+  "Return LT's home directory"
   ([] load/dir)
   ([path]
    (join (lt-home) path)))
 
 (defn lt-user-dir
+  "Return LT's user directory. Used for storing user-related content e.g.
+  settings, plugins, logs and caches"
   ([] (lt-user-dir ""))
   ([path]
    (if js/process.env.LT_USER_DIR
      (join js/process.env.LT_USER_DIR path)
      (join data-path path))))
 
-(defn walk-up-find [start find]
+(defn walk-up-find
+  "Starting at start path, walk up parent directories and return first path
+  whose basename matches find"
+  [start find]
   (let [roots (get-roots)]
     (loop [cur start
            prev ""]

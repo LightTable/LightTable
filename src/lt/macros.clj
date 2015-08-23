@@ -4,7 +4,20 @@
 (defn- namify [type keyword]
   (symbol (str "__" type "__" (.replace (name keyword) "." "__DOT__"))))
 
-(defmacro behavior [name & {:keys [reaction] :as r}]
+(defmacro behavior
+  "Define a behavior with a unique namespaced keyword and multiple key value pairs.
+  Keys are:
+
+  * :reaction (required) - Function to invoke when behavior is called.
+                           First arg is object behavior is attached to
+  * :triggers (required) - Set of keyword triggers that trigger behavior
+  * :desc - Brief description of behavior
+  * :type - When set to :user, shows up in hints. Not enabled by default
+  * :params - Vector of maps describing behavior args. Each map contains required :label key
+              and optional keys of :type (:string, :number or :list), :items and :example
+  * :throttle - Number of ms to throttle reaction fn
+  * :debounce - Number of ms to debounce reaction fn"
+  [name & {:keys [reaction] :as r}]
   (if (and (seq? reaction) (= 'fn (first reaction)))
     (let [[_ args & body] reaction]
       `(do
@@ -12,7 +25,10 @@
          (lt.object/behavior* ~name ~@(apply concat (assoc r :reaction (namify "BEH" name))))))
     `(lt.object/behavior* ~name ~@(apply concat r))))
 
-(defmacro defui [sym params hiccup & events]
+(defmacro defui
+  "Define a UI element for given hiccup data and key-value pairs
+  of events for element"
+  [sym params hiccup & events]
   `(defn ~sym ~params
      (let [e# (crate.core/html ~hiccup)]
        (doseq [[ev# func#] (partition 2 ~(vec events))]
@@ -68,7 +84,9 @@
   `(let [~start (.getTime (js/Date.))]
      ~@body)))
 
-(defmacro background [func]
+(defmacro background
+  "Register given func to run on background thread"
+  [func]
   `(lt.objs.thread/thread*
     (fn ~(gensym "tfun") []
       (let [orig# (js/argsArray js/arguments)
