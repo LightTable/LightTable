@@ -14,7 +14,12 @@
                                    :source-map "deploy/core/node_modules/lighttable/bootstrap.js.map"
                                    :output-to "deploy/core/node_modules/lighttable/bootstrap.js"
                                    :output-dir "deploy/core/node_modules/lighttable/cljs/"
-                                   :pretty-print true}}]}
+                                   :pretty-print true}}
+                       {:source-paths ["cljsdeps"]
+                        :compiler {:optimizations :simple
+                                   :output-to "deploy/core/node_modules/clojurescript/cljsDeps.js"
+                                   :output-dir "deploy/core/node_modules/clojurescript/cljsDeps/"
+                                   :pretty-print true }}]}
   :plugins [[lein-cljsbuild "1.0.6"]]
   :source-paths ["src/"]
   )
