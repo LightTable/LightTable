@@ -1,4 +1,5 @@
 (ns lt.objs.clients.local
+  "Provide local client for connecting to LT"
   (:refer-clojure :exclude [send])
   (:require [cljs.reader :as reader]
             [lt.object :as object]

@@ -1,4 +1,6 @@
 (ns lt.objs.cli
+  "Provide behaviors for commandline parsing and opening files from
+  commandline or file manager"
   (:require [lt.object :as object]
             [lt.objs.app :as app]
             [lt.objs.files :as files]

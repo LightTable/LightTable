@@ -1,4 +1,5 @@
 (ns lt.objs.menu
+  "Provide Electron-based menus and associated behaviors"
   (:require [lt.object :as object]
             [lt.objs.command :as cmd]
             [lt.objs.keyboard :as keyboard]

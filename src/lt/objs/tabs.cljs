@@ -1,4 +1,5 @@
 (ns lt.objs.tabs
+  "Manage tabsets and tabs"
   (:require [lt.object :refer [object* behavior*] :as object]
             [lt.objs.editor :as editor]
             [lt.objs.canvas :as canvas]

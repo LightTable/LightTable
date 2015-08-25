@@ -1,4 +1,5 @@
 (ns lt.objs.command
+  "Provide command manager and command related fns"
   (:require [lt.object :as object]))
 
 (declare manager)

@@ -1,4 +1,5 @@
 (ns lt.objs.editor.pool
+  "Provide manager for managing a pool of editors and several misc editor commands"
   (:require [lt.object :as object]
             [lt.objs.app :as app]
             [lt.objs.document :as doc]

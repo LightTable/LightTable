@@ -1,4 +1,6 @@
 (ns lt.objs.plugins
+  "Provide plugin manager with ability to search, install (download and unpack),
+  remove and update plguins"
   (:require [lt.object :as object]
             [lt.objs.command :as cmd]
             [lt.objs.context :as ctx]

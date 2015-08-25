@@ -1,4 +1,6 @@
 (ns lt.object
+  "Define core of BOT architecture and provide fns for manipulating objects,
+  behaviors and tags"
   (:refer-clojure :exclude [set!])
   (:require [crate.core :as crate]
             [clojure.set :as set]

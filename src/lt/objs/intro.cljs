@@ -1,4 +1,5 @@
 (ns lt.objs.intro
+  "Provide intro panel for introducing LT to new users"
   (:require [lt.object :as object]
             [lt.objs.style :as style]
             [lt.objs.deploy :as deploy]

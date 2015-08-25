@@ -1,4 +1,5 @@
 (ns lt.plugins.watches
+  "Provide watch related commands"
   (:require [lt.object :as object]
             [lt.objs.command :as cmd]
             [lt.objs.editor :as ed]

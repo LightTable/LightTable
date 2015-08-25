@@ -1,4 +1,6 @@
 (ns lt.objs.document
+  "Provide document object for wrapping CodeMirror documents. See
+  http://codemirror.org/doc/manual.html#api_doc for more"
   (:require [lt.object :as object]
             [lt.objs.files :as files]
             [lt.objs.popup :as popup])

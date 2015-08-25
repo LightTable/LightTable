@@ -1,4 +1,5 @@
 (ns lt.objs.titlebar
+  "Provide titlebar (not enabled by default) and window related commands"
   (:require [lt.object :as object]
             [lt.objs.app :as app]
             [lt.objs.tabs :as tabs]

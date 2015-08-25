@@ -1,4 +1,5 @@
 (ns lt.plugins.auto-complete
+  "Provide any auto-complete related functionality"
   (:require [lt.object :as object]
             [lt.objs.keyboard :as keyboard]
             [lt.objs.command :as cmd]

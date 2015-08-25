@@ -1,4 +1,5 @@
 (ns lt.macros
+  "Macros used across LT"
   (:require [clojure.walk :as walk]))
 
 (defn- namify [type keyword]

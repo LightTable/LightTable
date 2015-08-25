@@ -1,4 +1,5 @@
 (ns lt.objs.style
+  "Provide styling behaviors, themes and skins"
   (:require [lt.object :as object]
             [lt.objs.sidebar.command :as cmd]
             [lt.objs.app :as app]

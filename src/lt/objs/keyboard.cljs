@@ -1,4 +1,5 @@
 (ns lt.objs.keyboard
+  "Manage keybindings by wrapping Mousetrap"
   (:refer-clojure :exclude [keys meta])
   (:require [clojure.string :as string]
             [lt.object :as object]

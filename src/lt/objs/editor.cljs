@@ -1,4 +1,7 @@
 (ns lt.objs.editor
+  "Provide fns and behaviors for interfacing with a CodeMirror editor
+  object. Also manage defining and loading CodeMirror. For more about CodeMirror
+  objects see http://codemirror.org/doc/manual.html#CodeMirror"
   (:refer-clojure :exclude [val replace range])
   (:require [crate.core :as crate]
             [lt.objs.context :as ctx-obj]

@@ -1,4 +1,5 @@
 (ns lt.util.kahn
+  "Provide a Khan sort"
   (:require [clojure.set :as set :refer [difference union intersection]]))
 
 (defn without

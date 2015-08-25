@@ -1,4 +1,7 @@
 (ns lt.objs.context
+  "Provide context object which manages temporary contexts LT can get in.
+  An object can be associated with a context which is useful for keeping track
+  of current tabset or browser"
   (:require [lt.object :as object])
   (:require-macros [lt.macros :refer [behavior]]))
 

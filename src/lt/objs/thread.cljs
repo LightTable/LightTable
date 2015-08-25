@@ -1,4 +1,5 @@
 (ns lt.objs.thread
+  "Provide worker thread for background processes"
   (:require [lt.object :as object]
             [lt.objs.files :as files]
             [lt.objs.platform :as platform]
@@ -101,7 +102,7 @@
              :obj (object/->id obj)
              :params (map pr-str args)}))))
 
-;;NOTE: Because funcions are defined at load time, we need to pre-add the worker behaviors so that
+;;NOTE: Because functions are defined at load time, we need to pre-add the worker behaviors so that
 ;;      the defined functions are sent correctly
 (object/tag-behaviors :worker-thread [::kill! ::connect ::send! ::queue! ::try-send ::message])
 

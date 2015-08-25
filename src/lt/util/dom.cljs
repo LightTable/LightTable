@@ -1,4 +1,5 @@
 (ns lt.util.dom
+  "Provide DOM related fns"
   (:refer-clojure :exclude [parents remove next val empty]))
 
 (defn lazy-nl-via-item

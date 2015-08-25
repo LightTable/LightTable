@@ -1,4 +1,5 @@
 (ns lt.objs.notifos
+  "Provide fns for displaying messages and spinner in bottom statusbar"
   (:require [lt.object :as object]
             [lt.objs.statusbar :as statusbar]
             [lt.objs.command :as cmd]

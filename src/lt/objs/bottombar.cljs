@@ -1,4 +1,5 @@
 (ns lt.objs.bottombar
+  "Provide bottombar object and associated behaviors"
   (:require [lt.object :as object]
             [lt.objs.tabs :as tabs]
             [lt.objs.animations :as anim]

@@ -1,4 +1,5 @@
 (ns lt.util.cljs
+  "Set up cljs and provide a few misc util fns"
   (:refer-clojure :exclude [js->clj clj->js])
   (:require [clojure.string :as string]))
 

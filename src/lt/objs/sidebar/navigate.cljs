@@ -1,4 +1,5 @@
 (ns lt.objs.sidebar.navigate
+  "Provide sidebar for finding and opening files"
   (:require [lt.object :as object]
             [lt.objs.workspace :as workspace]
             [lt.objs.context :as ctx]

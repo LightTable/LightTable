@@ -1,4 +1,5 @@
-(ns lt.util.js)
+(ns lt.util.js
+  "Provide misc js related fns")
 
 (defn every [ms func]
   (js/setInterval func ms))

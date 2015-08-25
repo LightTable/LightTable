@@ -1,4 +1,5 @@
 (ns lt.objs.proc
+  "Provide fns to spawn processes and manage them. Used by language plugins"
   (:require [lt.object :as object]
             [lt.objs.clients :as clients]
             [lt.objs.files :as files]

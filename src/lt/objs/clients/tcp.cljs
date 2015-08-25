@@ -1,4 +1,5 @@
 (ns lt.objs.clients.tcp
+  "Define tcp server for use with language plugins"
   (:refer-clojure :exclude [send])
   (:require [cljs.reader :as reader]
             [lt.object :as object]

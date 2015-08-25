@@ -1,4 +1,5 @@
 (ns lt.objs.sidebar.workspace
+  "Provide sidebar for managing workspaces and files within a workspace"
   (:require [lt.object :as object]
             [lt.objs.command :as cmd]
             [lt.objs.context :as ctx]

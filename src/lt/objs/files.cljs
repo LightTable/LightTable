@@ -1,4 +1,6 @@
 (ns lt.objs.files
+  "Provider fns for doing file related operations. A number of fns
+  use the node fs library - https://nodejs.org/api/fs.html"
   (:refer-clojure :exclude [open exists?])
   (:require [lt.object :as object]
             [lt.util.load :as load]

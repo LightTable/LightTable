@@ -1,4 +1,5 @@
 (ns lt.objs.dialogs
+  "Provide Electron-based dialogs"
   (:require [lt.object :as object]
             [lt.util.dom :as dom]
             [lt.objs.app :as app])

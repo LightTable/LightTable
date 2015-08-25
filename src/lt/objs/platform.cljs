@@ -1,4 +1,5 @@
 (ns lt.objs.platform
+  "Provide platform-agnostic and platform related fns"
   (:require [lt.object :as object]
             [lt.util.dom :as dom])
   (:require-macros [lt.macros :refer [behavior]]))

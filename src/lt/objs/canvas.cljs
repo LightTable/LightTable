@@ -1,4 +1,6 @@
 (ns lt.objs.canvas
+  "Provide canvas object which contains the primary div of the UI: #canvas.
+  Children divs are #multi (tabs), #side, #right-bar and #bottombar"
   (:refer-clojure :exclude [rem])
   (:require [lt.object :as object]
             [lt.objs.context :as ctx]
