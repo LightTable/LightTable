@@ -7,6 +7,8 @@ Current ClojureScript version and libraries we use are in [project.clj](https://
 
 ### Node packages
 
+Node package installs last done with node v0.12.7 and npm v2.12.1.
+
 Node dependencies are at deploy/core/node\_modules/. This directory is currently a mix of vendored
 dependencies, forked dependencies and Light Table specific libraries:
 
@@ -22,3 +24,11 @@ dependencies, forked dependencies and Light Table specific libraries:
   * clojurescript - Provides cljsDeps.js
   * codemirror\_addons - Provides codemirror addons
   * lighttable - Mostly lighttable js libs _except for_ lighttable/util/{keyevents.js,throttle.js} which should be moved to vendored dependencies.
+
+### Code Reading
+
+When reading LT's source you may come across a fn that doesn't have an obvious use and may appear to
+be unused. Some tips to confirm how it is/was used:
+
+* Do a LightTable user search for the given fn. For example, to see where [proc/exec is used](https://github.com/search?utf8=%E2%9C%93&q=proc%2Fexec+user%3ALightTable&type=Code&ref=searchresults)
+* `git log -u -S WORD` will do a code history for WORD
