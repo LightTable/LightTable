@@ -102,7 +102,7 @@ function start() {
   app.commandLine.appendSwitch('remote-debugging-port', '8315');
   app.commandLine.appendSwitch('js-flags', '--harmony');
 
-  // This method will be called when atom-shell has done everything
+  // This method will be called when electron has done everything
   // initialization and ready for creating browser windows.
   app.on('ready', onReady);
 
