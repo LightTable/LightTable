@@ -1,4 +1,5 @@
 (ns lt.objs.notifos
+  "Provide fns for displaying messages and spinner in bottom statusbar"
   (:require [lt.object :as object]
             [lt.objs.statusbar :as statusbar]
             [lt.objs.command :as cmd]
@@ -17,6 +18,10 @@
 (declare cur-timeout)
 
 (defn set-msg!
+  "Display message in bottom statusbar. Takes map of options with following keys:
+
+  * :class - css class for message. Use 'error' to display error message
+  * :timeout - Number of ms before message times out. Default is 10000 (10s)"
   ([msg]
    (msg* msg)
    (js/clearTimeout cur-timeout)
@@ -28,6 +33,7 @@
                                standard-timeout) #(msg* "")))))
 
 (defn working
+  "Display working spinner with optional statusbar message"
   ([] (working nil))
   ([msg]
     (when msg
@@ -35,6 +41,7 @@
     (statusbar/loader-inc)))
 
 (defn done-working
+  "Hide working spinner with optional statusbar message"
   ([]
    (statusbar/loader-dec))
   ([msg]

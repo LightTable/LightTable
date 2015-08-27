@@ -1,4 +1,5 @@
 (ns lt.objs.opener
+  "Provide functionality around opening and saving files"
   (:require [lt.object :as object]
             [lt.objs.metrics :as metrics]
             [lt.objs.editor :as editor]

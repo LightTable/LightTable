@@ -1,4 +1,5 @@
 (ns lt.objs.clients.ws
+  "Define websocket server for use with language plugins e.g. JavaScript"
   (:refer-clojure :exclude [send])
   (:require [cljs.reader :as reader]
             [lt.object :as object]

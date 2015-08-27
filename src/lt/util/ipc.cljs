@@ -1,5 +1,5 @@
 (ns lt.util.ipc
-  "Util functions for the ipc renderer - https://github.com/atom/atom-shell/blob/master/docs/api/ipc-renderer.md")
+  "Util functions for the ipc renderer - https://github.com/atom/electron/blob/master/docs/api/ipc-renderer.md")
 
 (def ipc (js/require "ipc"))
 

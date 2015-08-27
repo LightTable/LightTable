@@ -1,4 +1,5 @@
 (ns lt.plugins.auto-paren
+  "Provide pair character e.g. () related commands"
   (:require [lt.object :as object]
             [lt.objs.command :as cmd]
             [lt.objs.editor :as editor]

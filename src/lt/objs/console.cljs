@@ -1,4 +1,6 @@
 (ns lt.objs.console
+  "Provide console object for logging to file and displaying log messages
+  in bottom bar"
   (:require [lt.object :as object]
             [lt.objs.app :as app]
             [lt.objs.files :as files]

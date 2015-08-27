@@ -1,4 +1,5 @@
-(ns lt.util.events)
+(ns lt.util.events
+  "Provide DOM event related fns")
 
 (defn capture
   ([ev handler] (capture js/document ev handler))

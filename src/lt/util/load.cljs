@@ -1,4 +1,5 @@
 (ns lt.util.load
+  "Provide fns to load js, css and node module assets into LT"
   (:require [clojure.string :as string]))
 
 (def fpath (js/require "path"))

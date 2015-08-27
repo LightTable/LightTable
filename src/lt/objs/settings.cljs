@@ -1,4 +1,5 @@
 (ns lt.objs.settings
+  "Provide User plugin functionality - user.cljs, user.behaviors and user.keymap"
   (:require [lt.object :as object]
             [lt.objs.app :as app]
             [lt.objs.command :as cmd]

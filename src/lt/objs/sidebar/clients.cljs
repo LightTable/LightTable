@@ -1,4 +1,5 @@
 (ns lt.objs.sidebar.clients
+  "Provide sidebar for (dis)connecting to a client"
   (:require [lt.object :as object]
             [lt.objs.clients :as clients]
             [lt.objs.sidebar :as sidebar]

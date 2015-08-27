@@ -1,4 +1,5 @@
 (ns lt.objs.sidebar.command
+  "Provide command sidebar for finding and executing a command"
   (:require [lt.object :as object]
             [lt.objs.context :as ctx]
             [lt.objs.sidebar :as sidebar]

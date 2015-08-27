@@ -1,4 +1,5 @@
 (ns lt.objs.version
+  "Provide LT version command"
   (:require [lt.object :as object]
             [lt.objs.sidebar.command :as cmd]
             [lt.objs.opener :as opener]

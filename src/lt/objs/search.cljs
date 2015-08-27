@@ -1,4 +1,5 @@
 (ns lt.objs.search
+  "Provide search and replace functionality across files"
   (:require [lt.object :as object]
             [lt.objs.proc :as proc]
             [lt.objs.tabs :as tabs]

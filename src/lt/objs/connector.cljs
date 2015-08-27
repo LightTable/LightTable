@@ -1,4 +1,5 @@
 (ns lt.objs.connector
+  "Provide client-selector object for UI and behaviors to choosing a client"
   (:require [lt.object :as object]
             [lt.objs.canvas :as canvas]
             [lt.objs.popup :as popup]

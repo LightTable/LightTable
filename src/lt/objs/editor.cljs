@@ -1,4 +1,7 @@
 (ns lt.objs.editor
+  "Provide fns and behaviors for interfacing with a CodeMirror editor
+  object. Also manage defining and loading CodeMirror. For more about CodeMirror
+  objects see http://codemirror.org/doc/manual.html#CodeMirror"
   (:refer-clojure :exclude [val replace range])
   (:require [crate.core :as crate]
             [lt.objs.context :as ctx-obj]
@@ -15,19 +18,26 @@
         [lt.util.cljs :only [js->clj]])
   (:require-macros [lt.macros :refer [behavior]]))
 
-(defn ->cm-ed [e]
+(defn ->cm-ed
+  "Return editor's CodeMirror object"
+  [e]
   (if (satisfies? IDeref e)
     (:ed @e)
     e))
 
-(defn ->elem [e]
+(defn ->elem
+  "Return DOM element of editor's CodeMirror object"
+  [e]
   (.-parentElement (.getScrollerElement (->cm-ed e))))
 
 (defn set-val [e v]
   (. (->cm-ed e) (setValue (or v "")))
   e)
 
-(defn set-options [e m]
+(defn set-options
+  "Given a map of options, set each pair as an option on editor's
+  CodeMirror object"
+  [e m]
   (doseq [[k v] m]
     (.setOption (->cm-ed e) (name k) v))
   e)
@@ -82,10 +92,14 @@
       (.swapDoc e (-> (:doc context) deref :doc)))
     e))
 
-(defn on [ed ev func]
+(defn on
+  "Register event handler on editor's CodeMirror object"
+  [ed ev func]
   (.on (->cm-ed ed) (name ev) func))
 
-(defn off [ed ev func]
+(defn off
+  "Remove event handler on editor's CodeMirror object"
+  [ed ev func]
   (.off (->cm-ed ed) (name ev) func))
 
 (defn wrap-object-events [ed obj]
@@ -106,7 +120,9 @@
 ;; Params
 ;;*********************************************************
 
-(defn ->val [e]
+(defn ->val
+  "Return editor's CodeMirror object buffer contents"
+  [e]
   (. (->cm-ed e) (getValue)))
 
 (defn ->token [e pos]
@@ -130,10 +146,14 @@
   e)
 
 (defn cursor
+  "Return cursor of editor's CodeMirror object as js object.
+   Example: #js {:line 144, :ch 9}"
   ([e] (cursor e nil))
   ([e side] (.getCursor (->cm-ed e) side)))
 
-(defn ->cursor [e & [side]]
+(defn ->cursor
+  "Same as cursor but returned as cljs map"
+  [e & [side]]
   (let [pos (cursor e side)]
     {:line (.-line pos)
      :ch (.-ch pos)}))
@@ -150,7 +170,9 @@
 (defn bookmark [e from widg]
   (.setBookmark (->cm-ed e) (clj->js from) (clj->js widg)))
 
-(defn option [e o]
+(defn option
+  "Return value for option name on editor's CodeMirror object"
+  [e o]
   (.getOption (->cm-ed e) (name o)))
 
 (defn set-mode [e m]

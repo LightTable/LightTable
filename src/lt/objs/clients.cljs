@@ -1,4 +1,6 @@
 (ns lt.objs.clients
+  "Provide clients object for managing multiple types of clients e.g. browser
+  or Clojure and their connections"
   (:refer-clojure :exclude [send])
   (:require [lt.object :as object]
             [lt.util.js :refer [wait]]

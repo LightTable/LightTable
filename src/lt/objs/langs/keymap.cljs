@@ -1,4 +1,5 @@
 (ns lt.objs.langs.keymap
+  "Provide hints for keymaps"
   (:require [lt.object :as object]
             [lt.objs.context :as ctx]
             [lt.objs.command :as cmd]

@@ -1,4 +1,5 @@
 (ns lt.objs.docs
+  "Provide command and behavior(s) to see LT documentation"
   (:require [lt.object :as object]
             [lt.objs.command :as cmd]
             [lt.objs.tabs :as tabs])

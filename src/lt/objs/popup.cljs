@@ -1,4 +1,5 @@
 (ns lt.objs.popup
+  "Provide popup object for displaying popups"
   (:require [lt.object :as object]
             [lt.objs.command :as cmd]
             [lt.objs.context :as ctx]

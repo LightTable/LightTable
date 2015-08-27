@@ -1,4 +1,5 @@
 (ns lt.objs.cache
+  "Provide cache which persists to disk and thus across application reboots"
   (:require [lt.object :as object]
             [lt.objs.files :as files]
             [cljs.reader :as reader])

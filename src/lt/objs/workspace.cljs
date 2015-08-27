@@ -1,4 +1,5 @@
 (ns lt.objs.workspace
+  "Provide workspace object and associated behaviors"
   (:require [lt.object :as object]
             [lt.objs.app :as app]
             [lt.objs.files :as files]

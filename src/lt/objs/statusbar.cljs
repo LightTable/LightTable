@@ -1,4 +1,6 @@
 (ns lt.objs.statusbar
+  "Provide statusbar functionality e.g. current line and column.
+  Statusbar is close to the bottom but above bottombar"
   (:require [lt.object :as object]
             [lt.objs.tabs :as tabs]
             [lt.objs.canvas :as canvas]

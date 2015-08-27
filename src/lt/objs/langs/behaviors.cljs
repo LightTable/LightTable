@@ -1,4 +1,5 @@
 (ns lt.objs.langs.behaviors
+  "Provide hints for behaviors"
   (:require [lt.object :as object]
             [lt.objs.context :as ctx]
             [lt.objs.command :as cmd]

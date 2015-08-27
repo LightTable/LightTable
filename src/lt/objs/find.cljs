@@ -1,4 +1,5 @@
 (ns lt.objs.find
+  "Provide find and replace functionality for current file"
   (:require [lt.object :as object]
             [lt.objs.context :as ctx]
             [lt.objs.statusbar :as statusbar]

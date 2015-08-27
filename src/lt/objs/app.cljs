@@ -1,4 +1,6 @@
 (ns lt.objs.app
+  "Provide app object which manages app startup, app shutdown and
+  window related features"
   (:require [lt.object :as object]
             [lt.objs.platform :as platform]
             [lt.objs.command :as cmd]

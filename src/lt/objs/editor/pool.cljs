@@ -1,4 +1,5 @@
 (ns lt.objs.editor.pool
+  "Provide manager for managing a pool of editors and several misc editor commands"
   (:require [lt.object :as object]
             [lt.objs.app :as app]
             [lt.objs.document :as doc]
@@ -44,12 +45,16 @@
 (defn unsaved? []
   (some #(:dirty (deref %)) (object/by-tag :editor)))
 
-(defn by-path [path]
+(defn by-path
+  "Return editor objects that edit given path"
+  [path]
   (when path
     (let [path (string/lower-case path)]
       (filter #(= (-> @% :info (get :path) (or "") string/lower-case) path) (object/by-tag :editor)))))
 
-(defn containing-path [path]
+(defn containing-path
+  "Return editor objects that edit paths containing given path string"
+  [path]
   (let [path (string/lower-case path)]
     (filter #(> (.indexOf (-> @% :info :path (or "") string/lower-case) path) -1) (object/by-tag :editor))))
 
@@ -68,7 +73,9 @@
 
 (def pool (object/create ::pool))
 
-(defn last-active []
+(defn last-active
+  "Return current editor object (last active in pool)"
+  []
   (let [l (:last @pool)]
     (when (and l @l)
       l)))
