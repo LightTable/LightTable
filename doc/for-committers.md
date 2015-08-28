@@ -5,6 +5,12 @@
 
 Current ClojureScript version and libraries we use are in [project.clj](https://github.com/LightTable/LightTable/blob/master/project.clj).
 
+### Notable JS dependencies
+
+* [CodeMirror](http://codemirror.org/) for the editor
+* [Mousetrap](https://github.com/LightTable/LightTable/blob/686c9b1e5e24fcb08ff44eb57eb7889e31e37806/deploy/core/node_modules/lighttable/util/keyevents.js) for handling keyboard shortcuts
+* [jQuery throttle/debounce plugin](https://github.com/LightTable/LightTable/blob/686c9b1e5e24fcb08ff44eb57eb7889e31e37806/deploy/core/node_modules/lighttable/util/throttle.js)
+
 ### Node packages
 
 Node package installs last done with node v0.12.7 and npm v2.12.1.
@@ -27,7 +33,7 @@ dependencies, forked dependencies and Light Table specific libraries:
 
 ### Electron
 
-See [Electron guide](electron-guide.md)
+Allows us to build cross platfrom desktop apps. See [Electron guide](electron-guide.md)
 
 ## Other
 
