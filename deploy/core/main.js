@@ -2,9 +2,7 @@
 
 var app = require('app'),  // Module to control application life.
     BrowserWindow = require('browser-window'),  // Module to create native browser window.
-    dialog = require("dialog"),
     ipc = require("ipc"),
-    fs = require('fs'),
     optimist = require('optimist');
 
 // Keep a global reference of the window object, if you don't, the window will
