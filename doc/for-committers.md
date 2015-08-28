@@ -25,10 +25,16 @@ dependencies, forked dependencies and Light Table specific libraries:
   * codemirror\_addons - Provides codemirror addons
   * lighttable - Mostly lighttable js libs _except for_ lighttable/util/{keyevents.js,throttle.js} which should be moved to vendored dependencies.
 
+### Electron
+
+See [Electron guide](electron-guide.md)
+
+## Other
+
 ### Code Reading
 
 When reading LT's source you may come across a fn that doesn't have an obvious use and may appear to
 be unused. Some tips to confirm how it is/was used:
 
 * Do a LightTable user search for the given fn. For example, to see where [proc/exec is used](https://github.com/search?utf8=%E2%9C%93&q=proc%2Fexec+user%3ALightTable&type=Code&ref=searchresults)
-* `git log -u -S WORD` will do a code history for WORD
+* `git log -u -S WORD` will do a code history search for WORD
