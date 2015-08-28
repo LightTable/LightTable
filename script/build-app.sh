@@ -68,7 +68,10 @@ cp LICENSE.md $RELEASE_DIR/LICENSE
 
 mkdir $RELEASE_RSRC/app
 cp -R deploy/core $RELEASE_RSRC/app/
-cp deploy/package.json $RELEASE_RSRC/app/
+cp deploy/core/package.json $RELEASE_RSRC/app/
+# sed -i with arg is only cross platform way. -i '' doesn't work across platforms
+sed -i.bak 's/"main.js"/"core\/main.js"/' $RELEASE_RSRC/app/package.json
+rm $RELEASE_RSRC/app/package.json.bak
 cp -R deploy/settings $RELEASE_RSRC/app/
 cp -R deploy/plugins "${RELEASE_RSRC}"/app/
 rm -rf "${RELEASE_RSRC}"/app/plugins/*/.git

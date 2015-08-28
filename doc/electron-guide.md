@@ -4,37 +4,25 @@ Please read [Electron's Quick start](https://github.com/atom/electron/blob/maste
 
 ## Electron App Layout
 
-A normal Electron app has this structure:
+Light Table's Electron app has the following layout:
 
 ```
-electron-app/
+deploy/core/
 ├── package.json
 ├── main.js
-├── index.html
+├── LightTable.html
 ├── node_modules/
-└── src/
-```
-
-Light Table is structured with most files nested in core/ for historical reasons:
-
-
-```
-deploy/
-├── package.json
-├── core/main.js
-├── core/LightTable.html
-├── core/node_modules/
-└── ../src/
+└── ../../src/
 ```
 
 Description of each file/directory:
 
-* [package.json](package.json) - This is a manifest file that sets the name, version and the js file to start the main process. To learn more about how Electron uses it [read the source](https://github.com/atom/electron/blob/c441dd143690aab71a925f0b941a6d9760768fa5/atom/browser/lib/init.coffee#L62).
+* [package.json](../deploy/core/package.json) - This is a manifest file that sets the name, version and the js file to start the main process. To learn more about how Electron uses it [read the source](https://github.com/atom/electron/blob/c441dd143690aab71a925f0b941a6d9760768fa5/atom/browser/lib/init.coffee#L62).
    * Our package.json has an additional 'browserWindowOptions' key. This key is used by the main process to set [BrowserWindow](https://github.com/atom/electron/blob/master/docs/api/browser-window.md) options. This is placed in package.json because it is a declaration of an Electron app, like the rest of the file.
-* [core/main.js](core/main.js) - This is the heart of the main process. _All_ GUI interactions run through this file. This also handles the CLI. Recommend understanding this file.
-* [LightTable.html](LightTable.html) - This is the web page we see as our editor. It lives in the renderer process.
-* [core/node\_modules](core/node_modules) - These are node packages used by the renderer process. These are described in [this doc](../doc/for-committers.md#node-packages)
-* [../src/](../src) - This is the ClojureScript code that is run in the renderer process. It is [loaded by LightTable.html](https://github.com/LightTable/LightTable/blob/8e8d20a5da5d2ee42db4ff761eb2cd15a2c178b2/deploy/core/LightTable.html#L24-L40).
+* [main.js](../deploy/core/main.js) - This is the heart of the main process. _All_ GUI interactions run through this file. This also handles the CLI. Recommend understanding this file.
+* [LightTable.html](../deploy/core/LightTable.html) - This is the web page we see as our editor. It lives in the renderer process.
+* [node\_modules](../deploy/core/node_modules) - These are node packages used by the renderer process. These are described in [this doc](../doc/for-committers.md#node-packages)
+* [../../src/](../src) - This is the ClojureScript code that is run in the renderer process. It is [loaded by LightTable.html](https://github.com/LightTable/LightTable/blob/8e8d20a5da5d2ee42db4ff761eb2cd15a2c178b2/deploy/core/LightTable.html#L24-L40).
 
 ## Miscellaneous Pointers
 

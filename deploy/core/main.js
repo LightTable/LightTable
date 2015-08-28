@@ -12,7 +12,7 @@ var app = require('app'),  // Module to control application life.
 var windows = {};
 global.browserOpenFiles = []; // Track files for open-file event
 
-var packageJSON = require(__dirname + '/../package.json');
+var packageJSON = require(__dirname + '/package.json');
 
 function createWindow() {
   var browserWindowOptions = packageJSON.browserWindowOptions;
