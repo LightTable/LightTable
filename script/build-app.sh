@@ -11,7 +11,7 @@ cd "$(dirname "${BASH_SOURCE[0]}")"; cd ..
 # Get OS-specific Electron details
 #----------------------------------------------------------------------
 
-ELECTRON_DIR="shell/electron"
+ELECTRON_DIR="deploy/electron/electron"
 
 # from: http://stackoverflow.com/a/17072017/142317
 # Will need to change Atom.app/atom/atom.exe to Electron.app/exe once we move to ^0.24.0 https://github.com/atom/grunt-download-electron/issues/30
@@ -20,19 +20,19 @@ if [ "$(uname)" == "Darwin" ]; then
   EXE="Atom.app/Contents/MacOS/Atom"
   PLIST="Atom.app/Contents/Info.plist"
   RESOURCES="Atom.app/Contents/Resources"
-  PLATFORM_DIR="platform/mac"
+  PLATFORM_DIR="deploy/platform/mac"
 
 elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
   OS="linux"
   EXE="electron"
   RESOURCES="resources"
-  PLATFORM_DIR="platform/linux"
+  PLATFORM_DIR="deploy/platform/linux"
 
 elif [ "$(expr substr $(uname -s) 1 9)" == "CYGWIN_NT" ]; then
   OS="windows"
   EXE="electron.exe"
   RESOURCES="resources"
-  PLATFORM_DIR="platform/win"
+  PLATFORM_DIR="deploy/platform/win"
 
 else
   echo "Cannot detect a supported OS."
