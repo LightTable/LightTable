@@ -153,7 +153,7 @@
 		</dict>
 	</array>
 	<key>CFBundleExecutable</key>
-	<string>Atom</string>
+	<string>Electron</string>
 	<key>CFBundleIconFile</key>
 	<string>app/core/img/app.icns</string>
 	<key>CFBundleIdentifier</key>

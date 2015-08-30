@@ -19,4 +19,4 @@ then
 	exit 1
 fi
 
-LTCLI=true "${APP_DIR}/LightTable.app/Contents/MacOS/Atom" "$@" &
+LTCLI=true "${APP_DIR}/LightTable.app/Contents/MacOS/Electron" "$@" &

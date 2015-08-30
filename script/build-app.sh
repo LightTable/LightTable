@@ -14,23 +14,19 @@ cd "$(dirname "${BASH_SOURCE[0]}")"; cd ..
 ELECTRON_DIR="deploy/electron/electron"
 
 # from: http://stackoverflow.com/a/17072017/142317
-# Will need to change Atom.app/atom/atom.exe to Electron.app/exe once we move to ^0.24.0 https://github.com/atom/grunt-download-electron/issues/30
 if [ "$(uname)" == "Darwin" ]; then
   OS="mac"
-  EXE="Atom.app/Contents/MacOS/Atom"
-  PLIST="Atom.app/Contents/Info.plist"
-  RESOURCES="Atom.app/Contents/Resources"
+  PLIST="Electron.app/Contents/Info.plist"
+  RESOURCES="Electron.app/Contents/Resources"
   PLATFORM_DIR="deploy/platform/mac"
 
 elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
   OS="linux"
-  EXE="electron"
   RESOURCES="resources"
   PLATFORM_DIR="deploy/platform/linux"
 
 elif [ "$(expr substr $(uname -s) 1 9)" == "CYGWIN_NT" ]; then
   OS="windows"
-  EXE="electron.exe"
   RESOURCES="resources"
   PLATFORM_DIR="deploy/platform/win"
 
@@ -88,7 +84,7 @@ if [ "$OS" == "mac" ]; then
   FULL_PLIST="$(pwd)/$RELEASE_DIR/$PLIST"
   defaults write $FULL_PLIST CFBundleShortVersionString $VERSION
 
-  mv $RELEASE_DIR/Atom.app $RELEASE_DIR/LightTable.app
+  mv $RELEASE_DIR/Electron.app $RELEASE_DIR/LightTable.app
 
   # Sign app to avoid endless “accept incoming connections” dialogs
   codesign --force --deep --sign - $RELEASE_DIR/LightTable.app
@@ -97,11 +93,11 @@ elif [ "$OS" == "linux" ]; then
 
   cp $PLATFORM_DIR/light $RELEASE_DIR/
 
-  mv $RELEASE_DIR/atom $RELEASE_DIR/LightTable
+  mv $RELEASE_DIR/electron $RELEASE_DIR/LightTable
 
 elif [ "$OS" == "windows" ]; then
 
-  mv $RELEASE_DIR/atom.exe $RELEASE_DIR/LightTable.exe
+  mv $RELEASE_DIR/electron.exe $RELEASE_DIR/LightTable.exe
 
 fi
 
