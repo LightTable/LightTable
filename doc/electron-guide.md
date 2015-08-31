@@ -28,6 +28,7 @@ Description of each file/directory:
 
 * Communication between `main.js` (main process) and ClojureScript code (renderer process) happens through [ipc messages](https://github.com/atom/electron/blob/master/docs/api/ipc-main-process.md) and [remote objects](https://github.com/atom/electron/blob/master/docs/api/remote.md).
   * For example, when a window [receives a focus event](https://github.com/LightTable/LightTable/blob/686c9b1e5e24fcb08ff44eb57eb7889e31e37806/deploy/core/main.js#L33-L36), the main process sends an ipc message on the "app" channel to the renderer process. The renderer process [receives that message](https://github.com/LightTable/LightTable/blob/686c9b1e5e24fcb08ff44eb57eb7889e31e37806/src/lt/objs/app.cljs#L228) and invokes a :focus trigger on the app object.
+  * IPC messages between the main and renderer process can be logged in the terminal with $IPC\_DEBUG e.g. `IPC_DEBUG=1 script/light.sh`.
 * We use [webview](https://github.com/atom/electron/blob/master/docs/api/web-view-tag.md) for our browser.
 * We use [remote-debugging-port](https://github.com/atom/electron/blob/1bc49487add140f22ea4e454dcb0050e08679b4b/docs/api/chrome-command-line-switches.md#--remote-debugging-portport) to do browser eval.
 

@@ -12,6 +12,7 @@ global.browserOpenFiles = []; // Track files for open-file event
 
 var packageJSON = require(__dirname + '/package.json');
 
+// Returns Window object
 function createWindow() {
   var browserWindowOptions = packageJSON.browserWindowOptions;
   browserWindowOptions.icon = __dirname + '/' + browserWindowOptions.icon;
@@ -125,5 +126,25 @@ function start() {
   });
   parseArgs();
 };
+
+// Set $IPC_DEBUG to debug incoming and outgoing ipc messages for the main process
+if (process.env["IPC_DEBUG"]) {
+  var oldOn = ipc.on;
+  ipc.on = function (channel, cb) {
+    oldOn.call(ipc, channel, function() {
+      console.log("\t\t\t\t\t->MAIN", channel, Array.prototype.slice.call(arguments).join(', '));
+      cb.apply(null, arguments);
+    });
+  };
+  var logSend = function (window) {
+    var oldSend = window.webContents.send;
+    window.webContents.send = function () {
+      console.log("\t\t\t\t\tMAIN->", Array.prototype.slice.call(arguments).join(', '));
+      oldSend.apply(window.webContents, arguments);
+    };
+  };
+  var oldCreateWindow = createWindow;
+  var createWindow = function() { logSend(oldCreateWindow()); };
+}
 
 start();
