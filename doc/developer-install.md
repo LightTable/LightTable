@@ -3,7 +3,7 @@
 ## Prerequisites
 
 - [Leiningen 2.x](http://leiningen.org/)
-- [Node.js and npm](http://nodejs.org/download/)
+- [io.js and npm](https://iojs.org/). To avoid clobbering an existing node install, [use nvm](https://github.com/creationix/nvm).
 
 ## OS Specific Prerequisites
 
