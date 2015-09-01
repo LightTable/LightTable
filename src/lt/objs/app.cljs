@@ -34,10 +34,12 @@
 (defn close
   ([] (close false))
   ([force?]
-   (when force?
-     (object/raise app :closing)
-     (object/raise app :closed))
-   (.close win)))
+   (if force?
+     (do
+       (object/raise app :closing)
+       (object/raise app :closed)
+       (.destroy win))
+     (.close win))))
 
 (defn refresh []
   (js/window.location.reload true))
@@ -227,8 +229,6 @@
 ;; Handles events e.g. focus, blur and close
 (ipc/on "app" #(object/raise app (keyword %)))
 
-(set! (.-onbeforeunload js/window) (fn []
-                                    "This will navigate the main LT window and all work will be lost, are you sure you want to do this?"))
 
 ;;*********************************************************
 ;; Commands
