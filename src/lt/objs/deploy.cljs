@@ -154,9 +154,10 @@
                        (notifos/set-msg! (str "At latest version: " (:version version))))))))))
 
 (defn binary-version
-  "Binary/atom-shell version. The two versions are in sync since binaries updates
-  only occur with atom-shell updates."
+  "Binary/electron version. The two versions are in sync since binaries updates
+  only occur with electron updates."
   []
+  ;; Still identifies as old electron name until we use a recent electron version
   (aget js/process.versions "atom-shell"))
 
 (defui button [label & [cb]]
@@ -181,8 +182,8 @@
 (behavior ::check-deploy
           :triggers #{:deploy}
           :reaction (fn [this]
-                      ;; Latest :atom-shell version changes after LT auto-updates and user restarts
-                      (when (is-newer? (binary-version) (:atom-shell version))
+                      ;; Latest :electron version changes after LT auto-updates and user restarts
+                      (when (is-newer? (binary-version) (:electron version))
                         (alert-binary-update))))
 
 (behavior ::check-version

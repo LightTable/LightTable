@@ -1,6 +1,20 @@
 {
-  "name": "LightTablePackages",
-  "description": "Vendored node dependencies for Light Table",
+  "name": "LightTable",
+  "description": "LightTable Electron App",
+  "version": "0.8.0",
+  "main": "main.js",
+  "browserWindowOptions": {
+    "icon": "img/lticon.png",
+    "width": 1024,
+    "height": 700,
+    "min-width": 400,
+    "min-height": 400,
+    "web-preferences": {
+      "webgl": true,
+      "webaudio": true,
+      "plugins": true
+    }
+  },
   "dependencies": {
     "codemirror": "^4.7.0",
     "optimist": "^0.5.2",

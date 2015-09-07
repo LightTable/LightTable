@@ -9,14 +9,14 @@ cd "$(dirname "${BASH_SOURCE[0]}")"; cd ..
 DIR=$(pwd)
 
 if [ "$(uname)" == "Darwin" ]; then
-  CLI="${DIR}/shell/electron/Atom.app/Contents/MacOS/Atom"
+  CLI="${DIR}/deploy/electron/electron/Electron.app/Contents/MacOS/Electron"
 elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
-  CLI="${DIR}/shell/electron/atom"
+  CLI="${DIR}/deploy/electron/electron/electron"
 elif [ "$(expr substr $(uname -s) 1 9)" == "CYGWIN_NT" ]; then
-  CLI="${DIR}/shell/electron/atom.exe"
+  CLI="${DIR}/deploy/electron/electron/electron.exe"
 else
   echo "Cannot detect a supported OS."
   exit 1
 fi
 
-LT_DEV_CLI=true "$CLI" deploy "$@"
+LT_DEV_CLI=true "$CLI" deploy/core "$@"

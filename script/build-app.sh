@@ -11,28 +11,24 @@ cd "$(dirname "${BASH_SOURCE[0]}")"; cd ..
 # Get OS-specific Electron details
 #----------------------------------------------------------------------
 
-ELECTRON_DIR="shell/electron"
+ELECTRON_DIR="deploy/electron/electron"
 
 # from: http://stackoverflow.com/a/17072017/142317
-# Will need to change Atom.app/atom/atom.exe to Electron.app/exe once we move to ^0.24.0 https://github.com/atom/grunt-download-electron/issues/30
 if [ "$(uname)" == "Darwin" ]; then
   OS="mac"
-  EXE="Atom.app/Contents/MacOS/Atom"
-  PLIST="Atom.app/Contents/Info.plist"
-  RESOURCES="Atom.app/Contents/Resources"
-  PLATFORM_DIR="platform/mac"
+  PLIST="Electron.app/Contents/Info.plist"
+  RESOURCES="Electron.app/Contents/Resources"
+  PLATFORM_DIR="deploy/platform/mac"
 
 elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
   OS="linux"
-  EXE="electron"
   RESOURCES="resources"
-  PLATFORM_DIR="platform/linux"
+  PLATFORM_DIR="deploy/platform/linux"
 
 elif [ "$(expr substr $(uname -s) 1 9)" == "CYGWIN_NT" ]; then
   OS="windows"
-  EXE="electron.exe"
   RESOURCES="resources"
-  PLATFORM_DIR="platform/win"
+  PLATFORM_DIR="deploy/platform/win"
 
 else
   echo "Cannot detect a supported OS."
@@ -68,7 +64,10 @@ cp LICENSE.md $RELEASE_DIR/LICENSE
 
 mkdir $RELEASE_RSRC/app
 cp -R deploy/core $RELEASE_RSRC/app/
-cp deploy/package.json $RELEASE_RSRC/app/
+cp deploy/core/package.json $RELEASE_RSRC/app/
+# sed -i with arg is only cross platform way. -i '' doesn't work across platforms
+sed -i.bak 's/"main.js"/"core\/main.js"/' $RELEASE_RSRC/app/package.json
+rm $RELEASE_RSRC/app/package.json.bak
 cp -R deploy/settings $RELEASE_RSRC/app/
 cp -R deploy/plugins "${RELEASE_RSRC}"/app/
 rm -rf "${RELEASE_RSRC}"/app/plugins/*/.git
@@ -85,7 +84,7 @@ if [ "$OS" == "mac" ]; then
   FULL_PLIST="$(pwd)/$RELEASE_DIR/$PLIST"
   defaults write $FULL_PLIST CFBundleShortVersionString $VERSION
 
-  mv $RELEASE_DIR/Atom.app $RELEASE_DIR/LightTable.app
+  mv $RELEASE_DIR/Electron.app $RELEASE_DIR/LightTable.app
 
   # Sign app to avoid endless “accept incoming connections” dialogs
   codesign --force --deep --sign - $RELEASE_DIR/LightTable.app
@@ -94,11 +93,11 @@ elif [ "$OS" == "linux" ]; then
 
   cp $PLATFORM_DIR/light $RELEASE_DIR/
 
-  mv $RELEASE_DIR/atom $RELEASE_DIR/LightTable
+  mv $RELEASE_DIR/electron $RELEASE_DIR/LightTable
 
 elif [ "$OS" == "windows" ]; then
 
-  mv $RELEASE_DIR/atom.exe $RELEASE_DIR/LightTable.exe
+  mv $RELEASE_DIR/electron.exe $RELEASE_DIR/LightTable.exe
 
 fi
 

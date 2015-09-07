@@ -36,4 +36,4 @@ When contributing:
 * For any other contributions, please discuss with us as early as possible. We want your hard work to count.
 * Please add docstrings to non-trivial functions that are added. Most existing code doesn't have this but we'd like to improve this.
 * We are not currently seeking refactoring contributions or code convention tweaks e.g. whitespace. This may change at a later point when we have automated tests and an explicit code convention.
-
+* For contributions to a [vendored dependency](doc/for-committers.md#node-packages), they must be sent upstream and then we can update to the new version.

@@ -19,8 +19,7 @@ npm --version >/dev/null 2>&1 || { echo >&2 "Please install npm before running t
 cd "$(dirname "${BASH_SOURCE[0]}")"; cd ..
 
 # Ensure we have current version of electron 
-pushd shell
-  npm install grunt-cli
+pushd deploy/electron
   npm install
   node_modules/.bin/grunt download-electron
 popd
