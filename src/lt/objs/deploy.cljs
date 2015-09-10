@@ -157,8 +157,7 @@
   "Binary/electron version. The two versions are in sync since binaries updates
   only occur with electron updates."
   []
-  ;; Still identifies as old electron name until we use a recent electron version
-  (aget js/process.versions "atom-shell"))
+  (aget js/process.versions "electron"))
 
 (defui button [label & [cb]]
        [:div.button.right label]
