@@ -51,6 +51,12 @@ function createWindow() {
   // and load the index.html of the app.
   window.loadUrl('file://' + __dirname + '/LightTable.html?id=' + window.id);
 
+  // Notify LT that the user requested to close the window/app
+  window.on("close", function(evt) {
+    window.webContents.send("app", "close!");
+    evt.preventDefault();
+  });
+
   // Emitted when the window is closed.
   window.on('closed', function() {
     windows[window.id] = null;
