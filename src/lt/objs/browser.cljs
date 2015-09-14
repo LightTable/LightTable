@@ -139,6 +139,7 @@
                   :triggers #{:close}
                   :reaction (fn [this]
                               (object/raise this :inactive)
+                              (object/destroy! (:devtools-client @this))
                               (object/destroy! this)))
 
 (behavior ::rem-client
