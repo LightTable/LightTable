@@ -382,8 +382,7 @@
 (cmd/command {:command :behaviors.modify-workspace
               :desc "Settings: Workspace behaviors"
               :exec (fn []
-                      (cmd/exec! :opener.open-info {:path "workspace.behaviors"
-                                                    :mime "text/x-clojure"
+                      (cmd/exec! :opener.open-info {:mime "text/x-clojure"
                                                     :name "workspace.behaviors"
                                                     :tags [:editor.behaviors :editor.behaviors.workspace]
                                                     :content (:ws-behaviors @workspace/current-ws "")}))})
