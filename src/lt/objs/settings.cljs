@@ -106,14 +106,17 @@
          (sort-by first)
          (vec))))
 
-(defn parse-file [file]
-  (let [behs (-> (files/open-sync file)
-                 :content
-                 (safe-read file))]
-    (cond
+(defn parse-behaviors [behs file]
+  (cond
      (map? behs) behs
      (vector? behs) (flat-behaviors->map behs)
-     :else (console/error (str "Invalid behaviors file: " file ". Behaviors must be either a vector or a map.")))))
+     :else (console/error (str "Invalid behaviors file: " file ". Behaviors must be either a vector or a map."))))
+
+(defn parse-file [file]
+  (parse-behaviors (-> (files/open-sync file)
+                       :content
+                       (safe-read file))
+                   file))
 
 (defn pprint-flat-behaviors [flat]
   (-> (reduce (fn [result cur]
@@ -145,7 +148,9 @@
                               ))
         ws-diff (:ws-behaviors @workspace/current-ws)
         final (if (and ws-diff (not (empty? ws-diff)))
-                (behavior-diff (safe-read ws-diff "workspace.behaviors") final)
+                (behavior-diff (parse-behaviors (safe-read ws-diff "workspace.behaviors")
+                                                "workspace.behaviors")
+                               final)
                 final)]
     (reset! object/negated-tags (or (:- final) {}))
     (reset! object/tags (or (:+ final) {}))))
@@ -279,10 +284,10 @@
           :reaction (fn [workspace old]
                       (let [old (:ws-behaviors old)
                             old (when-not (empty? old)
-                                  (reader/read-string old))
+                                  (parse-behaviors (reader/read-string old) "workspace.behaviors"))
                             neue (:ws-behaviors @workspace)
                             neue (when-not (empty? neue)
-                                   (reader/read-string neue))]
+                                   (parse-behaviors (reader/read-string neue) "workspace.behaviors"))]
                         (when old
                           (apply-diff (reverse-diff old))
                           (refresh-diffed old))
@@ -382,8 +387,7 @@
 (cmd/command {:command :behaviors.modify-workspace
               :desc "Settings: Workspace behaviors"
               :exec (fn []
-                      (cmd/exec! :opener.open-info {:path "workspace.behaviors"
-                                                    :mime "text/x-clojure"
+                      (cmd/exec! :opener.open-info {:mime "text/x-clojure"
                                                     :name "workspace.behaviors"
                                                     :tags [:editor.behaviors :editor.behaviors.workspace]
                                                     :content (:ws-behaviors @workspace/current-ws "")}))})
