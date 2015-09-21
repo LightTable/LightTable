@@ -492,8 +492,8 @@
            (dom/prevent e)
            (dom/stop-propagation e)
            (discover-deps plugin (fn []
-                                   (cmd/exec! :behaviors.reload)
-                                   (object/raise manager :refresh!)))))
+                                   (object/raise manager :refresh!)
+                                   (cmd/exec! :behaviors.reload)))))
 
 (defui install-button [plugin]
   [:span.install]
@@ -501,8 +501,8 @@
            (this-as me
                     (discover-deps plugin (fn []
                                             (dom/remove (dom/parent me))
-                                            (cmd/exec! :behaviors.reload)
-                                            (object/raise manager :refresh!))))
+                                            (object/raise manager :refresh!)
+                                            (cmd/exec! :behaviors.reload))))
            (dom/prevent e)
            (dom/stop-propagation e)))
 
