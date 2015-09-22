@@ -121,7 +121,6 @@
     (-> (reduce (fn [final [name version]]
                   (let [name (cljs.core/name name)]
                     (if-let [cur (or (get all name) (get final name))]
-                      ;;check if it's newer
                       (if (deploy/is-newer? (:version cur) version)
                         (assoc! final name {:name name
                                             :version version})
@@ -411,42 +410,47 @@
     (doseq [dep missing]
       (discover-deps dep count-down))))
 
+(defn check-missing
+  "Check a plugins map for outdated or missing :dependencies and prompt
+  to install missing ones"
+  [deps]
+  (when-let [missing? (missing-deps deps)]
+    (popup/popup! {:header "Some plugin dependencies are missing."
+                   :body [:div
+                          [:span "We found that the following plugin dependencies are missing: "]
+                          (for [{:keys [name version]} missing?]
+                            [:div name " " version " "])
+                          [:span "Would you like us to install them?"]]
+                   :buttons [{:label "Cancel"}
+                             {:label "Install all"
+                              :action (fn []
+                                        (install-missing missing?))}]})))
+
 (defn available-plugins
-  [& {:keys [ignore-missing]}]
+  "Return a map of plugins by plugin name based on what's read from filesystem"
+  []
   (let [ds (concat (files/dirs user-plugins-dir)
                    (files/dirs plugins-dir)
                    [settings/user-plugin-dir])
         plugins (->> ds
                      (map plugin-info)
-                     (filterv identity))
-        final (-> (reduce (fn [final p]
-                            (if-let [cur (get final (:name p))]
-                              ;;check if it's newer
-                              (if (deploy/is-newer? (:version cur) (:version p))
-                                (assoc! final (:name p) p)
-                                final)
-                              (assoc! final (:name p) p)))
-                          (transient {})
-                          plugins)
-                  (persistent!))
-        missing? (missing-deps final)]
-    (when (and missing? (not ignore-missing))
-      (popup/popup! {:header "Some plugin dependencies are missing."
-                     :body [:div
-                            [:span "We found that the following plugin dependencies are missing: "]
-                            (for [{:keys [name version]} missing?]
-                              [:div name " " version " "])
-                            [:span "Would you like us to install them?"]]
-                     :buttons [{:label "Cancel"}
-                               {:label "Install all"
-                                :action (fn []
-                                          (install-missing missing?))}]}))
-    final))
+                     (filterv identity))]
+    (-> (reduce (fn [final p]
+                  (if-let [cur (get final (:name p))]
+                    ;;check if it's newer
+                    (if (deploy/is-newer? (:version cur) (:version p))
+                      (assoc! final (:name p) p)
+                      final)
+                    (assoc! final (:name p) p)))
+                (transient {})
+                plugins)
+        (persistent!))))
 
 (defn uninstall [plugin]
   (when (:dir plugin)
     (files/delete! (:dir plugin))
-    (object/raise manager :refresh!)))
+    ;; :ignore-missing b/c uninstalled shows up missing
+    (object/raise manager :refresh! :ignore-missing true)))
 
 ;;*********************************************************
 ;; Manager ui
@@ -644,16 +648,17 @@
 (behavior ::save-user-plugin-dependencies
           :triggers #{:refresh!}
           :desc "Saves dependencies to user's plugin.edn"
-          :reaction (fn [this]
+          :reaction (fn [this & opts]
                       ;; Use available-plugins b/c ::plugins aren't always up to date e.g. uninstall
-                      ;; :ignore-missing to avoid missing popup on uninstall
-                      (save-plugins (available-plugins :ignore-missing true))))
+                      (save-plugins (available-plugins))))
 
 (behavior ::render-installed-plugins
           :triggers #{:refresh!}
           :desc "Plugin Manager: refresh installed plugins"
-          :reaction (fn [this plugins]
+          :reaction (fn [this & {:keys [ignore-missing]}]
                       (object/merge! app/app {::plugins (available-plugins)})
+                      (when-not ignore-missing
+                        (check-missing (::plugins @app/app)))
                       (let [ul (dom/$ :.plugins (object/->content this))]
                         (dom/empty ul)
                         (dom/append ul (dom/fragment (map installed-plugin-ui (->> @app/app ::plugins vals (sort-by #(.toUpperCase (:name %))))))))))
@@ -721,7 +726,8 @@
                       (object/raise app/app :create-user-plugin)
                       (object/raise app/app :flatten-map-settings)
                       ;;load enabled plugins
-                      (object/merge! app/app {::plugins (available-plugins)})))
+                      (object/merge! app/app {::plugins (available-plugins)})
+                      (check-missing (::plugins @app/app))))
 
 (behavior ::behaviors.refreshed-load-keys
           :triggers #{:behaviors.refreshed}
