@@ -121,7 +121,6 @@
     (-> (reduce (fn [final [name version]]
                   (let [name (cljs.core/name name)]
                     (if-let [cur (or (get all name) (get final name))]
-                      ;;check if it's newer
                       (if (deploy/is-newer? (:version cur) version)
                         (assoc! final name {:name name
                                             :version version})
