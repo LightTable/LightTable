@@ -446,7 +446,8 @@
 (defn uninstall [plugin]
   (when (:dir plugin)
     (files/delete! (:dir plugin))
-    (object/raise manager :refresh!)))
+    ;; :ignore-missing b/c uninstalled shows up missing
+    (object/raise manager :refresh! :ignore-missing true)))
 
 ;;*********************************************************
 ;; Manager ui
@@ -644,16 +645,15 @@
 (behavior ::save-user-plugin-dependencies
           :triggers #{:refresh!}
           :desc "Saves dependencies to user's plugin.edn"
-          :reaction (fn [this]
+          :reaction (fn [this & opts]
                       ;; Use available-plugins b/c ::plugins aren't always up to date e.g. uninstall
-                      ;; :ignore-missing to avoid missing popup on uninstall
                       (save-plugins (available-plugins :ignore-missing true))))
 
 (behavior ::render-installed-plugins
           :triggers #{:refresh!}
           :desc "Plugin Manager: refresh installed plugins"
-          :reaction (fn [this plugins]
-                      (object/merge! app/app {::plugins (available-plugins)})
+          :reaction (fn [this & opts]
+                      (object/merge! app/app {::plugins (apply available-plugins opts)})
                       (let [ul (dom/$ :.plugins (object/->content this))]
                         (dom/empty ul)
                         (dom/append ul (dom/fragment (map installed-plugin-ui (->> @app/app ::plugins vals (sort-by #(.toUpperCase (:name %))))))))))
