@@ -8,14 +8,16 @@
                   :exclusions [org.apache.ant/ant]]
                  ]
   :jvm-opts ["-Xmx1g" "-XX:+UseConcMarkSweepGC"] ; cljsbuild eats memory
-  :cljsbuild {:builds [{:source-paths ["src"]
+  :cljsbuild {:builds [{:id "app"
+                        :source-paths ["src"]
                         :compiler {:optimizations :simple
                                    :externs ["externs/jquery.js" "externs/throttle.js" "externs/codemirror.js"]
                                    :source-map "deploy/core/node_modules/lighttable/bootstrap.js.map"
                                    :output-to "deploy/core/node_modules/lighttable/bootstrap.js"
                                    :output-dir "deploy/core/node_modules/lighttable/cljs/"
                                    :pretty-print true}}
-                       {:source-paths ["cljsdeps"]
+                       {:id "cljsdeps"
+                        :source-paths ["src-cljsdeps"]
                         :compiler {:optimizations :simple
                                    :output-to "deploy/core/node_modules/clojurescript/cljsDeps.js"
                                    :output-dir "deploy/core/node_modules/clojurescript/cljsDeps/"
