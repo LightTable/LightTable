@@ -12,7 +12,6 @@
             [crate.core :as crate]
             [lt.util.dom :as dom]
             [lt.util.js :refer [every wait ->clj]]
-            [lt.util.cljs :refer [js->clj]]
             [lt.util.ipc :as ipc]
             [crate.binding :refer [bound subatom]]
             [clojure.string :as string])

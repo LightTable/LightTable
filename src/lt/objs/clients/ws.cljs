@@ -6,7 +6,6 @@
             [lt.objs.files :as files]
             [lt.objs.clients :as clients]
             [lt.util.load :as load]
-            [lt.util.cljs :refer [js->clj]]
             [clojure.string :as string])
   (:use [lt.util.js :only [wait ->clj]])
   (:require-macros [lt.macros :refer [behavior]]))

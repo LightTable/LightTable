@@ -11,7 +11,6 @@
             [lt.objs.sidebar :as sidebar]
             [lt.util.dom :as dom]
             [lt.util.load :as load]
-            [lt.util.cljs :as cljs-util]
             [crate.core :as crate]
             [crate.binding :refer [bound subatom]])
   (:require-macros [lt.macros :refer [behavior defui background]]))
@@ -42,7 +41,7 @@
 (behavior ::workspace-files
                   :triggers #{:workspace-files}
                   :reaction (fn [this files]
-                              (object/merge! this {:files (cljs-util/js->clj files :keywordize-keys true)})
+                              (object/merge! this {:files (js->clj files :keywordize-keys true)})
                               (object/raise (:filter-list @this) :refresh!)
                               ))
 
