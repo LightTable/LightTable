@@ -17,10 +17,11 @@
   (-count [this] (.-length this))
 
   IIndexed
-  (-nth [this n]
-    (.item this n))
-  (-nth [this n not-found]
-        (or (.item this n) not-found)))
+  (-nth
+    ([this n]
+     (.item this n))
+    ([this n not-found]
+     (or (.item this n) not-found))))
 
 (extend-type js/NodeList
   ISeqable
@@ -30,10 +31,11 @@
   (-count [this] (.-length this))
 
   IIndexed
-  (-nth [this n]
-    (.item this n))
-  (-nth [this n not-found]
-        (or (.item this n) not-found)))
+  (-nth
+    ([this n]
+     (.item this n))
+    ([this n not-found]
+     (or (.item this n) not-found))))
 
 (defn text-node [text]
   (js/document.createTextNode text))

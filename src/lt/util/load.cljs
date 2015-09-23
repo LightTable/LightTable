@@ -9,8 +9,6 @@
 
 (def ^:dynamic *force-reload* false)
 
-(def fpath (js/require "path"))
-
 (def separator (.-sep fpath))
 
 (defn absolute? [path]

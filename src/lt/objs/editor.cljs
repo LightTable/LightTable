@@ -458,11 +458,6 @@
 ;;*********************************************************
 
 
-(behavior ::read-only
-          :triggers #{:init}
-          :reaction (fn [obj]
-                      (set-options (:ed @obj) {:readOnly "nocursor"})))
-
 (behavior ::wrap
           :triggers #{:object.instant :lt.object/tags-removed}
           :desc "Editor: Wrap lines"
