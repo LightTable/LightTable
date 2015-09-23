@@ -10,6 +10,7 @@
             [lt.objs.opener :as opener]
             [lt.objs.sidebar :as sidebar]
             [lt.util.dom :as dom]
+            [lt.objs.thread]
             [lt.util.load :as load]
             [crate.core :as crate]
             [crate.binding :refer [bound subatom]])
