@@ -21,12 +21,17 @@
                         :compiler {:optimizations :simple
                                    :output-to "deploy/core/node_modules/clojurescript/cljsDeps.js"
                                    :output-dir "deploy/core/node_modules/clojurescript/cljsDeps/"
-                                   :pretty-print true }}]}
+                                   :pretty-print true }} ]}
 
   ;; TODO: Remove separate :doc :dependencies after ClojureScript upgrade
   :profiles {:doc {:dependencies [[org.clojure/clojure "1.7.0"]
                                   [org.clojure/clojurescript "1.7.145"
-                                   :exclusions [org.apache.ant/ant]]]}}
+                                   :exclusions [org.apache.ant/ant]] ]}
+             :dev {:dependencies [[clj-webdriver "0.7.2"]
+                                  [org.seleniumhq.selenium/selenium-java "2.47.0"] 
+                                  [me.raynes/fs "1.4.6"]]
+                   :plugins [[test2junit "1.1.2"] 
+                             [lein-cljsbuild "1.0.1"]]}}
   :plugins [[lein-cljsbuild "1.0.1"]
             [lein-codox "0.9.5"]]
   :codox {:language :clojurescript
@@ -39,5 +44,4 @@
           ;; Be explicit that undocumented public fns should be documented
           :metadata {:doc "TODO: Add docstring"
                      :doc/format :markdown}}
-  :source-paths ["src/"]
-  )
+  :source-paths ["src/"])

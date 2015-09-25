@@ -1,0 +1,52 @@
+environment:
+    global:
+        CYG_ROOT: C:\cygwin
+        CYG_MIRROR: http://cygwin.mirror.constant.com
+        CYG_CACHE: C:\cygwin\var\cache\setup
+        CYG_BASH: C:\cygwin\bin\bash
+        GITHUB_OAUTH_READONLY_TOKEN: 9c40494099f5c56573b6438ff96dfddfb223cbcb
+cache:
+    - '%CYG_CACHE%'
+
+install:
+    - 'echo Setting up Cygwin dependencies'
+    - '%CYG_ROOT%\setup-x86.exe -qnNdO -R "%CYG_ROOT%" -s "%CYG_MIRROR%" -l "%CYG_CACHE%" -P autoconf -P automake -P bison -P gcc-core -P gcc-g++ -P mingw-runtime -P mingw-binutils -P mingw-gcc-core -P mingw-gcc-g++ -P mingw-pthreads -P mingw-w32api -P libtool -P make -P python -P gettext-devel -P gettext -P intltool -P libiconv -P pkg-config -P git -P wget -P curl -P unzip -P psmisc> NUL' 
+
+    - 'echo Check Cygwin setup'
+    - '%CYG_ROOT%/bin/bash -lc "cygcheck -dc cygwin"'
+    - 'echo Done setting up Cygwin'
+
+    - 'echo installing lein'
+    - ps: | 
+        $base = "https://raw.githubusercontent.com/technomancy/leiningen/"
+        $lein = $base + "stable/bin/lein.bat"
+        (new-object net.webclient).DownloadFile($lein, "c:/projects/lighttable/lein.bat")
+    - lein self-install
+    - 'echo Done installing lein'
+    #Add random location, this prevents qutation mark being added to 
+    #the current directory's path
+    - cmd: 'set PATH="%PATH%;%cd%;c:\windows\system32"'
+    - cmd: 'echo %PATH%'
+
+build_script:
+    - cmd: 'echo Cygwin root is: %CYG_ROOT%'
+    - cmd: 'echo Build folder is: %APPVEYOR_BUILD_FOLDER%'
+    - cmd: 'echo Repo build branch is: %APPVEYOR_REPO_BRANCH%'
+    - cmd: 'echo Repo build commit is: %APPVEYOR_REPO_COMMIT%'
+
+    - cmd: 'echo creating lein reference'
+    - '%CYG_ROOT%/bin/bash -lc "cd $APPVEYOR_BUILD_FOLDER; echo \"#!/bin/bash\" > lein.sh"'
+    - '%CYG_ROOT%/bin/bash -lc "cd $APPVEYOR_BUILD_FOLDER; echo \"./lein.bat \$@\" >> lein.sh"'
+    - '%CYG_ROOT%/bin/bash -lc "cd $APPVEYOR_BUILD_FOLDER; chmod a+x lein.sh"'
+    - '%CYG_ROOT%/bin/bash -lc "cd $APPVEYOR_BUILD_FOLDER; ln -s /cygdrive/c/projects/lighttable/lein.sh lein; ls -la"'
+
+    - cmd: 'echo Running build.sh'
+    - '%CYG_ROOT%/bin/bash -lc "cd $APPVEYOR_BUILD_FOLDER; ./script/build.sh"'
+
+    - '%CYG_ROOT%/bin/bash -lc "cd $APPVEYOR_BUILD_FOLDER; ./script/run-tests.sh"'
+    #DEBUG BEGIN, PAUSES BUILD PROCESS TO ALLOW FOR REMOTE DEBUGGING VIA RDP
+    #- ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
+    #- ps: throw "Failing tests"
+    #DBEUG END
+
+

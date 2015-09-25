@@ -6,7 +6,8 @@ module.exports = function(grunt) {
     "download-electron": {
       version: "0.36.7",
       outputDir: "./electron",
-      rebuild: true
+      rebuild: true,
+      token: process.env.GITHUB_OAUTH_READONLY_TOKEN
     }
   });
 

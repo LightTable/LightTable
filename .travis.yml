@@ -1,11 +1,27 @@
-language: clojure
+env:
+- TRAVIS=1
+os: 
+ - linux
+ - osx
 lein: lein
-script: "! lein cljsbuild once 2>&1 | grep WARNING:"
-jdk:
-- oraclejdk8
+env:
+  global:
+    GITHUB_OAUTH_READONLY_TOKEN: 9c40494099f5c56573b6438ff96dfddfb223cbcb
+script: 
+ - ./script/build.sh
+ - ./script/run-tests.sh
+language: java
+before_script:
+ - if [[ "${TRAVIS_OS_NAME}" = "linux" ]] ; then export DISPLAY=:99.0; sh -e /etc/init.d/xvfb start; sudo apt-get -qq update; sudo apt-get install -y leiningen; fi
+ - if [[ "${TRAVIS_OS_NAME}" = "osx" ]] ; then brew update;  brew install leiningen; fi
 notifications:
   irc: "chat.freenode.net#lighttable"
   email:
   - gabriel.horner@gmail.com
   - kenny.evitt@gmail.com
   - mrundberget@hotmail.com
+  - sbauer322@gmail.com
+addons:
+  apt:
+    packages:
+      - chromium-browser

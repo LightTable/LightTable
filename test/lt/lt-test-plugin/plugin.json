@@ -1,0 +1,8 @@
+{
+  "name": "LightTable Test Plugin",
+  "author": "Justin Taft",
+  "version": "0.0.1",
+  "source": "https://github.com/LightTable/LightTable",
+  "desc": "Mocks LightTable components so they can be tested",
+  "behaviors": "lighttable-test-plugin.behaviors"
+}

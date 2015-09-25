@@ -57,11 +57,6 @@ function createWindow() {
     evt.preventDefault();
   });
 
-  // Emitted when the window is closed.
-  window.on('closed', function() {
-    windows[window.id] = null;
-  });
-
   return window;
 };
 

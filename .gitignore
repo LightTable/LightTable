@@ -6,6 +6,7 @@
 /deploy/core/node_modules/lighttable/bootstrap.js*
 .lein-deps-sum
 .lein-env
+.lein-failures
 .lein-plugins/
 .nrepl-port
 /builds/
