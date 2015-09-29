@@ -47,11 +47,12 @@ DEFAULT_VERSION=`echo $META | cut -d' ' -f3 | tr -d '"'`
 BUILDS=builds
 RELEASE="$NAME-$VERSION-$OS"
 RELEASE_DIR="$BUILDS/$RELEASE"
-RELEASE_TARBALL="$BUILDS/${RELEASE}.tar.gz"
+RELEASE_TARBALL="${RELEASE}.tar.gz"
 RELEASE_ZIP="${RELEASE}.zip"
 RELEASE_RSRC="$RELEASE_DIR/$RESOURCES"
 
 rm -rf $RELEASE_DIR $RELEASE_TARBALL $RELEASE_ZIP
+rm -rf $RELEASE_DIR "$BUILDS/$RELEASE_TARBALL" "$BUILDS/$RELEASE_ZIP"
 
 #----------------------------------------------------------------------
 # Copy Electron installation and app directory into output location
@@ -107,7 +108,9 @@ fi
 #----------------------------------------------------------------------
 
 if [ "$1" == "--tarball" ]; then
-  tar -zcvf $RELEASE_TARBALL $RELEASE_DIR
+  pushd $BUILDS
+  tar -zcvf $RELEASE_TARBALL $RELEASE/*
+  popd
 fi
 
 # Create zip file for Cygwin (Windows) using 7-Zip
