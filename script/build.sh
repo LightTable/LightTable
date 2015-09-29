@@ -33,8 +33,8 @@ fi
 lein cljsbuild clean && lein cljsbuild once
 
 # Fetch plugins
-PLUGINS=("Clojure,0.1.0" "CSS,0.0.6" "HTML,0.0.2" "Javascript,0.1.2"
-         "Paredit,0.0.4" "Python,0.0.5" "Rainbow,0.0.8")
+PLUGINS=("Clojure,0.2.0" "CSS,0.0.6" "HTML,0.0.2" "Javascript,0.1.3"
+         "Paredit,0.0.4" "Python,0.0.7" "Rainbow,0.0.8")
 
 # Plugins cache
 mkdir -p deploy/plugins
