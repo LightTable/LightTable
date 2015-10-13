@@ -305,14 +305,13 @@
                       (let [ed (:ed @this)
                             type (or (:type opts) :inline)
                             line (ed/line-handle ed (:line loc))
-                            ch (:ch loc)
                             res-obj (object/create ::inline-result {:ed this
                                                                     :class (name type)
                                                                     :opts opts
                                                                     :result res
                                                                     :loc loc
                                                                     :line line})]
-                        (when-let [prev (get (@this :widgets) [line ch type])]
+                        (when-let [prev (get (@this :widgets) [line type])]
                           (when (:open @prev)
                             (object/merge! res-obj {:open true}))
                           (object/raise prev :clear!))
@@ -320,7 +319,7 @@
                           (doseq [widget (map #(get (@this :widgets) [(ed/line-handle ed %) type]) (range (:start-line loc) (:line loc)))
                                   :when widget]
                             (object/raise widget :clear!)))
-                        (object/update! this [:widgets] assoc [line ch type] res-obj))))
+                        (object/update! this [:widgets] assoc [line type] res-obj))))
 
 ;;****************************************************
 ;; underline result
@@ -481,10 +480,8 @@
               :desc "Eval: Clear inline results"
               :exec (fn []
                       (when-let [ed (pool/last-active)]
-                        (let [widgets (:widgets @ed)]
-                          (object/merge! ed {:widgets {}})
-                          (doseq [[_ w] widgets]
-                            (object/raise w :clear!)))))})
+                        (doseq [[_ w] (:widgets @ed)]
+                          (object/raise w :clear!))))})
 
 (cmd/command {:command :eval-editor
               :desc "Eval: Eval editor contents"
