@@ -399,6 +399,7 @@
  [:hinter :lt.plugins.auto-complete/escape!]
  [:hinter :lt.plugins.auto-complete/select-unknown]
  [:hinter :lt.plugins.auto-complete/line-change]
+ [:hinter :lt.plugins.auto-complete/set-hint-limit 1000]
 
  [:inline.doc :lt.plugins.doc/clear]
 
