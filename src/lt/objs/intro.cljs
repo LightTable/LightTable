@@ -23,7 +23,7 @@
                                     "dark") ".png"))
 
 (defui docs []
-  [:button "Light Table's docs"]
+  [:button "Light Table's online docs"]
   :click (fn []
            (cmd/exec! :show-docs)))
 
