@@ -148,19 +148,32 @@
 
 (declare hinter)
 
+(defn remove-long-completions [hints]
+  (filter #(< (.-length (.-completion %)) (:hint-limit @hinter)) hints))
+
 (def hinter (-> (scmd/filter-list {:items (fn []
                                             (when-let [cur (pool/last-active)]
                                               (let [token (-> @hinter :starting-token :string)]
-                                                (distinct-completions
-                                                 (if token
-                                                   (remove #(= token (.-completion %))
-                                                           (object/raise-reduce cur :hints+ [] token))
-                                                   (object/raise-reduce cur :hints+ []))))))
+                                                (->> (if token
+                                                       (remove #(= token (.-completion %))
+                                                               (object/raise-reduce cur :hints+ [] token))
+                                                       (object/raise-reduce cur :hints+ []))
+                                                     remove-long-completions
+                                                     distinct-completions))))
                                    :key text|completion})
                 (object/add-tags [:hinter])))
 
 (defn on-line-change [line ch]
   (object/raise hinter :line-change line ch))
+
+(behavior ::set-hint-limit
+          :triggers #{:object.instant}
+          :type :user
+          :desc "Auto-complete: Set maximum length of an autocomplete hint"
+          :params [{:label "Number"
+                    :example 1000}]
+          :reaction (fn [this n]
+                      (object/merge! this {:hint-limit n})))
 
 (behavior ::textual-hints
           :triggers #{:hints+}
