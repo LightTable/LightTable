@@ -9,6 +9,7 @@ When filing a bug on GitHub, please help us help you by including the following:
 * *Steps to reproduce the bug.*
 * Your operating system, LT and relevant plugin versions.
 * Relevant configuration in your user.keymap and user.behaviors.
+* Error messages you see in your console. In your menu, select`View > Commands` and then search for and execute the `Console: Open the console in a tab` command. Go to the console tab and copy and paste its errors.
 
 Note: The issue tracker is mainly for bugs. Questions should be asked on the [Light Table Google group](https://groups.google.com/forum/#!forum/light-table-discussion).
 
