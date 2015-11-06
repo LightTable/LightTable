@@ -104,20 +104,20 @@ elif [ "$OS" == "windows" ]; then
 fi
 
 #----------------------------------------------------------------------
-# Create tarball or zip file
+# Create release version: tarball or zip file
 #----------------------------------------------------------------------
 
-if [ "$1" == "--tarball" ]; then
-  pushd $BUILDS
-  tar -zcvf $RELEASE_TARBALL $RELEASE/*
-  popd
-fi
-
-# Create zip file for Cygwin (Windows) using 7-Zip
-if [ "$1" == "--zip" ]; then
-  pushd "$BUILDS"
-  "/cygdrive/c/Program Files/7-Zip/7z.exe" a $RELEASE_ZIP "$RELEASE/*"
-  popd
+if [ "$1" == "--release" ]; then
+  # Create zip file for Cygwin (Windows) using 7-Zip
+  if [ "$OS" == "windows" ]; then
+    pushd "$BUILDS"
+    "/cygdrive/c/Program Files/7-Zip/7z.exe" a $RELEASE_ZIP "$RELEASE/*"
+    popd
+  else
+    pushd "$BUILDS"
+    tar -zcvf $RELEASE_TARBALL $RELEASE/*
+    popd
+  fi
 fi
 
 echo DONE!
