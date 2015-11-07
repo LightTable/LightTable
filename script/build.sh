@@ -3,6 +3,7 @@ set -e
 
 # Build LightTable app and CLI and place in builds/.
 # Specify $VERSION to override default build version.
+# Pass `--release` to build a release version.
 # This script primarily installs dependencies and sets up
 # the app before calling build-app.sh to build it.
 
@@ -60,4 +61,4 @@ pushd deploy/plugins
   done
 popd
 
-script/build-app.sh
+script/build-app.sh $@

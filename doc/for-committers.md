@@ -44,3 +44,21 @@ be unused. Some tips to confirm how it is/was used:
 
 * Do a LightTable user search for the given fn. For example, to see where [proc/exec is used](https://github.com/search?utf8=%E2%9C%93&q=proc%2Fexec+user%3ALightTable&type=Code&ref=searchresults)
 * `git log -u -S WORD` will do a code history search for WORD
+
+## Release process
+
+This is our release checklist which can be dropped in to an issue:
+
+- [ ] Release 0.X.X
+      - [ ] Version updates
+         - [ ] Update deploy/core/package.json, deploy/core/version.json and project.clj to 0.X.X
+         - [ ] Make sure electron version is up to date in version.json
+         - [ ] Make sure plugin versions in script/build-app.sh are latest versions
+      - [ ] Each core developer should QA at least one OS using the [QA checklist](https://github.com/LightTable/LightTable/wiki/QA-Checklist)
+      - [ ] When QA passes freeze master
+      - [ ] Add changelog to [GH release draft](https://github.com/LightTable/LightTable/releases/new)
+      - [ ] Upload binaries from `script/build.sh --release` to draft. Don't forget to click *Save draft*!
+      - [ ] Publish GH release which creates git tag and notifies users about new release
+      - [ ] Update download links on lighttable.com
+      - [ ] Mailing list announcement - [example email](https://gist.github.com/cldwalker/3d67153fe1eade2ae3cf)
+      - [ ] Optional blog post if a major release
