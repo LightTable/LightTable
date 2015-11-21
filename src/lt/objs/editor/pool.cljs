@@ -274,6 +274,16 @@
                             (editor/line-comment cur cursor (editor/->cursor cur "end") (::comment-options @cur))
                             (editor/line-comment cur cursor cursor (::comment-options @cur))))))})
 
+(cmd/command {:command :block-comment-selection
+              :desc "Editor: Block Comment line(s)"
+              :exec (fn []
+                      (when-let [cur (last-active)]
+                        (let [cursor (editor/->cursor cur "start")]
+                          (if (editor/selection? cur)
+                            (editor/block-comment cur cursor (editor/->cursor cur "end") (::comment-options @cur))
+                            (editor/block-comment cur cursor cursor (::comment-options @cur))))))})
+
+
 (cmd/command {:command :uncomment-selection
               :desc "Editor: Uncomment line(s)"
               :exec (fn []
@@ -292,7 +302,9 @@
                                             [cursor (editor/->cursor cur "end")]
                                             [cursor cursor])]
                           (when-not (editor/uncomment cur start end)
-                            (editor/line-comment cur cursor (editor/->cursor cur "end") (::comment-options @cur))))))})
+                            (if-not (= (:line start) (:line end))
+                              (editor/block-comment cur cursor end (::comment-options @cur))
+                              (editor/line-comment cur cursor (editor/->cursor cur "end") (::comment-options @cur)))))))})
 
 (cmd/command {:command :indent-selection
               :desc "Editor: Indent line(s)"

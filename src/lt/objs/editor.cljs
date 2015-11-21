@@ -384,6 +384,9 @@
 (defn line-comment [e from to opts]
   (.lineComment (->cm-ed e) (clj->js from) (clj->js to) (clj->js opts)))
 
+(defn block-comment [e from to opts]
+  (.blockComment (->cm-ed e) (clj->js from) (clj->js to) (clj->js opts)))
+
 (defn uncomment
   ([e from to]
    (uncomment e from to nil))
