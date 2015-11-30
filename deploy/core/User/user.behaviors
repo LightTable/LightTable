@@ -1,13 +1,22 @@
 ;; User behaviors
 ;; -----------------------------
-;; Behaviors are stored as a set of diffs that are merged together
-;; to create the final set of functionality that makes up Light Table. You can
-;; modify these diffs to either add or subtract functionality.
+;; Modify this file to add and subtract behaviors. Behaviors allow customization of
+;; almost any aspect of LightTable e.g. show line numbers or current theme.
+;; A behavior has the following format:
 ;;
-;; Behaviors are added to tags, objects with those tags then automatically gain
-;; whatever logic the behavior imparts. To see a list of user-level behaviors,
-;; start typing a word related to the functionality you want in between the square
-;; brackets (e.g. "theme").
+;;   [:TAG :BEHAVIOR OPTIONAL_ARGUMENTS]
+;;
+;; * A tag indicates in what context the behavior applies. Common tags are :app and :editor which respectively
+;;   indicate the behavior can be used anywhere and the behavior only applies to editors.
+;;
+;; * Behavior is the specific LightTable behavior to configure. To search available behaviors,
+;;   start typing a search term after :TAG. Once you've found the desired behavior, press TAB to have autocomplete
+;;   fill in the behavior name.
+;;
+;; * Optional arguments are arguments to pass to a behavior. If a behavior has arguments they should
+;;   pop up in an info box after the behavior has been autocompleted.
+;;
+;; * For more on configuring behaviors, [see this doc](doc/behavior-and-keymap-configuration.md).
 
 [
  ;; The app tag is kind of like global scope. You assign behaviors that affect
@@ -27,5 +36,17 @@
 
  ;; To subtract a behavior, prefix the name with '-' e.g.
  ;;  [:app :-lt.objs.intro/show-intro]
+
+
+ ;; Common behaviors to consider
+ ;; ============================
+ ;; Show line numbers
+ ;; [:editor :lt.objs.editor/line-numbers]
+ ;; Customize font
+ ;; [:app :lt.objs.style/font-settings "Courier New" "11"]
+ ;; Auto-close characters '{[("'. Currently only works in English keyboards
+ ;; [:app :lt.objs.settings/pair-keymap-diffs]
+ ;; Tab settings: Use real tabs, tab size in spaces, spaces per indent
+;; [:editor :lt.objs.editor/tab-settings false 2 2]
 ]
 
