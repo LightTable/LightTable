@@ -31,7 +31,7 @@ a browser. Here are some common ones:
 
 For more tags see the ones used by default in
 [default.keymap](../deploy/settings/default/default.keymap) and
-[default.beahviors](../deploy/settings/default/default.behaviors) and search
+[default.behaviors](../deploy/settings/default/default.behaviors) and search
 LightTable for when a context tag is added with
 [ctx/in!](https://github.com/LightTable/LightTable/search?utf8=%E2%9C%93&q=%22ctx%2Fin%21%22&type=Code).
 

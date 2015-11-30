@@ -16,7 +16,7 @@
 ;; * Optional arguments are arguments to pass to a behavior. If a behavior has arguments they should
 ;;   pop up in an info box after the behavior has been autocompleted.
 ;;
-;; * For more on configuring behaviors, [see this doc](doc/behavior-and-keymap-configuration.md).
+;; * For more on configuring behaviors see https://github.com/LightTable/LightTable/blob/master/doc/behavior-and-keymap-configuration.md.
 
 [
  ;; The app tag is kind of like global scope. You assign behaviors that affect
