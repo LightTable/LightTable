@@ -5,6 +5,7 @@
             [lt.objs.app :as app]
             [lt.objs.files :as files]
             [lt.objs.workspace :as workspace]
+            [lt.objs.platform :as platform]
             [lt.objs.command :as cmd]
             [lt.util.cljs :refer [js->clj]]
             [clojure.string :as string]
@@ -43,7 +44,12 @@
   on first window since subsequent windows don't open path arguments."
   []
   (and (app/first-window?)
-       (or (seq (if js/process.env.LT_DEV_CLI (subvec argv 2) (rest argv)))
+       (or (when-let [argv-args (seq (if js/process.env.LT_DEV_CLI (subvec argv 2) (rest argv)))]
+             ;; When opening LT with a file from a file manager, process.argv gets an apple event
+             ;; as a second arg e.g. ["/path/to/electron" "-psn_0_12381134"]. This should be ignored
+             ;; since file to open is in open-files
+             (if (and (platform/mac?) (.startsWith (first argv-args) "-psn_"))
+               (seq (rest argv-args)) argv-args))
            (seq open-files))))
 
 ;;*********************************************************
