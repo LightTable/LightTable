@@ -13,7 +13,7 @@ Current ClojureScript version and libraries we use are in [project.clj](https://
 
 ### Node packages
 
-Node package installs last done with io.js v2.5.0 and npm v2.13.2.
+Node package installs last done with node.js v2.5.0 and npm v2.13.2.
 
 Node dependencies are at deploy/core/node\_modules/. This directory is currently a mix of vendored
 dependencies, forked dependencies and Light Table specific libraries:
