@@ -1,5 +1,6 @@
 (ns lt.objs.keyboard
-  (:refer-clojure :exclude [keys])
+  "Manage keybindings by wrapping Mousetrap"
+  (:refer-clojure :exclude [keys meta])
   (:require [clojure.string :as string]
             [lt.object :as object]
             [lt.objs.app :as app]
@@ -58,7 +59,7 @@
                           "cmd-"
                           "meta-"))
    (when (.-altKey ev) "alt-")
-   (when (or (.-altGraphKey ev) altgr) "altgr-")
+   (when (.-altGraphKey ev) "altgr-")
    (when (.-shiftKey ev) "shift-")
    (. (or key "") toLowerCase)))
 
@@ -79,9 +80,15 @@
         (or (@key-map ch) (@key-map ks) (when current []))))))
 
 (def ^:dynamic *capture* true)
+(def ^:dynamic *stop* false)
 
 (defn passthrough []
   (set! *capture* false))
+
+(defn stop-commands!
+  "Called to prevent commands after the current one from firing"
+  []
+  (set! *stop* true))
 
 (defn disable []
   (set! capturing? false))
@@ -106,10 +113,13 @@
 
 (defn capture [key char ev]
   (activity)
-  (binding [*capture* true]
+  (binding [*capture* true
+            *stop* false]
     (when-let [cs (chord|mapping key char ev)]
       (doseq [c cs]
-        (trigger c))
+        (when-not *stop*
+          (set! *capture* true)
+          (trigger c)))
       *capture*)))
 
 (defn capture-up [key char ev]

@@ -1,10 +1,11 @@
 (ns lt.util.load
+  "Provide fns to load js, css and node module assets into LT"
   (:require [clojure.string :as string]))
 
 (def fpath (js/require "path"))
 (def fs (js/require "fs"))
 
-(def pwd (.resolve fpath "."))
+(def dir (str js/__dirname "/.."))
 
 (def ^:dynamic *force-reload* false)
 
@@ -16,7 +17,7 @@
   (boolean (re-seq #"^\s*[\\\/]|([\w]+:[\\\/])" path)))
 
 (defn node-module [path]
-  (js/require (str pwd "/core/node_modules/" path)))
+  (js/require (str dir "/core/node_modules/" path)))
 
 (defn- abs-source-mapping-url [code file]
   (if-let [path-to-source-map (second (re-find #"\n//# sourceMappingURL=(.*\.map)" code))]
@@ -38,13 +39,13 @@
   ([file] (js file false))
   ([file sync]
    (let [file (if-not (absolute? file)
-                (.join fpath pwd file)
+                (.join fpath dir file)
                 file)]
    (if sync
      (js/window.eval (-> (.readFileSync fs file)
                          (.toString)
                          (prep file)))
-     (.readFile fs (.join fpath pwd file) (fn [content]
+     (.readFile fs (.join fpath dir file) (fn [content]
                                             (js/window.eval (-> (.toString content)
                                                                 (prep file)))))))))
 

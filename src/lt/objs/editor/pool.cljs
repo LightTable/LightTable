@@ -1,4 +1,5 @@
 (ns lt.objs.editor.pool
+  "Provide manager for managing a pool of editors and several misc editor commands"
   (:require [lt.object :as object]
             [lt.objs.app :as app]
             [lt.objs.document :as doc]
@@ -44,14 +45,18 @@
 (defn unsaved? []
   (some #(:dirty (deref %)) (object/by-tag :editor)))
 
-(defn by-path [path]
+(defn by-path
+  "Return editor objects that edit given path"
+  [path]
   (when path
     (let [path (string/lower-case path)]
       (filter #(= (-> @% :info (get :path) (or "") string/lower-case) path) (object/by-tag :editor)))))
 
-(defn containing-path [path]
+(defn containing-path
+  "Return editor objects that edit paths containing given path string"
+  [path]
   (let [path (string/lower-case path)]
-    (filter #(> (.indexOf (-> @% :info :path string/lower-case) path) -1) (object/by-tag :editor))))
+    (filter #(> (.indexOf (-> @% :info :path (or "") string/lower-case) path) -1) (object/by-tag :editor))))
 
 (defui button [label & [cb]]
   [:div.button.right label]
@@ -67,6 +72,19 @@
                            popup/cancel-button]}))
 
 (def pool (object/create ::pool))
+
+(defn last-active
+  "Return current editor object (last active in pool)"
+  []
+  (let [l (:last @pool)]
+    (when (and l @l)
+      l)))
+
+(defn focus-last []
+  (when-let [ed (last-active)]
+    (when-let [ed (:ed @ed)]
+      (dom/focus js/document.body)
+      (editor/focus ed))))
 
 (behavior ::track-active
           :triggers #{:active}
@@ -129,7 +147,7 @@
                         (when-let [ed (first (by-path f))]
                           (when-not (doc/check-mtime (doc/->stats f) stat)
                             (if (:dirty @ed)
-                              (active-warn ed {:header "This file has been modified."
+                              (active-warn ed {:header (str "File modified: " f)
                                                :body "This file seems to have been modified outside of Light Table. Do you want to load the latest and lose your changes?"
                                                :buttons [{:label "Reload from disk"
                                                           :action (fn []
@@ -138,20 +156,31 @@
                                                          ]})
                               (reload ed)))))))
 
-(defn warn-delete [ed]
-  (active-warn ed {:header "This file has been deleted."
+(defn warn-delete [ed f]
+  (active-warn ed {:header (str "File deleted: " f)
                    :body "This file seems to have been deleted and we've marked it as unsaved."
                    :buttons [{:label "Save as.."
                               :action (fn []
                                         (object/raise ed :save))}
                              {:label "ok"}]}))
 
+(defn set-syntax [ed new-syn]
+  (let [prev-info (-> @ed :info)]
+    (when prev-info
+      (object/remove-tags ed (:tags prev-info)))
+    (object/update! ed [:info] merge (dissoc new-syn :name))
+    (editor/set-mode ed (:mime new-syn))
+    (object/add-tags ed (:tags new-syn))))
+
+(defn set-syntax-by-path [ed path]
+  (set-syntax ed (files/path->type path)))
+
 (behavior ::watched.delete
           :triggers #{:watched.delete}
           :reaction (fn [ws del]
                       (if-let [ed (first (by-path del))]
                         (do
-                          (warn-delete ed)
+                          (warn-delete ed del)
                           (make-transient-dirty ed)
                           (when-let [ts (:lt.objs.tabs/tabset @ed)]
                             (object/raise ts :tab.updated)))
@@ -160,7 +189,7 @@
                                               false)
                                            (object/by-tag :editor))]
                           (doseq [ed open]
-                            (warn-delete ed)
+                            (warn-delete ed del)
                             (make-transient-dirty ed))))))
 
 (behavior ::watched.rename
@@ -181,17 +210,6 @@
                             (doc/move-doc old neue-path)
                             )))))
 
-(defn last-active []
-  (let [l (:last @pool)]
-    (when (and l @l)
-      l)))
-
-(defn focus-last []
-  (when-let [ed (last-active)]
-    (when-let [ed (:ed @ed)]
-      (dom/focus js/document.body)
-      (editor/focus ed))))
-
 (defn create [info]
   (let [ed (object/create :lt.objs.editor/editor info)]
     (object/add-tags ed (:tags info []))
@@ -211,17 +229,6 @@
                                                 (sort-by :name (-> @files/files-obj :types vals)))
                                        :key :name
                                        :placeholder "Syntax"}))
-
-(defn set-syntax [ed new-syn]
-  (let [prev-info (-> @ed :info)]
-    (when prev-info
-      (object/remove-tags ed (:tags prev-info)))
-    (object/update! ed [:info] merge (dissoc new-syn :name))
-    (editor/set-mode ed (:mime new-syn))
-    (object/add-tags ed (:tags new-syn))))
-
-(defn set-syntax-by-path [ed path]
-  (set-syntax ed (files/path->type path)))
 
 (behavior ::set-syntax
           :triggers #{:select}
@@ -267,6 +274,16 @@
                             (editor/line-comment cur cursor (editor/->cursor cur "end") (::comment-options @cur))
                             (editor/line-comment cur cursor cursor (::comment-options @cur))))))})
 
+(cmd/command {:command :block-comment-selection
+              :desc "Editor: Block Comment line(s)"
+              :exec (fn []
+                      (when-let [cur (last-active)]
+                        (let [cursor (editor/->cursor cur "start")]
+                          (if (editor/selection? cur)
+                            (editor/block-comment cur cursor (editor/->cursor cur "end") (::comment-options @cur))
+                            (editor/block-comment cur cursor cursor (::comment-options @cur))))))})
+
+
 (cmd/command {:command :uncomment-selection
               :desc "Editor: Uncomment line(s)"
               :exec (fn []
@@ -285,7 +302,9 @@
                                             [cursor (editor/->cursor cur "end")]
                                             [cursor cursor])]
                           (when-not (editor/uncomment cur start end)
-                            (editor/line-comment cur cursor (editor/->cursor cur "end") (::comment-options @cur))))))})
+                            (if-not (= (:line start) (:line end))
+                              (editor/block-comment cur cursor end (::comment-options @cur))
+                              (editor/line-comment cur cursor (editor/->cursor cur "end") (::comment-options @cur)))))))})
 
 (cmd/command {:command :indent-selection
               :desc "Editor: Indent line(s)"
@@ -573,19 +592,22 @@
 (cmd/command {:command :editor.select-line
               :desc "Editor: Select line"
               :exec (fn []
-                      (when-let [ed (last-active)]
-                        (let [line (-> (editor/->cursor ed) :line)
-                              len (editor/line-length ed line)]
-                          (editor/set-selection ed {:line line :ch 0} {:line line :ch len})
-                          (editor/set-extending ed false))))})
+                      (cmd/exec! :editor.codemirror.command "selectLine")
+                      )})
 
 (cmd/command {:command :editor.force.wrap
               :desc "Editor: Toggle line wrapping in current editor"
               :exec (fn []
                       (when-let [ed (last-active)]
                         (if (editor/option ed "lineWrapping")
-                          (object/add-tags ed [:editor.force.unwrap])
-                          (object/add-tags ed [:editor.force.wrap]))))})
+                          (do
+                            (object/remove-tags ed [:editor.force.wrap])
+                            (object/add-tags ed [:editor.force.unwrap])
+                            (notifos/set-msg! "Wrapping off" {:timeout 2000}))
+                          (do
+                            (object/remove-tags ed [:editor.force.unwrap])
+                            (object/add-tags ed [:editor.force.wrap])
+                            (notifos/set-msg! "Wrapping on" {:timeout 2000})))))})
 
 (cmd/command {:command :editor.undo
               :desc "Editor: Undo"
@@ -617,3 +639,90 @@
                       (when-let [ed (last-active)]
                         (editor/fold-code ed)))})
 
+;;;sublime commands
+
+(cmd/command {:command :editor.sublime.singleSelectionTop
+              :desc "Editor: Set selection to top most cursor"
+              :exec (fn []
+                      (cmd/exec! :editor.codemirror.command "singleSelectionTop"))})
+
+(cmd/command {:command :editor.sublime.singleSelectionTop
+              :desc "Editor: Clear multiple cursors"
+              :exec (fn []
+                      (cmd/exec! :editor.codemirror.command "singleSelectionTop"))})
+
+(cmd/command {:command :editor.sublime.insertLineAfter
+              :desc "Editor: Insert line after"
+              :exec (fn []
+                      (cmd/exec! :editor.codemirror.command "insertLineAfter"))})
+
+(cmd/command {:command :editor.sublime.insertLineBefore
+              :desc "Editor: Insert line before"
+              :exec (fn []
+                      (cmd/exec! :editor.codemirror.command "insertLineBefore"))})
+
+(cmd/command {:command :editor.sublime.selectNextOccurrence
+              :desc "Editor: Select next occurrence of word"
+              :exec (fn []
+                      (cmd/exec! :editor.codemirror.command "selectNextOccurrence"))})
+
+(cmd/command {:command :editor.sublime.selectBetweenBrackets
+              :desc "Editor: Select between brackets"
+              :exec (fn []
+                      (cmd/exec! :editor.codemirror.command "selectBetweenBrackets"))})
+
+(cmd/command {:command :editor.sublime.selectScope
+              :desc "Editor: Select scope"
+              :exec (fn []
+                      (cmd/exec! :editor.codemirror.command "selectScope"))})
+
+(cmd/command {:command :editor.sublime.goToBracket
+              :desc "Editor: Go to bracket"
+              :exec (fn []
+                      (cmd/exec! :editor.codemirror.command "goToBracket"))})
+
+(cmd/command {:command :editor.sublime.swapLineUp
+              :desc "Editor: Swap line up"
+              :exec (fn []
+                      (cmd/exec! :editor.codemirror.command "swapLineUp"))})
+
+(cmd/command {:command :editor.sublime.swapLineDown
+              :desc "Editor: Swap line down"
+              :exec (fn []
+                      (cmd/exec! :editor.codemirror.command "swapLineDown"))})
+
+(cmd/command {:command :editor.sublime.joinLines
+              :desc "Editor: Join lines"
+              :exec (fn []
+                      (cmd/exec! :editor.codemirror.command "joinLines"))})
+
+(cmd/command {:command :editor.sublime.duplicateLine
+              :desc "Editor: Duplicate line"
+              :exec (fn []
+                      (cmd/exec! :editor.codemirror.command "duplicateLine"))})
+
+
+(cmd/command {:command :editor.sublime.sortLines
+              :desc "Editor: Sort lines"
+              :exec (fn []
+                      (cmd/exec! :editor.codemirror.command "sortLines"))})
+
+(cmd/command {:command :editor.sublime.sortLinesInsensitive
+              :desc "Editor: Sort lines insensitive"
+              :exec (fn []
+                      (cmd/exec! :editor.codemirror.command "sortLinesInsensitive"))})
+
+(cmd/command {:command :editor.sublime.selectLinesUpward
+              :desc "Editor: Select lines upward with multiple cursors"
+              :exec (fn []
+                      (cmd/exec! :editor.codemirror.command "selectLinesUpward"))})
+
+(cmd/command {:command :editor.sublime.selectLinesDownward
+              :desc "Editor: Select lines downward with multiple cursors"
+              :exec (fn []
+                      (cmd/exec! :editor.codemirror.command "selectLinesDownward"))})
+
+(cmd/command {:command :editor.sublime.splitSelectionByLine
+              :desc "Editor: Split selection into cursors per line"
+              :exec (fn []
+                      (cmd/exec! :editor.codemirror.command "splitSelectionByLine"))})

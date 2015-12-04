@@ -1,4 +1,5 @@
 (ns lt.objs.bottombar
+  "Provide bottombar object and associated behaviors"
   (:require [lt.object :as object]
             [lt.objs.tabs :as tabs]
             [lt.objs.animations :as anim]
@@ -25,6 +26,8 @@
 (defn active-content [active]
   (when active
     (object/->content active)))
+
+(declare bottombar)
 
 (defn active? [item]
   (= (:active @bottombar) item))

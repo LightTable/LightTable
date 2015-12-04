@@ -1,4 +1,6 @@
 (ns lt.objs.statusbar
+  "Provide statusbar functionality e.g. current line and column.
+  Statusbar is close to the bottom but above bottombar"
   (:require [lt.object :as object]
             [lt.objs.tabs :as tabs]
             [lt.objs.canvas :as canvas]
@@ -15,7 +17,7 @@
 ;;**********************************************************
 
 (object/object* ::statusbar-container
-                :tags #{:statusbar-container}
+                :tags #{:statusbar}
                 :items (sorted-set-by #(-> % deref :order))
                 :init (fn [this]
                         [:div#statusbar-container
@@ -28,7 +30,7 @@
   raise :show! or :hide! respectively. Objects must have :order and :height keys in order to determine
   the space required for the object."
   [obj]
-  (object/add-tags obj [:statusbar-container-item])
+  (object/add-tags obj [:statusbar-item])
   (object/update! container [:items] conj obj)
   (let [i (cljs/index-of obj (:items @container))]
     (if (= i 0)
@@ -51,7 +53,7 @@
                         (object/merge! this {::shown false})
                         (object/raise tabs/multi :tabset-bottom! (- (:height @this))))))
 
-(behavior ::init-statusbar-container
+(behavior ::init-statusbar
           :triggers #{:init}
           :reaction (fn [app]
                       (dom/append (object/->content tabs/multi) (object/->content container))))
@@ -106,13 +108,14 @@
                         (statusbar-item (bound this ->cursor-str) "")
                         ))
 
+(def statusbar-cursor (object/create ::statusbar.cursor))
+(add-statusbar-item statusbar-cursor)
+
 (behavior ::report-cursor-location
                   :triggers #{:move :active}
                   :reaction (fn [this]
                               (object/raise statusbar-cursor :update! (ed/->cursor this))))
 
-(def statusbar-cursor (object/create ::statusbar.cursor))
-(add-statusbar-item statusbar-cursor)
 
 ;;**********************************************************
 ;; loader
@@ -155,6 +158,9 @@
                         (statusbar-item (log this) "left")
                         ))
 
+(def statusbar-loader (object/create ::statusbar.loader))
+(add-statusbar-item statusbar-loader)
+
 (defn loader-set []
   (object/merge! statusbar-loader {:loaders 0}))
 
@@ -165,12 +171,12 @@
   (if (> (:loaders @statusbar-loader) 0)
     (object/update! statusbar-loader [:loaders] dec)))
 
-(def statusbar-loader (object/create ::statusbar.loader))
-(add-statusbar-item statusbar-loader)
-
 ;;**********************************************************
 ;; console list
 ;;**********************************************************
+
+(defn toggle-class [{:keys [dirty class]}]
+  (str "console-toggle " (when class (str class " ")) (when (> dirty 0) "dirty")))
 
 (defui toggle-span [this]
   [:span {:class (bound this toggle-class)}
@@ -178,8 +184,14 @@
   :click (fn []
            (cmd/exec! :toggle-console)))
 
-(defn toggle-class [{:keys [dirty class]}]
-  (str "console-toggle " (when class (str class " ")) (when (> dirty 0) "dirty")))
+(object/object* ::statusbar.console-toggle
+                :dirty 0
+                :tags [:statusbar.console-toggle]
+                :init (fn [this]
+                        (statusbar-item (toggle-span this) "")))
+
+(def console-toggle (object/create ::statusbar.console-toggle))
+(add-statusbar-item console-toggle)
 
 (defn dirty []
   (object/update! console-toggle [:dirty] inc))
@@ -190,12 +202,3 @@
 
 (defn console-class [class]
   (object/merge! console-toggle {:class class}))
-
-(object/object* ::statusbar.console-toggle
-                :dirty 0
-                :tags [:statusbar.console-toggle]
-                :init (fn [this]
-                        (statusbar-item (toggle-span this))))
-
-(def console-toggle (object/create ::statusbar.console-toggle))
-(add-statusbar-item console-toggle)

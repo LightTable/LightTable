@@ -1,10 +1,9 @@
-(defproject lighttable "0.1.0"
+(defproject lighttable "0.8.0-alpha"
   :description "Light Table is a new interactive IDE that lets you modify running programs and embed anything from websites to games. It provides the real time feedback we need to not only answer questions about our code, but to understand how our programs really work."
   :url "http://www.lighttable.com/"
   :dependencies [[org.clojure/clojure "1.5.1"]
                  [crate "0.2.5"]
-                 [fetch "0.1.1" :exclusions [org.clojure/clojure]]
-                 ;[core.async "0.1.0-SNAPSHOT"]
+                 [fetch "0.2.0" :exclusions [org.clojure/clojure noir]]
                  [org.clojure/clojurescript "0.0-2138"
                   :exclusions [org.apache.ant/ant]]
                  ]
@@ -19,9 +18,3 @@
   :plugins [[lein-cljsbuild "1.0.1"]]
   :source-paths ["src/"]
   )
-
-
-
-
-
-

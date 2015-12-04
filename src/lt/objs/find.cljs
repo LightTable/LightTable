@@ -1,4 +1,5 @@
 (ns lt.objs.find
+  "Provide find and replace functionality for current file"
   (:require [lt.object :as object]
             [lt.objs.context :as ctx]
             [lt.objs.statusbar :as statusbar]
@@ -15,10 +16,12 @@
 
 (def find-height 30)
 
+(declare bar)
+
 (defui input [this]
   [:input.find {:type "text"
                 :placeholder "find"}]
-  :keyup (fn []
+  :input (fn []
            (this-as me
                     (object/raise this :search! (dom/val me))))
   :focus (fn []
@@ -31,7 +34,7 @@
 (defui replace-input [this]
   [:input.replace {:type "text"
                    :placeholder "replace"}]
-  :keyup (fn []
+  :input (fn []
            (this-as me
                     (object/raise this :replace.changed (dom/val me))))
   :focus (fn []
@@ -62,6 +65,12 @@
 
 (defn set-val [this v]
   (dom/val (dom/$ :input.find (object/->content this)) v))
+
+(behavior ::show!
+          :triggers #{:show!}
+          :reaction (fn [this]
+                      (object/merge! this {:pos (when-let [ed (pool/last-active)]
+                                                  (editor/->cursor ed))})))
 
 (behavior ::hide!
           :triggers #{:hide!}
@@ -120,6 +129,8 @@
                       (if (empty? v)
                         (object/raise this :clear!)
                         (when-let [e (pool/last-active)]
+                          (when-let [pos (:pos @this)]
+                            (editor/move-cursor e pos))
                           (object/merge! this {:searching? true})
                           (object/merge! e {:searching.for v})
                           (let [ed (editor/->cm-ed e)]
@@ -132,6 +143,7 @@
                 :searching? false
                 :reverse? false
                 :shown false
+                :pos nil
                 :init (fn [this]
                         [:div#find-bar
                          (input this)
@@ -141,10 +153,9 @@
 (behavior ::init
           :triggers #{:init}
           :reaction (fn [this]
-                      (load/js "core/node_modules/codemirror/search.js" :sync)
-                      (load/js "core/node_modules/codemirror/searchcursor.js" :sync)
-
-                      ))
+                      ;; TODO: use addon/search/search.js
+                      (load/js "core/node_modules/codemirror_addons/search.js" :sync)
+                      (load/js "core/node_modules/codemirror/addon/search/searchcursor.js" :sync)))
 
 (def bar (object/create ::find-bar))
 (statusbar/add-container bar)

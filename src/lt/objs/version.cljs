@@ -1,4 +1,5 @@
 (ns lt.objs.version
+  "Provide LT version command"
   (:require [lt.object :as object]
             [lt.objs.sidebar.command :as cmd]
             [lt.objs.opener :as opener]
@@ -38,6 +39,7 @@
                             [:dl
                              [:dt "Light Table version"] [:dd (:version deploy/version)]
                              [:dt "Binary version"] [:dd (deploy/binary-version)]
+                             [:dt "Plugins directory" [:dd (files/lt-user-dir "plugins")]]
                              ]
                             (check-button)
                             ]

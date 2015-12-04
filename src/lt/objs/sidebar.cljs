@@ -1,4 +1,5 @@
 (ns lt.objs.sidebar
+  "Provide sidebar (left bar) and rightbar objects"
   (:require [lt.object :as object]
             [lt.objs.tabs :as tabs]
             [lt.objs.command :as cmd]

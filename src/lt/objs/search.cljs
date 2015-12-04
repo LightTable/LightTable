@@ -1,4 +1,5 @@
 (ns lt.objs.search
+  "Provide search and replace functionality across files"
   (:require [lt.object :as object]
             [lt.objs.proc :as proc]
             [lt.objs.tabs :as tabs]
@@ -85,7 +86,7 @@
           (ctx/out! :searcher.replace)))
 
 (defui replace-all-button [this]
-  [:button.replace "all"]
+  [:button.replace "Replace All"]
   :click (fn [e]
            (cmd/exec! :searcher.replace-all)))
 
@@ -234,11 +235,13 @@
                          [:div.searcher
                           [:p (bound this result-count)]
                           (search-box this)
-                          [:div (replace-box this) (replace-all-button)]
+                          [:div (replace-box this) (replace-all-button this)]
                           (location-box this)
                           ]
                          ]
                         ))
+
+(def searcher (object/create ::workspace-search))
 
 (cmd/command {:command :searcher.search
               :desc "Searcher: Execute search"
@@ -272,5 +275,3 @@
               :hidden true
               :exec (fn []
                       (object/raise searcher :replace!))})
-
-(def searcher (object/create ::workspace-search))

@@ -1,4 +1,5 @@
 (ns lt.objs.popup
+  "Provide popup object for displaying popups"
   (:require [lt.object :as object]
             [lt.objs.command :as cmd]
             [lt.objs.context :as ctx]
@@ -7,7 +8,7 @@
             [lt.util.dom :as dom])
   (:require-macros [lt.macros :refer [behavior defui]]))
 
-(def *no-close* nil)
+(def ^{:dynamic true} *no-close* nil)
 
 (behavior ::on-click-destroy
           :triggers #{:click}

@@ -1,4 +1,5 @@
 (ns lt.objs.sidebar.workspace
+  "Provide sidebar for managing workspaces and files within a workspace"
   (:require [lt.object :as object]
             [lt.objs.command :as cmd]
             [lt.objs.context :as ctx]
@@ -7,28 +8,13 @@
             [lt.objs.opener :as opener]
             [lt.objs.popup :as popup]
             [lt.objs.sidebar :as sidebar]
+            [lt.objs.dialogs :as dialogs]
+            [lt.objs.menu :as menu]
             [lt.util.dom :as dom]
             [lt.util.cljs :refer [->dottedkw]]
             [crate.binding :refer [bound subatom]]
             [clojure.string :as string])
   (:require-macros [lt.macros :refer [behavior defui]]))
-
-(def active-dialog nil)
-(def gui (js/require "nw.gui"))
-
-(defn menu-item [opts]
-  (let [mi (.-MenuItem gui)]
-    (mi. (clj->js opts))))
-
-(defn menu [items]
-  (let [m (.-Menu gui)
-        menu (m.)]
-    (doseq [i items]
-      (.append menu (menu-item i)))
-    menu))
-
-(defn show-menu [m x y]
-  (.popup m x y))
 
 (defn files-and-folders [path]
   (let [fs (workspace/files-and-folders path)]
@@ -47,6 +33,11 @@
   (if (object/has-tag? child :workspace.file)
     (object/update! p [:files] (fn [cur] (vec (remove #{child} cur))))
     (object/update! p [:folders] (fn [cur] (vec (remove #{child} cur))))))
+
+(defn find-by-path [path]
+  (first (filter #(= (:path @%) path) (object/by-tag :tree-item))))
+
+(declare tree)
 
 (behavior ::add-ws-folder
           :triggers #{:workspace.add.folder!}
@@ -140,9 +131,6 @@
           :reaction (fn [this cur]
                       (concat cur (:open-dirs @tree))))
 
-(defn find-by-path [path]
-  (first (filter #(= (:path @%) path) (object/by-tag :tree-item))))
-
 (behavior ::watched.delete
           :triggers #{:watched.delete}
           :reaction (fn [ws path]
@@ -184,8 +172,8 @@
           :triggers #{:menu!}
           :reaction (fn [this e]
                       (let [items (sort-by :order (object/raise-reduce this :menu-items []))]
-                        (-> (menu items)
-                            (show-menu (.-clientX e) (.-clientY e))))))
+                        (-> (menu/menu items)
+                            (menu/show-menu)))))
 
 (behavior ::on-root-menu
           :triggers #{:menu-items}
@@ -201,11 +189,15 @@
 (behavior ::subfile-menu
           :triggers #{:menu-items}
           :reaction (fn [this items]
-                      (conj items {:label "Rename"
-                                   :order 1
-                                   :click (fn [] (object/raise this :start-rename!))}
-                            {:label "Delete"
+                      (conj items
+                            {:label "Duplicate"
+                             :order 1
+                             :click (fn [] (object/raise this :duplicate!))}
+                            {:label "Rename"
                              :order 2
+                             :click (fn [] (object/raise this :start-rename!))}
+                            {:label "Delete"
+                             :order 3
                              :click (fn [] (object/raise this :delete!))})))
 
 (behavior ::subfolder-menu
@@ -369,6 +361,14 @@
                       (object/merge! this {:renaming? false})
                       ))
 
+(behavior ::duplicate
+          :triggers #{:duplicate!}
+          :reaction (fn [this]
+                      (let [base-name (files/without-ext (files/basename (:path @this)))
+                            new-name (str base-name " copy." (files/ext (:path @this)))
+                            new-path (files/join (files/parent (:path @this)) new-name)]
+                        (files/copy (:path @this) new-path))))
+
 (behavior ::destroy-sub-tree
           :trigger #{:destroy}
           :reaction (fn [this]
@@ -469,12 +469,10 @@
                        (object/raise tree event (dom/val me))))))
 
 (defn open-folder []
-  (set! active-dialog (input :nwdirectory :workspace.add.folder!))
-  (dom/trigger active-dialog :click))
+  (dialogs/dir tree :workspace.add.folder!))
 
 (defn open-file []
-  (set! active-dialog (input :blah :workspace.add.file!))
-  (dom/trigger active-dialog :click))
+  (dialogs/file tree :workspace.add.file!))
 
 (defui button [name action]
   [:li name]
@@ -498,6 +496,11 @@
   :click (fn []
            (object/raise this :select!)))
 
+(defui back-button [this]
+  [:h2 "Select a workspace"]
+  :click (fn []
+           (object/raise this :tree!)))
+
 (defui recents [this rs]
   [:div
    (back-button this)
@@ -505,10 +508,7 @@
     (for [r rs]
       (object/->content r))]])
 
-(defui back-button [this]
-  [:h2 "Select a workspace"]
-  :click (fn []
-           (object/raise this :tree!)))
+(declare sidebar-workspace)
 
 (behavior ::recent!
           :triggers #{:recent!}

@@ -1,10 +1,11 @@
 (ns lt.plugins.auto-paren
+  "Provide pair character e.g. () related commands"
   (:require [lt.object :as object]
             [lt.objs.command :as cmd]
             [lt.objs.editor :as editor]
             [lt.objs.editor.pool :as pool]
             [lt.objs.context :as ctx]
-            [lt.objs.keyboard :refer [passthrough]])
+            [lt.objs.keyboard :as keyboard :refer [passthrough]])
   (:require-macros [lt.macros :refer [behavior]]))
 
 (def pairs {\( \)
@@ -35,7 +36,7 @@
                        (fn []
                          (let [current-selection (editor/selection this)]
                            (if-not (= current-selection "")
-                             (editor/replace-selection this (str ch current-selection (pairs ch)))
+                             (editor/replace-selection this (str ch current-selection (pairs ch)) :around)
                              (if (re-seq word-char (get-char this 1))
                                (editor/insert-at-cursor this ch)
                                (do
@@ -69,13 +70,15 @@
 (behavior ::try-remove-pair
           :triggers #{:backspace!}
           :reaction (fn [this]
-                      (let [ch (get-char this -1)]
-                        (if (and (pairs ch)
-                                 (= (get-char this 1) (pairs ch)))
-                          (let [loc (editor/->cursor this)]
-                            (editor/replace this (adjust-loc loc -1) (adjust-loc loc 1) ""))
-                          (passthrough)))))
-
+                      (if-not (editor/selection? this)
+                        (let [ch (get-char this -1)]
+                          (if (and (pairs ch)
+                                   (= (get-char this 1) (pairs ch)))
+                            (let [loc (editor/->cursor this)]
+                              (editor/replace this (adjust-loc loc -1) (adjust-loc loc 1) "")
+                              (keyboard/stop-commands!))
+                            (passthrough)))
+                        (passthrough))))
 
 (cmd/command {:command :editor.close-pair
               :hidden true
@@ -100,3 +103,32 @@
               :desc "Editor: Pair aware backspace"
               :exec (fn [c]
                       (object/raise (ctx/->obj :editor.keys.normal) :backspace! c))})
+
+;; Treat spaces as tabs
+
+(defn pre-cursor-indent [ed {:keys [line ch]}]
+  (let [tabs (editor/option ed :indentWithTabs)
+        unit (editor/option ed :indentUnit)
+        precursor (.substring (editor/line ed line) 0 ch)
+        whitespace (count (re-find (if tabs #"^\t*$" #"^ *$") precursor))]
+    [(quot whitespace unit) (mod whitespace unit)]))
+
+(defn backspace-indent [ed]
+  (if-not (or (editor/selection? ed)
+              (> (.-length (.getSelections (editor/->cm-ed ed))) 1))
+    (let [cursor (editor/->cursor ed)
+          unit (editor/option ed :indentUnit)
+          [indent rem] (pre-cursor-indent ed cursor)
+          cursor (if (> rem 0) (adjust-loc (editor/->cursor ed) (- unit rem)) cursor)
+          [indent rem] (if (> rem 0) (pre-cursor-indent ed cursor) [indent rem])]
+      (if (and (> indent 0) (zero? rem))
+        (do
+          (editor/replace ed (adjust-loc cursor (- unit)) cursor "")
+          (keyboard/stop-commands!))
+        (passthrough)))
+    (passthrough)))
+
+(cmd/command {:command :editor.backspace-indent
+              :hidden true
+              :desc "Editor: Indent aware backspace"
+              :exec #(backspace-indent (ctx/->obj :editor.keys.normal))})

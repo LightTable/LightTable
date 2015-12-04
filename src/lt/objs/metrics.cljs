@@ -1,4 +1,5 @@
 (ns lt.objs.metrics
+  "Define and collect usage metrics"
   (:refer-clojure :exclude [send flush])
   (:require [lt.object :as object]
             [lt.objs.app :as app]

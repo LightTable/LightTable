@@ -1,4 +1,5 @@
 (ns lt.plugins.auto-complete
+  "Provide any auto-complete related functionality"
   (:require [lt.object :as object]
             [lt.objs.keyboard :as keyboard]
             [lt.objs.command :as cmd]
@@ -25,6 +26,9 @@
 (defn current [s]
   (.current s))
 
+(defn peek* [s]
+  (.peek s))
+
 (defn skip-space [s]
   (when (and (peek* s) (re-seq #"\s" (peek* s)))
     (.eatSpace s)
@@ -32,9 +36,6 @@
 
 (defn eat-while [s r]
   (.eatWhile s r))
-
-(defn peek* [s]
-  (.peek s))
 
 (defn string->tokens [str pattern]
   (let [s (stream str)
@@ -51,6 +52,12 @@
           (advance s)))
       (skip-space s))
     (into-array (map #(do #js {:completion %}) (js/Object.keys res)))))
+
+(def default-pattern #"[\w_$]")
+
+(defn get-pattern [ed]
+  (let [mode (editor/inner-mode ed)]
+    (or (:hint-pattern @ed) (aget mode "hint-pattern") default-pattern)))
 
 (defn get-token [ed pos]
   (let [line (editor/line ed (:line pos))
@@ -84,7 +91,7 @@
       false)))
 
 (def w (background (fn [obj-id m]
-                     (let [StringStream (-> (js/require (str js/ltpath "/core/node_modules/codemirror/stringstream.js"))
+                     (let [StringStream (-> (js/require (str js/ltpath "/core/node_modules/codemirror/addon/runmode/runmode.node.js"))
                                             (.-StringStream))
                            stream (fn [s]
                                     (StringStream. s))
@@ -120,12 +127,6 @@
                                               (into-array (map #(do #js {:completion %}) (js/Object.keys res)))))]
                        (js/_send obj-id :hint-tokens (string->tokens (:string m) (:pattern m)))))))
 
-(def default-pattern #"[\w_$]")
-
-(defn get-pattern [ed]
-  (let [mode (editor/inner-mode ed)]
-    (or (:hint-pattern @ed) (aget mode "hint-pattern") default-pattern)))
-
 (defn async-hints [this]
   (when @this
     (w this {:string (editor/->val this)
@@ -145,16 +146,34 @@
                 (aset seen (.-completion hint) true)))
             hints)))
 
+(declare hinter)
+
+(defn remove-long-completions [hints]
+  (filter #(< (.-length (.-completion %)) (:hint-limit @hinter)) hints))
+
 (def hinter (-> (scmd/filter-list {:items (fn []
                                             (when-let [cur (pool/last-active)]
                                               (let [token (-> @hinter :starting-token :string)]
-                                                (distinct-completions
-                                                 (if token
-                                                   (remove #(= token (.-completion %))
-                                                           (object/raise-reduce cur :hints+ [] token))
-                                                   (object/raise-reduce cur :hints+ []))))))
+                                                (->> (if token
+                                                       (remove #(= token (.-completion %))
+                                                               (object/raise-reduce cur :hints+ [] token))
+                                                       (object/raise-reduce cur :hints+ []))
+                                                     remove-long-completions
+                                                     distinct-completions))))
                                    :key text|completion})
                 (object/add-tags [:hinter])))
+
+(defn on-line-change [line ch]
+  (object/raise hinter :line-change line ch))
+
+(behavior ::set-hint-limit
+          :triggers #{:object.instant}
+          :type :user
+          :desc "Auto-complete: Set maximum length of an autocomplete hint"
+          :params [{:label "Number"
+                    :example 1000}]
+          :reaction (fn [this n]
+                      (object/merge! this {:hint-limit n})))
 
 (behavior ::textual-hints
           :triggers #{:hints+}
@@ -168,8 +187,6 @@
                         (when (:line @this)
                           (js/CodeMirror.off (:line @this) "change" on-line-change))
                         (ctx/out! [:editor.keys.hinting.active])
-                        (when (or force? (= 0 (count (:cur @this))))
-                          (keyboard/passthrough))
                         (object/merge! this {:active false
                                              :selected 0
                                              :ed nil
@@ -218,9 +235,6 @@
                                   (ctx/in! [:editor.keys.hinting.active] (:ed @hinter))))
                               (object/merge! hinter {:token token})))))))
 
-(defn on-line-change [line ch]
-  (object/raise hinter :line-change line ch))
-
 (behavior ::async-hint-tokens
           :triggers #{:hint-tokens}
           :reaction (fn [this tokens]
@@ -235,28 +249,30 @@
                         (async-hints this))
                       ))
 
-(defn start-hinting [this opts]
-  (let [pos (editor/->cursor this)
-        token (get-token this pos)
-        line (editor/line-handle this (:line pos))
-        elem (object/->content hinter)]
-    (ctx/in! [:editor.keys.hinting.active] this)
-    (object/merge! hinter {:token token
-                           :starting-token token
-                           :ed this
-                           :active true
-                           :line line})
-    (object/raise hinter :change! (:string token))
-    (object/raise hinter :active)
-    (let [count (count (:cur @hinter))]
-      (cond
-       (= 0 count) (ctx/out! [:editor.keys.hinting.active :filter-list.input])
-       (and (= 1 count)
-            (:select-single opts)) (object/raise hinter :select! 0)
-       :else (do
-               (js/CodeMirror.on line "change" on-line-change)
-               (dom/append (dom/$ :body) elem)
-               (js/CodeMirror.positionHint (editor/->cm-ed this) elem (:start token)))))))
+(defn start-hinting
+  ([this] (start-hinting this nil))
+  ([this opts]
+   (let [pos (editor/->cursor this)
+         token (get-token this pos)
+         line (editor/line-handle this (:line pos))
+         elem (object/->content hinter)]
+     (ctx/in! [:editor.keys.hinting.active] this)
+     (object/merge! hinter {:token token
+                            :starting-token token
+                            :ed this
+                            :active true
+                            :line line})
+     (object/raise hinter :change! (:string token))
+     (object/raise hinter :active)
+     (let [count (count (:cur @hinter))]
+       (cond
+        (= 0 count) (ctx/out! [:editor.keys.hinting.active :filter-list.input])
+        (and (= 1 count)
+             (:select-single opts)) (object/raise hinter :select! 0)
+        :else (do
+                (js/CodeMirror.on line "change" on-line-change)
+                (dom/append (dom/$ :body) elem)
+                (js/CodeMirror.positionHint (editor/->cm-ed this) elem (:start token))))))))
 
 (behavior ::show-hint
           :triggers #{:hint}
@@ -335,7 +351,7 @@
 (behavior ::init
           :triggers #{:init}
           :reaction (fn [this]
-                      (load/js "core/node_modules/codemirror/show-hint.js" :sync)
+                      (load/js "core/node_modules/codemirror_addons/show-hint.js" :sync)
                       (js/CodeMirror.extendMode "clojure" (clj->js {:hint-pattern #"[\w\-\>\:\*\$\?\<\!\+\.\/foo]"}))
                       (js/CodeMirror.extendMode "text/x-clojurescript" (clj->js {:hint-pattern #"[\w\-\>\:\*\$\?\<\!\+\.\/foo]"}))
                       (js/CodeMirror.extendMode "css" (clj->js {:hint-pattern #"[\w\.\-\#]"}))

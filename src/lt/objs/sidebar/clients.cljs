@@ -1,4 +1,5 @@
 (ns lt.objs.sidebar.clients
+  "Provide sidebar for (dis)connecting to a client"
   (:require [lt.object :as object]
             [lt.objs.clients :as clients]
             [lt.objs.sidebar :as sidebar]
@@ -16,6 +17,8 @@
   [:span.button "disconnect"]
   :click (fn []
            (clients/close! i)))
+
+(declare clients)
 
 (defui unset-button [i]
   [:span.button.unset "unset"]
@@ -84,6 +87,11 @@
            ((:connect i))
            ))
 
+(defn connectors [this connectors]
+  (for [[k c] connectors]
+    (connection-type this c)
+    ))
+
 (defui connect-ui [this]
   [:div {:class (bound this connector?)
          :tabindex -1}
@@ -137,11 +145,6 @@
                   :triggers #{:focus!}
                   :reaction (fn [this]
                               (dom/focus (object/->content this))))
-
-(defn connectors [this connectors]
-  (for [[k c] connectors]
-    (connection-type this c)
-    ))
 
 (object/object* ::sidebar.clients
                 :tags #{:sidebar.clients}

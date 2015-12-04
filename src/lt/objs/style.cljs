@@ -1,4 +1,5 @@
 (ns lt.objs.style
+  "Provide styling behaviors, themes and skins"
   (:require [lt.object :as object]
             [lt.objs.sidebar.command :as cmd]
             [lt.objs.app :as app]
@@ -40,7 +41,7 @@
                 :init (fn [this]
                         [:div
                          [:style {:type "text/css"}
-                          (bound this ->css)
+                          (bound (subatom this :font-settings) ->css)
                           ]]))
 
 (def styles (object/create ::styles
@@ -72,7 +73,7 @@
                                                    (> line-height 0))
                                             (assoc final :line-height line-height)
                                             final)]
-                                (object/merge! styles final))))
+                                (object/merge! styles {:font-settings final}))))
 
 ;;**********************************************************
 ;; Skins
@@ -98,8 +99,6 @@
   (sort-by #(.-text %)
            (for [[skin path] (object/raise-reduce app/app :skins+ {})]
               #js {:text (pr-str skin) :completion (pr-str skin)})))
-
-(get-skins)
 
 (behavior ::set-skin
                   :triggers #{:object.instant}

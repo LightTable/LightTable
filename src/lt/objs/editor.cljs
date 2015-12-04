@@ -1,4 +1,7 @@
 (ns lt.objs.editor
+  "Provide fns and behaviors for interfacing with a CodeMirror editor
+  object. Also manage defining and loading CodeMirror. For more about CodeMirror
+  objects see http://codemirror.org/doc/manual.html#CodeMirror"
   (:refer-clojure :exclude [val replace range])
   (:require [crate.core :as crate]
             [lt.objs.context :as ctx-obj]
@@ -15,7 +18,41 @@
         [lt.util.cljs :only [js->clj]])
   (:require-macros [lt.macros :refer [behavior]]))
 
-(def gui (js/require "nw.gui"))
+(defn ->cm-ed
+  "Return editor's CodeMirror object"
+  [e]
+  (if (satisfies? IDeref e)
+    (:ed @e)
+    e))
+
+(defn ->elem
+  "Return DOM element of editor's CodeMirror object"
+  [e]
+  (.-parentElement (.getScrollerElement (->cm-ed e))))
+
+(defn set-val [e v]
+  (. (->cm-ed e) (setValue (or v "")))
+  e)
+
+(defn set-options
+  "Given a map of options, set each pair as an option on editor's
+  CodeMirror object"
+  [e m]
+  (doseq [[k v] m]
+    (.setOption (->cm-ed e) (name k) v))
+  e)
+
+(defn clear-history [e]
+  (.clearHistory (->cm-ed e))
+  e)
+
+(defn get-history [e]
+  (.getHistory (->cm-ed e)))
+
+(defn set-history [e v]
+  (.setHistory (->cm-ed e) v)
+  e)
+
 
 ;;*********************************************************
 ;; commands
@@ -44,9 +81,9 @@
                              "plaintext")
                      :autoClearEmptyLines true
                      :dragDrop false
-                     :onDragEvent (fn [] true)
                      :undoDepth 10000
                      :matchBrackets true
+                     :singleCursorHeightPerLine false
                      :showCursorWhenSelecting true})]
     (when-let [c (:content context)]
       (set-val e c)
@@ -55,19 +92,22 @@
       (.swapDoc e (-> (:doc context) deref :doc)))
     e))
 
-(defn ->cm-ed [e]
-  (if (satisfies? IDeref e)
-    (:ed @e)
-    e))
-
-(defn on [ed ev func]
+(defn on
+  "Register event handler on editor's CodeMirror object"
+  [ed ev func]
   (.on (->cm-ed ed) (name ev) func))
 
-(defn off [ed ev func]
+(defn off
+  "Remove event handler on editor's CodeMirror object"
+  [ed ev func]
   (.off (->cm-ed ed) (name ev) func))
 
 (defn wrap-object-events [ed obj]
   (dom/on (->elem ed) :contextmenu #(object/raise obj :menu! %))
+  (on ed :dragstart #(.preventDefault %2))
+  (on ed :dragenter #(.preventDefault %2))
+  (on ed :dragover #(.preventDefault %2))
+  (on ed :drop #(.preventDefault %2))
   (on ed :scroll #(object/raise obj :scroll %))
   (on ed :update #(object/raise obj :update % %2))
   (on ed :change #(object/raise obj :change % %2))
@@ -80,7 +120,9 @@
 ;; Params
 ;;*********************************************************
 
-(defn ->val [e]
+(defn ->val
+  "Return editor's CodeMirror object buffer contents"
+  [e]
   (. (->cm-ed e) (getValue)))
 
 (defn ->token [e pos]
@@ -95,9 +137,6 @@
 (defn ->coords [e]
   (js->clj (.cursorCoords (->cm-ed e)) :keywordize-keys true :force-obj true))
 
-(defn ->elem [e]
-  (.-parentElement (.getScrollerElement (->cm-ed e))))
-
 (defn +class [e klass]
   (add-class (->elem e) (name klass))
   e)
@@ -106,20 +145,21 @@
   (remove-class (->elem e) (name klass))
   e)
 
-(defn cursor [e side]
-  (.getCursor (->cm-ed e) side))
+(defn cursor
+  "Return cursor of editor's CodeMirror object as js object.
+   Example: #js {:line 144, :ch 9}"
+  ([e] (cursor e nil))
+  ([e side] (.getCursor (->cm-ed e) side)))
 
-(defn ->cursor [e & [side]]
+(defn ->cursor
+  "Same as cursor but returned as cljs map"
+  [e & [side]]
   (let [pos (cursor e side)]
     {:line (.-line pos)
      :ch (.-ch pos)}))
 
 (defn pos->index [e pos]
   (.indexFromPos (->cm-ed e) (clj->js pos)))
-
-(defn set-val [e v]
-  (. (->cm-ed e) (setValue (or v "")))
-  e)
 
 (defn mark [e from to opts]
   (.markText (->cm-ed e) (clj->js from) (clj->js to) (clj->js opts)))
@@ -130,13 +170,10 @@
 (defn bookmark [e from widg]
   (.setBookmark (->cm-ed e) (clj->js from) (clj->js widg)))
 
-(defn option [e o]
+(defn option
+  "Return value for option name on editor's CodeMirror object"
+  [e o]
   (.getOption (->cm-ed e) (name o)))
-
-(defn set-options [e m]
-  (doseq [[k v] m]
-    (.setOption (->cm-ed e) (name k) v))
-  e)
 
 (defn set-mode [e m]
   (.setOption (->cm-ed e) "mode" m)
@@ -195,7 +232,7 @@
   (.getRange (->cm-ed e) (clj->js from) (clj->js to)))
 
 (defn line-count [e]
-  (.lineCount e))
+  (.lineCount (->cm-ed e)))
 
 (defn insert-at-cursor [ed s]
   (replace (->cm-ed ed) (->cursor ed) s)
@@ -213,6 +250,9 @@
         half-h (/ (.-offsetHeight (.getScrollerElement (->cm-ed ed))) 2)]
     (scroll-to ed nil (- y half-h -55))))
 
+(defn selection? [e]
+  (.somethingSelected (->cm-ed e)))
+
 (defn selection-bounds [e]
   (when (selection? e)
     {:from (->cursor e"start")
@@ -221,17 +261,14 @@
 (defn selection [e]
   (.getSelection (->cm-ed e)))
 
-(defn selection? [e]
-  (.somethingSelected (->cm-ed e)))
-
 (defn set-selection [e start end]
   (.setSelection (->cm-ed e) (clj->js start) (clj->js end)))
 
 (defn set-extending [e ext?]
   (.setExtending (->cm-ed e) ext?))
 
-(defn replace-selection [e neue]
-  (.replaceSelection (->cm-ed e) neue "end" "+input"))
+(defn replace-selection [e neue & [after]]
+  (.replaceSelection (->cm-ed e) neue (name (or after :end)) "+input"))
 
 (defn undo [e]
   (.undo (->cm-ed e)))
@@ -248,22 +285,6 @@
 
 (defn paste [e]
   (replace-selection e (platform/paste)))
-
-(defn select-all [e]
-  (set-selection e
-                 {:line (first-line e) :ch 0}
-                 {:line (last-line e)}))
-
-(defn clear-history [e]
-  (.clearHistory (->cm-ed e))
-  e)
-
-(defn get-history [e]
-  (.getHistory (->cm-ed e)))
-
-(defn set-history [e v]
-  (.setHistory (->cm-ed e) v)
-  e)
 
 (defn char-coords [e pos]
   (js->clj (.charCoords (->cm-ed e) (clj->js pos)) :keywordize-keys true :force-obj true))
@@ -289,9 +310,6 @@
 (defn line [e l]
   (.getLine (->cm-ed e) l))
 
-(defn set-line [e l text]
-  (.setLine (->cm-ed e) l text))
-
 (defn first-line [e]
   (.firstLine (->cm-ed e)))
 
@@ -307,20 +325,34 @@
 (defn line-length [e l]
   (count (line e l)))
 
+(defn select-all [e]
+  (set-selection e
+                 {:line (first-line e) :ch 0}
+                 {:line (last-line e)}))
+
+(defn set-line [e l text]
+  (let [length (line-length e l)]
+    (replace e
+             {:line l :ch 0}
+             {:line l :ch length}
+             text)))
+
 (defn +line-class [e lh plane class]
-  (.addLineClass e lh (name plane) (name class)))
+  (.addLineClass (->cm-ed e) lh (name plane) (name class)))
 
 (defn -line-class [e lh plane class]
-  (.removeLineClass e lh (name plane) (name class)))
+  (.removeLineClass (->cm-ed e) lh (name plane) (name class)))
 
 (defn show-hints [e hint-fn options]
   (js/CodeMirror.showHint (->cm-ed e) hint-fn (clj->js options))
   e)
 
-(defn inner-mode [e state]
-  (let [state (or state (->> (cursor e) (->token-js e) (.-state)))]
-    (-> (js/CodeMirror.innerMode (.getMode (->cm-ed e)) state)
-        (.-mode))))
+(defn inner-mode
+  ([e] (inner-mode e nil))
+  ([e state]
+   (let [state (or state (->> (cursor e) (->token-js e) (.-state)))]
+     (-> (js/CodeMirror.innerMode (.getMode (->cm-ed e)) state)
+         (.-mode)))))
 
 (defn adjust-loc
   ([loc dir]
@@ -352,8 +384,14 @@
 (defn line-comment [e from to opts]
   (.lineComment (->cm-ed e) (clj->js from) (clj->js to) (clj->js opts)))
 
-(defn uncomment [e from to opts]
-  (.uncomment (->cm-ed e) (clj->js from) (clj->js to) (clj->js opts)))
+(defn block-comment [e from to opts]
+  (.blockComment (->cm-ed e) (clj->js from) (clj->js to) (clj->js opts)))
+
+(defn uncomment
+  ([e from to]
+   (uncomment e from to nil))
+  ([e from to opts]
+   (.uncomment (->cm-ed e) (clj->js from) (clj->js to) (clj->js opts))))
 
 (defn ->generation [e]
   (.changeGeneration (->cm-ed e)))
@@ -368,8 +406,11 @@
   (object/merge! e {:doc doc})
   (.swapDoc (->cm-ed e) (:doc @doc)))
 
-(defn fold-code [e]
-  (.foldCode (->cm-ed e) (cursor e)))
+(defn fold-code
+  ([e]
+   (fold-code e (->cursor e)))
+  ([e loc]
+   (.foldCode (->cm-ed e) (clj->js loc))))
 
 (defn gutter-widths [e]
   (let [gutter-div (dom/$ :div.CodeMirror-gutters (object/->content e))
@@ -403,7 +444,7 @@
 ;; Object
 ;;*********************************************************
 
-(load/js "core/node_modules/codemirror/codemirror.js" :sync)
+(load/js "core/node_modules/codemirror/lib/codemirror.js" :sync)
 
 (object* ::editor
          :tags #{:editor :editor.inline-result :editor.keys.normal}
@@ -624,7 +665,7 @@
           :reaction (fn [this e]
                       (let [items (sort-by :order (object/raise-reduce this :menu+ []))]
                         (-> (menu/menu items)
-                            (menu/show-menu (.-clientX e) (.-clientY e))))
+                            (menu/show-menu)))
                       (dom/prevent e)
                       (dom/stop-propagation e)
                       ))
@@ -655,16 +696,57 @@
                              :click (fn []
                                       (select-all this))})))
 
+(def mode-blacklist "Modes to not load on startup"
+  #{"clojure" "css" "htmlembedded" "htmlmixed" "javascript" "python"})
+
 (behavior ::init-codemirror
           :triggers #{:init}
           :reaction (fn [this]
-                      (load/js "core/node_modules/codemirror/matchbracket.js" :sync)
-                      (load/js "core/node_modules/codemirror/comment.js" :sync)
-                      (load/js "core/node_modules/codemirror/active-line.js" :sync)
-                      (load/js "core/node_modules/codemirror/overlay.js" :sync)
-                      (load/js "core/node_modules/codemirror/scrollpastend.js" :sync)
-                      (load/js "core/node_modules/codemirror/fold.js" :sync)
-                      (doseq [mode (files/ls "core/node_modules/codemirror/modes")
-                              :when (= (files/ext mode) "js")]
-                        (load/js (str "core/node_modules/codemirror/modes/" mode) :sync))
+                      (load/js "core/node_modules/codemirror/addon/edit/matchbrackets.js" :sync)
+                      (load/js "core/node_modules/codemirror/addon/comment/comment.js" :sync)
+                      (load/js "core/node_modules/codemirror/addon/selection/active-line.js" :sync)
+                      ;; TODO: use addon/mode/overlay.js
+                      (load/js "core/node_modules/codemirror_addons/overlay.js" :sync)
+                      (load/js "core/node_modules/codemirror/addon/scroll/scrollpastend.js" :sync)
+                      (doseq [file (files/ls (files/lt-home "core/node_modules/codemirror/addon/fold"))
+                              :when (= (files/ext file) "js")]
+                        (load/js (str "core/node_modules/codemirror/addon/fold/" file) :sync))
+                      (load/css "node_modules/codemirror/addon/fold/foldgutter.css")
+                      (load/js "core/node_modules/codemirror/keymap/sublime.js" :sync)
+                      (doseq [path (files/filter-walk #(and (= (files/ext %) "js")
+                                                            (not (some (fn [m] (> (.indexOf % (str "core/node_modules/codemirror/mode/" m "/")) -1))
+                                                                       mode-blacklist))
+                                                            ;; Remove test files
+                                                            (not (.endsWith % "test.js")))
+                                                      (files/lt-home "core/node_modules/codemirror/mode"))]
+                        (load/js path :sync))
                       (aset js/CodeMirror.keyMap.basic "Tab" expand-tab)))
+
+(behavior ::load-addon
+          :triggers #{:object.instant-load}
+          :desc "App: Load CodeMirror addon path(s)"
+          :params [{:label "path(s)"
+                    :example "edit/matchtags.js"}]
+          :type :user
+          :reaction (fn [this path]
+                      (let [paths (map #(files/join (files/lt-home)
+                                                    "core/node_modules/codemirror/addon" %)
+                                       (if (coll? path) path [path]))]
+                        (object/call-behavior-reaction :lt.objs.plugins/load-js
+                                                       this
+                                                       (filter #(= (files/ext %) "js") paths))
+                        (object/call-behavior-reaction :lt.objs.plugins/load-css
+                                                       this
+                                                       (filter #(= (files/ext %) "css") paths)))))
+
+(behavior ::set-rulers
+          :triggers #{:object.instant}
+          :type :user
+          :desc "Editor: Set CodeMirror rulers"
+          :params [{:label "Vector of rulers"
+                    :example "[{:color \"#cfc\" :column 100 :lineStyle \"dashed\"}]"}]
+          :reaction (fn [this rulers]
+                      (when-not (.getOption (->cm-ed this) "rulers")
+                        (load/js "core/node_modules/codemirror/addon/display/rulers.js" :sync))
+                      (let [rulers (or rulers [{:lineStyle "dashed" :color "#aff" :column 80}])]
+                        (set-options this {:rulers (clj->js rulers)}))))

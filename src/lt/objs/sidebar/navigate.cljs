@@ -1,4 +1,5 @@
 (ns lt.objs.sidebar.navigate
+  "Provide sidebar for finding and opening files"
   (:require [lt.object :as object]
             [lt.objs.workspace :as workspace]
             [lt.objs.context :as ctx]
@@ -19,11 +20,6 @@
 (defn file-filters [f]
   (re-seq files/ignore-pattern f))
 
-(defn populate [ws]
-  (let [files (reduce grab-files [] (:folders ws))
-        fs (map #(do {:full % :rel (files/basename %)}) (:files ws))]
-    (vec (filter #(files/file? (:full %)) (remove #(-> % :rel file-filters) (concat files fs))))))
-
 (def populate-bg (background (fn [obj-id {:keys [lim pattern ws]}]
                                (let [fs (js/require "fs")
                                      fpath (js/require "path")
@@ -40,6 +36,8 @@
                                      final (.concat all-files other-files)]
                                  (js/_send obj-id :workspace-files final)
                                  ))))
+
+(declare sidebar-navigate)
 
 (behavior ::workspace-files
                   :triggers #{:workspace-files}

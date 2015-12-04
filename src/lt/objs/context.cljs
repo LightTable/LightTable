@@ -1,4 +1,7 @@
 (ns lt.objs.context
+  "Provide context object which manages temporary contexts LT can get in.
+  An object can be associated with a context which is useful for keeping track
+  of current tabset or browser"
   (:require [lt.object :as object])
   (:require-macros [lt.macros :refer [behavior]]))
 
@@ -17,13 +20,17 @@
 (defn in? [k]
   (@contexts k))
 
-(defn out! [ctxs]
-  (let [ctxs (if (coll? ctxs)
-               ctxs
-               [ctxs])]
-    (swap! contexts #(apply disj % ctxs))
-    (swap! ctx->obj #(apply dissoc % ctxs))
-    (object/raise ctx-obj :log!)))
+(declare ctx-obj)
+
+(defn out!
+  ([ctxs]
+   (let [ctxs (if (coll? ctxs)
+                ctxs
+                [ctxs])]
+     (swap! contexts #(apply disj % ctxs))
+     (swap! ctx->obj #(apply dissoc % ctxs))
+     (object/raise ctx-obj :log!)))
+   ([ctxs _] (out! ctxs)))
 
 (defn in! [ctxs & [obj]]
   (let [ctxs (if (coll? ctxs)
@@ -47,7 +54,7 @@
 
 (defn group! [ctx group]
   (swap! ctx->group assoc ctx group)
-  (swap! group->ctx update-in [group] conj ctx))
+  (swap! group->ctxs update-in [group] conj ctx))
 
 (defn ->obj [ctx]
   (@ctx->obj ctx))

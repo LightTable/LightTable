@@ -1,4 +1,5 @@
 (ns lt.plugins.doc
+  "Provide documentation sidebar for searching docs. Used by language plugins"
   (:require [lt.object :as object]
             [lt.objs.context :as ctx]
             [lt.objs.clients :as clients]
@@ -43,7 +44,7 @@
           :triggers #{:menu+}
           :reaction (fn [this items]
                       (conj items
-                            {:label "Show docs"
+                            {:label "Toggle docs"
                              :order 0.1
                              :enabled (not (editor/selection? this))
                              :click (fn []
@@ -215,6 +216,8 @@
                           ]]
                         ))
 
+(def doc-search nil)
+
 (cmd/command {:command :docs.search.exec
               :desc "Docs: Execute sidebar search"
               :hidden true
@@ -245,7 +248,3 @@
                       (set! doc-search (object/create ::sidebar.doc.search))
                       (sidebar/add-item sidebar/rightbar doc-search)
                       ))
-
-(def doc-search nil)
-
-

@@ -1,4 +1,5 @@
 (ns lt.objs.sidebar.command
+  "Provide command sidebar for finding and executing a command"
   (:require [lt.object :as object]
             [lt.objs.context :as ctx]
             [lt.objs.sidebar :as sidebar]
@@ -90,14 +91,6 @@
   (set-val this v)
   (object/raise this :change! v))
 
-(defn current-selected [this]
-  (let [cur (indexed-results @this)
-        cnt (count cur)
-        idx (:selected @this)
-        i (mod idx (if (> cnt (:size @this)) (:size @this) cnt))]
-    (when (> cnt 0)
-      (aget (aget cur i) 0))))
-
 (defn ensure-visible [this]
   (let [list (dom/$ "ul" (object/->content this))
         elem (dom/$ ".selected" list)]
@@ -107,6 +100,33 @@
         (+ (.-scrollTop list) (.-clientHeight list))) (set! (.-scrollTop list)
                                                             (- (+ (.-offsetTop elem) (.-offsetHeight elem) 15) (.-clientHeight list)))
      :else nil)))
+
+(defn fill-lis [{:keys [lis size search selected key transform] :as this} results]
+  (let [cnt (count results)
+        cur (mod selected (if (> cnt size)
+                            size
+                            cnt))
+        transform (if transform
+                    transform
+                    #(do %3))]
+    (if (= cnt 0)
+      (dom/add-class (:content this) :empty)
+      (dom/remove-class (:content this) :empty))
+    (doseq [[i li res] (map vector (range) lis results)
+            :when res]
+      (dom/html li (transform (aget res 1) (aget res 4) (if-not (empty? search)
+
+                                                          (js/wrapMatch (aget res 1) (aget res 4))
+                                                          (aget res 1))
+                              (aget res 0)))
+      (dom/css li {:display "block"})
+      (if (= i cur)
+        (dom/add-class li :selected)
+        (dom/remove-class li :selected)))
+    (doseq [li (drop cnt lis)]
+      (dom/css li {:display "none"}))))
+
+(declare sidebar-command indexed-results)
 
 (behavior ::move-selection
           :triggers #{:move-selection}
@@ -144,13 +164,13 @@
           :triggers #{:escape!}
           :reaction (fn [this]
                       (object/raise this :inactive)
-                      (exec! :close-sidebar)))
+                      (cmd/exec! :close-sidebar)))
 
 (behavior ::options-escape!
           :triggers #{:escape!}
           :reaction (fn [this]
                       (object/raise sidebar-command :cancel!)
-                      (exec! :close-sidebar)))
+                      (cmd/exec! :close-sidebar)))
 
 (behavior ::set-on-select
           :triggers #{:select}
@@ -240,7 +260,13 @@
         score2)
       (.. items (map #(array % (key %) nil nil))))))
 
-
+(defn current-selected [this]
+  (let [cur (indexed-results @this)
+        cnt (count cur)
+        idx (:selected @this)
+        i (mod idx (if (> cnt (:size @this)) (:size @this) cnt))]
+    (when (> cnt 0)
+      (aget (aget cur i) 0))))
 
 (defui item [this x]
   [:li {:index x}]
@@ -249,31 +275,6 @@
                (dom/stop-propagation e)
                (object/raise this :set-selection! x)
                (object/raise this :select! x)))
-
-(defn fill-lis [{:keys [lis size search selected key transform] :as this} results]
-  (let [cnt (count results)
-        cur (mod selected (if (> cnt size)
-                            size
-                            cnt))
-        transform (if transform
-                    transform
-                    #(do %3))]
-    (if (= cnt 0)
-      (dom/add-class (:content this) :empty)
-      (dom/remove-class (:content this) :empty))
-    (doseq [[i li res] (map vector (range) lis results)
-            :when res]
-      (dom/html li (transform (aget res 1) (aget res 4) (if-not (empty? search)
-
-                                                          (js/wrapMatch (aget res 1) (aget res 4))
-                                                          (aget res 1))
-                              (aget res 0)))
-      (dom/css li {:display "block"})
-      (if (= i cur)
-        (dom/add-class li :selected)
-        (dom/remove-class li :selected)))
-    (doseq [li (drop cnt lis)]
-      (dom/css li {:display "none"}))))
 
 (object/object* ::filter-list
                 :tags #{:filter-list}
@@ -305,7 +306,7 @@
 (behavior ::select-command
           :triggers #{:select}
           :reaction (fn [this sel]
-                      (when-let [cmd (by-id sel)]
+                      (when-let [cmd (cmd/by-id sel)]
                         (if (:options cmd)
                           (do
                             (object/merge! sidebar-command {:active cmd})
@@ -320,7 +321,7 @@
 (behavior ::select-hidden
           :triggers #{:select-unknown}
           :reaction (fn [this v]
-                      (when-let [cmd (by-id (keyword v))]
+                      (when-let [cmd (cmd/by-id (keyword v))]
                         (object/raise this :select cmd))))
 
 (behavior ::post-select-pop
@@ -334,11 +335,11 @@
 (behavior ::exec-command
           :triggers #{:exec!}
           :reaction (fn [this sel & args]
-                      (let [cmd (by-id sel)]
+                      (let [cmd (cmd/by-id sel)]
                         (cond
-                         (not (:options cmd)) (apply exec! cmd args)
+                         (not (:options cmd)) (apply cmd/exec! cmd args)
                          (and (:options cmd) (seq args)) (apply (:exec cmd) args)
-                         :else (do (exec! :show-commandbar-transient)
+                         :else (do (cmd/exec! :show-commandbar-transient)
                                  (object/raise (:selector @this) :select cmd))))))
 
 (behavior ::exec-active!
@@ -454,8 +455,6 @@
   (pre-fill fill)
   (object/raise sidebar/rightbar :toggle sidebar-command (assoc opts :soft? true))
   (object/raise sidebar-command :soft-focus!))
-
-(def by-id cmd/by-id)
 
 (def exec! cmd/exec!)
 

@@ -1,4 +1,5 @@
 (ns lt.plugins.watches
+  "Provide watch related commands"
   (:require [lt.object :as object]
             [lt.objs.command :as cmd]
             [lt.objs.editor :as ed]
@@ -12,7 +13,6 @@
         res-obj (object/create :lt.objs.eval/inline-result {:ed this
                                                             :class (or (:class opts) (name type))
                                                             :opts opts
-                                                            :result res
                                                             :loc loc
                                                             :line line})]
     (object/add-tags res-obj [:inline.watch])
