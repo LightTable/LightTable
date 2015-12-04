@@ -1,4 +1,5 @@
 (ns lt.objs.editor.pool
+  "Provide manager for managing a pool of editors and several misc editor commands"
   (:require [lt.object :as object]
             [lt.objs.app :as app]
             [lt.objs.document :as doc]
@@ -44,12 +45,16 @@
 (defn unsaved? []
   (some #(:dirty (deref %)) (object/by-tag :editor)))
 
-(defn by-path [path]
+(defn by-path
+  "Return editor objects that edit given path"
+  [path]
   (when path
     (let [path (string/lower-case path)]
       (filter #(= (-> @% :info (get :path) (or "") string/lower-case) path) (object/by-tag :editor)))))
 
-(defn containing-path [path]
+(defn containing-path
+  "Return editor objects that edit paths containing given path string"
+  [path]
   (let [path (string/lower-case path)]
     (filter #(> (.indexOf (-> @% :info :path (or "") string/lower-case) path) -1) (object/by-tag :editor))))
 
@@ -68,7 +73,9 @@
 
 (def pool (object/create ::pool))
 
-(defn last-active []
+(defn last-active
+  "Return current editor object (last active in pool)"
+  []
   (let [l (:last @pool)]
     (when (and l @l)
       l)))
@@ -272,13 +279,32 @@
               :desc "Editor: Comment line(s)"
               :exec (do-commenting editor/line-comment)})
 
+(cmd/command {:command :block-comment-selection
+              :desc "Editor: Block Comment line(s)"
+              :exec (fn []
+                      (when-let [cur (last-active)]
+                        (let [cursor (editor/->cursor cur "start")]
+                          (if (editor/selection? cur)
+                            (editor/block-comment cur cursor (editor/->cursor cur "end") (::comment-options @cur))
+                            (editor/block-comment cur cursor cursor (::comment-options @cur))))))})
+
+
 (cmd/command {:command :uncomment-selection
               :desc "Editor: Uncomment line(s)"
               :exec (do-commenting editor/uncomment)})
 
 (cmd/command {:command :toggle-comment-selection
               :desc "Editor: Toggle comment line(s)"
-              :exec (do-commenting editor/toggle-comment)})
+              :exec (fn []
+                      (when-let [cur (last-active)]
+                        (let [cursor (editor/->cursor cur "start")
+                              [start end] (if (editor/selection? cur)
+                                            [cursor (editor/->cursor cur "end")]
+                                            [cursor cursor])]
+                          (when-not (editor/uncomment cur start end)
+                            (if-not (= (:line start) (:line end))
+                              (editor/block-comment cur cursor end (::comment-options @cur))
+                              (editor/line-comment cur cursor (editor/->cursor cur "end") (::comment-options @cur)))))))})
 
 (cmd/command {:command :indent-selection
               :desc "Editor: Indent line(s)"
@@ -574,8 +600,14 @@
               :exec (fn []
                       (when-let [ed (last-active)]
                         (if (editor/option ed "lineWrapping")
-                          (object/add-tags ed [:editor.force.unwrap])
-                          (object/add-tags ed [:editor.force.wrap]))))})
+                          (do
+                            (object/remove-tags ed [:editor.force.wrap])
+                            (object/add-tags ed [:editor.force.unwrap])
+                            (notifos/set-msg! "Wrapping off" {:timeout 2000}))
+                          (do
+                            (object/remove-tags ed [:editor.force.unwrap])
+                            (object/add-tags ed [:editor.force.wrap])
+                            (notifos/set-msg! "Wrapping on" {:timeout 2000})))))})
 
 (cmd/command {:command :editor.undo
               :desc "Editor: Undo"
@@ -694,4 +726,3 @@
               :desc "Editor: Split selection into cursors per line"
               :exec (fn []
                       (cmd/exec! :editor.codemirror.command "splitSelectionByLine"))})
-

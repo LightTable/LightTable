@@ -1,4 +1,6 @@
 (ns lt.objs.eval
+  "Provide objects for doing evals through clients and displaying inline
+  results from evals"
   (:require [lt.object :as object]
             [lt.objs.canvas :as canvas]
             [lt.objs.editor :as ed]

@@ -1,4 +1,5 @@
 (ns lt.objs.animations
+  "Manage (de)activating animations"
   (:require [lt.object :as object]
             [lt.util.dom :as dom])
   (:require-macros [lt.macros :refer [behavior]]))

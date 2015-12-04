@@ -1,7 +1,8 @@
 (ns lt.objs.find
+  "Provide find and replace functionality for current file"
   (:require [lt.object :as object]
             [lt.objs.context :as ctx]
-            [lt.objs.status-bar :as status-bar]
+            [lt.objs.statusbar :as statusbar]
             [lt.util.load :as load]
             [lt.objs.canvas :as canvas]
             [lt.objs.sidebar.command :as cmd]
@@ -152,13 +153,12 @@
 (behavior ::init
           :triggers #{:init}
           :reaction (fn [this]
-                      (load/js "core/node_modules/codemirror/search.js" :sync)
-                      (load/js "core/node_modules/codemirror/searchcursor.js" :sync)
-
-                      ))
+                      ;; TODO: use addon/search/search.js
+                      (load/js "core/node_modules/codemirror_addons/search.js" :sync)
+                      (load/js "core/node_modules/codemirror/addon/search/searchcursor.js" :sync)))
 
 (def bar (object/create ::find-bar))
-(status-bar/add-container bar)
+(statusbar/add-container bar)
 
 (cmd/command {:command :find.show
               :desc "Find: In current editor"

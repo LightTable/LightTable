@@ -1,4 +1,5 @@
 (ns lt.objs.bottombar
+  "Provide bottombar object and associated behaviors"
   (:require [lt.object :as object]
             [lt.objs.tabs :as tabs]
             [lt.objs.animations :as anim]
@@ -49,7 +50,7 @@
                 :height 0
                 :max-height default-height
                 :init (fn [this]
-                        [:div#bottom-bar {:class (bound this ->active-class)
+                        [:div#bottombar {:class (bound this ->active-class)
                                          :style {:left (bound (subatom tabs/multi :left) ->px)
                                                  :right (bound (subatom tabs/multi :right) ->px)
                                                  :height (bound (subatom this :height) ->px)}}

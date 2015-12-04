@@ -1,4 +1,5 @@
 (ns lt.objs.cache
+  "Provide cache which persists to disk and thus across application reboots"
   (:require [lt.object :as object]
             [lt.objs.files :as files]
             [cljs.reader :as reader])
@@ -36,8 +37,10 @@
              (swap! settings merge setts))))
 
 (behavior ::init
-          :triggers #{:init}
+          :triggers #{:deploy}
           :reaction (fn [this]
                       (when-not (files/exists? cache-path)
                         (files/mkdir cache-path))
                       (init)))
+
+(object/tag-behaviors :app [::init])

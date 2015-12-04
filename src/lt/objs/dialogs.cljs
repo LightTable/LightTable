@@ -1,28 +1,23 @@
 (ns lt.objs.dialogs
+  "Provide Electron-based dialogs"
   (:require [lt.object :as object]
-            [lt.util.dom :as dom])
+            [lt.util.dom :as dom]
+            [lt.objs.app :as app])
   (:require-macros [lt.macros :refer [behavior defui]]))
 
-(def active-input nil)
-
-(defui input [obj type event]
-  [:input {:type "file" type true :style "display:none;"}]
-  :change (fn []
-            (this-as me
-                     (when-not (empty? (dom/val me))
-                       (object/raise obj event (dom/val me))))))
-
-(defn trigger []
-  (dom/trigger active-input :click))
+(def remote (js/require "remote"))
+(def dialog (.require remote "dialog"))
 
 (defn dir [obj event]
-  (set! active-input (input obj :nwdirectory event))
-  (trigger))
+  (let [files (.showOpenDialog dialog app/win #js {:properties #js ["openDirectory" "multiSelections"]})]
+    (doseq [file files]
+      (object/raise obj event file))))
 
 (defn file [obj event]
-  (set! active-input (input obj :b event))
-  (trigger))
+  (let [files (.showOpenDialog dialog app/win #js {:properties #js ["openFile" "multiSelections"]})]
+    (doseq [file files]
+      (object/raise obj event file))))
 
-(defn save-as [obj event]
-  (set! active-input (input obj :nwsaveas event))
-  (trigger))
+(defn save-as [obj event path]
+  (when-let [file (.showSaveDialog dialog app/win #js {:defaultPath path})]
+    (object/raise obj event file)))

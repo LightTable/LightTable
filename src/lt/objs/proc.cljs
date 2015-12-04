@@ -1,4 +1,5 @@
 (ns lt.objs.proc
+  "Provide fns to spawn processes and manage them. Used by language plugins"
   (:require [lt.object :as object]
             [lt.objs.clients :as clients]
             [lt.objs.files :as files]
@@ -11,7 +12,6 @@
 
 (def shell (load/node-module "shelljs"))
 (def spawn (.-spawn (js/require "child_process")))
-(def cur-path (.pwd shell))
 (def custom-env (atom {}))
 
 (def procs (atom #{}))

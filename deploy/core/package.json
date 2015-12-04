@@ -1,0 +1,30 @@
+{
+  "name": "LightTable",
+  "description": "LightTable Electron App",
+  "version": "0.8.0-alpha",
+  "main": "main.js",
+  "browserWindowOptions": {
+    "icon": "img/lticon.png",
+    "width": 1024,
+    "height": 700,
+    "min-width": 400,
+    "min-height": 400,
+    "web-preferences": {
+      "webgl": true,
+      "webaudio": true,
+      "plugins": true
+    }
+  },
+  "dependencies": {
+    "codemirror": "^4.7.0",
+    "optimist": "^0.5.2",
+    "request": "^2.14.0",
+    "wrench": "^1.5.6"
+  },
+  "forkedDependencies": {
+    "replace": "^0.2.7",
+    "socket.io": "^0.9.13",
+    "shelljs": "^0.1.4",
+    "tar": "^0.1.19"
+  }
+}

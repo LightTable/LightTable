@@ -1,4 +1,5 @@
 (ns lt.objs.editor.file
+  "Provide behaviors for a file-based editor object"
   (:require [lt.object :as object]
             [lt.objs.editor :as ed]
             [lt.objs.document :as doc]

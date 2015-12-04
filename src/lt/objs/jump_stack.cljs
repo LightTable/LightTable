@@ -1,4 +1,5 @@
 (ns lt.objs.jump-stack
+  "Provide jump stack to jump to definitions and jump back"
   (:require [lt.object :as object]
             [lt.objs.editor :as editor]
             [lt.objs.editor.pool :as pool]

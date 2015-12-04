@@ -1,20 +1,20 @@
 (ns lt.objs.files
+  "Provider fns for doing file related operations. A number of fns
+  use the node fs library - https://nodejs.org/api/fs.html"
   (:refer-clojure :exclude [open exists?])
   (:require [lt.object :as object]
             [lt.util.load :as load]
             [clojure.string :as string]
+            [lt.objs.platform :as platform]
             [lt.util.js :refer [now]])
   (:require-macros [lt.macros :refer [behavior]]))
 
 (def fs (js/require "fs"))
 (def fpath (js/require "path"))
 (def wrench (load/node-module "wrench"))
+(def shell (js/require "shell"))
 (def os (js/require "os"))
-(def app (.-App (js/require "nw.gui")))
-(def data-path (let [path (.-dataPath app)]
-                 (if (array? path)
-                   (first path)
-                   path)))
+(def data-path (platform/get-data-path))
 
 (defn typelist->index [cur types]
   (let [full (map (juxt :name identity) types)
@@ -59,7 +59,7 @@
 (def line-ending (.-EOL os))
 (def separator (.-sep fpath))
 (def available-drives #{})
-(def pwd (.resolve fpath "."))
+(def cwd "Directory process is started in" (js/process.cwd))
 
 (when (= separator "\\")
   (.exec (js/require "child_process") "wmic logicaldisk get name"
@@ -88,9 +88,7 @@
         (recur (rest parts) (conj acc (string/join "." parts)))))))
 
 (defn ext [path]
-  (let [i (.lastIndexOf path ".")]
-    (when (> i 0)
-      (subs path (inc i) (count path)))))
+  (subs (.extname fpath path) 1))
 
 (defn without-ext [path]
   (let [i (.lastIndexOf path ".")]
@@ -173,7 +171,9 @@
   (let [content (.readFileSync fs path "utf-8")]
     (string/replace content "\uFEFF" "")))
 
-(defn open [path cb]
+(defn open
+  "Open file and in callback return map with file's content in :content"
+  [path cb]
   (try
     (let [content (bomless-read path)]
       ;;TODO: error handling
@@ -192,7 +192,9 @@
       (when cb (cb nil e)))
     ))
 
-(defn open-sync [path]
+(defn open-sync
+  "Open file and return map with file's content in :content"
+  [path]
   (try
     (let [content (bomless-read path)]
       ;;TODO: error handling
@@ -211,7 +213,9 @@
       nil)
     ))
 
-(defn save [path content & [cb]]
+(defn save
+  "Save path with given content. Optional callback called after save"
+  [path content & [cb]]
   (try
     (.writeFileSync fs path content)
     (object/raise files-obj :files.save path)
@@ -225,7 +229,9 @@
       (when cb (cb e))
       )))
 
-(defn append [path content & [cb]]
+(defn append
+  "Append content to path. Optional callback called after append"
+  [path content & [cb]]
   (try
     (.appendFileSync fs path content)
     (object/raise files-obj :files.save path)
@@ -239,12 +245,19 @@
       (when cb (cb e))
       )))
 
-(defn delete! [path]
+(defn trash! [path]
+  (.moveItemTotrash shell path))
+
+(defn delete!
+  "Delete file or directory"
+  [path]
   (if (dir? path)
     (.rmdirSyncRecursive wrench path)
     (.unlinkSync fs path)))
 
-(defn move! [from to]
+(defn move!
+  "Move file or directory to given path"
+  [from to]
   (if (dir? from)
     (do
       (.copyDirSyncRecursive wrench from to)
@@ -253,15 +266,21 @@
       (save to (:content (open-sync from)))
       (delete! from))))
 
-(defn copy [from to]
+(defn copy
+  "Copy file or directory to given path"
+  [from to]
   (if (dir? from)
     (.copyDirSyncRecursive wrench from to)
     (save to (:content (open-sync from)))))
 
-(defn mkdir [path]
+(defn mkdir
+  "Make given directory"
+  [path]
   (.mkdirSync fs path))
 
-(defn parent [path]
+(defn parent
+  "Return directory of path"
+  [path]
 	(.dirname fpath path))
 
 (defn next-available-name [path]
@@ -277,6 +296,7 @@
           (recur (inc x) (join p (str name (inc x) (when ext (str "." ext))))))))))
 
 (defn ls
+  "Return directory's files"
   ([path] (ls path nil))
   ([path cb]
    (try
@@ -289,7 +309,12 @@
          (cb nil))
        nil))))
 
-(defn ls-sync [path opts]
+(defn ls-sync
+  "Return directory's files applying ignore-pattern. Takes map of options with keys:
+
+  * :files - When set only returns files
+  * :dirs - When set only return directories"
+  [path opts]
   (try
     (let [fs (remove #(re-seq ignore-pattern %) (map (partial ->file|dir path) (.readdirSync fs path)))]
       (cond
@@ -299,7 +324,9 @@
     (catch js/global.Error e
       nil)))
 
-(defn full-path-ls [path]
+(defn full-path-ls
+  "Return directory's files as full paths"
+  [path]
   (try
     (doall (map (partial join path) (.readdirSync fs path)))
     (catch js/Error e
@@ -307,13 +334,16 @@
     (catch js/global.Error e
       (js/lt.objs.console.error e))))
 
-(defn dirs [path]
+(defn dirs
+  "Return directory's directories"
+  [path]
   (try
     (filter dir? (map (partial join path) (.readdirSync fs path)))
     (catch js/Error e)
     (catch js/global.Error e)))
 
 (defn home
+  "Return users' home directory (e.g. ~/) or path under it"
   ([] (home nil))
   ([path]
    (let [h (if (= js/process.platform "win32")
@@ -322,16 +352,24 @@
      (join h (or path separator)))))
 
 (defn lt-home
-  ([] pwd)
+  "Return LT's home directory"
+  ([] load/dir)
   ([path]
-   (join pwd path)))
+   (join (lt-home) path)))
 
-(defn lt-user-dir [path]
-  (if js/process.env.LT_USER_DIR
-    (join js/process.env.LT_USER_DIR (or path ""))
-    (join data-path path)))
+(defn lt-user-dir
+  "Return LT's user directory. Used for storing user-related content e.g.
+  settings, plugins, logs and caches"
+  ([] (lt-user-dir ""))
+  ([path]
+   (if js/process.env.LT_USER_DIR
+     (join js/process.env.LT_USER_DIR path)
+     (join data-path path))))
 
-(defn walk-up-find [start find]
+(defn walk-up-find
+  "Starting at start path, walk up parent directories and return first path
+  whose basename matches find"
+  [start find]
   (let [roots (get-roots)]
     (loop [cur start
            prev ""]
@@ -368,4 +406,3 @@
       (let [cur (first to-walk)
             neue (filterv func (full-path-ls cur))]
         (recur (concat (rest to-walk) (dirs cur)) (concat found neue))))))
-

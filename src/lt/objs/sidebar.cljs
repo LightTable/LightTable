@@ -1,4 +1,5 @@
 (ns lt.objs.sidebar
+  "Provide sidebar (left bar) and rightbar objects"
   (:require [lt.object :as object]
             [lt.objs.tabs :as tabs]
             [lt.objs.command :as cmd]
@@ -103,7 +104,7 @@
                 :transients '()
                 :max-width default-width
                 :init (fn [this]
-                        [:div#left-bar {:style {:width (bound (subatom this :width) ->width)}}
+                        [:div#side {:style {:width (bound (subatom this :width) ->width)}}
                          [:div.content
                           (bound (subatom this :active) active-content)]
                          (vertical-grip this)]))

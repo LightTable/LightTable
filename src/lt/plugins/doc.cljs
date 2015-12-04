@@ -1,4 +1,5 @@
 (ns lt.plugins.doc
+  "Provide documentation sidebar for searching docs. Used by language plugins"
   (:require [lt.object :as object]
             [lt.objs.context :as ctx]
             [lt.objs.clients :as clients]
@@ -43,7 +44,7 @@
           :triggers #{:menu+}
           :reaction (fn [this items]
                       (conj items
-                            {:label "Show docs"
+                            {:label "Toggle docs"
                              :order 0.1
                              :enabled (not (editor/selection? this))
                              :click (fn []

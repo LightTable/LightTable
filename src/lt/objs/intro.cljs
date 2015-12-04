@@ -1,4 +1,5 @@
 (ns lt.objs.intro
+  "Provide intro panel for introducing LT to new users"
   (:require [lt.object :as object]
             [lt.objs.style :as style]
             [lt.objs.deploy :as deploy]
@@ -22,7 +23,7 @@
                                     "dark") ".png"))
 
 (defui docs []
-  [:button "Light Table's docs"]
+  [:button "Light Table's online docs"]
   :click (fn []
            (cmd/exec! :show-docs)))
 
@@ -46,28 +47,27 @@
                          [:h1
                           [:img {:height 40 :src (bound style/styles ->lt-image)}]]
                          [:p "Welcome to the latest version of Light Table. To see the full list of what's been added/changed, checkout the " (changelog) ".
-                          Some of the highlights include deeper Javascript support, inline browsers, and Python eval! If you're new, you might want to take a look at " (docs) "to get started."]
+                          Some of the highlights include deeper Javascript support, inline browsers, and Python eval! If you're new, you might want to take a look at " (docs) " to get started."]
                          [:p "If you run into any problems, report the issue on " (reports) "!"]    ;; TODO: Added button to click for reporting issue - TWM
                          ]))
 
 (behavior ::show-intro
-                  :triggers #{:post-init}
-                  :type :user
-                  :exclusive [::show-new-file]
-                  :desc "App: Open the welcome screen when Light Table starts"
-                  :reaction (fn [this]
-                              (when-not (cli/args)
-                                (let [intro (object/create ::intro)]
-                                  (.focus app/win)
-                                  (dom/focus (dom/$ :body))
-                                  (tabs/add! intro)
-                                  (tabs/active! intro)))))
+          :triggers #{:post-init}
+          :type :user
+          :exclusive [::show-new-file]
+          :desc "App: Open the welcome screen when Light Table starts"
+          :reaction (fn [this]
+                      (when-not (cli/args)
+                        (let [intro (object/create ::intro)]
+                          (dom/focus (dom/$ :body))
+                          (tabs/add! intro)
+                          (tabs/active! intro)))))
 
 (behavior ::show-new-file
-                  :triggers #{:post-init}
-                  :type :user
-                  :exclusive [::show-intro]
-                  :desc "App: Open a new file when Light Table starts"
-                  :reaction (fn [this]
-                              (when-not (cli/args)
-                                (cmd/exec! :new-file))))
+          :triggers #{:post-init}
+          :type :user
+          :exclusive [::show-intro]
+          :desc "App: Open a new file when Light Table starts"
+          :reaction (fn [this]
+                      (when-not (cli/args)
+                        (cmd/exec! :new-file))))

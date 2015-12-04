@@ -1,4 +1,5 @@
 (ns lt.util.dom
+  "Provide DOM related fns"
   (:refer-clojure :exclude [parents remove next val empty]))
 
 (defn lazy-nl-via-item
@@ -148,6 +149,9 @@
 
 (defn width [elem]
   (.-clientWidth elem))
+
+(defn scroll-width [elem]
+  (.-scrollWidth elem))
 
 (defn offset-top [elem]
   (.-offsetTop elem))

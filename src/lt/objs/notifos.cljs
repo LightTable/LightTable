@@ -1,6 +1,7 @@
 (ns lt.objs.notifos
+  "Provide fns for displaying messages and spinner in bottom statusbar"
   (:require [lt.object :as object]
-            [lt.objs.status-bar :as status-bar]
+            [lt.objs.statusbar :as statusbar]
             [lt.objs.command :as cmd]
             [lt.util.js :refer [wait]]
             [crate.binding :refer [map-bound bound deref?]])
@@ -12,11 +13,15 @@
   (let [m (if (string? m)
             m
             (pr-str m))]
-    (object/merge! status-bar/status-loader (merge {:message m :class ""} opts))))
+    (object/merge! statusbar/statusbar-loader (merge {:message m :class ""} opts))))
 
 (declare cur-timeout)
 
 (defn set-msg!
+  "Display message in bottom statusbar. Takes map of options with following keys:
+
+  * :class - css class for message. Use 'error' to display error message
+  * :timeout - Number of ms before message times out. Default is 10000 (10s)"
   ([msg]
    (msg* msg)
    (js/clearTimeout cur-timeout)
@@ -28,21 +33,23 @@
                                standard-timeout) #(msg* "")))))
 
 (defn working
+  "Display working spinner with optional statusbar message"
   ([] (working nil))
   ([msg]
     (when msg
       (set-msg! msg))
-    (status-bar/loader-inc)))
+    (statusbar/loader-inc)))
 
 (defn done-working
+  "Hide working spinner with optional statusbar message"
   ([]
-   (status-bar/loader-dec))
+   (statusbar/loader-dec))
   ([msg]
    (set-msg! msg)
-   (status-bar/loader-dec)))
+   (statusbar/loader-dec)))
 
 (cmd/command {:command :reset-working
               :desc "Status Bar: Reset working indicator"
               :exec (fn []
-                      (status-bar/loader-set)
+                      (statusbar/loader-set)
                       )})

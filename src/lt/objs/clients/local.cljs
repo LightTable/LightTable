@@ -1,4 +1,5 @@
 (ns lt.objs.clients.local
+  "Provide local client for connecting to LT"
   (:refer-clojure :exclude [send])
   (:require [cljs.reader :as reader]
             [lt.object :as object]
@@ -42,7 +43,7 @@
           (object/raise clients/clients :message [cb :editor.eval.js.exception {:ex e :meta (:meta data)}])))))
 
 (defmethod on-message :editor.eval.css [_ data cb]
-  (let [name (string/replace (str "local-" (:name data)) #"\." "-")
+  (let [name (str "local-" (string/replace (:name data) #"[^a-zA-Z0-9]+" "-"))
         cur ($ (str "#" name))]
     (when cur
       (remove cur))

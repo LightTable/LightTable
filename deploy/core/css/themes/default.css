@@ -28,6 +28,8 @@
 .cm-s-default span.cm-def {color:#acf;}
 .cm-s-default span.cm-builtin {color: #aec;}
 .cm-s-default span.cm-header {color: #aec;}
+.cm-s-default span.cm-quote {color: #add;}
+.cm-s-default span.cm-link {color: #aec;}
 .cm-s-default span.cm-property {color: #aaa; }
 .cm-s-default span.cm-operator {color: #aaa; }
 .cm-s-default span.cm-keyword {color: #aec; }
@@ -64,3 +66,7 @@
 .CodeMirror-hints input { display:none; }
 .CodeMirror-hints .selected { background: #616161; color: #f4f4f4; }
 .CodeMirror-hints ul::-webkit-scrollbar-thumb { background: #606970; border-color: #606970; }
+
+.CodeMirror.cm-keymap-fat-cursor div.CodeMirror-cursors {
+  z-index: 3;
+}

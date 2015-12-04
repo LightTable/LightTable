@@ -1,4 +1,5 @@
 (ns lt.objs.sidebar.workspace
+  "Provide sidebar for managing workspaces and files within a workspace"
   (:require [lt.object :as object]
             [lt.objs.command :as cmd]
             [lt.objs.context :as ctx]
@@ -7,28 +8,13 @@
             [lt.objs.opener :as opener]
             [lt.objs.popup :as popup]
             [lt.objs.sidebar :as sidebar]
+            [lt.objs.dialogs :as dialogs]
+            [lt.objs.menu :as menu]
             [lt.util.dom :as dom]
             [lt.util.cljs :refer [->dottedkw]]
             [crate.binding :refer [bound subatom]]
             [clojure.string :as string])
   (:require-macros [lt.macros :refer [behavior defui]]))
-
-(def active-dialog nil)
-(def gui (js/require "nw.gui"))
-
-(defn menu-item [opts]
-  (let [mi (.-MenuItem gui)]
-    (mi. (clj->js opts))))
-
-(defn menu [items]
-  (let [m (.-Menu gui)
-        menu (m.)]
-    (doseq [i items]
-      (.append menu (menu-item i)))
-    menu))
-
-(defn show-menu [m x y]
-  (.popup m x y))
 
 (defn files-and-folders [path]
   (let [fs (workspace/files-and-folders path)]
@@ -72,7 +58,11 @@
                       (object/merge! this {:open? true})
                       (when-not (:realized? @this)
                         (object/merge! this {:realized? true})
-                        (object/merge! this (files-and-folders (:path @this))))))
+                        (object/merge! this (files-and-folders (:path @this)))
+                        (let [folder (dom/$ :ul (object/->content this))
+                              width (dom/scroll-width folder)]
+                          (doseq [child (dom/children folder)]
+                            (dom/css child {:width width}))))))
 
 (behavior ::refresh
           :triggers #{:refresh!}
@@ -186,8 +176,8 @@
           :triggers #{:menu!}
           :reaction (fn [this e]
                       (let [items (sort-by :order (object/raise-reduce this :menu-items []))]
-                        (-> (menu items)
-                            (show-menu (.-clientX e) (.-clientY e))))))
+                        (-> (menu/menu items)
+                            (menu/show-menu)))))
 
 (behavior ::on-root-menu
           :triggers #{:menu-items}
@@ -345,7 +335,9 @@
           :reaction (fn [this]
                       (object/merge! this {:renaming? true})
                       (let [input (dom/$ :input (object/->content this))
-                            len (count (files/without-ext (files/basename (:path @this))))]
+                            len (count (files/without-ext (files/basename (:path @this))))
+                            width (dom/scroll-width (dom/parent input))]
+                        (dom/css input {:width width})
                         (dom/focus input)
                         (dom/selection input 0 len "forward"))))
 
@@ -483,12 +475,10 @@
                        (object/raise tree event (dom/val me))))))
 
 (defn open-folder []
-  (set! active-dialog (input :nwdirectory :workspace.add.folder!))
-  (dom/trigger active-dialog :click))
+  (dialogs/dir tree :workspace.add.folder!))
 
 (defn open-file []
-  (set! active-dialog (input :blah :workspace.add.file!))
-  (dom/trigger active-dialog :click))
+  (dialogs/file tree :workspace.add.file!))
 
 (defui button [name action]
   [:li name]

@@ -1,4 +1,5 @@
 (ns lt.objs.search
+  "Provide search and replace functionality across files"
   (:require [lt.object :as object]
             [lt.objs.proc :as proc]
             [lt.objs.tabs :as tabs]
@@ -85,7 +86,7 @@
           (ctx/out! :searcher.replace)))
 
 (defui replace-all-button [this]
-  [:button.replace "all"]
+  [:button.replace "Replace All"]
   :click (fn [e]
            (cmd/exec! :searcher.replace-all)))
 

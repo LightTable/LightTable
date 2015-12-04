@@ -1,10 +1,12 @@
 (ns lt.objs.console
+  "Provide console object for logging to file and displaying log messages
+  in bottom bar"
   (:require [lt.object :as object]
             [lt.objs.app :as app]
             [lt.objs.files :as files]
             [lt.objs.bottombar :as bottombar]
             [lt.objs.command :as cmd]
-            [lt.objs.status-bar :as status-bar]
+            [lt.objs.statusbar :as statusbar]
             [lt.objs.tabs :as tabs]
             [clojure.string :as string]
             [lt.util.dom :refer [$ append empty parents] :as dom]
@@ -17,6 +19,8 @@
 (def logs-dir (files/lt-user-dir "logs"))
 (def core-log (try
                 (when-not (files/exists? logs-dir)
+                  (when-not (files/exists? (files/lt-user-dir))
+                    (files/mkdir (files/lt-user-dir)))
                   (files/mkdir logs-dir))
                 (.. (js/require "fs") (createWriteStream (files/join logs-dir (str "window" (app/window-number) ".log"))))
                 (catch js/global.Error e
@@ -38,7 +42,7 @@
   (when (> (count (dom/children $console)) (dec console-limit))
     (dom/remove (aget (dom/children $console) 0)))
   (when-not (bottombar/active? console)
-    (status-bar/dirty))
+    (statusbar/dirty))
   (append $console msg))
 
 (defn write-to-log [thing]
@@ -49,6 +53,7 @@
   [:li {:class class} l])
 
 (defn log
+  ([l] (log l nil))
   ([l class] (log l class nil))
   ([l class str-content]
    (when-not (= "" l)
@@ -63,13 +68,12 @@
          nil)))))
 
 (defn error [e]
-  (status-bar/console-class "error")
-  (log (str (if (.-stack e)
-              (.-stack e)
-              (let [pr-e (pr-str e)]
-                (if (not= pr-e "[object Object]")
-                  pr-e
-                  (str e)))))
+  (statusbar/console-class "error")
+  (log (str (cond
+             (.-stack e) (.-stack e)
+             (string? e) e
+             (not= (pr-str e) "[object Object]") (pr-str e)
+             :else (str e)))
        "error"))
 
 (.on js/process "uncaughtException" #(error %))
@@ -106,6 +110,7 @@
   (util-inspect thing false 2))
 
 (defn verbatim
+  ([thing] (verbatim thing nil))
   ([thing class]
    (verbatim thing class nil))
   ([thing class str-content]
@@ -113,7 +118,7 @@
      (when str-content
        (write-to-log str-content))
      (when class
-       (status-bar/console-class class))
+       (statusbar/console-class class))
      (write $console (->item thing class))
      (dom/scroll-top $console 10000000000)
      nil)))
@@ -182,28 +187,28 @@
                                         (cmd/exec! :toggle-console)
                                         (cmd/exec! :console-tab))}))))
 
-;; @FIXME: rename to status-bar ?
-(behavior ::status-bar-console-toggle
+;; @FIXME: rename to statusbar ?
+(behavior ::statusbar-console-toggle
           :triggers #{:toggle}
           :reaction (fn [this]
                       (object/raise bottombar/bottombar :toggle console)
                       (when (bottombar/active? console)
                         (dom/scroll-top (object/->content console) 10000000000)
-                        (status-bar/clean))
+                        (statusbar/clean))
                       ))
 
-;; @FIXME: rename to status-bar ?
-(behavior ::status-bar-console-show
+;; @FIXME: rename to statusbar ?
+(behavior ::statusbar-console-show
           :triggers #{:show!}
           :reaction (fn [this]
                       (object/raise bottombar/bottombar :show! console)
                       (when (bottombar/active? console)
                         (dom/scroll-top (object/->content console) 10000000000)
-                        (status-bar/clean))
+                        (statusbar/clean))
                       ))
 
-;; @FIXME: rename to status-bar ?
-(behavior ::status-bar-console-hide
+;; @FIXME: rename to statusbar ?
+(behavior ::statusbar-console-hide
           :triggers #{:hide!}
           :reaction (fn [this]
                       (object/raise bottombar/bottombar :hide! console)))
@@ -215,7 +220,7 @@
               :desc "Console: Open the console in a tab"
               :exec (fn []
                       (when (not= :tab (:current-ui @console)) ; Running the command when tab is already opened in a tab was creating another new tab each time.
-                        (object/raise status-bar/console-toggle :hide!)
+                        (object/raise statusbar/console-toggle :hide!)
                         (object/merge! console {:current-ui :tab})
                         (tabs/add! console)
                       ))})
@@ -226,8 +231,8 @@
               :hidden true
               :exec (fn []
                       (if (= (:current-ui @console) :tab)
-                        (do (tabs/active! console) (status-bar/clean))
-                        (object/raise status-bar/console-toggle :show!)))})
+                        (do (tabs/active! console) (statusbar/clean))
+                        (object/raise statusbar/console-toggle :show!)))})
 
 (cmd/command {:command :console.hide
               :desc "Console: Hide console"
@@ -235,14 +240,14 @@
               :exec (fn []
                       (if (= (:current-ui @console) :tab)
                         (object/raise console :close)
-                        (object/raise status-bar/console-toggle :hide!)))})
+                        (object/raise statusbar/console-toggle :hide!)))})
 
 (cmd/command {:command :toggle-console
               :desc "Console: Toggle console"
               :exec (fn []
                       (if (= (:current-ui @console) :tab)
-                        (do (tabs/active! console) (status-bar/clean))
-                        (object/raise status-bar/console-toggle :toggle)))})
+                        (do (tabs/active! console) (statusbar/clean))
+                        (object/raise statusbar/console-toggle :toggle)))})
 
 (cmd/command {:command :clear-console
               :desc "Console: Clear console"
