@@ -58,7 +58,11 @@
                       (object/merge! this {:open? true})
                       (when-not (:realized? @this)
                         (object/merge! this {:realized? true})
-                        (object/merge! this (files-and-folders (:path @this))))))
+                        (object/merge! this (files-and-folders (:path @this)))
+                        (let [folder (dom/$ :ul (object/->content this))
+                              width (dom/scroll-width folder)]
+                          (doseq [child (dom/children folder)]
+                            (dom/css child {:width width}))))))
 
 (behavior ::refresh
           :triggers #{:refresh!}
@@ -331,7 +335,9 @@
           :reaction (fn [this]
                       (object/merge! this {:renaming? true})
                       (let [input (dom/$ :input (object/->content this))
-                            len (count (files/without-ext (files/basename (:path @this))))]
+                            len (count (files/without-ext (files/basename (:path @this))))
+                            width (dom/scroll-width (dom/parent input))]
+                        (dom/css input {:width width})
                         (dom/focus input)
                         (dom/selection input 0 len "forward"))))
 
