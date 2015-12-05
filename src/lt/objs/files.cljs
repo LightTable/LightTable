@@ -18,11 +18,15 @@
 
 (defn typelist->index [cur types]
   (let [full (map (juxt :name identity) types)
-        ext (for [cur types
+        exts (for [cur types
                   ext (:exts cur)]
-              [ext (:name cur)])]
+              [ext (:name cur)])
+        filenames (for [cur types
+                        filename (:filenames cur)]
+                    [filename (:name cur)])]
     {:types (into (:types cur {}) full)
-     :exts (into (:exts cur {}) ext)}))
+     :exts (into (:exts cur {}) exts)
+     :typed-filenames (into (:typed-filenames curr {}) filenames)}))
 
 (defn join [& segs]
   (apply (.-join fpath) (filter string? (map str segs))))
@@ -54,6 +58,7 @@
 (def files-obj (object/create (object/object* ::files
                                               :tags [:files]
                                               :exts {}
+                                              :typed-filenames {}
                                               :types {})))
 
 (def line-ending (.-EOL os))
@@ -104,19 +109,31 @@
 (defn ext->mode [ext]
   (:mime (ext->type ext)))
 
+(defn filename->type [filename]
+  (let [filenames (:typed-filenames @files-obj)
+        types (:types @files-obj)]
+    (-> filenames (get filename) types)))
+
+(defn filename->mode [filename]
+  (:mime (filename->type filename)))
+
 (defn path->type [path]
-  (->> path
-       get-file-parts
-       (map #(ext->type (keyword %)))
-       (remove nil?)
-       first))
+  (let [filename (basename path)]
+    (or (filename->type filename)
+        (->> path
+             get-file-parts
+             (map #(ext->type (keyword %)))
+             (remove nil?)
+             first))))
 
 (defn path->mode [path]
-  (->> path
-       get-file-parts
-       (map #(ext->mode (keyword %)))
-       (remove nil?)
-       first))
+  (let [filename (basename path)]
+    (or (filename->mode filename)
+        (->> path
+             get-file-parts
+             (map #(ext->mode (keyword %)))
+             (remove nil?)
+             first))))
 
 (defn determine-line-ending [text]
   (let [text (subs text 0 1000)
