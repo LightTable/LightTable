@@ -265,6 +265,5 @@
                                                                   (aget i)
                                                                   (.-path)))
                                   (recur (inc i)))))
-                            (catch js/Error e
-                              (println e)))
-                          ))
+                            (catch :default e
+                              (println e)))))

@@ -169,7 +169,7 @@
                                   (object/raise workspace/current-ws :add.folder! path)
                                   (object/raise workspace/current-ws :add.file! path)))
                               (recur (inc i)))))
-                        (catch js/Error e
+                        (catch :default e
                           (println e)))))
 
 (behavior ::on-menu

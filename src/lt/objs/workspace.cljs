@@ -180,7 +180,7 @@
       (reconstitute ws (file->ws loc))
       (save ws (:file @ws))
       (files/delete! loc)
-      (catch js/Error e
+      (catch :default e
         ))))
 
 (defn cached []
