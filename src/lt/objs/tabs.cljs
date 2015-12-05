@@ -387,9 +387,7 @@
                       (try
                         (let [orig (:active-obj @this)]
                           (object/raise orig :close))
-                        (catch js/Error e
-                          (js/lt.objs.console.error e))
-                        (catch js/global.Error e
+                        (catch :default e
                           (js/lt.objs.console.error e)))))
 
 (behavior ::on-destroy-objs

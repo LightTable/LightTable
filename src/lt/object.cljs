@@ -132,14 +132,9 @@
          (apply func obj args))
        (when-not (= trigger :object.behavior.time)
          (raise obj :object.behavior.time r time trigger)))
-       (catch js/Error e
+       (catch :default e
          (safe-report-error (str "Invalid behavior: " (-> (->behavior r) :name)))
-         (safe-report-error e)
-         )
-       (catch js/global.Error e
-         (safe-report-error (str "Invalid behavior: " (-> (->behavior r) :name)))
-         (safe-report-error e)
-         )))))
+         (safe-report-error e))))))
 
 (defn raise
   "Invoke object's behavior fns for given trigger. Args are passed to behavior fns"
