@@ -286,7 +286,7 @@
        (if cb
          (cb fs)
          fs))
-     (catch js/global.Error e
+     (catch :default e
        (when cb
          (cb nil))
        nil))))
@@ -303,7 +303,7 @@
        (:files opts) (filter #(file? (join path %)) fs)
        (:dirs opts) (filter #(dir? (join path %)) fs)
        :else fs))
-    (catch js/global.Error e
+    (catch :default e
       nil)))
 
 (defn full-path-ls
