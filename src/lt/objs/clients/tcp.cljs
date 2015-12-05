@@ -71,8 +71,9 @@
       (.listen s 0)
       (.on s "listening" #(set! port (.-port (.address s))))
       s)
-    ;;TODO: warn the user that they're not connected to anything
-    (catch :default e)))
+    (catch :default e
+      ;; TODO: warn the user that they're not connected to anything
+      e)))
 
 (behavior ::send!
                   :triggers #{:send!}
@@ -85,5 +86,6 @@
                   :reaction (fn [app]
                               (try
                                 (.close server)
-                                (catch :default e))))
+                                (catch :default e
+                                  e))))
 

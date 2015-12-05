@@ -304,7 +304,7 @@
        (:dirs opts) (filter #(dir? (join path %)) fs)
        :else fs))
     (catch :default e
-      nil)))
+      e)))
 
 (defn full-path-ls
   "Return directory's files as full paths"
@@ -319,7 +319,8 @@
   [path]
   (try
     (filter dir? (map (partial join path) (.readdirSync fs path)))
-    (catch :default e)))
+    (catch :default e
+      e)))
 
 (defn home
   "Return users' home directory (e.g. ~/) or path under it"

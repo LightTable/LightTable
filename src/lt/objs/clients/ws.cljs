@@ -76,4 +76,5 @@
                   :reaction (fn [app]
                               (try
                                 (.close server)
-                                (catch :default e))))
+                                (catch :default e
+                                  e))))

@@ -113,7 +113,7 @@
   (try
     (reader/read-string r)
     (catch :default e
-      r)))
+      e)))
 
 (defn find-client [{:keys [origin command info key create] :as opts}]
   (let [[result client] (clients/discover command info)
