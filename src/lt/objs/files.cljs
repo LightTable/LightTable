@@ -56,8 +56,8 @@
                                                         :exts {}
                                                         :types {})))
 
-(def line-ending (.-EOL os))
-(def separator (.-sep fpath))
+(def line-ending "Current platform-specific line" (.-EOL os))
+(def separator "Current platform-specific file separator" (.-sep fpath))
 (def ^:private available-drives #{})
 (def cwd "Directory process is started in" (js/process.cwd))
 

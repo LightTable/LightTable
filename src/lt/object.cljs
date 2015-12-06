@@ -46,7 +46,9 @@
 (defn- add-behavior [beh]
   (swap! behaviors assoc (:name beh) beh))
 
-(defn ->id [obj]
+(defn ->id
+  "Return id of given object"
+  [obj]
   (if (deref? obj)
     (::id @obj)
     (::id obj)))
@@ -384,17 +386,25 @@
 (defn- in-tag? [tag behavior]
   (first (filter #{behavior} (@tags tag))))
 
-(defn has-tag? [obj tag]
+(defn has-tag?
+  "Return truthy if object has tag"
+  [obj tag]
   ((:tags @obj) tag))
 
-(defn add-tags [obj ts]
+(defn add-tags
+  "Add tags to given object and updates effected behaviors and listeners.
+  ::tags-added trigger is raised on object after update"
+  [obj ts]
   (update! obj [:tags] #(reduce conj % (filter identity ts)))
   (reset! obj (update-listeners obj))
   (raise obj ::tags-added ts)
   (raise* obj (trigger->behaviors :object.instant ts) nil)
   obj)
 
-(defn remove-tags [obj ts]
+(defn remove-tags
+  "Remove tags from given object and updates effected behaviors and listeners.
+  ::tags-removed trigger is raised on object after update"
+  [obj ts]
   (let [cur @obj
         behs (apply concat (map @tags ts))
         cur (-> cur

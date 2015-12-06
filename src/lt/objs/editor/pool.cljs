@@ -42,7 +42,9 @@
 (object/object* ::pool
                 :tags #{:editor.pool})
 
-(defn unsaved? []
+(defn unsaved?
+  "Return truthy if any editors are currently dirty/unsaved?"
+  []
   (some #(:dirty (deref %)) (object/by-tag :editor)))
 
 (defn by-path
@@ -210,7 +212,9 @@
                             (doc/move-doc old neue-path)
                             )))))
 
-(defn create [info]
+(defn create
+  "Create a :lt.objs.editor/editor object with given info map and add it to current pool"
+  [info]
   (let [ed (object/create :lt.objs.editor/editor info)]
     (object/add-tags ed (:tags info []))
     (object/merge! ed {:editor.generation (editor/->generation ed)})
