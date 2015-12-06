@@ -19,7 +19,7 @@ npm --version >/dev/null 2>&1 || { echo >&2 "Please install npm before running t
 # Ensure we start in project root
 cd "$(dirname "${BASH_SOURCE[0]}")"; cd ..
 
-# Ensure we have current version of electron 
+# Ensure we have current version of electron
 pushd deploy/electron
   npm install
   node_modules/.bin/grunt download-electron
@@ -34,7 +34,7 @@ fi
 lein cljsbuild clean && lein cljsbuild once
 
 # Fetch plugins
-PLUGINS=("Clojure,0.2.0" "CSS,0.0.6" "HTML,0.0.2" "Javascript,0.1.3"
+PLUGINS=("Clojure,0.2.0" "CSS,0.0.6" "HTML,0.1.0" "Javascript,0.1.3"
          "Paredit,0.0.4" "Python,0.0.7" "Rainbow,0.0.8")
 
 # Plugins cache

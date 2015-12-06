@@ -1,4 +1,4 @@
-(defproject lighttable "0.8.0-alpha"
+(defproject lighttable "0.8.0"
   :description "Light Table is a next generation code editor that connects you to your creation with instant feedback. Light Table is very customizable and can display anything a Chromium browser can."
   :url "http://www.lighttable.com/"
   :dependencies [[org.clojure/clojure "1.5.1"]
