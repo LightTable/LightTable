@@ -14,6 +14,8 @@ Prebuilt binaries are available through [lighttable.com](http://lighttable.com).
 * See the [community wiki](https://github.com/LightTable/LightTable/wiki) which includes a [User FAQ](https://github.com/LightTable/LightTable/wiki/FAQ) and a [For Users page](https://github.com/LightTable/LightTable/wiki/For-Users) for additional links.
 * For a typical Light Table workflow, [read this](doc/workflow.md).
 * To understand how Light Table works, read about its [BOT architecture](doc/BOT.md).
+* See [Light Table's API docs](http://lighttable.github.io/LightTable/api/index.html) to see what
+  plugin authors have access to.
 * If you're a user coming from vim or emacs see the [For Vim Users](https://github.com/LightTable/LightTable/wiki/For-Vim-Users) and [For Emacs Users](https://github.com/LightTable/LightTable/wiki/For-Emacs-Users) guides.
 
 ## Plugins

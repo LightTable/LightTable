@@ -15,7 +15,7 @@
             [lt.util.dom :as dom])
   (:require-macros [lt.macros :refer [behavior defui]]))
 
-(defn get-all []
+(defn- get-all []
   (object/by-tag :editor))
 
 (behavior ::theme-changed
@@ -42,7 +42,9 @@
 (object/object* ::pool
                 :tags #{:editor.pool})
 
-(defn unsaved? []
+(defn unsaved?
+  "Return truthy if any editors are currently dirty/unsaved?"
+  []
   (some #(:dirty (deref %)) (object/by-tag :editor)))
 
 (defn by-path
@@ -58,20 +60,20 @@
   (let [path (string/lower-case path)]
     (filter #(> (.indexOf (-> @% :info :path (or "") string/lower-case) path) -1) (object/by-tag :editor))))
 
-(defui button [label & [cb]]
+(defui ^:private button [label & [cb]]
   [:div.button.right label]
   :click (fn []
            (when cb
              (cb))))
 
-(defn unsaved-prompt [on-yes]
+(defn- unsaved-prompt [on-yes]
   (popup/popup! {:header "You will lose changes."
                  :body "If you close now, you'll lose any unsaved changes. Are you sure you want to do that?"
                  :buttons [{:label "Discard changes"
                             :action on-yes}
                            popup/cancel-button]}))
 
-(def pool (object/create ::pool))
+(def ^:private pool (object/create ::pool))
 
 (defn last-active
   "Return current editor object (last active in pool)"
@@ -80,7 +82,7 @@
     (when (and l @l)
       l)))
 
-(defn focus-last []
+(defn- focus-last []
   (when-let [ed (last-active)]
     (when-let [ed (:ed @ed)]
       (dom/focus js/document.body)
@@ -117,18 +119,18 @@
           :reaction (fn [this]
                       (focus-last)))
 
-(defn make-transient-dirty [ed]
+(defn- make-transient-dirty [ed]
   (object/merge! ed {:dirty true})
   (object/update! ed [:info] assoc :path nil)
   (object/remove-tags ed [:editor.file-backed])
   (object/add-tags ed [:editor.transient]))
 
-(defn active-warn [ed popup]
+(defn- active-warn [ed popup]
   (if-not (= (last-active) ed)
     (object/merge! ed {:active-warn popup})
     (popup/popup! popup)))
 
-(defn reload [ed]
+(defn- reload [ed]
   (editor/set-val ed (:content (files/open-sync (-> @ed :info :path))))
   (doc/update-stats (-> @ed :info :path))
   (object/merge! ed {:dirty false}))
@@ -156,7 +158,7 @@
                                                          ]})
                               (reload ed)))))))
 
-(defn warn-delete [ed f]
+(defn- warn-delete [ed f]
   (active-warn ed {:header (str "File deleted: " f)
                    :body "This file seems to have been deleted and we've marked it as unsaved."
                    :buttons [{:label "Save as.."
@@ -164,7 +166,7 @@
                                         (object/raise ed :save))}
                              {:label "ok"}]}))
 
-(defn set-syntax [ed new-syn]
+(defn- set-syntax [ed new-syn]
   (let [prev-info (-> @ed :info)]
     (when prev-info
       (object/remove-tags ed (:tags prev-info)))
@@ -172,7 +174,7 @@
     (editor/set-mode ed (:mime new-syn))
     (object/add-tags ed (:tags new-syn))))
 
-(defn set-syntax-by-path [ed path]
+(defn- set-syntax-by-path [ed path]
   (set-syntax ed (files/path->type path)))
 
 (behavior ::watched.delete
@@ -210,7 +212,9 @@
                             (doc/move-doc old neue-path)
                             )))))
 
-(defn create [info]
+(defn create
+  "Create a :lt.objs.editor/editor object with given info map and add it to current pool"
+  [info]
   (let [ed (object/create :lt.objs.editor/editor info)]
     (object/add-tags ed (:tags info []))
     (object/merge! ed {:editor.generation (editor/->generation ed)})
@@ -225,10 +229,10 @@
                       (focus-last))})
 
 
-(def syntax-selector (cmd/filter-list {:items (fn []
-                                                (sort-by :name (-> @files/files-obj :types vals)))
-                                       :key :name
-                                       :placeholder "Syntax"}))
+(def ^:private syntax-selector (cmd/filter-list {:items (fn []
+                                                          (sort-by :name (-> @files/files-obj :types vals)))
+                                                 :key :name
+                                                 :placeholder "Syntax"}))
 
 (behavior ::set-syntax
           :triggers #{:select}
@@ -265,7 +269,7 @@
           :reaction (fn [this options]
                       (object/merge! this {::comment-options options})))
 
-(defn do-commenting [commenting-fn]
+(defn- do-commenting [commenting-fn]
   (when-let [cur (last-active)]
     (let [from (editor/->cursor cur "start")
           to (if (editor/selection? cur)
