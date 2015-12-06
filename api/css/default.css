@@ -1,0 +1,516 @@
+body {
+   font-family: Helvetica, Arial, sans-serif;
+   font-size: 15px;
+}
+
+pre, code {
+   font-family: Monaco, DejaVu Sans Mono, Consolas, monospace;
+   font-size: 9pt;
+   margin: 15px 0;
+}
+
+h1 {
+   font-weight: normal;
+   font-size: 28px;
+   margin: 10px 0 2px 0;
+   padding: 0;
+}
+
+h2 {
+    font-weight: normal;
+    font-size: 25px;
+}
+
+.document h1, .namespace-index h1 {
+    font-size: 30px;
+    margin-top: 12px;
+}
+
+#header, #content, .sidebar {
+   position: fixed;
+}
+
+#header {
+   top: 0;
+   left: 0;
+   right: 0;
+   height: 22px;
+   color: #f5f5f5;
+   padding: 5px 7px;
+}
+
+#content {
+   top: 32px;
+   right: 0;
+   bottom: 0;
+   overflow: auto;
+   background: #fff;
+   color: #333;
+   padding: 0 18px;
+}
+
+.sidebar {
+   position: fixed;
+   top: 32px;
+   bottom: 0;
+   overflow: auto;
+}
+
+.sidebar.primary {
+   background: #e2e2e2;
+   border-right: solid 1px #cccccc;
+   left: 0;
+   width: 250px;
+}
+
+.sidebar.secondary {
+   background: #f2f2f2;
+   border-right: solid 1px #cccccc;
+   left: 251px;
+   width: 200px;
+}
+
+#content.namespace-index, #content.document {
+   left: 251px;
+}
+
+#content.namespace-docs {
+   left: 452px;
+}
+
+#content.document {
+    padding-bottom: 10%;
+}
+
+#header {
+    background: #3f3f3f;
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.4);
+    z-index: 100;
+}
+
+#header h1 {
+   margin: 0;
+   padding: 0;
+   font-size: 18px;
+   font-weight: lighter;
+   text-shadow: -1px -1px 0px #333;
+}
+
+#header h1 .project-version {
+    font-weight: normal;
+}
+
+.project-version {
+    padding-left: 5px;
+}
+
+#header a, .sidebar a {
+   display: block;
+   text-decoration: none;
+}
+
+#header a {
+   color: #f5f5f5;
+}
+
+.sidebar a {
+   color: #333;
+}
+
+#header h2 {
+    float: right;
+    font-size: 9pt;
+    font-weight: normal;
+    margin: 4px 3px;
+    padding: 0;
+    color: #bbb;
+}
+
+#header h2 a {
+    display: inline;
+}
+
+.sidebar h3 {
+   margin: 0;
+   padding: 10px 10px 0 10px;
+   font-size: 19px;
+   font-weight: normal;
+}
+
+.sidebar h3.no-link {
+    color: #636363;
+   font-weight: lighter;
+}
+
+.sidebar ul {
+   padding: 7px 0 6px 0;
+   margin: 0;
+}
+
+.sidebar ul.index-link {
+    padding-bottom: 4px;
+}
+
+.sidebar li {
+   display: block;
+   vertical-align: middle;
+}
+
+.sidebar li a, .sidebar li .no-link {
+    border-left: 3px solid transparent;
+    padding: 0 7px;
+    white-space: nowrap;
+}
+
+.sidebar li .no-link {
+    display: block;
+    color: #777;
+    font-style: italic;
+}
+
+.sidebar li .inner {
+    display: inline-block;
+    padding-top: 7px;
+    height: 24px;
+}
+
+.sidebar li a, .sidebar li .tree {
+    height: 31px;
+}
+
+.depth-1 .inner { padding-left: 2px; }
+.depth-2 .inner { padding-left: 6px; }
+.depth-3 .inner { padding-left: 20px; }
+.depth-4 .inner { padding-left: 34px; }
+.depth-5 .inner { padding-left: 48px; }
+.depth-6 .inner { padding-left: 62px; }
+
+.sidebar li .tree {
+    display: block;
+    float: left;
+    position: relative;
+    top: -10px;
+    margin: 0 4px 0 0;
+    padding: 0;
+}
+
+.sidebar li.depth-1 .tree {
+    display: none;
+}
+
+.sidebar li .tree .top, .sidebar li .tree .bottom {
+    display: block;
+    margin: 0;
+    padding: 0;
+    width: 7px;
+}
+
+.sidebar li .tree .top {
+    border-left: 1px solid #aaa;
+    border-bottom: 1px solid #aaa;
+    height: 19px;
+}
+
+.sidebar li .tree .bottom {
+    height: 22px;
+}
+
+.sidebar li.branch .tree .bottom {
+    border-left: 1px solid #aaa;
+}
+
+.sidebar.primary li.current a {
+   border-left: 3px solid #a33;
+   color: #a33;
+}
+
+.sidebar.secondary li.current a {
+   border-left: 3px solid #33a;
+   color: #33a;
+}
+
+.namespace-index h2 {
+    margin: 30px 0 0 0;
+}
+
+.namespace-index h3 {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 0;
+}
+
+.namespace-index .topics {
+    padding-left: 30px;
+    margin: 11px 0 0 0;
+}
+
+.namespace-index .topics li {
+    padding: 5px 0;
+}
+
+.namespace-docs h3 {
+   font-size: 18px;
+   font-weight: bold;
+}
+
+.public h3 {
+    margin: 0;
+    float: left;
+}
+
+.usage {
+    clear: both;
+}
+
+.public {
+    margin: 0;
+    border-top: 1px solid #e0e0e0;
+    padding-top: 14px;
+    padding-bottom: 6px;
+}
+
+.public:last-child {
+   margin-bottom: 20%;
+}
+
+.members .public:last-child {
+    margin-bottom: 0;
+}
+
+.members {
+    margin: 15px 0;
+}
+
+.members h4 {
+    color: #555;
+    font-weight: normal;
+    font-variant: small-caps;
+    margin: 0 0 5px 0;
+}
+
+.members .inner {
+    padding-top: 5px;
+    padding-left: 12px;
+    margin-top: 2px;
+    margin-left: 7px;
+    border-left: 1px solid #bbb;
+}
+
+#content .members .inner h3 {
+    font-size: 12pt;
+}
+
+.members .public {
+    border-top: none;
+    margin-top: 0;
+    padding-top: 6px;
+    padding-bottom: 0;
+}
+
+.members .public:first-child {
+    padding-top: 0;
+}
+
+h4.type,
+h4.dynamic,
+h4.added,
+h4.deprecated {
+    float: left;
+    margin: 3px 10px 15px 0;
+    font-size: 15px;
+    font-weight: bold;
+    font-variant: small-caps;
+}
+
+.public h4.type,
+.public h4.dynamic,
+.public h4.added,
+.public h4.deprecated {
+    font-size: 13px;
+    font-weight: bold;
+    margin: 3px 0 0 10px;
+}
+
+.members h4.type,
+.members h4.added,
+.members h4.deprecated {
+    margin-top: 1px;
+}
+
+h4.type {
+    color: #717171;
+}
+
+h4.dynamic {
+    color: #9933aa;
+}
+
+h4.added {
+    color: #508820;
+}
+
+h4.deprecated {
+    color: #880000;
+}
+
+.namespace {
+    margin-bottom: 30px;
+}
+
+.namespace:last-child {
+    margin-bottom: 10%;
+}
+
+.index {
+    padding: 0;
+    font-size: 80%;
+    margin: 15px 0;
+    line-height: 16px;
+}
+
+.index * {
+    display: inline;
+}
+
+.index p {
+    padding-right: 3px;
+}
+
+.index li {
+    padding-right: 5px;
+}
+
+.index ul {
+    padding-left: 0;
+}
+
+.usage code {
+    display: block;
+    color: #008;
+    margin: 2px 0;
+}
+
+.usage code:first-child {
+    padding-top: 10px;
+}
+
+p {
+    margin: 15px 0;
+}
+
+.public p:first-child, .public pre.plaintext {
+    margin-top: 12px;
+}
+
+.doc {
+    margin: 0 0 26px 0;
+    clear: both;
+}
+
+.public .doc {
+    margin: 0;
+}
+
+.namespace-index .doc {
+    margin-bottom: 20px;
+}
+
+.namespace-index .namespace .doc {
+    margin-bottom: 10px;
+}
+
+.markdown {
+    font-size: 14px;
+}
+
+.markdown p, .markdown li, .markdown dt, .markdown dd, .markdown td {
+    line-height: 18px;
+}
+
+.markdown h2 {
+    font-weight: normal;
+    font-size: 25px;
+}
+
+#content .markdown h3 {
+    font-size: 20px;
+}
+
+.markdown h4 {
+    font-size: 15px;
+}
+
+.doc, .public, .namespace .index {
+    max-width: 680px;
+    overflow-x: visible;
+}
+
+.markdown code, .src-link a {
+    background: #f6f6f6;
+    border: 1px solid #e4e4e4;
+    border-radius: 2px;
+}
+
+.markdown pre {
+    background: #f4f4f4;
+    border: 1px solid #e0e0e0;
+    border-radius: 2px;
+    padding: 5px 10px;
+    margin: 0 10px;
+}
+
+.markdown pre code {
+    background: transparent;
+    border: none;
+}
+
+.doc ul, .doc ol {
+    padding-left: 30px;
+}
+
+.doc table {
+    border-collapse: collapse;
+    margin: 0 10px;
+}
+
+.doc table td, .doc table th {
+    border: 1px solid #dddddd;
+    padding: 4px 6px;
+}
+
+.doc table th {
+    background: #f2f2f2;
+}
+
+.doc dl {
+    margin: 0 10px 20px 10px;
+}
+
+.doc dl dt {
+    font-weight: bold;
+    margin: 0;
+    padding: 3px 0;
+    border-bottom: 1px solid #ddd;
+}
+
+.doc dl dd {
+    padding: 5px 0;
+    margin: 0 0 5px 10px;
+}
+
+.doc abbr {
+    border-bottom: 1px dotted #333;
+    font-variant: none
+    cursor: help;
+}
+
+.src-link {
+    margin-bottom: 15px;
+}
+
+.src-link a {
+    font-size: 70%;
+    padding: 1px 4px;
+    text-decoration: none;
+    color: #5555bb;
+}
