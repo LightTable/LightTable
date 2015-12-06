@@ -1,5 +1,5 @@
 (defproject lighttable "0.8.0-alpha"
-  :description "Light Table is a new interactive IDE that lets you modify running programs and embed anything from websites to games. It provides the real time feedback we need to not only answer questions about our code, but to understand how our programs really work."
+  :description "Light Table is a next generation code editor that connects you to your creation with instant feedback. Light Table is very customizable and can display anything a Chromium browser can."
   :url "http://www.lighttable.com/"
   :dependencies [[org.clojure/clojure "1.5.1"]
                  [crate "0.2.5"]
@@ -28,6 +28,7 @@
                        lt.objs.editor.pool lt.objs.files lt.objs.notifos]
           ;; :source-uri version needs to be bumped per release until codox supports {version}
           :source-uri "https://github.com/LightTable/LightTable/blob/0.8.0-alpha/{filepath}#L{line}"
+          ;; Be explicit that undocumented public fns should be documented
           :metadata {:doc "TODO: Add docstring"}}
   :source-paths ["src/"]
   )
