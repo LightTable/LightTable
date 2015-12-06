@@ -125,13 +125,13 @@
   [e]
   (. (->cm-ed e) (getValue)))
 
-(defn- ->token [e pos]
+(defn ->token [e pos]
   (js->clj (.getTokenAt (->cm-ed e) (clj->js pos)) :keywordize-keys true))
 
 (defn- ->token-js [e pos]
   (.getTokenAt (->cm-ed e) (clj->js pos)))
 
-(defn- ->token-type [e pos]
+(defn ->token-type [e pos]
   (.getTokenTypeAt (->cm-ed e) (clj->js pos)))
 
 (defn- ->coords [e]

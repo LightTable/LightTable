@@ -12,27 +12,27 @@
   (:require-macros [lt.macros :refer [behavior with-time aloop]]))
 
 ;; HEART of BOT Architecture!
-(def obj-id
+(def ^:private obj-id
   "Counter to guarantee unique object ids"
   (atom 0))
 
-(def instances
+(def ^:private instances
   "Map of object ids to objects created by object/create"
   (atom (sorted-map)))
 
-(def behaviors
+(def ^:private behaviors
   "Map of behavior names to behaviors created by macros/behavior"
   (atom {}))
 
-(def object-defs
+(def ^:private object-defs
   "Map of object template keys to template maps created by object/object*"
   (atom {}))
 
-(def tags
+(def ^:private tags
   "Map of tags to associated lists of behaviors"
   (atom {}))
 
-(def negated-tags
+(def ^:private negated-tags
   "Map of tags to dissociated lists of behaviors e.g. :-behavior"
   (atom {}))
 
@@ -287,7 +287,9 @@
   [obj & r]
   (swap! obj #(apply update-in % r)))
 
-(defn- assoc-in! [obj k v]
+(defn assoc-in!
+  "Update object with assoc-in for given key and value"
+  [obj k v]
   (when (and k (not (sequential? k)))
     (throw (js/Error. (str "Associate requires a sequence of keys: " k))))
   (swap! obj #(assoc-in % k v)))
@@ -356,11 +358,15 @@
   (raise* obj (trigger->behaviors :object.instant (:tags @obj)) nil)
   (raise obj :object.refresh))
 
-(defn- add-behavior! [obj behavior]
+(defn add-behavior!
+  "Add behavior to object and update its listeners"
+  [obj behavior]
   (update! obj [:behaviors] conj behavior)
   (reset! obj (update-listeners obj)))
 
-(defn- rem-behavior! [obj behavior]
+(defn rem-behavior!
+  "Remove behavior from object and update its listeners"
+  [obj behavior]
   (update! obj [:behaviors] #(remove #{behavior} %))
   (reset! obj (update-listeners obj)))
 
