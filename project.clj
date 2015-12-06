@@ -15,6 +15,7 @@
                                    :output-to "deploy/core/node_modules/lighttable/bootstrap.js"
                                    :output-dir "deploy/core/node_modules/lighttable/cljs/"
                                    :pretty-print true}}]}
+  ;; TODO: Remove separate :doc :dependencies after ClojureScript upgrade
   :profiles {:doc {:dependencies [[org.clojure/clojure "1.7.0"]
                                   [org.clojure/clojurescript "1.7.145"
                                    :exclusions [org.apache.ant/ant]]]}}

@@ -62,3 +62,14 @@ This is our release checklist which can be dropped in to an issue:
       - [ ] Update download links on lighttable.com
       - [ ] Mailing list announcement - [example email](https://gist.github.com/cldwalker/3d67153fe1eade2ae3cf)
       - [ ] Optional blog post if a major release
+      - [ ] After release, [build api documentation](#build-api-documentation)
+
+## Build api documentation
+
+To build api documentation for current LT version and publish generated docs:
+
+1. In project.clj make sure that `[:codox :source-uri]` points to current LT version.
+   This step will be removed once [there is upstream support for version in :source-uri](https://github.com/weavejester/codox/issues/107)
+2. Run `script/build-api-docs.sh` on a clean git state. Make sure there are no pending git changes as this script will change git branches and push generated api docs to gh-pages.
+
+Expect to see a ton of warnings e.g. `WARNING: Use of undeclared Var cljs.core/seq at line 197`. This will be noise we have to live with until we upgrade ClojureScript.
