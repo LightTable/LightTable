@@ -7,15 +7,15 @@
             [crate.binding :refer [map-bound bound deref?]])
   (:require-macros [lt.macros :refer [behavior defui]]))
 
-(def standard-timeout 10000)
+(def ^:private standard-timeout 10000)
 
-(defn msg* [m & [opts]]
+(defn- msg* [m & [opts]]
   (let [m (if (string? m)
             m
             (pr-str m))]
     (object/merge! statusbar/statusbar-loader (merge {:message m :class ""} opts))))
 
-(declare cur-timeout)
+(def ^:private cur-timeout)
 
 (defn set-msg!
   "Display message in bottom statusbar. Takes map of options with following keys:

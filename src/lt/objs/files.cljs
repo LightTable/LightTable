@@ -1,5 +1,5 @@
 (ns lt.objs.files
-  "Provider fns for doing file related operations. A number of fns
+  "Provide fns for doing file related operations. A number of fns
   use the node fs library - https://nodejs.org/api/fs.html"
   (:refer-clojure :exclude [open exists?])
   (:require [lt.object :as object]
@@ -9,14 +9,14 @@
             [lt.util.js :refer [now]])
   (:require-macros [lt.macros :refer [behavior]]))
 
-(def fs (js/require "fs"))
-(def fpath (js/require "path"))
-(def wrench (load/node-module "wrench"))
-(def shell (js/require "shell"))
-(def os (js/require "os"))
-(def data-path (platform/get-data-path))
+(def ^:private fs (js/require "fs"))
+(def ^:private fpath (js/require "path"))
+(def ^:private wrench (load/node-module "wrench"))
+(def ^:private shell (js/require "shell"))
+(def ^:private os (js/require "os"))
+(def ^:private data-path (platform/get-data-path))
 
-(defn typelist->index [cur types]
+(defn- typelist->index [cur types]
   (let [full (map (juxt :name identity) types)
         ext (for [cur types
                   ext (:exts cur)]
@@ -24,7 +24,7 @@
     {:types (into (:types cur {}) full)
      :exts (into (:exts cur {}) ext)}))
 
-(defn join [& segs]
+(defn- join [& segs]
   (apply (.-join fpath) (filter string? (map str segs))))
 
 (def ignore-pattern #"(^\..*)|\.class$|target/|svn|cvs|\.git|\.pyc|~|\.swp|\.jar|.DS_Store")
@@ -51,14 +51,14 @@
                               (set! ignore-pattern (js/RegExp. pattern))))
 
 
-(def files-obj (object/create (object/object* ::files
-                                              :tags [:files]
-                                              :exts {}
-                                              :types {})))
+(def ^:private files-obj (object/create (object/object* ::files
+                                                        :tags [:files]
+                                                        :exts {}
+                                                        :types {})))
 
 (def line-ending (.-EOL os))
 (def separator (.-sep fpath))
-(def available-drives #{})
+(def ^:private available-drives #{})
 (def cwd "Directory process is started in" (js/process.cwd))
 
 (when (= separator "\\")
@@ -78,7 +78,7 @@
     available-drives
     #{"/"}))
 
-(defn get-file-parts [path]
+(defn- get-file-parts [path]
   (let [filename (basename path)
         file-parts (string/split filename #"\.")]
     (loop [parts file-parts
@@ -96,7 +96,7 @@
       (subs path 0 i)
       path)))
 
-(defn ext->type [ext]
+(defn- ext->type [ext]
   (let [exts (:exts @files-obj)
         types (:types @files-obj)]
     (-> exts (get ext) types)))
@@ -118,7 +118,7 @@
        (remove nil?)
        first))
 
-(defn determine-line-ending [text]
+(defn- determine-line-ending [text]
   (let [text (subs text 0 1000)
         rn (re-seq #"\r\n" text)
         n (re-seq #"[^\r]\n" text)]
@@ -162,12 +162,12 @@
 (defn real-path [c]
   (.realpathSync fs c))
 
-(defn ->file|dir [path f]
+(defn- ->file|dir [path f]
   (if (dir? (str path separator f))
     (str f separator)
     (str f)))
 
-(defn bomless-read [path]
+(defn- bomless-read [path]
   (let [content (.readFileSync fs path "utf-8")]
     (string/replace content "\uFEFF" "")))
 
@@ -283,7 +283,7 @@
   [path]
 	(.dirname fpath path))
 
-(defn next-available-name [path]
+(defn- next-available-name [path]
   (if-not (exists? path)
     path
     (let [ext (ext path)
@@ -384,13 +384,13 @@
 (defn relative [a b]
   (.relative fpath a b))
 
-(defn ->name|path [f & [rel]]
+(defn- ->name|path [f & [rel]]
   (let [path (if rel
                (relative rel f)
                f)]
     [(.basename fpath f) path]))
 
-(defn path-segs [path]
+(defn- path-segs [path]
   (let [segs (.split path separator)
         segs (if (or (.extname fpath (last segs))
                      (empty? (last segs)))

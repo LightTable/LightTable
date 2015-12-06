@@ -40,10 +40,10 @@
   "Metadata of current behavior set during raise and raise-reduce"
   nil)
 
-(defn add [obj]
+(defn- add [obj]
   (swap! object-defs assoc (::type obj) obj))
 
-(defn add-behavior [beh]
+(defn- add-behavior [beh]
   (swap! behaviors assoc (:name beh) beh))
 
 (defn ->id [obj]
@@ -51,22 +51,22 @@
     (::id @obj)
     (::id obj)))
 
-(defn ->behavior-name [beh]
+(defn- ->behavior-name [beh]
   (if (coll? beh)
     (first beh)
     beh))
 
-(defn ->behavior [beh]
+(defn- ->behavior [beh]
   (@behaviors (->behavior-name beh)))
 
-(defn ->triggers [behs]
+(defn- ->triggers [behs]
   (let [result (atom (transient {}))]
     (doseq [beh behs
             t (:triggers (->behavior beh))]
       (swap! result assoc! t (conj (or (get @result t) '[]) beh)))
     (persistent! @result)))
 
-(defn specificity-sort
+(defn- specificity-sort
   ([xs] (specificity-sort xs nil))
   ([xs dir]
    (let [arr #js []]
@@ -77,13 +77,13 @@
      (aloop [i arr] (aset arr i (aget arr i 2)))
      arr)))
 
-(defn ts->negations [ts]
+(defn- ts->negations [ts]
   (let [seen (js-obj)]
     (doseq [beh (apply concat (map @negated-tags ts))]
       (aset seen (->behavior-name beh) true))
     seen))
 
-(defn tags->behaviors [ts]
+(defn- tags->behaviors [ts]
   (let [duped (apply concat (map @tags (specificity-sort ts)))
         de-duped (reduce
                    (fn [res cur]
@@ -102,10 +102,10 @@
                    duped)]
     (reverse (persistent! (:final de-duped)))))
 
-(defn trigger->behaviors [trig ts]
+(defn- trigger->behaviors [trig ts]
   (get (->triggers (tags->behaviors ts)) trig))
 
-(defn safe-report-error [e]
+(defn- safe-report-error [e]
   (if js/lt.objs.console
     (js/lt.objs.console.error e)
     (.error js/console (if (string? e)
@@ -114,7 +114,7 @@
 
 (declare raise)
 
-(defn raise*
+(defn- raise*
   ([obj reactions args] (raise* obj reactions args nil))
   ([obj reactions args trigger]
    (doseq [r reactions
@@ -154,7 +154,7 @@
     (assert behavior-fn)
     (apply behavior-fn args)))
 
-(defn update-listeners
+(defn- update-listeners
   ([obj] (update-listeners obj nil))
   ([obj instants]
    (let [cur @obj
@@ -174,12 +174,12 @@
      ;;deref again in case :object.instant-load made any updates
      (assoc @obj :listeners trigs))))
 
-(defn make-object* [name & r]
+(defn- make-object* [name & r]
   (let [obj (merge {:behaviors #{} :tags #{} :triggers [] :listeners {} ::type name :children {}}
                    (apply hash-map r))]
     obj))
 
-(defn store-object* [obj]
+(defn- store-object* [obj]
   (add obj)
   obj)
 
@@ -195,7 +195,7 @@
     (throw (js/Error. (str "Merge requires a map: " m))))
   (swap! obj merge m))
 
-(defn handle-redef [odef]
+(defn- handle-redef [odef]
   (let [id (::type odef)]
     (doseq [o (instances-by-type id)
             :let [o (deref o)
@@ -233,26 +233,26 @@
       (store-object*)
       (handle-redef)))
 
-(defn make-behavior* [name & r]
+(defn- make-behavior* [name & r]
   (let [be (merge {:name name}
                   (apply hash-map r))]
     be))
 
-(defn store-behavior* [beh]
+(defn- store-behavior* [beh]
   (add-behavior beh)
   (:name beh))
 
-(defn wrap-throttle [beh]
+(defn- wrap-throttle [beh]
   (if-let [thr (:throttle beh)]
     (assoc beh :reaction (throttle thr (:reaction beh)))
     beh))
 
-(defn wrap-debounce [beh]
+(defn- wrap-debounce [beh]
   (if-let [thr (:debounce beh)]
     (assoc beh :reaction (debounce thr (:reaction beh)))
     beh))
 
-(defn behavior* [name & r]
+(defn- behavior* [name & r]
   (-> (apply make-behavior* name r)
       (wrap-throttle)
       (wrap-debounce)
@@ -285,12 +285,12 @@
   [obj & r]
   (swap! obj #(apply update-in % r)))
 
-(defn assoc-in! [obj k v]
+(defn- assoc-in! [obj k v]
   (when (and k (not (sequential? k)))
     (throw (js/Error. (str "Associate requires a sequence of keys: " k))))
   (swap! obj #(assoc-in % k v)))
 
-(defn ->inst [o]
+(defn- ->inst [o]
   (cond
    (map? o) (@instances (->id o))
    (deref? o) o
@@ -312,7 +312,7 @@
       (dom/remove (->content obj)))
     (reset! obj nil)))
 
-(defn store-inst [inst]
+(defn- store-inst [inst]
   (swap! instances assoc (::id @inst) inst)
   inst)
 
@@ -349,20 +349,20 @@
     (raise inst :init)
     inst))
 
-(defn refresh! [obj]
+(defn- refresh! [obj]
   (reset! obj (update-listeners obj))
   (raise* obj (trigger->behaviors :object.instant (:tags @obj)) nil)
   (raise obj :object.refresh))
 
-(defn add-behavior! [obj behavior]
+(defn- add-behavior! [obj behavior]
   (update! obj [:behaviors] conj behavior)
   (reset! obj (update-listeners obj)))
 
-(defn rem-behavior! [obj behavior]
+(defn- rem-behavior! [obj behavior]
   (update! obj [:behaviors] #(remove #{behavior} %))
   (reset! obj (update-listeners obj)))
 
-(defn ->def [def|name]
+(defn- ->def [def|name]
   (if (map? def|name)
     def|name
     (@object-defs def|name)))
@@ -381,7 +381,7 @@
                       (ts tag))
                    (vals @instances))))
 
-(defn in-tag? [tag behavior]
+(defn- in-tag? [tag behavior]
   (first (filter #{behavior} (@tags tag))))
 
 (defn has-tag? [obj tag]
@@ -416,7 +416,7 @@
     (refresh! cur))
   (@tags tag))
 
-(defn remove-tag-behaviors [tag behs]
+(defn- remove-tag-behaviors [tag behs]
   (swap! tags update-in [tag] #(remove (set behs) (or % '())))
   (doseq [cur (by-tag tag)
           b behs]

@@ -4,7 +4,7 @@
 
 (declare manager)
 
-(def required-keys #{:command :desc :exec})
+(def ^:private required-keys #{:command :desc :exec})
 
 (defn command
   "Define a command given a map with the following keys:
@@ -21,12 +21,12 @@
     (object/add-tags (:options cmd) [:command.options]))
   (object/raise manager :added cmd))
 
-(defn by-id [k]
+(defn- by-id [k]
   (-> @manager :commands (get (if (map? k)
                                 (:command k)
                                 k))))
 
-(defn completions [token]
+(defn- completions [token]
   (if (and token
            (= (subs token 0 1) ":"))
     (map #(do #js {:completion (str (:command %)) :text (str (:command %))}) (vals (:commands @manager)))
@@ -53,4 +53,4 @@
                 :tags #{:command.manager}
                 :commands {})
 
-(def manager (object/create ::command.manager))
+(def ^:private manager (object/create ::command.manager))

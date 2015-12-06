@@ -58,7 +58,7 @@
 ;; commands
 ;;*********************************************************
 
-(defn expand-tab [cm]
+(defn- expand-tab [cm]
   (cond
    (.somethingSelected cm) (.indentSelection cm "add")
    (.getOption cm "indentWithTabs") (.replaceSelection cm "\t" "end" "+input")
@@ -71,11 +71,11 @@
 ;; Creating
 ;;*********************************************************
 
-(defn headless [opts]
+(defn- headless [opts]
   (-> (js/CodeMirror. (fn []))
       (set-options opts)))
 
-(defn make [context]
+(defn- make [context]
   (let [e (headless {:mode (if (:mime context)
                              (name (:mime context))
                              "plaintext")
@@ -102,7 +102,7 @@
   [ed ev func]
   (.off (->cm-ed ed) (name ev) func))
 
-(defn wrap-object-events [ed obj]
+(defn- wrap-object-events [ed obj]
   (dom/on (->elem ed) :contextmenu #(object/raise obj :menu! %))
   (on ed :dragstart #(.preventDefault %2))
   (on ed :dragenter #(.preventDefault %2))
@@ -125,23 +125,23 @@
   [e]
   (. (->cm-ed e) (getValue)))
 
-(defn ->token [e pos]
+(defn- ->token [e pos]
   (js->clj (.getTokenAt (->cm-ed e) (clj->js pos)) :keywordize-keys true))
 
-(defn ->token-js [e pos]
+(defn- ->token-js [e pos]
   (.getTokenAt (->cm-ed e) (clj->js pos)))
 
-(defn ->token-type [e pos]
+(defn- ->token-type [e pos]
   (.getTokenTypeAt (->cm-ed e) (clj->js pos)))
 
-(defn ->coords [e]
+(defn- ->coords [e]
   (js->clj (.cursorCoords (->cm-ed e)) :keywordize-keys true :force-obj true))
 
-(defn +class [e klass]
+(defn- +class [e klass]
   (add-class (->elem e) (name klass))
   e)
 
-(defn -class [e klass]
+(defn- -class [e klass]
   (remove-class (->elem e) (name klass))
   e)
 
@@ -417,7 +417,7 @@
   ([e loc]
    (.foldCode (->cm-ed e) (clj->js loc))))
 
-(defn gutter-widths [e]
+(defn- gutter-widths [e]
   (let [gutter-div (dom/$ :div.CodeMirror-gutters (object/->content e))
         gutter-divs (dom/$$ :div.CodeMirror-gutter gutter-div)
         current-widths (reduce (fn [res gutter]
@@ -426,7 +426,7 @@
                                  ) {} gutter-divs)]
     current-widths))
 
-(defn update-gutters [e class-names class-widths]
+(defn- update-gutters [e class-names class-widths]
   (let [gutter-div (dom/$ :div.CodeMirror-gutters (object/->content e))]
     (operation e (fn[]
                    (set-options e {:gutters (clj->js class-names)})
