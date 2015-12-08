@@ -28,7 +28,7 @@
           :namespaces [lt.macros lt.object lt.objs.command lt.objs.editor
                        lt.objs.editor.pool lt.objs.files lt.objs.notifos]
           ;; :source-uri version needs to be bumped per release until codox supports {version}
-          :source-uri "https://github.com/LightTable/LightTable/blob/0.8.0-alpha/{filepath}#L{line}"
+          :source-uri "https://github.com/LightTable/LightTable/blob/0.8.0/{filepath}#L{line}"
           ;; Be explicit that undocumented public fns should be documented
           :metadata {:doc "TODO: Add docstring"}}
   :source-paths ["src/"]
