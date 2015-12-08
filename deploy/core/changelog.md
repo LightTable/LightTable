@@ -1,5 +1,46 @@
 #Changes
 
+## 0.8.0
+
+* CHANGED: We have switched to Electron from NW.js
+* CHANGED: LT's releases and self-updating processes are completely in the open on Github
+* CHANGED: We no longer ship with a node binary as we're able to use Electon's node binary for background processes
+* CHANGED: Proxy support has been disabled. There is an issue for re-enabling it at https://github.com/LightTable/LightTable/issues/1984. We are looking for help on how to QA this.
+* CHANGED: `:lt.objs.app/set-default-zoom-level` behavior takes a value from 0 to 1. With NW.js, it could take negative numbers which no longer work and will _freeze_ LT on startup
+* CHANGED: When opening a file from the commandline, each invocation opens a new LightTable app regardless of whether LightTable is already open. To optionally bring back the old behavior, see https://github.com/LightTable/LightTable/issues/2014.
+* CHANGED: Provide constant port number 5678 for external browser connection
+* CHANGED: Beginner friendly explanations to user.keymap and user.behaviors
+* CHANGED: 32-bit linux is no longer an official download. Building from source will still be supported
+* FIX: Major usability issues on >= OSX 10.10
+* FIX: Bug in :editor.force.wrap command
+* FIX: Invalid behaviors warning when installing plugin
+* FIX: Uninstalling plugin causes misleading missing dialog to popup
+* FIX: Installing plugins, loads new behaviors immediately
+* FIX: Open files from commandline that have whitespace
+* FIX: Styling for folding
+* FIX: Creating files under folders with '.' in name
+* FIX: Quote and link styling for default theme
+* FIX: Fat cursor not showing up when searching in default theme
+* FIX: Uncomment command respects line-comment-options behavior
+* FIX: Opening file from OSX file manager opens correct file
+* FIX: Width of inputs for renaming files in workspace tree
+* FIX: Detect latest plugin versions in plugin manager
+* ADDED: LT can be built from source with provided scripts across supported platforms
+* ADDED: Improved documentation - most core fns have docstrings, all namespaces have docstrings, [API docs](http://lighttable.github.io/LightTable/api/) and [developer docs](https://github.com/LightTable/LightTable/tree/master/doc)
+* ADDED: Most of LT's node libraries are installed as npm dependencies instead of as forked libraries
+* ADDED: Vector format support for workspace behaviors
+* ADDED: Open to line number from commandline e.g. `light FILE:LINE `
+* ADDED: commandline comes with improved --help
+* ADDED: `:lt.objs.editor/load-addon` behavior loads CodeMirror addons that [ship with LT](https://github.com/LightTable/LightTable/tree/master/deploy/core/node_modules/codemirror/addon)
+* ADDED: `:lt.objs.editor/set-rulers` behavior to set CodeMirror rulers - [screenshot](https://www.dropbox.com/s/ipq7c21w1dkwmg3/Screenshot%202015-01-24%2011.50.25.png?dl=0)
+* ADDED: Add file-type definitions for .feature, .rst and [many more](https://github.com/LightTable/LightTable/commit/a12dc47d78825897b9a7bdcfafa72525eb4949f7)
+* ADDED: Add F-11 keybinding for fullscreen
+* ADDED: Add pmeta-/ for toggle-comment
+* ADDED: Better error handling for download errors
+* ADDED: Block comment command
+* ADDED: Max length for autocompletion is configurable
+* ADDED: Plugins and settings menu items
+
 ##0.7.2
 
 * FIX: Behavior ordering issue that caused plugin weirdness and menus disappearing (ibdknox)
