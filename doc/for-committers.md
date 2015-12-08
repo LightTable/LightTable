@@ -51,7 +51,7 @@ This is our release checklist which can be dropped in to an issue:
 
 - [ ] Release 0.X.X
       - [ ] Version updates
-         - [ ] Update deploy/core/package.json, deploy/core/version.json and project.clj to 0.X.X
+         - [ ] Update deploy/core/package.json, deploy/core/version.json and project.clj (including the Codox `:source-uri` value) to 0.X.X
          - [ ] Make sure electron version is up to date in version.json
          - [ ] Make sure plugin versions in script/build-app.sh are latest versions
       - [ ] Add changelog for release to CHANGELOG.md
