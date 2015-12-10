@@ -31,15 +31,15 @@ function scrollToCurrentVarLink(elements) {
 }
 
 function setCurrentVarLink() {
-    $('.secondary a').parent().removeClass('current')
+    $('#vars a').parent().removeClass('current')
     $('.anchor').
         filter(function(index) { return visibleInParent(this) }).
         each(function(index, element) {
-            findLinkByFragment(".secondary a", element.id).
+            findLinkByFragment("#vars a", element.id).
                 parent().
                 addClass('current')
         });
-    scrollToCurrentVarLink('.secondary .current');
+    scrollToCurrentVarLink('#vars .current');
 }
 
 var hasStorage = (function() { try { return localStorage.getItem } catch(e) {} }())
@@ -72,32 +72,27 @@ function sidebarContentWidth(element) {
 }
 
 function resizeSidebars() {
-    var primaryWidth   = sidebarContentWidth('.primary') + 30
-    var secondaryWidth = 0
+    var nsWidth  = sidebarContentWidth('#namespaces') + 30
+    var varWidth = 0
 
-    if ($('.secondary').length != 0) {
-        secondaryWidth = sidebarContentWidth('.secondary') + 30
+    if ($('#vars').length != 0) {
+        varWidth = sidebarContentWidth('#vars') + 30
     }
 
     // snap to grid
-    var snap = 30
-    primaryWidth   = Math.ceil(primaryWidth / snap) * snap
-    secondaryWidth = Math.ceil(secondaryWidth / snap) * snap
+    var snap = 30;
+    nsWidth  = Math.ceil(nsWidth / snap) * snap;
+    varWidth = Math.ceil(varWidth / snap) * snap;
 
-    $('.primary').css('width', primaryWidth)
-    $('.secondary').css('width', secondaryWidth).css('left', primaryWidth + 1)
-
-    if (secondaryWidth > 0) {
-        $('#content').css('left', primaryWidth + secondaryWidth + 2)
-    }
-    else {
-        $('#content').css('left', primaryWidth + 1)
-    }
+    $('#namespaces').css('width', nsWidth)
+    $('#vars').css('width', varWidth)
+    $('#vars, .namespace-index').css('left', nsWidth + 1)
+    $('.namespace-docs').css('left', nsWidth + varWidth + 2)
 }
 
 $(window).ready(resizeSidebars)
 $(window).ready(setCurrentVarLink)
-$(window).ready(function() { persistScrollPosition('.primary')})
+$(window).ready(function() { persistScrollPosition('#namespaces')})
 $(window).ready(function() {
     $('#content').scroll(setCurrentVarLink)
     $(window).resize(setCurrentVarLink)

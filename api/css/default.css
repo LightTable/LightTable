@@ -1,164 +1,105 @@
+@import url(http://fonts.googleapis.com/css?family=Droid+Sans+Mono:200,300,400);
+@import url(http://fonts.googleapis.com/css?family=Lato:light,regular);
+@import url(http://fonts.googleapis.com/css?family=Ubuntu:300,400,500);
+
 body {
-   font-family: Helvetica, Arial, sans-serif;
-   font-size: 15px;
+    font-family: "Lato", Helvetica, Arial, sans-serif;
+    font-weight: 300;
+    color:#585858;
+    font-size: 100%;
+    margin: 0px;
 }
 
 pre, code {
-   font-family: Monaco, DejaVu Sans Mono, Consolas, monospace;
-   font-size: 9pt;
-   margin: 15px 0;
+    font-family: "Droid Sans Mono","DejaVu Sans Mono","Monospace",monospace;
+    font-weight: 300;
 }
 
-h1 {
-   font-weight: normal;
-   font-size: 28px;
-   margin: 10px 0 2px 0;
-   padding: 0;
+section.container {
+    display: flex;
+    font-size: 100%;
 }
 
 h2 {
     font-weight: normal;
-    font-size: 25px;
+    font-size: 3em;
+    padding: 10px 0 2px 0;
+    margin: 0;
 }
 
-.document h1, .namespace-index h1 {
-    font-size: 30px;
-    margin-top: 12px;
+header {
+    color: #333;
+    padding: 10px;
 }
 
-#header, #content, .sidebar {
-   position: fixed;
+header small {
+    font-style: italic;
 }
 
-#header {
-   top: 0;
-   left: 0;
-   right: 0;
-   height: 22px;
-   color: #f5f5f5;
-   padding: 5px 7px;
+header h1 {
+    margin: 0;
+    padding: 0;
+    /* font-size: 12pt; */
+    font-weight: lighter;
+    /* text-shadow: -1px -1px 0px #333; */
+}
+
+header h1 a {
+    color: #333;
+    /* font-size: 32px; */
+    font-weight: 400;
+    text-decoration: none;
 }
 
 #content {
-   top: 32px;
-   right: 0;
-   bottom: 0;
-   overflow: auto;
-   background: #fff;
-   color: #333;
-   padding: 0 18px;
+    overflow: auto;
+    background: #fff;
+    color: #333;
+    padding: 0 18px;
+    font-size: 1.3em;
+}
+
+#namespaces {
+    border-right: solid 1px #cccccc;
+    min-width: 200px;
+    padding-right: 15px;
+}
+
+#vars {
+    border-right: solid 1px #cccccc;
+    width: 200px;
 }
 
 .sidebar {
-   position: fixed;
-   top: 32px;
-   bottom: 0;
-   overflow: auto;
-}
-
-.sidebar.primary {
-   background: #e2e2e2;
-   border-right: solid 1px #cccccc;
-   left: 0;
-   width: 250px;
-}
-
-.sidebar.secondary {
-   background: #f2f2f2;
-   border-right: solid 1px #cccccc;
-   left: 251px;
-   width: 200px;
-}
-
-#content.namespace-index, #content.document {
-   left: 251px;
-}
-
-#content.namespace-docs {
-   left: 452px;
-}
-
-#content.document {
-    padding-bottom: 10%;
-}
-
-#header {
-    background: #3f3f3f;
-    box-shadow: 0 0 8px rgba(0, 0, 0, 0.4);
-    z-index: 100;
-}
-
-#header h1 {
-   margin: 0;
-   padding: 0;
-   font-size: 18px;
-   font-weight: lighter;
-   text-shadow: -1px -1px 0px #333;
-}
-
-#header h1 .project-version {
-    font-weight: normal;
-}
-
-.project-version {
-    padding-left: 5px;
-}
-
-#header a, .sidebar a {
-   display: block;
-   text-decoration: none;
-}
-
-#header a {
-   color: #f5f5f5;
+    overflow: auto;
 }
 
 .sidebar a {
-   color: #333;
-}
-
-#header h2 {
-    float: right;
-    font-size: 9pt;
-    font-weight: normal;
-    margin: 4px 3px;
-    padding: 0;
-    color: #bbb;
-}
-
-#header h2 a {
-    display: inline;
+    color: #333;
+    display: block;
+    text-decoration: none;
 }
 
 .sidebar h3 {
-   margin: 0;
-   padding: 10px 10px 0 10px;
-   font-size: 19px;
-   font-weight: normal;
-}
-
-.sidebar h3.no-link {
-    color: #636363;
-   font-weight: lighter;
+    margin: 0;
+    padding: 10px 10px 0 10px;
+    font-size: 19px;
+    font-weight: normal;
 }
 
 .sidebar ul {
-   padding: 7px 0 6px 0;
-   margin: 0;
-}
-
-.sidebar ul.index-link {
-    padding-bottom: 4px;
+    padding: 0.5em 0em;
+    margin: 0;
 }
 
 .sidebar li {
-   display: block;
-   vertical-align: middle;
+    display: block;
+    vertical-align: middle;
 }
 
 .sidebar li a, .sidebar li .no-link {
     border-left: 3px solid transparent;
-    padding: 0 7px;
+    padding: 0 15px;
     white-space: nowrap;
 }
 
@@ -176,6 +117,7 @@ h2 {
 
 .sidebar li a, .sidebar li .tree {
     height: 31px;
+    /* height: 25px; */
 }
 
 .depth-1 .inner { padding-left: 2px; }
@@ -219,58 +161,63 @@ h2 {
     border-left: 1px solid #aaa;
 }
 
-.sidebar.primary li.current a {
-   border-left: 3px solid #a33;
-   color: #a33;
+#namespaces li.current a {
+    border-left: 3px solid #a33;
+    border-left: 3px solid #7a2518;
+    color: #a33;
+    color: #7a2518;
+
 }
 
-.sidebar.secondary li.current a {
-   border-left: 3px solid #33a;
-   color: #33a;
+#vars li.current a {
+    border-left: 3px solid #33a;
+    color: #33a;
 }
 
-.namespace-index h2 {
-    margin: 30px 0 0 0;
+.namespace-docs h2 {
+    color: #7a2518;
 }
 
-.namespace-index h3 {
-    font-size: 16px;
-    font-weight: bold;
-    margin-bottom: 0;
+.namespace-docs h3 a {
+    color: #ba3925;
+    font-family: "Droid Sans Mono","DejaVu Sans Mono","Monospace",monospace;
+    font-weight: 400;
+    text-decoration: none;
 }
 
-.namespace-index .topics {
-    padding-left: 30px;
-    margin: 11px 0 0 0;
+.namespace-docs .usage code {
+    display: block;
+    color: #777;
+    margin: 2px 0;
+    font-size: 0.6em;
 }
 
-.namespace-index .topics li {
-    padding: 5px 0;
-}
+/* .usage code:first-child { */
+/*     padding-top: 10px; */
+/* } */
 
-.namespace-docs h3 {
-   font-size: 18px;
-   font-weight: bold;
+
+
+.namespace-index h3 a {
+    text-decoration: none;
+    color: #ba3925;
+    font-family: "Droid Sans Mono","DejaVu Sans Mono","Monospace",monospace;
+    font-weight: 300;
 }
 
 .public h3 {
     margin: 0;
-    float: left;
-}
-
-.usage {
-    clear: both;
 }
 
 .public {
     margin: 0;
-    border-top: 1px solid #e0e0e0;
+    border-top: 1px solid #efefef;
     padding-top: 14px;
     padding-bottom: 6px;
 }
 
 .public:last-child {
-   margin-bottom: 20%;
+    margin-bottom: 20%;
 }
 
 .members .public:last-child {
@@ -297,7 +244,7 @@ h2 {
 }
 
 #content .members .inner h3 {
-    font-size: 12pt;
+    /* font-size: 12pt; */
 }
 
 .members .public {
@@ -315,9 +262,7 @@ h4.type,
 h4.dynamic,
 h4.added,
 h4.deprecated {
-    float: left;
-    margin: 3px 10px 15px 0;
-    font-size: 15px;
+    margin: 3px 10px 10spx 0;
     font-weight: bold;
     font-variant: small-caps;
 }
@@ -326,9 +271,9 @@ h4.deprecated {
 .public h4.dynamic,
 .public h4.added,
 .public h4.deprecated {
-    font-size: 13px;
     font-weight: bold;
-    margin: 3px 0 0 10px;
+    /* margin: 3px 0 0 10px; */
+    font-size: 0.7em;
 }
 
 .members h4.type,
@@ -354,7 +299,7 @@ h4.deprecated {
 }
 
 .namespace {
-    margin-bottom: 30px;
+    margin-bottom: 40px;
 }
 
 .namespace:last-child {
@@ -363,9 +308,7 @@ h4.deprecated {
 
 .index {
     padding: 0;
-    font-size: 80%;
     margin: 15px 0;
-    line-height: 16px;
 }
 
 .index * {
@@ -380,18 +323,16 @@ h4.deprecated {
     padding-right: 5px;
 }
 
+.index li a {
+    color: #333;
+    font-family: "Droid Sans Mono","DejaVu Sans Mono","Monospace",monospace;
+    font-size: 0.8em;
+    text-decoration: none;
+    font-weight: 300;
+}
+
 .index ul {
     padding-left: 0;
-}
-
-.usage code {
-    display: block;
-    color: #008;
-    margin: 2px 0;
-}
-
-.usage code:first-child {
-    padding-top: 10px;
 }
 
 p {
@@ -420,43 +361,28 @@ p {
 }
 
 .markdown {
-    font-size: 14px;
-}
-
-.markdown p, .markdown li, .markdown dt, .markdown dd, .markdown td {
-    line-height: 18px;
-}
-
-.markdown h2 {
-    font-weight: normal;
-    font-size: 25px;
-}
-
-#content .markdown h3 {
-    font-size: 20px;
-}
-
-.markdown h4 {
-    font-size: 15px;
+    /* line-height: 18px; */
+    /* font-size: 16px; */
 }
 
 .doc, .public, .namespace .index {
-    max-width: 680px;
+    max-width: 780px;
     overflow-x: visible;
 }
 
 .markdown code, .src-link a {
-    background: #f6f6f6;
-    border: 1px solid #e4e4e4;
     border-radius: 2px;
+    font-size: 0.8em;
+    color: #444;
 }
 
 .markdown pre {
     background: #f4f4f4;
     border: 1px solid #e0e0e0;
-    border-radius: 2px;
-    padding: 5px 10px;
-    margin: 0 10px;
+    /* border-radius: 2px; */
+    padding: 5px 5px;
+    border-top: 1px solid #e0e0e0;
+    border-bottom: 1px solid #e0e0e0;
 }
 
 .markdown pre code {
@@ -501,7 +427,7 @@ p {
 .doc abbr {
     border-bottom: 1px dotted #333;
     font-variant: none
-    cursor: help;
+                      cursor: help;
 }
 
 .src-link {
@@ -509,7 +435,7 @@ p {
 }
 
 .src-link a {
-    font-size: 70%;
+    /* font-size: 70%; */
     padding: 1px 4px;
     text-decoration: none;
     color: #5555bb;
