@@ -8,6 +8,12 @@ Light Table is a next generation code editor that connects you to your creation 
 
 Prebuilt binaries are available through [lighttable.com](http://lighttable.com). To build and use a developer version of Light Table [see these instructions](doc/developer-install.md).
 
+For OSX users, the install process involves the following steps until we officially sign our OSX App:
+
+* In Finder, Ctrl-click on LightTable.app/ and select Open.
+* When you see [this prompt](https://cloud.githubusercontent.com/assets/11994/11731454/85181e90-9f69-11e5-9c65-f6aa4228005c.png) about LightTable being unidentified, click Open.
+* If Ctrl-click doesn't work for you, open System Preferences > Security & Privacy > General, temporarily change "Allow apps downloaded from:" to Anywhere and double click on LightTable.app.
+
 ## Documentation
 
 * See [docs.lighttable.com](http://docs.lighttable.com/) for official user documentation and tutorials.
