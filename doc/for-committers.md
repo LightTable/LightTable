@@ -59,6 +59,9 @@ This is our release checklist which can be dropped in to an issue:
       - [ ] When QA passes freeze master
       - [ ] Add changelog to [GH release draft](https://github.com/LightTable/LightTable/releases/new)
       - [ ] Upload binaries from `script/build.sh --release` to draft. Don't forget to click *Save draft*!
+         - [ ] Generate an MD5 checksum for the binary package:
+            - [ ] Run `certUtil -hashfile lighttable-x.y.z-windows.zip MD5` on Windows.
+            - [ ] Run `openssl md5 lighttable-x.y.z-mac.tar.gz` on Mac OS X or Linux.
       - [ ] Publish GH release which creates git tag and notifies users about new release
       - [ ] Update download links on lighttable.com
       - [ ] Mailing list announcement - [example email](https://gist.github.com/cldwalker/3d67153fe1eade2ae3cf)
