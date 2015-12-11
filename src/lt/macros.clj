@@ -36,7 +36,7 @@
          (lt.util.dom/on e# ev# func#))
        e#)))
 
-(defmacro timed [ev & body]
+(defmacro ^:private timed [ev & body]
   `(let [start# (lighttable.util.js/now)
          res# (do ~@body)]
      (lighttable.components.logger/log ~ev (- (lighttable.util.js/now) start#))
@@ -47,30 +47,30 @@
     [(first body) (rest body)]
     [[] body]))
 
-(defmacro on [name & body]
+(defmacro ^:private on [name & body]
   `(lighttable.command/on ~name (fn ~@body)))
 
-(defmacro in [ctx & body]
+(defmacro ^:private in [ctx & body]
   (let [[params body] (->params body)]
     `(assoc ~ctx :in (fn ~params ~@body))))
 
-(defmacro out [ctx & body]
+(defmacro ^:private out [ctx & body]
   (let [[params body] (->params body)]
     `(assoc ~ctx :out (fn ~params ~@body))))
 
-(defmacro defcontext [name & body]
+(defmacro ^:private defcontext [name & body]
   `(let [ctx# {:name ~name}]
      (lighttable.context/add-context!
        (-> ctx#
            ~@body))))
 
-(defmacro extract [elem kvs & body]
+(defmacro ^:private extract [elem kvs & body]
   (let [defs (vec (apply concat (for [[k v] (partition 2 kvs)]
                                   `[~k (lt.util.dom/$ ~v ~elem)])))]
     `(let ~defs
        ~@body)))
 
-(defmacro foreach [xs & body]
+(defmacro ^:private foreach [xs & body]
   `(let [xs# ~(second xs)
          len# (.-length xs#)]
      (loop [left# 0]
@@ -79,7 +79,7 @@
            ~@body
            (recur (inc left#)))))))
 
-(defmacro with-time [& body]
+(defmacro ^:private with-time [& body]
   (let [start (gensym "start")
         body (walk/postwalk-replace {'time (list '- '(.getTime (js/Date.)) start)} body)]
   `(let [~start (.getTime (js/Date.))]
@@ -98,7 +98,7 @@
         (.unshift args# (.-obj msg#))
         (.apply ~func nil args#)))))
 
-(defmacro aloop [[var arr] & body]
+(defmacro ^:private aloop [[var arr] & body]
   `(let [arr# ~arr]
      (loop [~var 0]
        (when (< ~var (.-length arr#))

@@ -197,8 +197,8 @@
 (defn version-sort [a b]
   (cond
    (= a b) 0
-   (deploy/is-newer? a b) 1
-   :else -1))
+   (deploy/is-newer? a b) -1
+   :else 1))
 
 (defn build-cache [sha]
   (let [items (filter files/dir? (files/full-path-ls metadata-dir))
@@ -207,7 +207,7 @@
                           :let [versions (->> (files/full-path-ls plugin)
                                               (filter files/dir?)
                                               (map plugin-info)
-                                              (sort-by #(version-sort % %2))
+                                              (sort-by :version version-sort)
                                               (vec))
                                 latest (last versions)]]
                       [(:name latest) {:versions (into {} (map (juxt :version identity) versions))

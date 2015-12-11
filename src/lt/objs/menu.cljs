@@ -126,6 +126,9 @@
                                          (cmd-item "Open recent workspace" :workspace.show-recents {})
                                          (cmd-item "Save file" :save)
                                          (cmd-item "Save file as.." :save-as)
+                                         {:label "Settings" :submenu [(cmd-item "User keymap" :keymap.modify-user)
+                                                                      (cmd-item "User behaviors" :behaviors.modify-user)
+                                                                      (cmd-item "User script" :user.modify-user)]}
                                          {:type "separator"}
                                          (cmd-item "New window" :window.new)
                                          (cmd-item "Close window" :window.close)
@@ -154,6 +157,7 @@
                                          (cmd-item "Connections" :show-connect)
                                          (cmd-item "Navigator" :navigate-workspace-transient)
                                          (cmd-item "Commands" :show-commandbar-transient)
+                                         (cmd-item "Plugin Manager" :plugin-manager.show)
                                          {:type "separator"}
                                          (cmd-item "Language docs" :docs.search.show)
                                          {:type "separator"}

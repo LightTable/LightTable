@@ -1,19 +1,25 @@
 ;; User keymap
 ;; -----------------------------
-;; Keymaps are stored as a set of diffs that are merged together to create
-;; the final set of keys. You can modify these diffs to either add or
-;; subtract bindings.
+;; Modify this file to add and subtract keybindings (keyboard shortcuts).
+;; Keybindings allow custom keys to invoke any desired LightTable functionality that is behind a command.
+;; A keybinding has the following format:
 ;;
-;; Like behaviors, keys are bound by tag. When objects with those tags are active
-;; the key bindings are live. Keys can be bound to any number of Light Table commands,
-;; allowing you the flexibility to execute multiple operations together. To see a list
-;; of all the commands you can execute, start typing a word related to the thing you
-;; want to do in between the square brackets (e.g. type "editor").
-
+;;   [:TAG "KEYS" :COMMAND]
+;;
+;; * A tag indicates in what context the keybinding applies. Common tags are :app and :editor which respectively
+;;   indicate the keybinding can be used anywhere and the keybinding can only be used when editing text.
+;;
+;; * Keys are the actual keys you type for the keybinding. Most keybindings start with modifier(s) e.g. alt or control.
+;;   Keybindings with modifiers have the format "modifier(s)-key". For example "alt-shift-x" means press alt, shift and x
+;;   at once. For more on configuring keys see https://github.com/LightTable/LightTable/blob/master/doc/behavior-and-keymap-configuration.md#keys.
+;;
+;; * Command is the specific LightTable command(s) to invoke. To search available commands,
+;;   start typing a search term after "KEYS". Once you've found the desired command, press TAB to have autocomplete
+;;   fill in the command name. For more on configuring commands see https://github.com/LightTable/LightTable/blob/master/doc/behavior-and-keymap-configuration.md#commands-in-keybindings.
 [
  [:editor "alt-w" :editor.watch.watch-selection]
  [:editor "alt-shift-w" :editor.watch.unwatch]
 
- ;; To subtract a binding, prefix the key with '-'  e.g.
+ ;; To subtract a keybinding, prefix the key with '-'  e.g.
  ;;  [:app "-ctrl-shift-d" :docs.search.show]
 ]

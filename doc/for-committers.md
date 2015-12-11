@@ -13,7 +13,7 @@ Current ClojureScript version and libraries we use are in [project.clj](https://
 
 ### Node packages
 
-Node package installs last done with io.js v2.5.0 and npm v2.13.2.
+Node package installs last done with node.js v2.5.0 and npm v2.13.2.
 
 Node dependencies are at deploy/core/node\_modules/. This directory is currently a mix of vendored
 dependencies, forked dependencies and Light Table specific libraries:
@@ -44,3 +44,36 @@ be unused. Some tips to confirm how it is/was used:
 
 * Do a LightTable user search for the given fn. For example, to see where [proc/exec is used](https://github.com/search?utf8=%E2%9C%93&q=proc%2Fexec+user%3ALightTable&type=Code&ref=searchresults)
 * `git log -u -S WORD` will do a code history search for WORD
+
+## Release process
+
+This is our release checklist which can be dropped in to an issue:
+
+- [ ] Release 0.X.X
+      - [ ] Version updates
+         - [ ] Update deploy/core/package.json, deploy/core/version.json and project.clj (including the Codox `:source-uri` value) to 0.X.X
+         - [ ] Make sure electron version is up to date in version.json
+         - [ ] Make sure plugin versions in script/build-app.sh are latest versions
+      - [ ] Add changelog for release to CHANGELOG.md
+      - [ ] Each core developer should QA at least one OS using the [QA checklist](https://github.com/LightTable/LightTable/wiki/QA-Checklist)
+      - [ ] When QA passes freeze master
+      - [ ] Add changelog to [GH release draft](https://github.com/LightTable/LightTable/releases/new)
+      - [ ] Upload binaries from `script/build.sh --release` to draft. Don't forget to click *Save draft*!
+         - [ ] Generate an MD5 checksum for the binary package:
+            - [ ] Run `certUtil -hashfile lighttable-x.y.z-windows.zip MD5` on Windows.
+            - [ ] Run `openssl md5 lighttable-x.y.z-mac.tar.gz` on Mac OS X or Linux.
+      - [ ] Publish GH release which creates git tag and notifies users about new release
+      - [ ] Update download links on lighttable.com
+      - [ ] Mailing list announcement - [example email](https://gist.github.com/cldwalker/3d67153fe1eade2ae3cf)
+      - [ ] Optional blog post if a major release
+      - [ ] After release, [build api documentation](#build-api-documentation)
+
+## Build api documentation
+
+To build api documentation for current LT version and publish generated docs:
+
+1. In project.clj make sure that `[:codox :source-uri]` points to current LT version.
+   This step will be removed once [there is upstream support for version in :source-uri](https://github.com/weavejester/codox/issues/107)
+2. Run `script/build-api-docs.sh` on a clean git state. Make sure there are no pending git changes as this script will change git branches and push generated api docs to gh-pages.
+
+Expect to see a ton of warnings e.g. `WARNING: Use of undeclared Var cljs.core/seq at line 197`. This will be noise we have to live with until we upgrade ClojureScript.

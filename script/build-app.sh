@@ -47,11 +47,12 @@ DEFAULT_VERSION=`echo $META | cut -d' ' -f3 | tr -d '"'`
 BUILDS=builds
 RELEASE="$NAME-$VERSION-$OS"
 RELEASE_DIR="$BUILDS/$RELEASE"
-RELEASE_TARBALL="$BUILDS/${RELEASE}.tar.gz"
+RELEASE_TARBALL="${RELEASE}.tar.gz"
 RELEASE_ZIP="${RELEASE}.zip"
 RELEASE_RSRC="$RELEASE_DIR/$RESOURCES"
 
 rm -rf $RELEASE_DIR $RELEASE_TARBALL $RELEASE_ZIP
+rm -rf $RELEASE_DIR "$BUILDS/$RELEASE_TARBALL" "$BUILDS/$RELEASE_ZIP"
 
 #----------------------------------------------------------------------
 # Copy Electron installation and app directory into output location
@@ -103,18 +104,20 @@ elif [ "$OS" == "windows" ]; then
 fi
 
 #----------------------------------------------------------------------
-# Create tarball or zip file
+# Create release version: tarball or zip file
 #----------------------------------------------------------------------
 
-if [ "$1" == "--tarball" ]; then
-  tar -zcvf $RELEASE_TARBALL $RELEASE_DIR
-fi
-
-# Create zip file for Cygwin (Windows) using 7-Zip
-if [ "$1" == "--zip" ]; then
-  pushd "$BUILDS"
-  "/cygdrive/c/Program Files/7-Zip/7z.exe" a $RELEASE_ZIP "$RELEASE/*"
-  popd
+if [ "$1" == "--release" ]; then
+  # Create zip file for Cygwin (Windows) using 7-Zip
+  if [ "$OS" == "windows" ]; then
+    pushd "$BUILDS"
+    "/cygdrive/c/Program Files/7-Zip/7z.exe" a $RELEASE_ZIP "$RELEASE/*"
+    popd
+  else
+    pushd "$BUILDS"
+    tar -zcvf $RELEASE_TARBALL $RELEASE/*
+    popd
+  fi
 fi
 
 echo DONE!

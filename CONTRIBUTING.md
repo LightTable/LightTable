@@ -9,6 +9,7 @@ When filing a bug on GitHub, please help us help you by including the following:
 * *Steps to reproduce the bug.*
 * Your operating system, LT and relevant plugin versions.
 * Relevant configuration in your user.keymap and user.behaviors.
+* Error messages you see in your console. In your menu, select`View > Commands` and then search for and execute the `Console: Open the console in a tab` command. Go to the console tab and copy and paste its errors.
 
 Note: The issue tracker is mainly for bugs. Questions should be asked on the [Light Table Google group](https://groups.google.com/forum/#!forum/light-table-discussion).
 
@@ -37,3 +38,6 @@ When contributing:
 * Please add docstrings to non-trivial functions that are added. Most existing code doesn't have this but we'd like to improve this.
 * We are not currently seeking refactoring contributions or code convention tweaks e.g. whitespace. This may change at a later point when we have automated tests and an explicit code convention.
 * For contributions to a [vendored dependency](doc/for-committers.md#node-packages), they must be sent upstream and then we can update to the new version.
+* For plugins and files that come from CodeMirror, usually under codemirror/, we do not take pull requests.
+  Instead, send a pull request [to CodeMirror](https://github.com/codemirror/CodeMirror). Once they release a new version we can
+  upgrade it on a plugin. Thanks!
