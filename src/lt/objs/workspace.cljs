@@ -180,8 +180,8 @@
       (reconstitute ws (file->ws loc))
       (save ws (:file @ws))
       (files/delete! loc)
-      (catch js/Error e
-        ))))
+      (catch :default e
+        e))))
 
 (defn cached []
   (filter #(> (.indexOf % ".clj") -1) (files/full-path-ls workspace-cache-path)))

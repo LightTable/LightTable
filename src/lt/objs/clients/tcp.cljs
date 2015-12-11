@@ -46,9 +46,7 @@
             next (subs buf (inc loc))
             data (try
                    (js->clj (.parse js/JSON cur) :keywordize-keys true)
-                   (catch js/Error e
-                     (console/error e))
-                   (catch js/global.Error e
+                   (catch :default e
                      (console/error e)))]
         (cb data)
         (recur (.indexOf next "\n") next))
@@ -73,11 +71,9 @@
       (.listen s 0)
       (.on s "listening" #(set! port (.-port (.address s))))
       s)
-    ;;TODO: warn the user that they're not connected to anything
-    (catch js/Error e
-      )
-    (catch js/global.Error e
-      )))
+    (catch :default e
+      ;; TODO: warn the user that they're not connected to anything
+      e)))
 
 (behavior ::send!
                   :triggers #{:send!}
@@ -90,6 +86,6 @@
                   :reaction (fn [app]
                               (try
                                 (.close server)
-                                (catch js/Error e)
-                                (catch js/global.Error e))))
+                                (catch :default e
+                                  e))))
 

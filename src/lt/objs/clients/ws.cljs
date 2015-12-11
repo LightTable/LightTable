@@ -76,5 +76,5 @@
                   :reaction (fn [app]
                               (try
                                 (.close server)
-                                (catch js/Error e)
-                                (catch js/global.Error e))))
+                                (catch :default e
+                                  e))))

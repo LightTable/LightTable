@@ -782,10 +782,7 @@
                                 (try
                                   (load/js path true)
                                   (object/update! this [::loaded-files] #(conj (or % #{}) path))
-                                  (catch js/Error e
-                                    (.error js/console (str "Error loading JS file: " path " : " e))
-                                    (.error js/console (.-stack e)))
-                                  (catch js/global.Error e
+                                  (catch :default e
                                     (.error js/console (str "Error loading JS file: " path " : " e))
                                     (.error js/console (.-stack e)))))))))))
 

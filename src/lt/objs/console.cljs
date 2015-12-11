@@ -23,9 +23,7 @@
                     (files/mkdir (files/lt-user-dir)))
                   (files/mkdir logs-dir))
                 (.. (js/require "fs") (createWriteStream (files/join logs-dir (str "window" (app/window-number) ".log"))))
-                (catch js/global.Error e
-                  (.error js/console (str "Failed to initialize the log writer: " e)))
-                (catch js/Error e
+                (catch :default e
                   (.error js/console (str "Failed to initialize the log writer: " e)))))
 
 (defn ->ui [c]
