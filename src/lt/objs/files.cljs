@@ -50,6 +50,11 @@
                   :reaction (fn [this pattern]
                               (set! ignore-pattern (js/RegExp. pattern))))
 
+(behavior ::open-failed
+          :triggers #{:files.open.error}
+          :reaction (fn [this path e]
+                      ;; Do not log stacktrace because it would be too much noise if multiple file openings fail
+                      (js/lt.objs.console.error (str "Failed to open path '" path "' with error: " e))))
 
 (def files-obj (object/create (object/object* ::files
                                               :tags [:files]
@@ -176,7 +181,6 @@
   [path cb]
   (try
     (let [content (bomless-read path)]
-      ;;TODO: error handling
       (when content
         (let [e (ext path)]
           (cb {:content content
@@ -193,7 +197,6 @@
   [path]
   (try
     (let [content (bomless-read path)]
-      ;;TODO: error handling
       (when content
         (let [e (ext path)]
           (object/raise files-obj :files.open content)
@@ -202,7 +205,7 @@
            :type (or (ext->mode (keyword e)) e)}))
         )
     (catch :default e
-      (object/raise files-obj :files.open.error path)
+      (object/raise files-obj :files.open.error path e)
       nil)))
 
 (defn save
