@@ -74,6 +74,4 @@
 (behavior ::kill-on-closed
                   :triggers #{:closed}
                   :reaction (fn [app]
-                              (try
-                                (.close server)
-                                (catch :default e))))
+                              (.close server)))
