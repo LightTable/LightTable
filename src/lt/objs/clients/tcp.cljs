@@ -72,8 +72,7 @@
       (.on s "listening" #(set! port (.-port (.address s))))
       s)
     (catch :default e
-      (console/error "Error starting tcp server")
-      (console/error e))))
+      (console/error "Error starting tcp server" e))))
 
 (behavior ::send!
                   :triggers #{:send!}

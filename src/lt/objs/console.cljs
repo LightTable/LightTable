@@ -65,14 +65,18 @@
          (dom/scroll-top $console 10000000000)
          nil)))))
 
-(defn error [e]
+(defn error
+  "Log errors, strings or any objects as console error(s). If an error,
+  its stack is logged"
+  [& errors]
   (statusbar/console-class "error")
-  (log (str (cond
-             (.-stack e) (.-stack e)
-             (string? e) e
-             (not= (pr-str e) "[object Object]") (pr-str e)
-             :else (str e)))
-       "error"))
+  (doseq [e errors]
+    (log (str (cond
+               (.-stack e) (.-stack e)
+               (string? e) e
+               (not= (pr-str e) "[object Object]") (pr-str e)
+               :else (str e)))
+         "error")))
 
 (.on js/process "uncaughtException" #(error %))
 
