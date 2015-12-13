@@ -12,6 +12,7 @@
             [lt.objs.popup :as popup]
             [lt.objs.tabs :as tabs]
             [lt.objs.app :as app]
+            [lt.objs.console :as console]
             [lt.objs.notifos :as notifos]
             [lt.objs.files :as files]
             [lt.util.dom :as dom]
@@ -265,6 +266,5 @@
                                                                   (aget i)
                                                                   (.-path)))
                                   (recur (inc i)))))
-                            (catch js/Error e
-                              (println e)))
-                          ))
+                            (catch :default err
+                              (console/error err)))))

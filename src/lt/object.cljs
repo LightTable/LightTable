@@ -107,7 +107,9 @@
 (defn- trigger->behaviors [trig ts]
   (get (->triggers (tags->behaviors ts)) trig))
 
-(defn- safe-report-error [e]
+(defn safe-report-error [e]
+  ;; This check is necessary because this can be called before
+  ;; the console ns has been loaded
   (if js/lt.objs.console
     (js/lt.objs.console.error e)
     (.error js/console (if (string? e)
@@ -134,14 +136,9 @@
          (apply func obj args))
        (when-not (= trigger :object.behavior.time)
          (raise obj :object.behavior.time r time trigger)))
-       (catch js/Error e
+       (catch :default e
          (safe-report-error (str "Invalid behavior: " (-> (->behavior r) :name)))
-         (safe-report-error e)
-         )
-       (catch js/global.Error e
-         (safe-report-error (str "Invalid behavior: " (-> (->behavior r) :name)))
-         (safe-report-error e)
-         )))))
+         (safe-report-error e))))))
 
 (defn raise
   "Invoke object's behavior fns for given trigger. Args are passed to behavior fns"

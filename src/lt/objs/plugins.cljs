@@ -782,12 +782,8 @@
                                 (try
                                   (load/js path true)
                                   (object/update! this [::loaded-files] #(conj (or % #{}) path))
-                                  (catch js/Error e
-                                    (.error js/console (str "Error loading JS file: " path " : " e))
-                                    (.error js/console (.-stack e)))
-                                  (catch js/global.Error e
-                                    (.error js/console (str "Error loading JS file: " path " : " e))
-                                    (.error js/console (.-stack e)))))))))))
+                                  (catch :default e
+                                    (console/error (str "Error loading JS file: " path " : " e) e))))))))))
 
 (behavior ::load-css
           :triggers #{:object.instant}

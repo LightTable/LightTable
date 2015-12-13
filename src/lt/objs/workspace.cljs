@@ -6,6 +6,7 @@
             [lt.objs.command :as cmd]
             [lt.objs.cache :as cache]
             [lt.objs.notifos :as notifos]
+            [lt.objs.console :as console]
             [cljs.reader :as reader]
             [lt.util.load :as load]
             [lt.util.js :refer [now]]
@@ -180,8 +181,8 @@
       (reconstitute ws (file->ws loc))
       (save ws (:file @ws))
       (files/delete! loc)
-      (catch js/Error e
-        ))))
+      (catch :default e
+        (console/error e)))))
 
 (defn cached []
   (filter #(> (.indexOf % ".clj") -1) (files/full-path-ls workspace-cache-path)))

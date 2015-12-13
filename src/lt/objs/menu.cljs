@@ -24,10 +24,8 @@
                                     (try
                                       (when-let [func (:click opts)]
                                         (func))
-                                      (catch js/Error e
-                                        (.error js/console e))
-                                      (catch js/global.Error e
-                                        (.error js/console e)))))
+                                      (catch :default e
+                                        (js/lt.objs.console.error e)))))
                opts)]
     (MenuItem. (clj->js opts))))
 

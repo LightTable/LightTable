@@ -23,9 +23,7 @@
                     (files/mkdir (files/lt-user-dir)))
                   (files/mkdir logs-dir))
                 (.. (js/require "fs") (createWriteStream (files/join logs-dir (str "window" (app/window-number) ".log"))))
-                (catch js/global.Error e
-                  (.error js/console (str "Failed to initialize the log writer: " e)))
-                (catch js/Error e
+                (catch :default e
                   (.error js/console (str "Failed to initialize the log writer: " e)))))
 
 (defn ->ui [c]
@@ -67,14 +65,18 @@
          (dom/scroll-top $console 10000000000)
          nil)))))
 
-(defn error [e]
+(defn error
+  "Log errors, strings or any objects as console error(s). If an error,
+  its stack is logged"
+  [& errors]
   (statusbar/console-class "error")
-  (log (str (cond
-             (.-stack e) (.-stack e)
-             (string? e) e
-             (not= (pr-str e) "[object Object]") (pr-str e)
-             :else (str e)))
-       "error"))
+  (doseq [e errors]
+    (log (str (cond
+               (.-stack e) (.-stack e)
+               (string? e) e
+               (not= (pr-str e) "[object Object]") (pr-str e)
+               :else (str e)))
+         "error")))
 
 (.on js/process "uncaughtException" #(error %))
 

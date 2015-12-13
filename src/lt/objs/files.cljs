@@ -50,6 +50,11 @@
                   :reaction (fn [this pattern]
                               (set! ignore-pattern (js/RegExp. pattern))))
 
+(behavior ::open-failed
+          :triggers #{:files.open.error}
+          :reaction (fn [this path e]
+                      ;; Do not log stacktrace because it would be too much noise if multiple file openings fail
+                      (js/lt.objs.console.error (str "Failed to open path '" path "' with error: " e))))
 
 (def ^:private files-obj (object/create (object/object* ::files
                                                         :tags [:files]
@@ -176,7 +181,6 @@
   [path cb]
   (try
     (let [content (bomless-read path)]
-      ;;TODO: error handling
       (when content
         (let [e (ext path)]
           (cb {:content content
@@ -184,20 +188,15 @@
                :type (or (path->mode path) e)})
           (object/raise files-obj :files.open content))
         ))
-    (catch js/Error e
+    (catch :default e
       (object/raise files-obj :files.open.error path e)
-      (when cb (cb nil e)))
-    (catch js/global.Error e
-      (object/raise files-obj :files.open.error path e)
-      (when cb (cb nil e)))
-    ))
+      (when cb (cb nil e)))))
 
 (defn open-sync
   "Open file and return map with file's content in :content"
   [path]
   (try
     (let [content (bomless-read path)]
-      ;;TODO: error handling
       (when content
         (let [e (ext path)]
           (object/raise files-obj :files.open content)
@@ -205,13 +204,9 @@
            :line-ending (determine-line-ending content)
            :type (or (ext->mode (keyword e)) e)}))
         )
-    (catch js/Error e
-      (object/raise files-obj :files.open.error path)
-      nil)
-    (catch js/global.Error e
-      (object/raise files-obj :files.open.error path)
-      nil)
-    ))
+    (catch :default e
+      (object/raise files-obj :files.open.error path e)
+      nil)))
 
 (defn save
   "Save path with given content. Optional callback called after save"
@@ -220,14 +215,9 @@
     (.writeFileSync fs path content)
     (object/raise files-obj :files.save path)
     (when cb (cb))
-    (catch js/global.Error e
+    (catch :default e
       (object/raise files-obj :files.save.error path e)
-      (when cb (cb e))
-      )
-    (catch js/Error e
-      (object/raise files-obj :files.save.error path e)
-      (when cb (cb e))
-      )))
+      (when cb (cb e)))))
 
 (defn append
   "Append content to path. Optional callback called after append"
@@ -236,14 +226,9 @@
     (.appendFileSync fs path content)
     (object/raise files-obj :files.save path)
     (when cb (cb))
-    (catch js/global.Error e
+    (catch :default  e
       (object/raise files-obj :files.save.error path e)
-      (when cb (cb e))
-      )
-    (catch js/Error e
-      (object/raise files-obj :files.save.error path e)
-      (when cb (cb e))
-      )))
+      (when cb (cb e)))))
 
 (defn trash! [path]
   (.moveItemTotrash shell path))
@@ -304,7 +289,7 @@
        (if cb
          (cb fs)
          fs))
-     (catch js/global.Error e
+     (catch :default e
        (when cb
          (cb nil))
        nil))))
@@ -321,17 +306,15 @@
        (:files opts) (filter #(file? (join path %)) fs)
        (:dirs opts) (filter #(dir? (join path %)) fs)
        :else fs))
-    (catch js/global.Error e
-      nil)))
+    (catch :default e
+      (js/lt.objs.console.error e))))
 
 (defn full-path-ls
   "Return directory's files as full paths"
   [path]
   (try
     (doall (map (partial join path) (.readdirSync fs path)))
-    (catch js/Error e
-      (js/lt.objs.console.error e))
-    (catch js/global.Error e
+    (catch :default e
       (js/lt.objs.console.error e))))
 
 (defn dirs
@@ -339,8 +322,8 @@
   [path]
   (try
     (filter dir? (map (partial join path) (.readdirSync fs path)))
-    (catch js/Error e)
-    (catch js/global.Error e)))
+    (catch :default e
+      (js/lt.objs.console.error e))))
 
 (defn home
   "Return users' home directory (e.g. ~/) or path under it"

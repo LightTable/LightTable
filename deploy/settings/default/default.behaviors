@@ -266,6 +266,7 @@
 
  [:evaler :lt.objs.eval/alert-on-no-client]
 
+ [:files :lt.objs.files/open-failed]
  [:files :lt.objs.opener/save-failed]
  [:files :lt.objs.files/file-types [{:exts [:apl :dyalog], :mime "text/apl", :tags [:editor.apl], :name "APL"}
                                     ;; No extension since .conf is an overloaded extension
