@@ -47,7 +47,7 @@
           (string/split " ")
           (second)))))
 
-(def version-timeout (* 5 60 1000))
+(def version-timeout (* 60 60 1000))
 (def version (get-versions))
 
 (defn str->version [s]
