@@ -158,19 +158,16 @@
 (behavior ::on-drop
           :triggers #{:drop}
           :reaction (fn [this e]
-                      (try
-                        (let [size (.-dataTransfer.files.length e)]
-                          (loop [i 0]
-                            (when (< i size)
-                              (let [path (-> (.-dataTransfer.files e)
-                                             (aget i)
-                                             (.-path))]
-                                (if (files/dir? path)
-                                  (object/raise workspace/current-ws :add.folder! path)
-                                  (object/raise workspace/current-ws :add.file! path)))
-                              (recur (inc i)))))
-                        (catch :default e
-                          (println e)))))
+                      (let [size (.-dataTransfer.files.length e)]
+                        (loop [i 0]
+                          (when (< i size)
+                            (let [path (-> (.-dataTransfer.files e)
+                                           (aget i)
+                                           (.-path))]
+                              (if (files/dir? path)
+                                (object/raise workspace/current-ws :add.folder! path)
+                                (object/raise workspace/current-ws :add.file! path)))
+                            (recur (inc i)))))))
 
 (behavior ::on-menu
           :triggers #{:menu!}

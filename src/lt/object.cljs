@@ -106,6 +106,8 @@
   (get (->triggers (tags->behaviors ts)) trig))
 
 (defn safe-report-error [e]
+  ;; This check is necessary because this can be called before
+  ;; the console ns has been loaded
   (if js/lt.objs.console
     (js/lt.objs.console.error e)
     (.error js/console (if (string? e)

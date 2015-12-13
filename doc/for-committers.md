@@ -37,6 +37,13 @@ Allows us to build cross platfrom desktop apps. See [Electron guide](electron-gu
 
 ## Other
 
+### Code Conventions
+
+* Catch blocks should catch on `:default` unless there is a specific exception to be caught.
+* Catch blocks should log errors with `lt.objs.console/error`. Namespaces that the console
+  ns depend on cannot refer to the clojure var but can refer to the js fn e.g.
+  `(js/lt.objs.console.error err)`.
+
 ### Code Reading
 
 When reading LT's source you may come across a fn that doesn't have an obvious use and may appear to

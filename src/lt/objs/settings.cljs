@@ -161,7 +161,7 @@
       (try
         (object/refresh! (first objs))
         (catch :default e
-          (.error js/console e)))
+          (console/error e)))
       (js/process.nextTick (fn []
                              (refresh-all (next objs)))))))
 
