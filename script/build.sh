@@ -14,7 +14,7 @@ if [ "$(echo `lein version` | grep 'Leiningen \(1.\|2.0\)')" ]; then
 fi
 
 # Check if npm is installed
-npm --version >/dev/null 2>&1 || { echo >&2 "Please install npm before running this script."; exit 1; }
+[ `which npm` ] || { echo >&2 "Please install npm before running this script."; exit 1; }
 
 # Ensure we start in project root
 cd "$(dirname "${BASH_SOURCE[0]}")"; cd ..
