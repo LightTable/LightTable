@@ -17,6 +17,7 @@
             [lt.objs.console :as console]
             [lt.util.dom :as dom]
             [clojure.string :as string]
+            [cljs.reader :as reader]
             [lt.objs.platform :as platform])
   (:require-macros [lt.macros :refer [behavior defui]]))
 

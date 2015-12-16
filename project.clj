@@ -8,13 +8,21 @@
                   :exclusions [org.apache.ant/ant]]
                  ]
   :jvm-opts ["-Xmx1g" "-XX:+UseConcMarkSweepGC"] ; cljsbuild eats memory
-  :cljsbuild {:builds [{:source-paths ["src"]
+  :cljsbuild {:builds [{:id "app"
+                        :source-paths ["src"]
                         :compiler {:optimizations :simple
                                    :externs ["externs/jquery.js" "externs/throttle.js" "externs/codemirror.js"]
                                    :source-map "deploy/core/node_modules/lighttable/bootstrap.js.map"
                                    :output-to "deploy/core/node_modules/lighttable/bootstrap.js"
                                    :output-dir "deploy/core/node_modules/lighttable/cljs/"
-                                   :pretty-print true}}]}
+                                   :pretty-print true}}
+                       {:id "cljsdeps"
+                        :source-paths ["src-cljsdeps"]
+                        :compiler {:optimizations :simple
+                                   :output-to "deploy/core/node_modules/clojurescript/cljsDeps.js"
+                                   :output-dir "deploy/core/node_modules/clojurescript/cljsDeps/"
+                                   :pretty-print true }}]}
+
   ;; TODO: Remove separate :doc :dependencies after ClojureScript upgrade
   :profiles {:doc {:dependencies [[org.clojure/clojure "1.7.0"]
                                   [org.clojure/clojurescript "1.7.145"

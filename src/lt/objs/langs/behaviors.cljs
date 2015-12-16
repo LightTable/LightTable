@@ -4,10 +4,10 @@
             [lt.objs.context :as ctx]
             [lt.objs.command :as cmd]
             [lt.util.dom :as dom]
+            [lt.objs.thread]
             [lt.objs.editor :as editor]
             [clojure.string :as string]
-            [lt.util.js :refer [wait]]
-            [lt.util.cljs :refer [js->clj]])
+            [lt.util.js :refer [wait]])
   (:require-macros [lt.macros :refer [behavior background defui]]))
 
 (def flat-parser (background (fn [obj-id contents]

@@ -6,7 +6,6 @@
             [lt.objs.files :as files]
             [lt.objs.workspace :as workspace]
             [lt.objs.command :as cmd]
-            [lt.util.cljs :refer [js->clj]]
             [clojure.string :as string]
             [lt.util.ipc :as ipc]
             [lt.objs.opener :as opener])

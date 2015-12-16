@@ -14,8 +14,7 @@
             [lt.util.load :as load]
             [lt.objs.platform :as platform])
   (:use [lt.util.dom :only [remove-class add-class]]
-        [lt.object :only [object* behavior*]]
-        [lt.util.cljs :only [js->clj]])
+        [lt.object :only [object* behavior*]])
   (:require-macros [lt.macros :refer [behavior]]))
 
 (defn ->cm-ed
@@ -466,11 +465,6 @@
 ;; Behaviors
 ;;*********************************************************
 
-
-(behavior ::read-only
-          :triggers #{:init}
-          :reaction (fn [obj]
-                      (set-options (:ed @obj) {:readOnly "nocursor"})))
 
 (behavior ::wrap
           :triggers #{:object.instant :lt.object/tags-removed}
