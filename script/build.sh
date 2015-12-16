@@ -31,7 +31,7 @@ popd
 if [ "$(echo $(uname -s) | cut -c 1-9)" == "CYGWIN_NT" ]; then
   sed -i 's/:source-map/;;:source-map/' project.clj
 fi
-lein cljsbuild clean && lein cljsbuild once
+rm deploy/core/node_modules/lighttable/bootstrap.js && lein cljsbuild once app
 
 # Fetch plugins
 PLUGINS=("Clojure,0.2.0" "CSS,0.0.6" "HTML,0.1.0" "Javascript,0.1.3"

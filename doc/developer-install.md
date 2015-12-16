@@ -56,7 +56,7 @@ This will take a few minutes the first time as electron and plugins are download
 To override the output directory, specify `$VERSION` e.g. `VERSION=0.8.1-pre script/build.sh`.
 
 On subsequent builds, use `script/build-app.sh` for quicker builds that don't require updating plugins or electron.
-If any ClojureScript files change, you must run `lein cljsbuild once`.  On Windows, you may need to comment out the :source-map
+If any ClojureScript files change, you must run `lein cljsbuild once app`.  On Windows, you may need to comment out the :source-map
 line before compiling ClojureScript to get around [issue 1025](https://github.com/LightTable/LightTable/issues/1025).
 
 # Usage

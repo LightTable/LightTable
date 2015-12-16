@@ -45,6 +45,15 @@ be unused. Some tips to confirm how it is/was used:
 * Do a LightTable user search for the given fn. For example, to see where [proc/exec is used](https://github.com/search?utf8=%E2%9C%93&q=proc%2Fexec+user%3ALightTable&type=Code&ref=searchresults)
 * `git log -u -S WORD` will do a code history search for WORD
 
+### Upgrading ClojureScript
+
+When upgrading ClojureScript, cljsDeps.js needs to be rebuilt with `lein cljsbuild once cljsdeps`.
+cljsDeps.js is used by
+[threadworker.js](https://github.com/cldwalker/LightTable/blob/d79adff78557febf4a3b94691a132fa81fe3aeaa/deploy/core/node_modules/lighttable/background/threadworker.js#L29)
+to run javascript in [a background
+thread](https://github.com/cldwalker/LightTable/blob/d79adff78557febf4a3b94691a132fa81fe3aeaa/src/lt/objs/thread.cljs#L67).
+This background thread is invoked with the `background` macro.
+
 ## Release process
 
 This is our release checklist which can be dropped in to an issue:
