@@ -96,21 +96,22 @@
       plugin)))
 
 (defn plugin-edn [dir]
-  (when-let [content (files/open-sync (files/join dir "plugin.edn"))]
-    (try
-      (-> (EOF-read (:content content))
-          (assoc :dir dir)
-          (validate "plugin.edn"))
-      (catch :default e
-        (console/error (str "FAILED to load plugin.edn: " dir))))
-    ))
+  (let [file (files/join dir "plugin.edn")]
+    (when-let [content (and (files/exists? file) (files/open-sync file))]
+      (try
+        (-> (EOF-read (:content content))
+            (assoc :dir dir)
+            (validate "plugin.edn"))
+        (catch :default e
+          (console/error (str "FAILED to load plugin.edn: " dir)))))))
 
 (defn plugin-json [dir]
-  (when-let [content (files/open-sync (files/join dir "plugin.json"))]
-    (-> (js/JSON.parse (:content content))
-        (js->clj :keywordize-keys true)
-        (assoc :dir dir)
-        (validate "plugin.json"))))
+  (let [file (files/join dir "plugin.json")]
+    (when-let [content (and (files/exists? file) (files/open-sync file))]
+      (-> (js/JSON.parse (:content content))
+          (js->clj :keywordize-keys true)
+          (assoc :dir dir)
+          (validate "plugin.json")))))
 
 (defn plugin-info [dir]
   (or (plugin-json dir) (plugin-edn dir)))
