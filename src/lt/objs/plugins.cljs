@@ -222,10 +222,12 @@
 (defn latest-metadata-sha []
   (fetch/xhr [:get metadata-commits] {}
              (fn [data]
-               (let [parsed (js/JSON.parse data)
-                     sha (-> (aget parsed 0)
-                             (aget "sha"))]
-                 (object/raise manager :metadata.sha sha)))))
+               (when-let [parsed (try (js/JSON.parse data)
+                                   (catch :default e
+                                     (console/error (str "Invalid JSON response from " metadata-commits ": " (pr-str data)))))]
+                 (let [sha (-> (aget parsed 0)
+                               (aget "sha"))]
+                   (object/raise manager :metadata.sha sha))))))
 
 (defn download-metadata [sha]
   (let [tmp-gz (files/lt-user-dir "metadata-temp.tar.gz")
