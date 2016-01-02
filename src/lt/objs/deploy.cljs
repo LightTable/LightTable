@@ -131,11 +131,15 @@
 (defn ->latest-version
   "Returns latest LT version for github api tags endpoint."
   [body]
-  (->> (js/JSON.parse body)
-       ;; Ensure only version tags
-       (keep #(when (re-find version-regex (.-name %)) (.-name %)))
-       sort
-       last))
+  (when-let [parsed-body
+             (try (js/JSON.parse body)
+               (catch :default e
+                 (console/error (str "Invalid JSON response from " tags-url ": " (pr-str body)))))]
+    (->> parsed-body
+         ;; Ensure only version tags
+         (keep #(when (re-find version-regex (.-name %)) (.-name %)))
+         sort
+         last)))
 
 (defn check-version [& [notify?]]
   (fetch/xhr tags-url {}
