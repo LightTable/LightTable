@@ -195,6 +195,7 @@
  [:editor :lt.objs.editor/hide-line-numbers]
  [:editor :lt.objs.editor/hide-fold-gutter]
  [:editor :lt.objs.editor/no-wrap]
+ [:editor :lt.objs.editor/disable-brackets-autoclose]
  [:editor :lt.objs.settings/default-keymap-diffs]
  [:editor :lt.objs.settings/user-keymap-diffs]
  [:editor :lt.objs.settings/default-behavior-diffs]
