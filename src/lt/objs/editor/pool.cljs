@@ -119,22 +119,10 @@
           :reaction (fn [this]
                       (focus-last)))
 
-(defn- active-warn [ed popup]
-  (if-not (= (last-active) ed)
-    (object/merge! ed {:active-warn popup})
-    (popup/popup! popup)))
-
 (defn- reload [ed]
   (editor/set-val ed (:content (files/open-sync (-> @ed :info :path))))
   (doc/update-stats (-> @ed :info :path))
   (object/merge! ed {:dirty false}))
-
-(behavior ::warn-on-active
-          :triggers #{:active}
-          :reaction (fn [this]
-                      (when (:active-warn @this)
-                        (popup/popup! (:active-warn @this))
-                        (object/merge! this {:active-warn nil}))))
 
 (behavior ::watched.update
           :triggers #{:watched.update}
@@ -142,14 +130,8 @@
                       (when (files/file? f)
                         (when-let [ed (first (by-path f))]
                           (when-not (doc/check-mtime (doc/->stats f) stat)
-                            (if (:dirty @ed)
-                              (active-warn ed {:header (str "File modified: " f)
-                                               :body "This file seems to have been modified outside of Light Table. Do you want to load the latest and lose your changes?"
-                                               :buttons [{:label "Reload from disk"
-                                                          :action (fn []
-                                                                    (reload ed))}
-                                                         {:label "Cancel"}
-                                                         ]})
+                            ;; If dirty no need to warn since user is warned on save
+                            (when-not (:dirty @ed)
                               (reload ed)))))))
 
 (defn- set-syntax [ed new-syn]

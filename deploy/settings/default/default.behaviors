@@ -180,7 +180,6 @@
  [:editor :lt.objs.editor.pool/track-active]
  [:editor :lt.objs.editor.pool/ed-close]
  [:editor :lt.objs.editor/menu!]
- [:editor :lt.objs.editor.pool/warn-on-active]
  [:editor :lt.objs.editor/refresh!]
  [:editor :lt.objs.editor.pool/line-comment-options {}]
  [:editor :lt.plugins.auto-paren/repeat-pair]
