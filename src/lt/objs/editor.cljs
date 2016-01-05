@@ -756,8 +756,12 @@
           :desc "Editor: Enable brackets autoclose"
           :exclusive [::disable-brackets-autoclose]
           :type :user
-          :reaction (fn [this]
-                      (set-options this {:autoCloseBrackets true})))
+          :params [{:label "map"
+                    :example "{:pairs \"()[]{}''\\\"\\\"\" :explode \"[]{}\"}"}]
+          :reaction (fn [this opts]
+                      (if opts
+                        (set-options this {:autoCloseBrackets (clj->js opts)})
+                        (set-options this {:autoCloseBrackets true}))))
 
 (behavior ::disable-brackets-autoclose
           :triggers #{:object.instant :lt.object/tags-removed}
