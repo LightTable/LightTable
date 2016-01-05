@@ -209,13 +209,14 @@ body { -webkit-user-select: none; }
 
 #right-bar .navigate { height:100%; overflow:auto; box-sizing:border-box; }
 #right-bar .navigate em { font-weight:normal; }
-#right-bar .navigate li { border:none; padding:5px 5px; cursor:default; overflow:hidden; width:100%; box-sizing:border-box; white-space:nowrap; }
+#right-bar .navigate li { border:none; padding:5px 5px; cursor:default; width:100%; box-sizing:border-box; white-space:nowrap; }
 #right-bar .navigate li:empty { display:none; }
 #right-bar .navigate p { font-size:8pt; }
 #right-bar .navigate h2 { font-size:11pt; }
 #right-bar .navigate .selected, #side .navigate li:hover { border-radius:2px}
 #right-bar .navigate input { border:none; margin-bottom:20px; border-radius:2px; outline:none; box-sizing:border-box; width:100%; padding:10px; font-size:11pt;}
 #right-bar .navigate .filter-list.empty ul:before { content: "Add some files or folders to your workspace to fill the navigator."; padding:10px 0; text-align:center; display:inline-block;}
+#right-bar .navigate.active {overflow: auto;}
 
 #right-bar .clients.active {overflow:auto; height:100%; }
 #right-bar .clients .list > h2.add { float:none; display:block; box-sizing:border-box; text-align:left; margin-bottom:15px; }
