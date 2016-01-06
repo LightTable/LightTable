@@ -14,14 +14,15 @@
           :reaction (fn [editor]
                       (let [{:keys [path]} (@editor :info)
                             final (object/raise-reduce editor :save+ (ed/->val editor))]
+                        (when (not= final (ed/->val editor))
+                          (ed/set-val-and-keep-cursor editor final))
                         (doc/save path final
                                   (fn []
                                     (object/merge! editor {:dirty false
                                                            :editor.generation (ed/->generation editor)})
                                     (object/raise editor :saved)
-                                    (object/raise editor :clean)
-                                    ;;TODO: saved
-                                    )))))
+                                    ;; TODO: :clean trigger unused internally. Consider removing
+                                    (object/raise editor :clean))))))
 
 (behavior ::dirty-on-change
           :throttle 100
