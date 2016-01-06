@@ -119,28 +119,10 @@
           :reaction (fn [this]
                       (focus-last)))
 
-(defn- make-transient-dirty [ed]
-  (object/merge! ed {:dirty true})
-  (object/update! ed [:info] assoc :path nil)
-  (object/remove-tags ed [:editor.file-backed])
-  (object/add-tags ed [:editor.transient]))
-
-(defn- active-warn [ed popup]
-  (if-not (= (last-active) ed)
-    (object/merge! ed {:active-warn popup})
-    (popup/popup! popup)))
-
 (defn- reload [ed]
   (editor/set-val ed (:content (files/open-sync (-> @ed :info :path))))
   (doc/update-stats (-> @ed :info :path))
   (object/merge! ed {:dirty false}))
-
-(behavior ::warn-on-active
-          :triggers #{:active}
-          :reaction (fn [this]
-                      (when (:active-warn @this)
-                        (popup/popup! (:active-warn @this))
-                        (object/merge! this {:active-warn nil}))))
 
 (behavior ::watched.update
           :triggers #{:watched.update}
@@ -148,23 +130,9 @@
                       (when (files/file? f)
                         (when-let [ed (first (by-path f))]
                           (when-not (doc/check-mtime (doc/->stats f) stat)
-                            (if (:dirty @ed)
-                              (active-warn ed {:header (str "File modified: " f)
-                                               :body "This file seems to have been modified outside of Light Table. Do you want to load the latest and lose your changes?"
-                                               :buttons [{:label "Reload from disk"
-                                                          :action (fn []
-                                                                    (reload ed))}
-                                                         {:label "Cancel"}
-                                                         ]})
+                            ;; If dirty no need to warn since user is warned on save
+                            (when-not (:dirty @ed)
                               (reload ed)))))))
-
-(defn- warn-delete [ed f]
-  (active-warn ed {:header (str "File deleted: " f)
-                   :body "This file seems to have been deleted and we've marked it as unsaved."
-                   :buttons [{:label "Save as.."
-                              :action (fn []
-                                        (object/raise ed :save))}
-                             {:label "ok"}]}))
 
 (defn- set-syntax [ed new-syn]
   (let [prev-info (-> @ed :info)]
@@ -180,19 +148,16 @@
 (behavior ::watched.delete
           :triggers #{:watched.delete}
           :reaction (fn [ws del]
-                      (if-let [ed (first (by-path del))]
-                        (do
-                          (warn-delete ed del)
-                          (make-transient-dirty ed)
-                          (when-let [ts (:lt.objs.tabs/tabset @ed)]
-                            (object/raise ts :tab.updated)))
-                        (let [open (filter #(if-let  [path (-> @% :info :path)]
-                                              (= 0 (.indexOf path (str del files/separator)))
-                                              false)
-                                           (object/by-tag :editor))]
-                          (doseq [ed open]
-                            (warn-delete ed del)
-                            (make-transient-dirty ed))))))
+                      (let [editors (or (seq (by-path del))
+                                        ;; If del is not a file, assume it's a directory
+                                        ;; and look for editors under it
+                                        (filter #(if-let  [path (-> @% :info :path)]
+                                                   (= 0 (.indexOf path (str del files/separator)))
+                                                   false)
+                                                (object/by-tag :editor)))]
+                        (doseq [ed editors]
+                          (when-not (:dirty @ed)
+                            (object/raise ed :close))))))
 
 (behavior ::watched.rename
           :triggers #{:watched.rename :rename}

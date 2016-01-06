@@ -166,7 +166,7 @@
                          (cb d))))))
 
 (defn check-mtime [prev updated]
-  (if prev
+  (if (and prev updated)
     (= (.getTime (.-mtime prev)) (.getTime (.-mtime updated)))
     true))
 
