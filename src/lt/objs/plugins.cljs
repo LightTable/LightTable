@@ -13,6 +13,7 @@
             [lt.objs.deploy :as deploy]
             [lt.objs.notifos :as notifos]
             [lt.objs.tabs :as tabs]
+            [lt.util.js :refer [wait]]
             [lt.objs.platform :as platform]
             [cljs.reader :as reader]
             [fetch.core :as fetch]
@@ -453,7 +454,8 @@
   (when (:dir plugin)
     (files/delete! (:dir plugin))
     ;; :ignore-missing b/c uninstalled shows up missing
-    (object/raise manager :refresh! :ignore-missing true)))
+    (object/raise manager :refresh! :ignore-missing true)
+    (notifos/set-msg! (str "Uninstalled " (:name plugin) " " (:version plugin)))))
 
 ;;*********************************************************
 ;; Manager ui
@@ -500,7 +502,10 @@
            (dom/stop-propagation e)
            (discover-deps plugin (fn []
                                    (object/raise manager :refresh!)
-                                   (cmd/exec! :behaviors.reload)))))
+                                   (cmd/exec! :behaviors.reload)
+                                   ;; Wait for behaviors.reload to write its message
+                                   (wait 1000 (fn []
+                                                (notifos/set-msg! (str "Updated " (:name plugin) " " (:version plugin)))))))))
 
 (defui install-button [plugin]
   [:span.install]
@@ -509,7 +514,10 @@
                     (discover-deps plugin (fn []
                                             (dom/remove (dom/parent me))
                                             (object/raise manager :refresh!)
-                                            (cmd/exec! :behaviors.reload))))
+                                            (cmd/exec! :behaviors.reload)
+                                            ;; Wait for behaviors.reload to write its message
+                                            (wait 1000 (fn []
+                                                         (notifos/set-msg! (str "Installed " (:name plugin) " " (:version plugin))))))))
            (dom/prevent e)
            (dom/stop-propagation e)))
 
