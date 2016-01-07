@@ -120,7 +120,7 @@
                       (focus-last)))
 
 (defn- reload [ed]
-  (editor/set-val ed (:content (files/open-sync (-> @ed :info :path))))
+  (editor/set-val-and-keep-cursor ed (:content (files/open-sync (-> @ed :info :path))))
   (doc/update-stats (-> @ed :info :path))
   (object/merge! ed {:dirty false}))
 
