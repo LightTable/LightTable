@@ -155,8 +155,6 @@
  [:docable :lt.plugins.doc/editor.doc.show!]
  [:docable :lt.plugins.doc/doc-menu+]
 
- [:docs :lt.objs.docs/on-close-destroy]
-
  [:document :lt.objs.document/try-close-root-document]
  [:document :lt.objs.document/close-root-document]
  [:document :lt.objs.document/set-linked-doc-options {}]

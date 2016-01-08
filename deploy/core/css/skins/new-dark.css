@@ -521,19 +521,6 @@ input {
   background: #606970;
   border: 1px solid #606970;
 }
-.docs ::-webkit-scrollbar {
-  background: #3b3f41 !important;
-}
-.docs ::-webkit-scrollbar-track {
-  background: #3b3f41 !important;
-}
-.docs ::-webkit-scrollbar-corner {
-  background: #3b3f41 !important;
-}
-.docs ::-webkit-scrollbar-thumb {
-  background: #606970;
-  border: 1px solid #606970;
-}
 .search-results .path,
 .search-results .line {
   color: #bbb;
