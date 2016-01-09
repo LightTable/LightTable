@@ -172,7 +172,7 @@
 
                 {:label "&Help" :submenu [(cmd-item "Documentation" :show-docs)
                                           {:label "Report an Issue" :click #(do
-                                                                              (cmd/exec! :add-browser-tab "https://github.com/LightTable/LightTable/issues?state=open"))}  ;; TODO: Add report an issue on GitHub menu item - TWM
+                                                                              (cmd/exec! :add-browser-tab "https://github.com/LightTable/LightTable/issues?state=open"))}
                                           (when-not (platform/mac?)
                                             (cmd-item "About Light Table" :version))]}]))
 
