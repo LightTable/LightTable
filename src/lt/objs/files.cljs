@@ -243,13 +243,7 @@
 (defn move!
   "Move file or directory to given path"
   [from to]
-  (if (dir? from)
-    (do
-      (.copyDirSyncRecursive wrench from to)
-      (.rmdirSyncRecursive wrench from))
-    (do
-      (save to (:content (open-sync from)))
-      (delete! from))))
+  (.renameSync fs from to))
 
 (defn copy
   "Copy file or directory to given path"
