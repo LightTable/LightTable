@@ -116,23 +116,29 @@
                                        {:label "Hide Others" :accelerator "Command+Alt+H" :selector "hideOtherApplications:"}
                                        {:type "separator"}
                                        (cmd-item "Quit Light Table" :quit {:accelerator "Command+Q"})]})
-                {:label "File" :submenu [(cmd-item "New file" :new-file)
-                                         (cmd-item "Open file" :open-file)
-                                         {:label "Open folder" :click #(do
-                                                                         (cmd/exec! :workspace.show :force)
-                                                                         (cmd/exec! :workspace.add-folder))}
-                                         (cmd-item "Open recent workspace" :workspace.show-recents {})
-                                         (cmd-item "Save file" :save)
-                                         (cmd-item "Save file as.." :save-as)
-                                         {:label "Settings" :submenu [(cmd-item "User keymap" :keymap.modify-user)
-                                                                      (cmd-item "User behaviors" :behaviors.modify-user)
-                                                                      (cmd-item "User script" :user.modify-user)]}
-                                         {:type "separator"}
-                                         (cmd-item "New window" :window.new)
-                                         (cmd-item "Close window" :window.close)
-                                         {:type "separator"}
-                                         (cmd-item "Close file" :tabs.close)
-                                         ]}
+
+                {:label "&File" :submenu (into [(cmd-item "New file" :new-file)
+                                                (cmd-item "Open file" :open-file)
+                                                {:label "Open folder" :click #(do
+                                                                                (cmd/exec! :workspace.show :force)
+                                                                                (cmd/exec! :workspace.add-folder))}
+                                                (cmd-item "Open recent workspace" :workspace.show-recents {})
+                                                (cmd-item "Save file" :save)
+                                                (cmd-item "Save file as.." :save-as)
+                                                (cmd-item "Close file" :tabs.close)
+                                                {:label "Settings" :submenu [(cmd-item "User keymap" :keymap.modify-user)
+                                                                             (cmd-item "User behaviors" :behaviors.modify-user)
+                                                                             (cmd-item "User script" :user.modify-user)]}
+                                                {:type "separator"}
+                                                (cmd-item "New window" :window.new)
+                                                (cmd-item "Close window" :window.close)]
+                                               (when-not (platform/mac?)
+                                                 [{:type "separator"}
+                                                  (cmd-item "About Light Table" :version)
+                                                  {:label "Hide Light Table" :accelerator "Control+H" :selector "hide:"}
+                                                  {:label "Hide Others" :accelerator "Control+Alt+H" :selector "hideOtherApplications:"}
+                                                  (cmd-item "Quit Light Table" :quit {:accelerator "Control+Q"})]))}
+
                 (if (platform/mac?)
                   {:label "Edit" :submenu [(cmd-item "Undo" :editor.undo {:selector "undo:" :accelerator "CommandOrControl+Z"})
                                            (cmd-item "Redo" :editor.redo {:selector "redo:" :accelerator "CommandOrControl+Shift+Z"})
@@ -140,37 +146,35 @@
                                            (cmd-item "Cut" :editor.cut {:selector "cut:" :accelerator "CommandOrControl+X"})
                                            (cmd-item "Copy" :editor.copy {:selector "copy:" :accelerator "CommandOrControl+C"})
                                            (cmd-item "Paste" :editor.paste {:selector "paste:" :accelerator "CommandOrControl+V"})
-                                           (cmd-item "Select All" :editor.select-all {:selector "selectAll:" :accelerator "CommandOrControl+A"})
-                                           ]}
-                  {:label "Edit" :submenu [(cmd-item "Undo" :editor.undo)
-                                           (cmd-item "Redo" :editor.redo)
-                                           {:type "separator"}
-                                           (cmd-item "Cut" :editor.cut)
-                                           (cmd-item "Copy" :editor.copy)
-                                           (cmd-item "Paste" :editor.paste)
-                                           (cmd-item "Select All" :editor.select-all)
-                                           ]}
-                  )
-                {:label "View" :submenu [(cmd-item "Workspace" :workspace.show)
-                                         (cmd-item "Connections" :show-connect)
-                                         (cmd-item "Navigator" :navigate-workspace-transient)
-                                         (cmd-item "Commands" :show-commandbar-transient)
-                                         (cmd-item "Plugin Manager" :plugin-manager.show)
-                                         {:type "separator"}
-                                         (cmd-item "Language docs" :docs.search.show)
-                                         {:type "separator"}
-                                         (cmd-item "Console" :toggle-console)
-                                         (cmd-item "Developer Tools" :dev-inspector)]}
+                                           (cmd-item "Select All" :editor.select-all {:selector "selectAll:" :accelerator "CommandOrControl+A"})]}
+                  {:label "&Edit" :submenu [(cmd-item "Undo" :editor.undo)
+                                            (cmd-item "Redo" :editor.redo)
+                                            {:type "separator"}
+                                            (cmd-item "Cut" :editor.cut)
+                                            (cmd-item "Copy" :editor.copy)
+                                            (cmd-item "Paste" :editor.paste)
+                                            (cmd-item "Select All" :editor.select-all)]})
 
-                {:label "Window" :submenu [(cmd-item "Minimize" :window.minimize)
-                                           (cmd-item "Maximize" :window.maximize)
-                                           (cmd-item "Fullscreen" :window.fullscreen)]}
-                {:label "Help" :submenu [(cmd-item "Documentation" :show-docs)
-                                         {:label "Report an Issue" :click #(do
-                                                                             (cmd/exec! :add-browser-tab "https://github.com/LightTable/LightTable/issues?state=open"))}  ;; TODO: Add report an issue on GitHub menu item - TWM
-                                         (when-not (platform/mac?)
-                                           (cmd-item "About Light Table" :version))]}
-                ]))
+                {:label "&View" :submenu [(cmd-item "Workspace" :workspace.show)
+                                          (cmd-item "Connections" :show-connect)
+                                          (cmd-item "Navigator" :navigate-workspace-transient)
+                                          (cmd-item "Commands" :show-commandbar-transient)
+                                          (cmd-item "Plugin Manager" :plugin-manager.show)
+                                          {:type "separator"}
+                                          (cmd-item "Language docs" :docs.search.show)
+                                          {:type "separator"}
+                                          (cmd-item "Console" :toggle-console)
+                                          (cmd-item "Developer Tools" :dev-inspector)]}
+
+                {:label "&Window" :submenu [(cmd-item "Minimize" :window.minimize)
+                                            (cmd-item "Maximize" :window.maximize)
+                                            (cmd-item "Fullscreen" :window.fullscreen)]}
+
+                {:label "&Help" :submenu [(cmd-item "Documentation" :show-docs)
+                                          {:label "Report an Issue" :click #(do
+                                                                              (cmd/exec! :add-browser-tab "https://github.com/LightTable/LightTable/issues?state=open"))}  ;; TODO: Add report an issue on GitHub menu item - TWM
+                                          (when-not (platform/mac?)
+                                            (cmd-item "About Light Table" :version))]}]))
 
 (behavior ::create-menu
           :triggers #{:init}
