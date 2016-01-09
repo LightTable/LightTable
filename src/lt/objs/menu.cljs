@@ -80,40 +80,40 @@
   ([label cmd opts]
    (merge
     {:label label
-     :click (when-not (:selector opts)
+     :click (when-not (:role opts)
               (fn [] (cmd/exec! cmd)))}
     opts
     (command->menu-binding cmd))))
 
 (defn unknown-menu []
-  (set-menubar [
-                (when (platform/mac?)
+  (set-menubar [(when (platform/mac?)
                   {:label "" :submenu [(cmd-item "About Light Table" :version)
                                        {:type "separator"}
-                                       {:label "Hide Light Table" :accelerator "Command+H" :selector "hide:"}
-                                       {:label "Hide Others" :accelerator "Command+Alt+H" :selector "hideOtherApplications:"}
+                                       {:label "Hide Light Table" :accelerator "Command+H" :role "hide"}
+                                       {:label "Hide Others" :accelerator "Command+Alt+H" :role "hideothers"}
                                        {:type "separator"}
                                        (cmd-item "Quit Light Table" :quit {:accelerator "Command+Q"})]})
-                {:label "Edit" :submenu [(cmd-item "Undo" :editor.undo {:selector "undo:" :accelerator "CommandOrControl+Z"})
-                                         (cmd-item "Redo" :editor.redo {:selector "redo:" :accelerator "Command+Shift+Z"})
+
+                {:label "Edit" :submenu [(cmd-item "Undo" :editor.undo {:role "undo" :accelerator "CommandOrControl+Z"})
+                                         (cmd-item "Redo" :editor.redo {:role "redo" :accelerator "Command+Shift+Z"})
                                          {:type "separator"}
-                                         (cmd-item "Cut" :editor.cut {:selector "cut:" :accelerator "CommandOrControl+X"})
-                                         (cmd-item "Copy" :editor.copy {:selector "copy:" :accelerator "CommandOrControl+C"})
-                                         (cmd-item "Paste" :editor.paste {:selector "paste:" :accelerator "CommandOrControl+V"})
-                                         (cmd-item "Select All" :editor.select-all {:selector "selectAll:" :accelerator "CommandOrControl+A"})
+                                         (cmd-item "Cut" :editor.cut {:role "cut" :accelerator "CommandOrControl+X"})
+                                         (cmd-item "Copy" :editor.copy {:role "copy" :accelerator "CommandOrControl+C"})
+                                         (cmd-item "Paste" :editor.paste {:role "paste" :accelerator "CommandOrControl+V"})
+                                         (cmd-item "Select All" :editor.select-all {:role "selectall" :accelerator "CommandOrControl+A"})
                                          ]}
-                {:label "Window" :submenu [(cmd-item "Minimize" :window.minimize {:selector "performMiniaturize:" :accelerator "Command+M"})
-                                           (cmd-item "Close window" :window.close {:selector "performClose:" :accelerator "Command+W"})]}
-                {:label "Help" :submenu []}
-                ]))
+
+                {:label "Window" :submenu [(cmd-item "Minimize" :window.minimize {:role "minimize" :accelerator "Command+M"})
+                                           (cmd-item "Close window" :window.close {:role "close" :accelerator "Command+W"})]}
+
+                {:label "Help" :submenu []}]))
 
 (defn main-menu []
-  (set-menubar [
-                (when (platform/mac?)
+  (set-menubar [(when (platform/mac?)
                   {:label "" :submenu [(cmd-item "About Light Table" :version)
                                        {:type "separator"}
-                                       {:label "Hide Light Table" :accelerator "Command+H" :selector "hide:"}
-                                       {:label "Hide Others" :accelerator "Command+Alt+H" :selector "hideOtherApplications:"}
+                                       {:label "Hide Light Table" :accelerator "Command+H" :role "hide"}
+                                       {:label "Hide Others" :accelerator "Command+Alt+H" :role "hideothers"}
                                        {:type "separator"}
                                        (cmd-item "Quit Light Table" :quit {:accelerator "Command+Q"})]})
 
@@ -135,18 +135,16 @@
                                                (when-not (platform/mac?)
                                                  [{:type "separator"}
                                                   (cmd-item "About Light Table" :version)
-                                                  {:label "Hide Light Table" :accelerator "Control+H" :selector "hide:"}
-                                                  {:label "Hide Others" :accelerator "Control+Alt+H" :selector "hideOtherApplications:"}
                                                   (cmd-item "Quit Light Table" :quit {:accelerator "Control+Q"})]))}
 
                 (if (platform/mac?)
-                  {:label "Edit" :submenu [(cmd-item "Undo" :editor.undo {:selector "undo:" :accelerator "CommandOrControl+Z"})
-                                           (cmd-item "Redo" :editor.redo {:selector "redo:" :accelerator "CommandOrControl+Shift+Z"})
+                  {:label "Edit" :submenu [(cmd-item "Undo" :editor.undo {:role "undo" :accelerator "CommandOrControl+Z"})
+                                           (cmd-item "Redo" :editor.redo {:role "redo" :accelerator "CommandOrControl+Shift+Z"})
                                            {:type "separator"}
-                                           (cmd-item "Cut" :editor.cut {:selector "cut:" :accelerator "CommandOrControl+X"})
-                                           (cmd-item "Copy" :editor.copy {:selector "copy:" :accelerator "CommandOrControl+C"})
-                                           (cmd-item "Paste" :editor.paste {:selector "paste:" :accelerator "CommandOrControl+V"})
-                                           (cmd-item "Select All" :editor.select-all {:selector "selectAll:" :accelerator "CommandOrControl+A"})]}
+                                           (cmd-item "Cut" :editor.cut {:role "cut" :accelerator "CommandOrControl+X"})
+                                           (cmd-item "Copy" :editor.copy {:role "copy" :accelerator "CommandOrControl+C"})
+                                           (cmd-item "Paste" :editor.paste {:role "paste" :accelerator "CommandOrControl+V"})
+                                           (cmd-item "Select All" :editor.select-all {:role "selectall" :accelerator "CommandOrControl+A"})]}
                   {:label "&Edit" :submenu [(cmd-item "Undo" :editor.undo)
                                             (cmd-item "Redo" :editor.redo)
                                             {:type "separator"}
