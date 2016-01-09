@@ -54,7 +54,7 @@
                               ))
 
 (behavior ::font-settings
-                  :desc "Editor: Font settings"
+                  :desc "App: Font settings"
                   :params [{:label "Font family"
                             :type :string}
                            {:label "Size (pt)"
