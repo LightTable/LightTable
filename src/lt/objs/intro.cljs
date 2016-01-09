@@ -17,10 +17,7 @@
                   :reaction (fn [this]
                               (object/raise this :destroy)))
 
-(defn ->lt-image [stts]
-  (str "img/lighttabletext" (if (= (:skin stts) "light")
-                                    "light"
-                                    "dark") ".png"))
+(def ->lt-image (constantly "img/lighttabletextdark.png"))
 
 (defui docs []
   [:button "Light Table's online docs"]
