@@ -235,11 +235,6 @@ input { color: $highlight-fg; background:$highlight-bg; }
 #browser ::-webkit-scrollbar-corner { background: $bg !important; }
 #browser ::-webkit-scrollbar-thumb { background: $scrollbar; border:1px solid $scrollbar;  }
 
-.docs ::-webkit-scrollbar { background: $bg !important; }
-.docs ::-webkit-scrollbar-track { background: $bg !important; }
-.docs ::-webkit-scrollbar-corner { background: $bg !important; }
-.docs ::-webkit-scrollbar-thumb { background: $scrollbar; border:1px solid $scrollbar;  }
-
 .search-results .path, .search-results .line { color:$hidden-fg; }
 .search-results .line { color:$secondary-accent-desat-fg; }
 .search-results .entry { color: $placeholder-fg; }

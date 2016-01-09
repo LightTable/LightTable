@@ -294,11 +294,6 @@ body { -webkit-user-select: none; }
 #find-bar input { display:inline-block; font-size:11pt; font-family:"Inconsolata", "Ubuntu Mono", "Consolas", monospace; border-radius:0;  width:50%; height:30px; box-sizing:border-box; padding:5px; padding-left:10px; outline:none; }
 #find-bar button { position:absolute; right:-3px; z-index: 100000; padding:6px 10px;}
 
-
-.docs { width:100%; height:100%; }
-.docs iframe { width:100%; height:100%; }
-.docs .frame-shade { height:100%; width:100%; background:transparent; position:absolute; display:none; }
-
 #browser webview { position:absolute; top:0; left:0; right:0; bottom:35px; }
 #browser nav { position:absolute; bottom:5px; left:0; right:0; }
 #browser .frame-shade { height:-webkit-calc(100% - 35px); width:100%; background:transparent; position:absolute; display:none; }
