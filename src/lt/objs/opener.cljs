@@ -183,8 +183,7 @@
           :reaction (fn [this]
                       (if (object/has-tag? this :editor)
                         (object/raise this :save)
-                        (cmd/exec! :save))
-                      ))
+                        (cmd/exec! :save))))
 
 (behavior ::save-all-on-focus-lost
           :triggers #{:blur}

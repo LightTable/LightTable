@@ -211,8 +211,7 @@
 (behavior ::add-platform-class
           :triggers #{:init}
           :reaction (fn [this]
-                      (dom/add-class (dom/$ :body) (name platform/platform))
-                      ))
+                      (dom/add-class (dom/$ :body) (name platform/platform))))
 
 ;;*********************************************************
 ;; Object

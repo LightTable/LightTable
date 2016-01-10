@@ -219,14 +219,7 @@
                             {:label "paste"
                              :order 4
                              :click (fn [e]
-                                      (.paste (to-frame this))
-                                      )}
-                            )
-
-
-
-
-                      ))
+                                      (.paste (to-frame this)))})))
 
 
 (behavior ::init!
@@ -297,8 +290,7 @@
 (behavior ::handle-send!
           :triggers #{:send!}
           :reaction (fn [this msg]
-                      (object/raise this (keyword (str (:command msg) "!")) msg)
-                      ))
+                      (object/raise this (keyword (str (:command msg) "!")) msg)))
 
 (behavior ::handle-refresh!
           :triggers #{:client.refresh!}
@@ -345,8 +337,7 @@
                       (let [info (:data msg)
                             frame (to-frame (:frame @this))]
                         (.send frame "editor.eval.css" #js {:name (:name info)
-                                                            :code (:code info)})
-                        )))
+                                                            :code (:code info)}))))
 
 (behavior ::cljs-exec
           :triggers #{:editor.eval.cljs.exec!}

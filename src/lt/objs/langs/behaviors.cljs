@@ -102,8 +102,7 @@
                             behavior-info (@object/behaviors behavior)]
                         (if (:desc behavior-info)
                           (object/raise helper :show! this behavior-info param-pos)
-                          (object/raise helper :clear!))
-                        )))
+                          (object/raise helper :clear!)))))
 
 (behavior ::behavior-hint-pattern
           :triggers #{:object.instant}

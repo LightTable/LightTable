@@ -58,8 +58,7 @@
 (behavior ::send!
           :triggers #{:send!}
           :reaction (fn [this data]
-                      (on-message (keyword (:command data)) (:data data) (:cb data))
-                      ))
+                      (on-message (keyword (:command data)) (:data data) (:cb data))))
 
 (defn init []
   (clients/handle-connection! {:name client-name
