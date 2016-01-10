@@ -88,20 +88,20 @@
 ;;*********************************************************
 
 (behavior ::refresh
-                  :triggers #{:refresh}
-                  :reaction (fn [obj]
-                              (set! closing true)
-                              (object/raise app :reload)
-                              (when closing
-                                (refresh))))
+          :triggers #{:refresh}
+          :reaction (fn [obj]
+                      (set! closing true)
+                      (object/raise app :reload)
+                      (when closing
+                        (refresh))))
 
 (behavior ::close!
-                  :triggers #{:close!}
-                  :reaction (fn [this]
-                              (set! closing true)
-                              (object/raise this :close)
-                              (when closing
-                                (close true))))
+          :triggers #{:close!}
+          :reaction (fn [this]
+                      (set! closing true)
+                      (object/raise this :close)
+                      (when closing
+                        (close true))))
 
 (behavior ::notify-init-window
           :triggers #{:init}
@@ -134,15 +134,15 @@
                         (.setPosition win (ensure-greater js/localStorage.x 0) (ensure-greater js/localStorage.y 0)))))
 
 (behavior ::on-show-bind-navigate
-                  :triggers #{:show}
-                  :reaction (fn [this]
-                              (dom/on ($ :#canvas) :click (fn [e]
-                                                            (when (and (= (.-target.nodeName e) "A")
-                                                                       (not (.-defaultPrevented e)))
-                                                              (dom/prevent e)
-                                                              (when-let [href (.-target.href e)]
-                                                                (platform/open-url href)
-                                                                (.focus win)))))))
+          :triggers #{:show}
+          :reaction (fn [this]
+                      (dom/on ($ :#canvas) :click (fn [e]
+                                                    (when (and (= (.-target.nodeName e) "A")
+                                                               (not (.-defaultPrevented e)))
+                                                      (dom/prevent e)
+                                                      (when-let [href (.-target.href e)]
+                                                        (platform/open-url href)
+                                                        (.focus win)))))))
 
 (behavior ::track-focus
           :triggers #{:focus :show}
@@ -190,13 +190,13 @@
           :reaction run-commands)
 
 (behavior ::run-post-init
-                  :triggers #{:post-init}
-                  :desc "App: Run commands after init"
-                  :params [{:label "commands"
-                            :type :list
-                            :items cmd/completions}]
-                  :type :user
-                  :reaction run-commands)
+          :triggers #{:post-init}
+          :desc "App: Run commands after init"
+          :params [{:label "commands"
+                    :type :list
+                    :items cmd/completions}]
+          :type :user
+          :reaction run-commands)
 
 (behavior ::set-default-zoom-level
           :triggers #{:init}
@@ -209,10 +209,10 @@
                       (cmd/exec! :window.zoom-reset)))
 
 (behavior ::add-platform-class
-                  :triggers #{:init}
-                  :reaction (fn [this]
-                              (dom/add-class (dom/$ :body) (name platform/platform))
-                              ))
+          :triggers #{:init}
+          :reaction (fn [this]
+                      (dom/add-class (dom/$ :body) (name platform/platform))
+                      ))
 
 ;;*********************************************************
 ;; Object

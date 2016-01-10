@@ -30,8 +30,8 @@
 ;;*********************************************************
 
 (behavior ::append-canvas
-                  :triggers #{:show}
-                  :reaction (fn [app]
-                              (dom/css ($ :#loader) {:opacity 0})
-                              (dom/css ($ :#wrapper) {:opacity 1})))
+          :triggers #{:show}
+          :reaction (fn [app]
+                      (dom/css ($ :#loader) {:opacity 0})
+                      (dom/css ($ :#wrapper) {:opacity 1})))
 

@@ -94,33 +94,33 @@
                         (completions-set token behavior-info param-pos token))))
 
 (behavior ::show-info-on-move
-                  :triggers #{:move}
-                  :debounce 200
-                  :reaction (fn [this]
-                              (let [idx (->index this)
-                                    {:keys [tag behavior param-pos] :as info} (idx->entry-info idx (:entries @this))
-                                    behavior-info (@object/behaviors behavior)]
-                                (if (:desc behavior-info)
-                                  (object/raise helper :show! this behavior-info param-pos)
-                                  (object/raise helper :clear!))
-                                  )))
+          :triggers #{:move}
+          :debounce 200
+          :reaction (fn [this]
+                      (let [idx (->index this)
+                            {:keys [tag behavior param-pos] :as info} (idx->entry-info idx (:entries @this))
+                            behavior-info (@object/behaviors behavior)]
+                        (if (:desc behavior-info)
+                          (object/raise helper :show! this behavior-info param-pos)
+                          (object/raise helper :clear!))
+                        )))
 
 (behavior ::behavior-hint-pattern
-                  :triggers #{:object.instant}
-                  :reaction (fn [this]
-                              (object/merge! this {:hint-pattern #"[\w\-\>\:\*\$\?\<\!\+\.\"\/]"})))
+          :triggers #{:object.instant}
+          :reaction (fn [this]
+                      (object/merge! this {:hint-pattern #"[\w\-\>\:\*\$\?\<\!\+\.\"\/]"})))
 
 (behavior ::on-changed
-                  :triggers #{:change :create}
-                  :debounce 100
-                  :reaction (fn [this]
-                              (flat-parser this (editor/->val this))))
+          :triggers #{:change :create}
+          :debounce 100
+          :reaction (fn [this]
+                      (flat-parser this (editor/->val this))))
 
 (behavior ::parsed
-                  :triggers #{:parsed}
-                  :reaction (fn [this results]
-                              (object/merge! this (js->clj results :keywordize-keys true))
-                              (object/raise this :move)))
+          :triggers #{:parsed}
+          :reaction (fn [this results]
+                      (object/merge! this (js->clj results :keywordize-keys true))
+                      (object/raise this :move)))
 
 (defn inline [this ed opts]
   (object/create :lt.objs.eval/inline-result {:ed ed
@@ -156,36 +156,36 @@
                 :tags #{:editor.behaviors.helper})
 
 (behavior ::helper.clear!
-                  :desc "Behaviors.helper: clear"
-                  :triggers #{:clear!}
-                  :reaction (fn [this]
-                                  (when (:mark @this)
-                                    (when (and (:ed @this) @(:ed @this))
-                                      (editor/-line-class (:ed @this) (:line @this) :text "behavior-helper-line"))
-                                    (object/raise (:mark @this) :clear!))
-                                  (object/merge! this {:content nil})
-                                  (object/merge! this {:mark nil
-                                                       :behavior nil
-                                                       :line nil
-                                                       :ed nil})))
+          :desc "Behaviors.helper: clear"
+          :triggers #{:clear!}
+          :reaction (fn [this]
+                      (when (:mark @this)
+                        (when (and (:ed @this) @(:ed @this))
+                          (editor/-line-class (:ed @this) (:line @this) :text "behavior-helper-line"))
+                        (object/raise (:mark @this) :clear!))
+                      (object/merge! this {:content nil})
+                      (object/merge! this {:mark nil
+                                           :behavior nil
+                                           :line nil
+                                           :ed nil})))
 
 (behavior ::helper.show!
-                  :desc "Behaviors.helper: show"
-                  :triggers #{:show!}
-                  :reaction (fn [this ed beh param-idx]
-                              (let [loc (editor/->cursor ed)]
-                                (when (or (not= beh (:behavior @this))
-                                          (not= ed (:ed @this)))
-                                  ;;clear old
-                                  (when (:mark @this)
-                                    (editor/-line-class ed (:line @this) :text "behavior-helper-line")
-                                    (object/raise (:mark @this) :clear!))
-                                  (editor/+line-class ed (:line loc) :text "behavior-helper-line")
-                                  (object/merge! this {:content (->helper beh)})
-                                  (object/merge! this {:mark (inline this ed (assoc loc :prev-line (:line @this)))
-                                                       :behavior beh
-                                                       :line (:line loc)
-                                                       :ed ed}))
-                                (set-param this param-idx))))
+          :desc "Behaviors.helper: show"
+          :triggers #{:show!}
+          :reaction (fn [this ed beh param-idx]
+                      (let [loc (editor/->cursor ed)]
+                        (when (or (not= beh (:behavior @this))
+                                  (not= ed (:ed @this)))
+                          ;;clear old
+                          (when (:mark @this)
+                            (editor/-line-class ed (:line @this) :text "behavior-helper-line")
+                            (object/raise (:mark @this) :clear!))
+                          (editor/+line-class ed (:line loc) :text "behavior-helper-line")
+                          (object/merge! this {:content (->helper beh)})
+                          (object/merge! this {:mark (inline this ed (assoc loc :prev-line (:line @this)))
+                                               :behavior beh
+                                               :line (:line loc)
+                                               :ed ed}))
+                        (set-param this param-idx))))
 
 (def helper (object/create ::helper))

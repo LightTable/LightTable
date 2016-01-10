@@ -74,13 +74,13 @@
       (console/error "Error starting tcp server" e))))
 
 (behavior ::send!
-                  :triggers #{:send!}
-                  :reaction (fn [this msg]
-                              (send-to (:socket @this) (array (:cb msg) (:command msg) (-> msg :data clj->js)))))
+          :triggers #{:send!}
+          :reaction (fn [this msg]
+                      (send-to (:socket @this) (array (:cb msg) (:command msg) (-> msg :data clj->js)))))
 
 
 (behavior ::kill-on-closed
-                  :triggers #{:closed}
-                  :reaction (fn [app]
-                              (.close server)))
+          :triggers #{:closed}
+          :reaction (fn [app]
+                      (.close server)))
 

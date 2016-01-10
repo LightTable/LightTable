@@ -33,74 +33,74 @@
 (def untitled-count (atom 0))
 
 (behavior ::open-transient-editor
-                  :triggers #{:new!}
-                  :reaction (fn [this path dirty?]
-                              (let [last (pool/last-active)
-                                    info (merge {:mime "plaintext" :tags [:editor.plaintext] :name (str "untitled-"
-                                                                                                        (swap! untitled-count inc))}
-                                                (path->info path))
-                                    ed (pool/create info)]
-                                (object/add-tags ed [:editor.transient])
-                                (object/merge! ed {:dirty dirty?})
-                                (object/raise this :open ed)
-                                (tabs/add! ed)
-                                (tabs/active! ed))))
+          :triggers #{:new!}
+          :reaction (fn [this path dirty?]
+                      (let [last (pool/last-active)
+                            info (merge {:mime "plaintext" :tags [:editor.plaintext] :name (str "untitled-"
+                                                                                                (swap! untitled-count inc))}
+                                        (path->info path))
+                            ed (pool/create info)]
+                        (object/add-tags ed [:editor.transient])
+                        (object/merge! ed {:dirty dirty?})
+                        (object/raise this :open ed)
+                        (tabs/add! ed)
+                        (tabs/active! ed))))
 
 (behavior ::transient-save
-                  :triggers #{:save :save-as-rename!}
-                  :reaction (fn [this]
-                              (let [path (or (first (:folders @workspace/current-ws))
-                                             (files/home))
-                                    info (:info @this)
-                                    fname (:name info)
-                                    ext (when-let [e (:exts info)]
-                                          (str "." (name (first e))))]
-                                (dialogs/save-as this :save-as! (files/join path (str fname ext))))))
+          :triggers #{:save :save-as-rename!}
+          :reaction (fn [this]
+                      (let [path (or (first (:folders @workspace/current-ws))
+                                     (files/home))
+                            info (:info @this)
+                            fname (:name info)
+                            ext (when-let [e (:exts info)]
+                                  (str "." (name (first e))))]
+                        (dialogs/save-as this :save-as! (files/join path (str fname ext))))))
 
 (behavior ::save-as-rename!
-                  :triggers #{:save-as-rename!}
-                  :reaction (fn [this]
-                              (dialogs/save-as this :save-as! (-> @this :info :path))))
+          :triggers #{:save-as-rename!}
+          :reaction (fn [this]
+                      (dialogs/save-as this :save-as! (-> @this :info :path))))
 
 (behavior ::save-as
-                  :triggers #{:save-as!}
-                  :reaction (fn [this path]
-                              (when (not (empty? path))
-                                (let [type (files/path->type path)
-                                      prev-tags (-> @this :info :tags)
-                                      mode (files/path->mode path)
-                                      neue-doc (doc/create {:doc (editor/get-doc this)
-                                                            :line-ending files/line-ending
-                                                            :mtime (files/stats path)
-                                                            :mime mode})]
-                                  (when (:doc @this)
-                                    (object/raise (:doc @this) :close.force))
-                                  (doc/register-doc neue-doc path)
-                                  (object/update! this [:info] merge (path->info path))
-                                  (object/merge! this {:dirty true
-                                                       :doc neue-doc})
-                                  (editor/set-mode this mode)
-                                  (object/remove-tags this (conj prev-tags :editor.transient))
-                                  (object/add-tags this (conj (:tags type) :editor.file-backed))
-                                  (object/raise this :save-as)
-                                  (object/raise this :save)))))
+          :triggers #{:save-as!}
+          :reaction (fn [this path]
+                      (when (not (empty? path))
+                        (let [type (files/path->type path)
+                              prev-tags (-> @this :info :tags)
+                              mode (files/path->mode path)
+                              neue-doc (doc/create {:doc (editor/get-doc this)
+                                                    :line-ending files/line-ending
+                                                    :mtime (files/stats path)
+                                                    :mime mode})]
+                          (when (:doc @this)
+                            (object/raise (:doc @this) :close.force))
+                          (doc/register-doc neue-doc path)
+                          (object/update! this [:info] merge (path->info path))
+                          (object/merge! this {:dirty true
+                                               :doc neue-doc})
+                          (editor/set-mode this mode)
+                          (object/remove-tags this (conj prev-tags :editor.transient))
+                          (object/add-tags this (conj (:tags type) :editor.file-backed))
+                          (object/raise this :save-as)
+                          (object/raise this :save)))))
 
 (behavior ::check-read-only
-                  :desc "Opener: check if file is read only"
-                  :triggers #{:open}
-                  :reaction (fn [this ed]
-                              (when-let [path (-> @ed :info :path)]
-                                (when (files/exists? path)
-                                  (when-not (files/writable? path)
-                                    (object/add-tags ed [:editor.read-only]))))))
+          :desc "Opener: check if file is read only"
+          :triggers #{:open}
+          :reaction (fn [this ed]
+                      (when-let [path (-> @ed :info :path)]
+                        (when (files/exists? path)
+                          (when-not (files/writable? path)
+                            (object/add-tags ed [:editor.read-only]))))))
 
 (behavior ::open-from-info
-                  :triggers #{:open-info!}
-                  :reaction (fn [obj info]
-                              (let [ed (pool/create info)]
-                                (object/raise obj :open ed)
-                                (tabs/add! ed)
-                                (tabs/active! ed))))
+          :triggers #{:open-info!}
+          :reaction (fn [obj info]
+                      (let [ed (pool/create info)]
+                        (object/raise obj :open ed)
+                        (tabs/add! ed)
+                        (tabs/active! ed))))
 
 (defn open-path*
   [doc-fn obj path]
@@ -135,70 +135,70 @@
                       (object/merge! this {:open-linked-doc bool})))
 
 (behavior ::open-standard-editor
-                  :triggers #{:open!}
-                  :reaction (fn [obj path]
-                              (if-not (files/file? path)
-                                (if (files/dir? path)
-                                  (notifos/set-msg! (str "Cannot open a directory: " path))
-                                  (notifos/set-msg! (str "No such file: " path)))
-                                (if-let [ed (first (pool/by-path path))]
-                                  (if (:open-linked-doc @obj)
-                                    (open-linked-path ed obj path {})
-                                    (tabs/active! ed))
-                                  (open-path obj path)))))
+          :triggers #{:open!}
+          :reaction (fn [obj path]
+                      (if-not (files/file? path)
+                        (if (files/dir? path)
+                          (notifos/set-msg! (str "Cannot open a directory: " path))
+                          (notifos/set-msg! (str "No such file: " path)))
+                        (if-let [ed (first (pool/by-path path))]
+                          (if (:open-linked-doc @obj)
+                            (open-linked-path ed obj path {})
+                            (tabs/active! ed))
+                          (open-path obj path)))))
 
 (behavior ::track-open-files
-                  :triggers #{:open}
-                  :reaction (fn [this ed]
-                              (when-let [path (-> @ed :info :path)]
-                                (object/update! this [:open-files] conj path))))
+          :triggers #{:open}
+          :reaction (fn [this ed]
+                      (when-let [path (-> @ed :info :path)]
+                        (object/update! this [:open-files] conj path))))
 
 (behavior ::untrack-closed
-                  :triggers #{:destroy}
-                  :reaction (fn [this]
-                              (when-let [path (-> @this :info :path)]
-                                (object/update! opener [:open-files] disj (-> @this :info :path)))))
+          :triggers #{:destroy}
+          :reaction (fn [this]
+                      (when-let [path (-> @this :info :path)]
+                        (object/update! opener [:open-files] disj (-> @this :info :path)))))
 
 (behavior ::unwatch-closed
-                  :triggers #{:close.force}
-                  :reaction (fn [ed]
-                              (when-let [path (-> @ed :info :path)]
-                                (workspace/unwatch! (-> @ed :info :path)))))
+          :triggers #{:close.force}
+          :reaction (fn [ed]
+                      (when-let [path (-> @ed :info :path)]
+                        (workspace/unwatch! (-> @ed :info :path)))))
 
 (behavior ::watch-on-open
-                  :triggers #{:open}
-                  :reaction (fn [this ed]
-                              (when-let [path (-> @ed :info :path)]
-                                (workspace/watch! (-> @ed :info :path)))))
+          :triggers #{:open}
+          :reaction (fn [this ed]
+                      (when-let [path (-> @ed :info :path)]
+                        (workspace/watch! (-> @ed :info :path)))))
 
 (behavior ::watch-open-files
-                  :triggers #{:watch-paths+}
-                  :reaction (fn [this cur]
-                              (concat cur (:open-files @opener))))
+          :triggers #{:watch-paths+}
+          :reaction (fn [this cur]
+                      (concat cur (:open-files @opener))))
 
 (behavior ::save-on-focus-lost
-                  :triggers #{:blur}
-                  :desc "Editor: Save on focus lost"
-                  :type :user
-                  :reaction (fn [this]
-                              (if (object/has-tag? this :editor)
-                                (object/raise this :save)
-                                (cmd/exec! :save))
-                              ))
+          :triggers #{:blur}
+          :desc "Editor: Save on focus lost"
+          :type :user
+          :reaction (fn [this]
+                      (if (object/has-tag? this :editor)
+                        (object/raise this :save)
+                        (cmd/exec! :save))
+                      ))
 
 (behavior ::save-all-on-focus-lost
-                  :triggers #{:blur}
-                  :desc "Editor: Save all on focus lost"
-                  :type :user
-                  :reaction (fn [this]
-                              (cmd/exec! :save-all)))
+          :triggers #{:blur}
+          :desc "Editor: Save all on focus lost"
+          :type :user
+          :reaction (fn [this]
+                      (cmd/exec! :save-all)))
 
 (behavior ::save-failed
-                  :triggers #{:files.save.error}
-                  :reaction (fn [this path e]
-                              (popup/popup! {:header (str "Failed to save: " (files/basename path))
-                                             :body [:pre (when e (str e))]
-                                             :buttons [{:label "cancel"}]})))
+          :triggers #{:files.save.error}
+          :reaction (fn [this path e]
+                      (popup/popup! {:header (str "Failed to save: " (files/basename path))
+                                     :body [:pre (when e (str e))]
+                                     :buttons [{:label "cancel"}]})))
 
 (object/object* ::opener
                 :tags #{:opener}

@@ -40,62 +40,62 @@
 (declare sidebar-navigate)
 
 (behavior ::workspace-files
-                  :triggers #{:workspace-files}
-                  :reaction (fn [this files]
-                              (object/merge! this {:files (js->clj files :keywordize-keys true)})
-                              (object/raise (:filter-list @this) :refresh!)
-                              ))
+          :triggers #{:workspace-files}
+          :reaction (fn [this files]
+                      (object/merge! this {:files (js->clj files :keywordize-keys true)})
+                      (object/raise (:filter-list @this) :refresh!)
+                      ))
 
 (behavior ::populate-on-ws-update
-                  :triggers #{:updated :refresh}
-                  :debounce 150
-                  :reaction (fn [ws]
-                              (populate-bg sidebar-navigate {:lim (dec (:file-limit @sidebar-navigate))
-                                                             :pattern (.-source files/ignore-pattern)
-                                                             :ws (workspace/serialize @ws)})))
+          :triggers #{:updated :refresh}
+          :debounce 150
+          :reaction (fn [ws]
+                      (populate-bg sidebar-navigate {:lim (dec (:file-limit @sidebar-navigate))
+                                                     :pattern (.-source files/ignore-pattern)
+                                                     :ws (workspace/serialize @ws)})))
 
 (behavior ::watched.create
-                  :triggers #{:watched.create}
-                  :reaction (fn [ws path]
-                              (when-not (file-filters (files/basename path))
-                                (let [ws-parent (files/parent (first (filter #(= 0 (.indexOf path %)) (:folders @ws))))
-                                      rel-length (inc (count ws-parent))]
-                                  (object/update! sidebar-navigate [:files] conj {:full path :rel (subs path rel-length)})
-                                  (object/raise (:filter-list @sidebar-navigate) :refresh!)))))
+          :triggers #{:watched.create}
+          :reaction (fn [ws path]
+                      (when-not (file-filters (files/basename path))
+                        (let [ws-parent (files/parent (first (filter #(= 0 (.indexOf path %)) (:folders @ws))))
+                              rel-length (inc (count ws-parent))]
+                          (object/update! sidebar-navigate [:files] conj {:full path :rel (subs path rel-length)})
+                          (object/raise (:filter-list @sidebar-navigate) :refresh!)))))
 
 (behavior ::watched.delete
-                  :triggers #{:watched.delete}
-                  :reaction (fn [ws path]
-                              ;;TODO: this is terribly inefficient
-                              (object/update! sidebar-navigate [:files] #(remove (fn [x] (= 0 (.indexOf (:full x) path))) %))
-                              (object/raise (:filter-list @sidebar-navigate) :refresh!)))
+          :triggers #{:watched.delete}
+          :reaction (fn [ws path]
+                      ;;TODO: this is terribly inefficient
+                      (object/update! sidebar-navigate [:files] #(remove (fn [x] (= 0 (.indexOf (:full x) path))) %))
+                      (object/raise (:filter-list @sidebar-navigate) :refresh!)))
 
 (behavior ::focus!
-                  :triggers #{:focus!}
-                  :reaction (fn [this]
-                              (object/raise (:filter-list @this) :focus!)
-                              ))
+          :triggers #{:focus!}
+          :reaction (fn [this]
+                      (object/raise (:filter-list @this) :focus!)
+                      ))
 
 (behavior ::focus-on-show
-                  :triggers #{:show}
-                  :reaction (fn [this]
-                              (object/raise this :focus!)))
+          :triggers #{:show}
+          :reaction (fn [this]
+                      (object/raise this :focus!)))
 
 (behavior ::open-on-select
-                  :triggers #{:select}
-                  :reaction (fn [this cur]
-                              (object/raise opener/opener :open! (:full cur))))
+          :triggers #{:select}
+          :reaction (fn [this cur]
+                      (object/raise opener/opener :open! (:full cur))))
 
 (behavior ::escape!
-                  :triggers #{:escape!}
-                  :reaction (fn [this]
-                              (cmd/exec! :escape-navigate)
-                              (cmd/exec! :focus-last-editor)))
+          :triggers #{:escape!}
+          :reaction (fn [this]
+                      (cmd/exec! :escape-navigate)
+                      (cmd/exec! :focus-last-editor)))
 
 (behavior ::pop-transient-on-select
-                  :triggers #{:selected}
-                  :reaction (fn [this]
-                              (object/raise sidebar/rightbar :close!)))
+          :triggers #{:selected}
+          :reaction (fn [this]
+                      (object/raise sidebar/rightbar :close!)))
 
 (behavior ::set-file-limit
           :triggers #{:object.instant}

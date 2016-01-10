@@ -61,45 +61,45 @@
 (declare helper)
 
 (behavior ::keymap-hints
-                  :triggers #{:hints+}
-                  :exclusive [:lt.plugins.auto-complete/textual-hints]
-                  :reaction (fn [this hints token]
-                              (let [idx (beh/->index this)
-                                    {:keys [tag key pos command-at-pos arg-pos]} (idx->entry-info idx (:entries @this))
-                                    comps (when (or (not arg-pos)
-                                                    (< arg-pos 1))
-                                            (completions (pos->token-type pos)))]
-                                (if-not comps
-                                  hints
-                                  (comps token)))))
+          :triggers #{:hints+}
+          :exclusive [:lt.plugins.auto-complete/textual-hints]
+          :reaction (fn [this hints token]
+                      (let [idx (beh/->index this)
+                            {:keys [tag key pos command-at-pos arg-pos]} (idx->entry-info idx (:entries @this))
+                            comps (when (or (not arg-pos)
+                                            (< arg-pos 1))
+                                    (completions (pos->token-type pos)))]
+                        (if-not comps
+                          hints
+                          (comps token)))))
 
 (behavior ::show-info-on-move
-                  :triggers #{:move}
-                  :debounce 200
-                  :reaction (fn [this]
-                              (let [idx (beh/->index this)
-                                    {:keys [command-at-pos arg-pos first-command]} (idx->entry-info idx (:entries @this))
-                                    command (get (:commands @cmd/manager) (or command-at-pos first-command))]
-                                (if command
-                                  (object/raise helper :show! this command arg-pos)
-                                  (object/raise helper :clear! this)))))
+          :triggers #{:move}
+          :debounce 200
+          :reaction (fn [this]
+                      (let [idx (beh/->index this)
+                            {:keys [command-at-pos arg-pos first-command]} (idx->entry-info idx (:entries @this))
+                            command (get (:commands @cmd/manager) (or command-at-pos first-command))]
+                        (if command
+                          (object/raise helper :show! this command arg-pos)
+                          (object/raise helper :clear! this)))))
 
 (behavior ::keymap-hint-pattern
-                  :triggers #{:object.instant}
-                  :reaction (fn [this]
-                              (object/merge! this {:hint-pattern #"[\w\-\>\:\*\$\?\<\!\+\.\"\/]"})))
+          :triggers #{:object.instant}
+          :reaction (fn [this]
+                      (object/merge! this {:hint-pattern #"[\w\-\>\:\*\$\?\<\!\+\.\"\/]"})))
 
 (behavior ::on-changed
-                  :triggers #{:change :create}
-                  :debounce 50
-                  :reaction (fn [this]
-                              (beh/flat-parser this (editor/->val this))))
+          :triggers #{:change :create}
+          :debounce 50
+          :reaction (fn [this]
+                      (beh/flat-parser this (editor/->val this))))
 
 (behavior ::parsed
-                  :triggers #{:parsed}
-                  :reaction (fn [this results]
-                              (object/merge! this (js->clj results :keywordize-keys true))
-                              (object/raise this :move)))
+          :triggers #{:parsed}
+          :reaction (fn [this results]
+                      (object/merge! this (js->clj results :keywordize-keys true))
+                      (object/raise this :move)))
 
 (defn inline [this ed opts]
   (object/create :lt.objs.eval/inline-result {:ed ed
@@ -134,22 +134,22 @@
 
 
 (behavior ::helper.show!
-                  :desc "Keymap.helper: show"
-                  :triggers #{:show!}
-                  :reaction (fn [this ed keym param-idx]
-                              (let [loc (editor/->cursor ed)]
-                                (when (or (not= keym (:key @this))
-                                          (not= ed (:ed @this)))
-                                  ;;clear old
-                                  (when (:mark @this)
-                                    (editor/-line-class ed (:line @this) :text "behavior-helper-line")
-                                    (object/raise (:mark @this) :clear!))
-                                  (editor/+line-class ed (:line loc) :text "behavior-helper-line")
-                                  (object/merge! this {:content (->helper keym)})
-                                  (object/merge! this {:mark (inline this ed (assoc loc :prev-line (:line @this)))
-                                                       :key keym
-                                                       :line (:line loc)
-                                                       :ed ed}))
-                                (set-param this param-idx))))
+          :desc "Keymap.helper: show"
+          :triggers #{:show!}
+          :reaction (fn [this ed keym param-idx]
+                      (let [loc (editor/->cursor ed)]
+                        (when (or (not= keym (:key @this))
+                                  (not= ed (:ed @this)))
+                          ;;clear old
+                          (when (:mark @this)
+                            (editor/-line-class ed (:line @this) :text "behavior-helper-line")
+                            (object/raise (:mark @this) :clear!))
+                          (editor/+line-class ed (:line loc) :text "behavior-helper-line")
+                          (object/merge! this {:content (->helper keym)})
+                          (object/merge! this {:mark (inline this ed (assoc loc :prev-line (:line @this)))
+                                               :key keym
+                                               :line (:line loc)
+                                               :ed ed}))
+                        (set-param this param-idx))))
 
 (def helper (object/create ::helper))
