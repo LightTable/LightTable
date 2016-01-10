@@ -16,15 +16,15 @@
                 (deploy/check-version true)))
 
 (behavior ::on-show-refresh-eds
-                  :triggers #{:show}
-                  :reaction (fn [this]
-                              (object/raise (:ed @this) :show)
-                              ))
+          :triggers #{:show}
+          :reaction (fn [this]
+                      (object/raise (:ed @this) :show)
+                      ))
 
 (behavior ::destroy-on-close
-                  :triggers #{:close}
-                  :reaction (fn [this]
-                              (object/destroy! this)))
+          :triggers #{:close}
+          :reaction (fn [this]
+                      (object/destroy! this)))
 
 (object/object* ::version-pane
                 :tags #{:version}

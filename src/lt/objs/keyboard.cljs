@@ -156,8 +156,8 @@
           (.stopPropagation ev))))
 
 (behavior ::chord-timeout
-                  :triggers #{:object.instant}
-                  :desc "App: Set the timeout for chorded shortcuts"
-                  :type :user
-                  :reaction (fn [this timeout]
-                              (set! chord-timeout timeout)))
+          :triggers #{:object.instant}
+          :desc "App: Set the timeout for chorded shortcuts"
+          :type :user
+          :reaction (fn [this timeout]
+                      (set! chord-timeout timeout)))
