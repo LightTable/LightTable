@@ -163,18 +163,10 @@
   (object/update! clients [:connectors] assoc (:name c) c))
 
 (cmd/command {:command :show-connect
-              :desc "Connect: Show connect bar"
+              :desc "Connect: Toggle connect bar"
               :exec (fn []
                       (object/raise sidebar/rightbar :toggle clients)
-                      (object/raise clients :focus!)
-                      )})
-
-
-(cmd/command {:command :hide-connect
-              :desc "Connect: hide connect bar"
-              :exec (fn []
-                      (object/raise sidebar/rightbar :close!)
-                      )})
+                      (object/raise clients :focus!))})
 
 (cmd/command {:command :show-add-connection
               :desc "Connect: Add Connection"
