@@ -141,11 +141,12 @@
                         (if (files/dir? path)
                           (notifos/set-msg! (str "Cannot open a directory: " path))
                           (notifos/set-msg! (str "No such file: " path)))
-                        (if-let [ed (first (pool/by-path path))]
-                          (if (:open-linked-doc @obj)
-                            (open-linked-path ed obj path {})
-                            (tabs/active! ed))
-                          (open-path obj path)))))
+                        (let [resolved-path (files/resolve files/cwd path)]
+                          (if-let [ed (first (pool/by-path resolved-path))]
+                            (if (:open-linked-doc @obj)
+                              (open-linked-path ed obj resolved-path {})
+                              (tabs/active! ed))
+                            (open-path obj resolved-path))))))
 
 (behavior ::track-open-files
           :triggers #{:open}
