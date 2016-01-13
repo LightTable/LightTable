@@ -73,7 +73,7 @@
 
  [:searcher.search "enter" :searcher.search]
 
- [:sidebar.clients "esc" :hide-connect]
+ [:sidebar.clients "esc" :show-connect]
 
  [:sidebar.doc.search.input "esc" :docs.search.hide]
  [:sidebar.doc.search.input "enter" :docs.search.exec]
