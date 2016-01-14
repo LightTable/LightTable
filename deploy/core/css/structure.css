@@ -349,9 +349,6 @@ body { -webkit-user-select: none; }
 .gitmark { height:1em; background:#5fa; display:inline-block; width:5px; }
 .gitmodified { height:1em; background:#b5f; display:inline-block; width:5px; }
 
-.jshintmarks { width:5px; }
-.jshinterror { height:1em; display:inline-block; width:5px; }
-
 .inline-doc { line-height:1.1em; margin-left:-10px; padding:5px 20px; border-radius:0px; }
 .inline-doc h1 span { font-size:10pt; }
 .inline-doc h1 { font-size:100%; margin:0; }
