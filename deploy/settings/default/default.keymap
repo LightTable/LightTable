@@ -9,7 +9,7 @@
  [:app "pmeta-o" :navigate-workspace-transient]
  [:app "pmeta-shift-=" :window.zoom-in]
  [:app "pmeta-=" :window.zoom-in]
- [:app "pmeta-0" :window.zoom-reset] 
+ [:app "pmeta-0" :window.zoom-reset]
  [:app "pmeta-r" :refresh-connected-browser]
  [:app "f11" :window.fullscreen]
 
