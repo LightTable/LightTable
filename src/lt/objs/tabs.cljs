@@ -109,6 +109,10 @@
     (->name e)]
    (when (object/raise-reduce e :close-button+ false)
      (close-tab label))]
+  ;; Disable middle-click pasting in linux
+  :mouseup (fn [ev]
+             (when (or (= 1 (.-button ev)) (.-metaKey ev))
+               (dom/prevent ev)))
   :click (fn [ev]
            (if (or (= 1 (.-button ev)) (.-metaKey ev))
              (object/raise label :close)
