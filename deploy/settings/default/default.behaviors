@@ -265,6 +265,7 @@
  [:files :lt.objs.files/open-failed]
  [:files :lt.objs.opener/save-failed]
  [:files :lt.objs.files/file-types [{:exts [:apl :dyalog], :mime "text/apl", :tags [:editor.apl], :name "APL"}
+                                    {:exts [:aspx] :mime "application/x-aspx" :tags [:editor.aspx] :name "ASPX"}
                                     ;; No extension since .conf is an overloaded extension
                                     {:exts [], :mime "text/x-asterisk", :tags [:editor.asterisk], :name "Asterisk Dialplan"}
                                     {:exts [:c], :mime "text/x-c", :tags [:editor.c], :name "C"}
@@ -283,6 +284,8 @@
                                     {:exts [:ecl], :mime "text/x-ecl", :tags [:editor.ecl], :name "ECL"}
                                     {:exts [:edn], :mime "text/x-clojure", :tags [:editor.clj :editor.edn], :name "EDN"}
                                     {:exts [:e], :mime "text/x-eiffel", :tags [:editor.eiffel], :name "Eiffel"}
+                                    {:exts [:ejs] :mime "application/x-ejs" :tags [:editor.ejs] :name "EJS"}
+                                    {:exts [:erb] :mime "application/x-erb" :tags [:editor.erb] :name "ERB"}
                                     {:exts [:erl], :mime "text/x-erlang", :tags [:editor.erlang], :name "Erlang"}
                                     {:exts [:fs :fsi :fsx], :mime "text/x-fsharp", :tags [:editor.fsharp], :name "F#"}
                                     {:exts [:f :f90 :for :f77], :mime "text/x-fortran", :tags [:editor.fortran], :name "Fortran"}
@@ -301,6 +304,7 @@
                                     {:exts [:jade], :mime "text/x-jade", :tags [:editor.jade], :name "Jade"}
                                     {:exts [:java], :mime "text/x-java", :tags [:editor.java], :name "Java"}
                                     {:exts [:jl], :mime "text/x-julia", :tags [:editor.julia], :name "Julia"}
+                                    {:exts [:jsp] :mime "application/x-jsp" :tags [:editor.jsp] :name "JSP"}
                                     {:exts [:kt], :mime "text/x-kotlin", :tags [:editor.kotlin], :name "Kotlin"}
                                     {:exts [:latex :tex], :mime "text/x-stex", :tags [:editor.latex], :name "LaTeX"}
                                     {:exts [:less], :mime "text/x-less", :tags [:editor.less], :name "LESS"}
