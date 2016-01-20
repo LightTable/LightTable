@@ -760,10 +760,9 @@
                       (let [rulers (or rulers [{:lineStyle "dashed" :color "#aff" :column 80}])]
                         (set-options this {:rulers (clj->js rulers)}))))
 
-(behavior ::enable-brackets-autoclose
-          :triggers #{:object.instant :lt.object/tags-removed}
-          :desc "Editor: Enable brackets autoclose"
-          :exclusive [::disable-brackets-autoclose]
+(behavior ::autoclose-brackets
+          :triggers #{:object.instant}
+          :desc "Editor: Enable autoclose brackets"
           :type :user
           :params [{:label "map"
                     :example "{:pairs \"()[]{}''\\\"\\\"\" :explode \"[]{}\"}"}]
@@ -771,11 +770,3 @@
                       (if opts
                         (set-options this {:autoCloseBrackets (clj->js opts)})
                         (set-options this {:autoCloseBrackets true}))))
-
-(behavior ::disable-brackets-autoclose
-          :triggers #{:object.instant :lt.object/tags-removed}
-          :desc "Editor: Disable brackets autoclose"
-          :exclusive [::enable-brackets-autoclose]
-          :type :user
-          :reaction (fn [this]
-                      (set-options this {:autoCloseBrackets false})))
