@@ -35,7 +35,7 @@
  [:editor.keys.normal "pmeta-f" :find.fill-selection :find.show]
  [:editor.keys.normal "pmeta-g" :find.next]
  [:editor.keys.normal "tab" :auto-complete]
- [:editor.keys.normal "backspace" :editor.backspace-pair :editor.backspace-indent]
+ [:editor.keys.normal "backspace" :passthrough :editor.backspace-indent]
 
  [:filter-list.input "down" (:filter-list.input.move-selection 1)]
  [:filter-list.input "esc" (:filter-list.input.escape! :force)]
