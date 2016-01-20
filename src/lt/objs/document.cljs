@@ -36,36 +36,36 @@
 
 
 (behavior ::close-document-on-editor-close
-                  :for #{:editor}
-                  :triggers #{:closed}
-                  :reaction (fn [editor]
-                              (when-let [doc (:doc @editor)]
-                                (object/raise doc :close.force))))
+          :for #{:editor}
+          :triggers #{:closed}
+          :reaction (fn [editor]
+                      (when-let [doc (:doc @editor)]
+                        (object/raise doc :close.force))))
 
 (behavior ::close-linked-document
-                  :for #{:document}
-                  :triggers #{:close.force}
-                  :reaction (fn [this]
-                              (when-let [root (:root @this)]
-                                (.unlinkDoc (->cm-doc this) (->cm-doc root))
-                                (object/update! root [:sub-docs] disj this))
-                              (object/destroy! this)))
+          :for #{:document}
+          :triggers #{:close.force}
+          :reaction (fn [this]
+                      (when-let [root (:root @this)]
+                        (.unlinkDoc (->cm-doc this) (->cm-doc root))
+                        (object/update! root [:sub-docs] disj this))
+                      (object/destroy! this)))
 
 (behavior ::try-close-root-document
-                  :for #{:document}
-                  :triggers #{:try-close}
-                  :reaction (fn [this]
-                              (when (= #{::this} (:sub-docs @this))
-                                (object/raise this :close.force))))
+          :for #{:document}
+          :triggers #{:try-close}
+          :reaction (fn [this]
+                      (when (= #{::this} (:sub-docs @this))
+                        (object/raise this :close.force))))
 
 (behavior ::close-root-document
-                  :for #{:document}
-                  :triggers #{:close.force}
-                  :reaction (fn [this]
-                              (if (and (= #{::this} (:sub-docs @this))
-                                       (not (object/has-tag? this :document.linked)))
-                                (object/destroy! this)
-                                (object/update! this [:sub-docs] disj ::this))))
+          :for #{:document}
+          :triggers #{:close.force}
+          :reaction (fn [this]
+                      (if (and (= #{::this} (:sub-docs @this))
+                               (not (object/has-tag? this :document.linked)))
+                        (object/destroy! this)
+                        (object/update! this [:sub-docs] disj ::this))))
 
 (def default-linked-doc-options {})
 
@@ -166,7 +166,7 @@
                          (cb d))))))
 
 (defn check-mtime [prev updated]
-  (if prev
+  (if (and prev updated)
     (= (.getTime (.-mtime prev)) (.getTime (.-mtime updated)))
     true))
 

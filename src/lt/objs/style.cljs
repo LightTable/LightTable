@@ -48,32 +48,32 @@
                            :theme "default"))
 
 (behavior ::style-on-init
-                  :triggers #{:init}
-                  :reaction (fn [app]
-                              (dom/append (dom/$ :head) (:content @styles))
-                              ))
+          :triggers #{:init}
+          :reaction (fn [app]
+                      (dom/append (dom/$ :head) (:content @styles))
+                      ))
 
 (behavior ::font-settings
-                  :desc "Editor: Font settings"
-                  :params [{:label "Font family"
-                            :type :string}
-                           {:label "Size (pt)"
-                            :type :number}
-                           {:label "Line height (em)"
-                            :type :number}]
-                  :type :user
-                  :exclusive true
-                  :triggers #{:object.instant}
-                  :reaction (fn [this family size line-height]
-                              (let [final {:font-family family}
-                                    final (if size
-                                            (assoc final :font-size size)
-                                            final)
-                                    final (if (and line-height
-                                                   (> line-height 0))
-                                            (assoc final :line-height line-height)
-                                            final)]
-                                (object/merge! styles {:font-settings final}))))
+          :desc "App: Font settings"
+          :params [{:label "Font family"
+                    :type :string}
+                   {:label "Size (pt)"
+                    :type :number}
+                   {:label "Line height (em)"
+                    :type :number}]
+          :type :user
+          :exclusive true
+          :triggers #{:object.instant}
+          :reaction (fn [this family size line-height]
+                      (let [final {:font-family family}
+                            final (if size
+                                    (assoc final :font-size size)
+                                    final)
+                            final (if (and line-height
+                                           (> line-height 0))
+                                    (assoc final :line-height line-height)
+                                    final)]
+                        (object/merge! styles {:font-settings final}))))
 
 ;;**********************************************************
 ;; Skins
@@ -101,22 +101,22 @@
               #js {:text (pr-str skin) :completion (pr-str skin)})))
 
 (behavior ::set-skin
-                  :triggers #{:object.instant}
-                  :desc "Style: Set Light Table skin"
-                  :params [{:label "skin"
-                            :type :list
-                            :items get-skins}]
-                  :type :user
-                  :reaction (fn [this skin]
-                              (inject-skin skin)))
+          :triggers #{:object.instant}
+          :desc "Style: Set Light Table skin"
+          :params [{:label "skin"
+                    :type :list
+                    :items get-skins}]
+          :type :user
+          :reaction (fn [this skin]
+                      (inject-skin skin)))
 
 (behavior ::provide-skin
-                  :desc "Style: Provide skin"
-                  :triggers #{:skins+}
-                  :type :user
-                  :params [{:label "name"} {:label "path"}]
-                  :reaction (fn [this skins name path]
-                              (assoc skins name (plugins/adjust-path path))))
+          :desc "Style: Provide skin"
+          :triggers #{:skins+}
+          :type :user
+          :params [{:label "name"} {:label "path"}]
+          :reaction (fn [this skins name path]
+                      (assoc skins name (plugins/adjust-path path))))
 
 ;;**********************************************************
 ;; themes
@@ -144,12 +144,12 @@
 
 
 (behavior ::provide-theme
-                  :desc "Style: Provide editor theme"
-                  :triggers #{:themes+}
-                  :type :user
-                  :params [{:label "name"} {:label "path"}]
-                  :reaction (fn [this themes name path]
-                              (assoc themes name (plugins/adjust-path path))))
+          :desc "Style: Provide editor theme"
+          :triggers #{:themes+}
+          :type :user
+          :params [{:label "name"} {:label "path"}]
+          :reaction (fn [this themes name path]
+                      (assoc themes name (plugins/adjust-path path))))
 
 (behavior ::remove-theme
           :triggers #{:deactivated :destroy}
@@ -160,13 +160,13 @@
 
 
 (behavior ::set-theme
-                  :triggers #{:object.instant :show}
-                  :desc "Style: Set the editor theme"
-                  :params [{:label "theme"
-                            :type :list
-                            :items get-themes}]
-                  :type :user
-                  :exclusive true
-                  :reaction (fn [this sel]
-                              (inject-theme sel)
-                              (editor/set-options this {:theme sel})))
+          :triggers #{:object.instant :show}
+          :desc "Style: Set the editor theme"
+          :params [{:label "theme"
+                    :type :list
+                    :items get-themes}]
+          :type :user
+          :exclusive true
+          :reaction (fn [this sel]
+                      (inject-theme sel)
+                      (editor/set-options this {:theme sel})))

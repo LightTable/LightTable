@@ -436,45 +436,45 @@
     (rem-behavior! cur b)))
 
 (behavior ::add-tag
-           :desc "App: Add tag to object"
-           :params [{:label "tag"}]
-           :type :user
-           :triggers #{:object.instant}
-           :reaction (fn [this t]
-                       (when t
-                         (add-tags this (if (coll? t)
-                                          t
-                                          [t])))))
+          :desc "App: Add tag to object"
+          :params [{:label "tag"}]
+          :type :user
+          :triggers #{:object.instant}
+          :reaction (fn [this t]
+                      (when t
+                        (add-tags this (if (coll? t)
+                                         t
+                                         [t])))))
 
 (behavior ::remove-tag
-           :desc "App: Remove tag from object"
-           :params [{:label "tag"}]
-           :type :user
-           :triggers #{:object.instant ::tags-added}
-           :reaction (fn [this t]
-                       (when (has-tag? this t)
-                         (remove-tags this (if (coll? t)
-                                             t
-                                             [t])))))
+          :desc "App: Remove tag from object"
+          :params [{:label "tag"}]
+          :type :user
+          :triggers #{:object.instant ::tags-added}
+          :reaction (fn [this t]
+                      (when (has-tag? this t)
+                        (remove-tags this (if (coll? t)
+                                            t
+                                            [t])))))
 
 (behavior ::shadow-tag
-           :desc "App: Shadow a tag on an object"
-           :params [{:label "tag to shadow"}
-                    {:label "tag to add"}]
-           :type :user
-           :triggers #{:object.instant ::tags-added ::tags-removed}
-           :reaction (fn [this to-shadow to-add]
-                       (let [has-shadow? (has-tag? this to-shadow)
-                             has-add? (has-tag? this to-add)]
-                         (cond
-                          (and has-shadow? (not has-add?)) (add-tags this [to-add])
-                          (and (not has-shadow?) has-add?) (remove-tags this [to-add])
-                          :else nil))))
+          :desc "App: Shadow a tag on an object"
+          :params [{:label "tag to shadow"}
+                   {:label "tag to add"}]
+          :type :user
+          :triggers #{:object.instant ::tags-added ::tags-removed}
+          :reaction (fn [this to-shadow to-add]
+                      (let [has-shadow? (has-tag? this to-shadow)
+                            has-add? (has-tag? this to-add)]
+                        (cond
+                         (and has-shadow? (not has-add?)) (add-tags this [to-add])
+                         (and (not has-shadow?) has-add?) (remove-tags this [to-add])
+                         :else nil))))
 
 (behavior ::report-time
-           :triggers #{:object.behavior.time}
-           :reaction (fn [this beh time trigger]
-                       (when js/lt.objs.console
-                         (js/lt.objs.console.log (str beh " triggered by "
-                                                      trigger " took "
-                                                      time "ms")))))
+          :triggers #{:object.behavior.time}
+          :reaction (fn [this beh time trigger]
+                      (when js/lt.objs.console
+                        (js/lt.objs.console.log (str beh " triggered by "
+                                                     trigger " took "
+                                                     time "ms")))))

@@ -35,7 +35,9 @@ For more tags see the ones used by default in
 LightTable for when a context tag is added with
 [ctx/in!](https://github.com/LightTable/LightTable/search?utf8=%E2%9C%93&q=%22ctx%2Fin%21%22&type=Code).
 
-## Keys
+## Keybindings
+
+### Keys
 
 LightTable uses [mousetrap](https://github.com/ccampbell/mousetrap) for keyboard
 handling. Mousetrap recognizes the following modifier keys: `shift, ctrl,
@@ -45,7 +47,19 @@ command/cmd in OSX and ctrl anywhere else. To specify other special keys like
 LightTable also supports key combinations/sequences when keys are separated by a
 space. This allows plugins like Emacs to support key chords like 'ctrl-x u'.
 
-## Commands In Keybindings
+### Keybindings and tags with multiple extensions
+
+To override a keybinding that has multiple extensions e.g.
+`:editor.keys.normal`, you must specify a tag that has the same prefix and than
+an additional extension e.g. `:editor.keys.normal.clojure`. As an example, let's
+override the backspace key which is tagged with `:editor.keys.normal` but only
+in a clojure file. In user.behaviors, create a tag when in clojure files which
+will override `editor.keys.normal` with `[:editor.cljs :lt.object/add-tag :editor.keys.normal.clojure]`.
+Then in user.keymap, use the tag with
+`[:editor.keys.normal.clojure "backspace" :add-browser-tab]`. Backspacing in
+a clojure tab should now add a browser tab - not that most useful thing ;).
+
+### Commands In Keybindings
 
 Keybindings can run multiple commands by appending them to the end e.g. `[:TAG
 "KEYS" :COMMAND1 :COMMAND2]`. While commands are started serially, there isn't a

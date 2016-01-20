@@ -29,9 +29,18 @@
   [e]
   (.-parentElement (.getScrollerElement (->cm-ed e))))
 
-(defn set-val [e v]
+(defn set-val
+  "Set content value of editor's CodeMirror object. Cursor position is lost"
+  [e v]
   (. (->cm-ed e) (setValue (or v "")))
   e)
+
+(defn set-val-and-keep-cursor
+  "Same as set-val but current cursor position is kept"
+  [e v]
+  (let [cursor (.getCursor (->cm-ed e))]
+    (set-val e v)
+    (.setCursor (->cm-ed e) cursor)))
 
 (defn set-options
   "Given a map of options, set each pair as an option on editor's

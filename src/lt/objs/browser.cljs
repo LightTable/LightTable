@@ -136,40 +136,40 @@
                       (object/raise (:devtools-client @this) :reconnect!)))
 
 (behavior ::destroy-on-close
-                  :triggers #{:close}
-                  :reaction (fn [this]
-                              (object/raise this :inactive)
-                              (object/destroy! (:devtools-client @this))
-                              (object/destroy! this)))
+          :triggers #{:close}
+          :reaction (fn [this]
+                      (object/raise this :inactive)
+                      (object/destroy! (:devtools-client @this))
+                      (object/destroy! this)))
 
 (behavior ::rem-client
-                  :triggers #{:destroy}
-                  :reaction (fn [this]
-                              (when (= (ctx/->obj :global.browser) this)
-                                (ctx/out! :global.browser))
-                              (when-let [b (first (remove #{this} (object/by-tag :browser)))]
-                                (ctx/in! :global.browser b))
-                              (clients/rem! (:client @this))))
+          :triggers #{:destroy}
+          :reaction (fn [this]
+                      (when (= (ctx/->obj :global.browser) this)
+                        (ctx/out! :global.browser))
+                      (when-let [b (first (remove #{this} (object/by-tag :browser)))]
+                        (ctx/in! :global.browser b))
+                      (clients/rem! (:client @this))))
 
 (behavior ::navigate!
-                  :triggers #{:navigate!}
-                  :reaction (fn [this n]
-                              (let [bar (dom/$ :input (object/->content this))
-                                    url (check-http (or n (dom/val bar)))]
-                                (notifos/working)
-                                (object/merge! this {:url url :loading-counter (inc (:loading-counter @this 0))}))))
+          :triggers #{:navigate!}
+          :reaction (fn [this n]
+                      (let [bar (dom/$ :input (object/->content this))
+                            url (check-http (or n (dom/val bar)))]
+                        (notifos/working)
+                        (object/merge! this {:url url :loading-counter (inc (:loading-counter @this 0))}))))
 
 (behavior ::url-focus!
-                  :triggers #{:url.focus!}
-                  :reaction (fn [this]
-                              (let [url-input (dom/$ :input (object/->content this))]
-                                (dom/focus url-input)
-                                (.select url-input))))
+          :triggers #{:url.focus!}
+          :reaction (fn [this]
+                      (let [url-input (dom/$ :input (object/->content this))]
+                        (dom/focus url-input)
+                        (.select url-input))))
 
 (behavior ::focus!
-                  :triggers #{:focus!}
-                  :reaction (fn [this]
-                              (dom/focus (dom/$ :webview (object/->content this)))))
+          :triggers #{:focus!}
+          :reaction (fn [this]
+                      (dom/focus (dom/$ :webview (object/->content this)))))
 
 (behavior ::back!
           :triggers #{:back!}
@@ -199,34 +199,27 @@
                       (dom/stop-propagation e)))
 
 (behavior ::menu+
-                  :triggers #{:menu+}
-                  :reaction (fn [this menu]
-                              (conj menu
-                                    {:label "forward"
-                                     :order 0
-                                     :click (fn [e]
-                                              (cmd/exec! :browser.forward))}
-                                    {:label "back"
-                                     :order 1
-                                     :click (fn [e]
-                                              (cmd/exec! :browser.back))}
-                                    {:type "separator"
-                                     :order 2}
-                                    {:label "copy"
-                                     :order 3
-                                     :click (fn [e]
-                                              (.copy (to-frame this)))}
-                                    {:label "paste"
-                                     :order 4
-                                     :click (fn [e]
-                                              (.paste (to-frame this))
-                                              )}
-                                    )
-
-
-
-
-                       ))
+          :triggers #{:menu+}
+          :reaction (fn [this menu]
+                      (conj menu
+                            {:label "forward"
+                             :order 0
+                             :click (fn [e]
+                                      (cmd/exec! :browser.forward))}
+                            {:label "back"
+                             :order 1
+                             :click (fn [e]
+                                      (cmd/exec! :browser.back))}
+                            {:type "separator"
+                             :order 2}
+                            {:label "copy"
+                             :order 3
+                             :click (fn [e]
+                                      (.copy (to-frame this)))}
+                            {:label "paste"
+                             :order 4
+                             :click (fn [e]
+                                      (.paste (to-frame this)))})))
 
 
 (behavior ::init!
@@ -257,104 +250,102 @@
                       (dom/val (dom/$ :input (object/->content this)) (.-href info))))
 
 (behavior ::set-client-name
-                  :triggers #{:navigate}
-                  :reaction (fn [this loc]
-                              (let [title (.getTitle (to-frame this))
-                                    title (if-not (empty? title)
-                                            title
-                                            "browser")]
-                                (object/merge! this {:name title})
-                                (tabs/refresh! this)
-                                (dotimes [x (:loading-counter @this)]
-                                  (notifos/done-working))
-                                (object/merge! (:client @this) {:name loc}))))
+          :triggers #{:navigate}
+          :reaction (fn [this loc]
+                      (let [title (.getTitle (to-frame this))
+                            title (if-not (empty? title)
+                                    title
+                                    "browser")]
+                        (object/merge! this {:name title})
+                        (tabs/refresh! this)
+                        (dotimes [x (:loading-counter @this)]
+                          (notifos/done-working))
+                        (object/merge! (:client @this) {:name loc}))))
 
 (behavior ::update-devtools-client-url
-                  :triggers #{:navigate}
-                  :reaction (fn [this loc]
-                                (object/merge! (:devtools-client @this) {:url loc})))
+          :triggers #{:navigate}
+          :reaction (fn [this loc]
+                      (object/merge! (:devtools-client @this) {:url loc})))
 
 (behavior ::set-active
-                  :triggers #{:active :show}
-                  :reaction (fn [this]
-                              (ctx/in! :global.browser this)))
+          :triggers #{:active :show}
+          :reaction (fn [this]
+                      (ctx/in! :global.browser this)))
 
 (behavior ::active-context
-                  :triggers #{:active :show}
-                  :reaction (fn [this]
-                              (ctx/in! :browser this)))
+          :triggers #{:active :show}
+          :reaction (fn [this]
+                      (ctx/in! :browser this)))
 
 (behavior ::focus-on-show
-                  :triggers #{:show}
-                  :reaction (fn [this]
-                              (object/raise this :focus!)))
+          :triggers #{:show}
+          :reaction (fn [this]
+                      (object/raise this :focus!)))
 
 (behavior ::inactive-context
-                  :triggers #{:inactive}
-                  :reaction (fn [this]
-                              (ctx/out! :browser)))
+          :triggers #{:inactive}
+          :reaction (fn [this]
+                      (ctx/out! :browser)))
 
 (behavior ::handle-send!
-                  :triggers #{:send!}
-                  :reaction (fn [this msg]
-                              (object/raise this (keyword (str (:command msg) "!")) msg)
-                              ))
+          :triggers #{:send!}
+          :reaction (fn [this msg]
+                      (object/raise this (keyword (str (:command msg) "!")) msg)))
 
 (behavior ::handle-refresh!
-                  :triggers #{:client.refresh!}
-                  :reaction (fn [this]
-                              (object/raise (:frame @this) :refresh!)))
+          :triggers #{:client.refresh!}
+          :reaction (fn [this]
+                      (object/raise (:frame @this) :refresh!)))
 
 (behavior ::handle-close!
-                  :triggers #{:client.close!}
-                  :reaction (fn [this]
-                              (object/raise (:frame @this) :close)
-                              (clients/rem! this)))
+          :triggers #{:client.close!}
+          :reaction (fn [this]
+                      (object/raise (:frame @this) :close)
+                      (clients/rem! this)))
 
 (behavior ::change-live
-                  :triggers #{:editor.eval.js.change-live!}
-                  :reaction (fn [this msg]
-                              (when-let [ed (clients/cb->obj (:cb msg))]
-                                (when (-> msg :data :path)
-                                  (devtools/changelive! ed (-> msg :data :path) (js/lt.plugins.watches.watched-range ed nil nil js/lt.objs.langs.js.src->watch)
-                                                        (fn [res]
-                                                          ;;TODO: check for exception, otherwise, assume success
-                                                          (object/raise ed :editor.eval.js.change-live.success)
-                                                          )
-                                                        identity)))))
+          :triggers #{:editor.eval.js.change-live!}
+          :reaction (fn [this msg]
+                      (when-let [ed (clients/cb->obj (:cb msg))]
+                        (when (-> msg :data :path)
+                          (devtools/changelive! ed (-> msg :data :path) (js/lt.plugins.watches.watched-range ed nil nil js/lt.objs.langs.js.src->watch)
+                                                (fn [res]
+                                                  ;;TODO: check for exception, otherwise, assume success
+                                                  (object/raise ed :editor.eval.js.change-live.success)
+                                                  )
+                                                identity)))))
 
 (behavior ::js-eval-file
-                  :triggers #{:editor.eval.js.file!}
-                  :reaction (fn [this msg cb]
-                              (when-let [ed (clients/cb->obj (:cb msg))]
-                                (let [data (:data msg)
-                                      data (assoc data :code (str (:code data) "\n\n//# sourceURL=" (:path data)))]
-                                  (devtools/eval-in-webview-client (client->devtools this) data (fn [res]
-                                                                                                   (when cb (cb))
-                                                                                                   ;;TODO: check for exception, otherwise, assume success
-                                                                                                   (object/raise ed :editor.eval.js.file.success)))))))
+          :triggers #{:editor.eval.js.file!}
+          :reaction (fn [this msg cb]
+                      (when-let [ed (clients/cb->obj (:cb msg))]
+                        (let [data (:data msg)
+                              data (assoc data :code (str (:code data) "\n\n//# sourceURL=" (:path data)))]
+                          (devtools/eval-in-webview-client (client->devtools this) data (fn [res]
+                                                                                          (when cb (cb))
+                                                                                          ;;TODO: check for exception, otherwise, assume success
+                                                                                          (object/raise ed :editor.eval.js.file.success)))))))
 
 (behavior ::html-eval
-                  :triggers #{:editor.eval.html!}
-                  :reaction (fn [this msg]
-                              (object/raise this :client.refresh!)))
+          :triggers #{:editor.eval.html!}
+          :reaction (fn [this msg]
+                      (object/raise this :client.refresh!)))
 
 (behavior ::css-eval
-                  :triggers #{:editor.eval.css!}
-                  :reaction (fn [this msg]
-                              (let [info (:data msg)
-                                    frame (to-frame (:frame @this))]
-                                (.send frame "editor.eval.css" #js {:name (:name info)
-                                                                    :code (:code info)})
-                                )))
+          :triggers #{:editor.eval.css!}
+          :reaction (fn [this msg]
+                      (let [info (:data msg)
+                            frame (to-frame (:frame @this))]
+                        (.send frame "editor.eval.css" #js {:name (:name info)
+                                                            :code (:code info)}))))
 
 (behavior ::cljs-exec
-                  :triggers #{:editor.eval.cljs.exec!}
-                  :reaction (fn [this msg]
-                              (let [frame (to-frame (:frame @this))
-                                    info (:data msg)]
-                                (.send frame "editor.eval.cljs.exec" #js {:results (clj->js (:results info))
-                                                                          :client (:cb msg)}))))
+          :triggers #{:editor.eval.cljs.exec!}
+          :reaction (fn [this msg]
+                      (let [frame (to-frame (:frame @this))
+                            info (:data msg)]
+                        (.send frame "editor.eval.cljs.exec" #js {:results (clj->js (:results info))
+                                                                  :client (:cb msg)}))))
 
 (defn eval-js-form [this msg]
   (let [data (assoc (:data msg) :code (eval/append-source-file (-> msg :data :code) (-> msg :data :path)))
@@ -377,16 +368,16 @@
 
 
 (behavior ::js-eval
-                  :triggers #{:editor.eval.js!}
-                  :reaction (fn [this msg]
-                              (let [devtools (client->devtools this)]
-                                (if (must-eval-file? devtools msg)
-                                  (when-let [ed (object/by-id (:cb msg))]
-                                    (let [data (:data msg)
-                                          data (assoc data :code (str (editor/->val ed) "\n\n//# sourceURL=" (-> data :path)))]
-                                      (devtools/eval-in-webview-client (client->devtools this) data (fn [res]
-                                                                                                      (eval-js-form this msg)))))
-                                  (eval-js-form this msg)))))
+          :triggers #{:editor.eval.js!}
+          :reaction (fn [this msg]
+                      (let [devtools (client->devtools this)]
+                        (if (must-eval-file? devtools msg)
+                          (when-let [ed (object/by-id (:cb msg))]
+                            (let [data (:data msg)
+                                  data (assoc data :code (str (editor/->val ed) "\n\n//# sourceURL=" (-> data :path)))]
+                              (devtools/eval-in-webview-client (client->devtools this) data (fn [res]
+                                                                                              (eval-js-form this msg)))))
+                          (eval-js-form this msg)))))
 
 ;;*********************************************************
 ;; Commands

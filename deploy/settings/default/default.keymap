@@ -8,6 +8,8 @@
  [:app "ctrl-shift-d" :docs.search.show]
  [:app "pmeta-o" :navigate-workspace-transient]
  [:app "pmeta-shift-=" :window.zoom-in]
+ [:app "pmeta-=" :window.zoom-in]
+ [:app "pmeta-0" :window.zoom-reset]
  [:app "pmeta-r" :refresh-connected-browser]
  [:app "f11" :window.fullscreen]
 
@@ -73,7 +75,7 @@
 
  [:searcher.search "enter" :searcher.search]
 
- [:sidebar.clients "esc" :hide-connect]
+ [:sidebar.clients "esc" :show-connect]
 
  [:sidebar.doc.search.input "esc" :docs.search.hide]
  [:sidebar.doc.search.input "enter" :docs.search.exec]

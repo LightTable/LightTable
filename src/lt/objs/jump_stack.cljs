@@ -16,26 +16,26 @@
     (editor/center-cursor cur)))
 
 (behavior ::jump-stack.push
-           :triggers #{:jump-stack.push!}
-           :reaction (fn [jump-stack editor file pos]
-                       (let [old-file (:path (:info @editor))
-                             old-pos (editor/->cursor editor)]
-                         (if-not (files/exists? file)
-                           (notifos/set-msg! (str "Could not find file: " file) {:class "error"})
-                           (do (jump-to file pos)
-                             (object/update! jump-stack [:stack] conj [old-file old-pos]))))))
+          :triggers #{:jump-stack.push!}
+          :reaction (fn [jump-stack editor file pos]
+                      (let [old-file (:path (:info @editor))
+                            old-pos (editor/->cursor editor)]
+                        (if-not (files/exists? file)
+                          (notifos/set-msg! (str "Could not find file: " file) {:class "error"})
+                          (do (jump-to file pos)
+                            (object/update! jump-stack [:stack] conj [old-file old-pos]))))))
 
 (behavior ::jump-stack.pop
-           :triggers #{:jump-stack.pop!}
-           :reaction (fn [jump-stack file pos]
-                       (let [stack (:stack @jump-stack)]
-                         (if (empty? stack)
-                           (notifos/set-msg! "Nowhere left to jump" {:class "error"})
-                           (let [[file pos] (last stack)]
-                             (if-not (files/exists? file)
-                               (notifos/set-msg! (str "Could not find file: " file) {:class "error"})
-                               (do (jump-to file pos)
-                                 (object/update! jump-stack [:stack] pop))))))))
+          :triggers #{:jump-stack.pop!}
+          :reaction (fn [jump-stack file pos]
+                      (let [stack (:stack @jump-stack)]
+                        (if (empty? stack)
+                          (notifos/set-msg! "Nowhere left to jump" {:class "error"})
+                          (let [[file pos] (last stack)]
+                            (if-not (files/exists? file)
+                              (notifos/set-msg! (str "Could not find file: " file) {:class "error"})
+                              (do (jump-to file pos)
+                                (object/update! jump-stack [:stack] pop))))))))
 
 
 (def jump-stack (object/create (object/object* ::jump-stack

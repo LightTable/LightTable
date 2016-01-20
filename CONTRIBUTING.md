@@ -11,7 +11,7 @@ When filing a bug on GitHub, please help us help you by including the following:
 * Relevant configuration in your user.keymap and user.behaviors.
 * Error messages you see in your console. In your menu, select`View > Commands` and then search for and execute the `Console: Open the console in a tab` command. Go to the console tab and copy and paste its errors.
 
-Note: The issue tracker is mainly for bugs. Questions should be asked on the [Light Table Google group](https://groups.google.com/forum/#!forum/light-table-discussion).
+Note: The issue tracker is for LightTable bugs. Bugs for a specific language should go in its plugin repository e.g. [Clojure](https://github.com/LightTable/Clojure/issues), [JavaScript](https://github.com/LightTable/JavaScript/issues) and [Python](https://github.com/LightTable/Python/issues). Questions should be asked on the [Light Table Google group](https://groups.google.com/forum/#!forum/light-table-discussion).
 
 # Feature Requests
 

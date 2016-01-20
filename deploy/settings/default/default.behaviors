@@ -55,7 +55,6 @@
  [:app :lt.objs.keyboard/chord-timeout 1000]
  [:app :lt.objs.files/file.ignore-pattern "(^\\..*)|\\.class$|target/|svn|cvs|\\.git|\\.pyc|~|\\.swp|\\.jar|.DS_Store|\\.nrepl-port"]
  [:app :lt.objs.style/provide-skin "dark" "core/css/skins/new-dark.css"]
- [:app :lt.objs.style/provide-skin "light" "core/css/skins/new-dark.css"]
  [:app :lt.objs.style/provide-skin "new-dark" "core/css/skins/new-dark.css"]
  [:app :lt.objs.style/provide-theme "3024-day" "core/css/themes/3024-day.css"]
  [:app :lt.objs.style/provide-theme "3024-night" "core/css/themes/3024-night.css"]
@@ -155,8 +154,6 @@
  [:docable :lt.plugins.doc/editor.doc.show!]
  [:docable :lt.plugins.doc/doc-menu+]
 
- [:docs :lt.objs.docs/on-close-destroy]
-
  [:document :lt.objs.document/try-close-root-document]
  [:document :lt.objs.document/close-root-document]
  [:document :lt.objs.document/set-linked-doc-options {}]
@@ -180,7 +177,6 @@
  [:editor :lt.objs.editor.pool/track-active]
  [:editor :lt.objs.editor.pool/ed-close]
  [:editor :lt.objs.editor/menu!]
- [:editor :lt.objs.editor.pool/warn-on-active]
  [:editor :lt.objs.editor/refresh!]
  [:editor :lt.objs.editor.pool/line-comment-options {}]
  [:editor :lt.plugins.auto-paren/repeat-pair]
@@ -270,6 +266,7 @@
  [:files :lt.objs.files/open-failed]
  [:files :lt.objs.opener/save-failed]
  [:files :lt.objs.files/file-types [{:exts [:apl :dyalog], :mime "text/apl", :tags [:editor.apl], :name "APL"}
+                                    {:exts [:aspx] :mime "application/x-aspx" :tags [:editor.aspx] :name "ASPX"}
                                     ;; No extension since .conf is an overloaded extension
                                     {:exts [], :mime "text/x-asterisk", :tags [:editor.asterisk], :name "Asterisk Dialplan"}
                                     {:exts [:c], :mime "text/x-c", :tags [:editor.c], :name "C"}
@@ -288,6 +285,8 @@
                                     {:exts [:ecl], :mime "text/x-ecl", :tags [:editor.ecl], :name "ECL"}
                                     {:exts [:edn], :mime "text/x-clojure", :tags [:editor.clj :editor.edn], :name "EDN"}
                                     {:exts [:e], :mime "text/x-eiffel", :tags [:editor.eiffel], :name "Eiffel"}
+                                    {:exts [:ejs] :mime "application/x-ejs" :tags [:editor.ejs] :name "EJS"}
+                                    {:exts [:erb] :mime "application/x-erb" :tags [:editor.erb] :name "ERB"}
                                     {:exts [:erl], :mime "text/x-erlang", :tags [:editor.erlang], :name "Erlang"}
                                     {:exts [:fs :fsi :fsx], :mime "text/x-fsharp", :tags [:editor.fsharp], :name "F#"}
                                     {:exts [:f :f90 :for :f77], :mime "text/x-fortran", :tags [:editor.fortran], :name "Fortran"}
@@ -306,6 +305,7 @@
                                     {:exts [:jade], :mime "text/x-jade", :tags [:editor.jade], :name "Jade"}
                                     {:exts [:java], :mime "text/x-java", :tags [:editor.java], :name "Java"}
                                     {:exts [:jl], :mime "text/x-julia", :tags [:editor.julia], :name "Julia"}
+                                    {:exts [:jsp] :mime "application/x-jsp" :tags [:editor.jsp] :name "JSP"}
                                     {:exts [:kt], :mime "text/x-kotlin", :tags [:editor.kotlin], :name "Kotlin"}
                                     {:exts [:latex :tex], :mime "text/x-stex", :tags [:editor.latex], :name "LaTeX"}
                                     {:exts [:less], :mime "text/x-less", :tags [:editor.less], :name "LESS"}

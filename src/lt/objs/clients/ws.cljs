@@ -71,6 +71,6 @@
       (console/error "Error starting socket.io server" e))))
 
 (behavior ::kill-on-closed
-                  :triggers #{:closed}
-                  :reaction (fn [app]
-                              (.close server)))
+          :triggers #{:closed}
+          :reaction (fn [app]
+                      (.close server)))
