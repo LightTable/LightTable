@@ -1,5 +1,36 @@
 #Changes
 
+## 0.8.1
+
+* CHANGED: [:app :lt.objs.settings/pair-keymap-diffs] behavior is being deprecated. Use [:editor :lt.objs.editor/autoclose-brackets] in your user.behaviors instead. lt.objs.editor/autoclose-brackets should fix autoclosing characters e.g. '[{" for international users.
+* CHANGED: Backspace key uses the same CodeMirror plugin that lt.objs.editor/autoclose-brackets does
+* CHANGED: lt.util.cljs/js->clj is being deprecated. Plugin authors can use the js->clj that comes with ClojureScript
+* CHANGED: Removed unused lt.objs.titlebar ns and lt.objs.titlebar/add-titlebar behavior
+* CHANGED: Removed unused styling in structure.css
+* CHANGED: Removed harbor and jshint node packages that belong to other LightTable plugins
+* CHANGED: Removed :hide-connect command which is the same as :show-connect
+* CHANGED: Removed light skin which was just a confusing pointer to dark skin
+* CHANGED: files/open-sync logs an error when trying to open a nonexistent file. Previously the error was ignored
+* CHANGED: Check for updates every hour instead of every 5 minutes
+* FIX: Git (vcs) friendly! Changing branches and doing rebases doesn't cause buggy dialogs. If a file is removed, the tab is closed. If a file has a local modification, the user decides whether to overwrite the current file or not
+* FIX: LightTable documentation supports navigation as it is now in a browser tab
+* FIX: Save and remove trailing whitespace behavior refreshes tab
+* FIX: Navigator no longer cuts off end of files i.e. can scroll horizontally
+* FIX: Case sensitive renaming of files e.g. readme -> README
+* FIX: Faster detection of binaries in build scripts
+* FIX: In linux, middle click to close tab doesn't paste clipboard contents
+* FIX: :open-path command resolves relative paths before opening them
+* FIX: Clearer description of font-settings behavior
+* FIX: Clear console error when github endpoints returns invalid JSON
+* FIX: All errors are consistently caught and logged to console
+* ADDED: Light Table builds without warnings on ClojureScript 1.7.x
+* ADDED: Add build target for generating cljsdeps.js (need for ClojureScript upgrade)
+* ADDED: Linux and Windows users have access keys on menus
+* ADDED: Linux and Windows users have additional menu items under File: Quit Light Table and About Light Table
+* ADDED: Added file type definitions for html templates: ERB, ASPX, EJS, JSP
+* ADDED: Command-0/Ctrl-0 to reset zoom and Command-=/Ctrl-= to zoom in
+* ADDED: Disply notification to user after installing/updating/uninstalling a plugin
+
 ## 0.8.0
 
 * CHANGED: We have switched to Electron from NW.js
