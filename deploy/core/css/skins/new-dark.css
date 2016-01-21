@@ -794,9 +794,6 @@ input {
   height: 20px;
   background: url("../../img/connectingloader.gif");
 }
-#titlebar .button {
-  color: #ccc;
-}
 .load-wrapper .img {
   background: url("../../img/loaderdark.gif");
 }

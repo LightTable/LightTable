@@ -297,8 +297,6 @@ input { color: $highlight-fg; background:$highlight-bg; }
 
 #right-bar .clients .load-wrapper .img { width:20px; height:20px; background:url("../../img/connectingloader.gif") }
 
-#titlebar .button { color:$fg; }
-
 .load-wrapper .img { background:url("../../img/loaderdark.gif"); }
 
 .timed { border-bottom:1px solid #fa5; }

@@ -11,18 +11,6 @@ button { cursor:default; border:none; outline:none; border-radius:0px; padding:2
 
 * { box-sizing: border-box; }
 
-.fullscreen #titlebar { display:none; }
-#titlebar { -webkit-app-region: drag; height:29px; }
-#titlebar p { text-align:center; padding-top:5px;  }
-#titlebar .window-buttons { position:absolute; left:8px; top:5px; }
-#titlebar .window-buttons .button { position:relative; display:inline-block; border-radius:10px !important; width:12px; height:12px; margin-right:8px; }
-#titlebar .window-buttons .button span { font-size:11px; }
-#titlebar .window-buttons .close span { position:absolute; top:-3px; left:3px; }
-#titlebar .window-buttons .minimize span { position:absolute; top:-5px; left:3px; font-size:14px }
-#titlebar .window-buttons .maximize span { position:absolute; top:-3px; left:2px; }
-#titlebar .fullscreen { position:absolute; top:5px; right:8px; }
-#titlebar .button { -webkit-app-region: no-drag; }
-
 body { -webkit-user-select: none; }
 
 #loader { position:absolute; top:0; left:0; right:0; bottom:0; width:100vw; height:100vh; display:table; text-align:center; box-sizing:border-box; vertical-align:middle;}
@@ -101,12 +89,6 @@ body { -webkit-user-select: none; }
 .console li > table td { vertical-align:top; }
 .console td.loc { padding-right:5px; }
 .console .log-val + .log-val:before { content: ", " }
-
-#multi .fullscreen { display:none; position:absolute; right:8px; top:8px; cursor:default; border-radius:3px; width:13px; height:13px; font-size:11pt; line-height:0.77em; padding-left:3px; box-sizing:border-box; }
-.windows.fullscreen #multi .fullscreen { display:block; }
-.linux.fullscreen #multi .fullscreen { display:block; }
-.windows.fullscreen #multi .tabset:last-child .list {width:calc(100% - 40px);}
-.linux.fullscreen #multi .tabset:last-child .list {width:calc(100% - 40px);}
 
 #intro { padding:50px; }
 #intro h1 { margin-bottom:50px; }
