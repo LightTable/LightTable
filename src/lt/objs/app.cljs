@@ -247,18 +247,30 @@
 (cmd/command {:command :window.zoom-in
               :desc "Window: Zoom in"
               :exec (fn []
-                      (.setZoomFactor frame (+ (.getZoomFactor frame) 0.2))
-                      )})
+                      (.setZoomFactor frame (+ (.getZoomFactor frame) 0.2)))})
 
 (cmd/command {:command :window.zoom-out
               :desc "Window: Zoom out"
               :exec (fn []
                       (when (> (.getZoomFactor frame) 0)
-                        (.setZoomFactor frame (- (.getZoomFactor frame) 0.2)))
-                      )})
+                        (.setZoomFactor frame (- (.getZoomFactor frame) 0.2))))})
 
 (cmd/command {:command :window.zoom-reset
               :desc "Window: Zoom reset"
               :exec (fn []
-                      (.setZoomFactor frame default-zoom)
-                      )})
+                      (.setZoomFactor frame default-zoom))})
+
+(cmd/command {:command :window.fullscreen
+              :desc "Window: Toggle fullscreen"
+              :exec (fn []
+                      (.setFullScreen win (not (.isFullScreen win))))})
+
+(cmd/command {:command :window.minimize
+              :desc "Window: Minimize"
+              :exec (fn []
+                      (.minimize win))})
+
+(cmd/command {:command :window.maximize
+              :desc "Window: Maximize"
+              :exec (fn []
+                      (.maximize win))})
