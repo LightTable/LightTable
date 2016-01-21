@@ -15,7 +15,9 @@
                       (let [{:keys [path]} (@editor :info)
                             final (object/raise-reduce editor :save+ (ed/->val editor))]
                         (when (not= final (ed/->val editor))
-                          (ed/set-val-and-keep-cursor editor final))
+                          (let [y-position (.-top (.getScrollInfo (ed/->cm-ed editor)))]
+                            (ed/set-val-and-keep-cursor editor final)
+                            (ed/scroll-to editor 0 y-position)))
                         (doc/save path final
                                   (fn []
                                     (object/merge! editor {:dirty false
