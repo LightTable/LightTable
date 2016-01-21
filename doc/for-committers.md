@@ -69,7 +69,7 @@ This is our release checklist which can be dropped in to an issue:
       - [ ] Version updates
          - [ ] Update deploy/core/package.json, deploy/core/version.json and project.clj (including the Codox `:source-uri` value) to 0.X.X
          - [ ] Make sure electron version is up to date in version.json
-         - [ ] Make sure plugin versions in script/build-app.sh are latest versions
+         - [ ] Make sure plugin versions in script/build.sh are latest versions
       - [ ] Add changelog for release to CHANGELOG.md
       - [ ] Each core developer should QA at least one OS using the [QA checklist](https://github.com/LightTable/LightTable/wiki/QA-Checklist)
       - [ ] When QA passes freeze master
