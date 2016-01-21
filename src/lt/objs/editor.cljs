@@ -711,6 +711,7 @@
           :triggers #{:init}
           :reaction (fn [this]
                       (load/js "core/node_modules/codemirror/addon/edit/matchbrackets.js" :sync)
+                      (load/js "core/node_modules/codemirror/addon/edit/closebrackets.js" :sync)
                       (load/js "core/node_modules/codemirror/addon/comment/comment.js" :sync)
                       (load/js "core/node_modules/codemirror/addon/selection/active-line.js" :sync)
                       ;; TODO: use addon/mode/overlay.js
@@ -758,3 +759,14 @@
                         (load/js "core/node_modules/codemirror/addon/display/rulers.js" :sync))
                       (let [rulers (or rulers [{:lineStyle "dashed" :color "#aff" :column 80}])]
                         (set-options this {:rulers (clj->js rulers)}))))
+
+(behavior ::autoclose-brackets
+          :triggers #{:object.instant}
+          :desc "Editor: Enable autoclose brackets"
+          :type :user
+          :params [{:label "map"
+                    :example "{:pairs \"()[]{}''\\\"\\\"\" :explode \"[]{}\"}"}]
+          :reaction (fn [this opts]
+                      (if opts
+                        (set-options this {:autoCloseBrackets (clj->js opts)})
+                        (set-options this {:autoCloseBrackets true}))))

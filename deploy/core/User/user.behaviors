@@ -44,8 +44,8 @@
  ;; [:editor :lt.objs.editor/line-numbers]
  ;; Customize font
  ;; [:app :lt.objs.style/font-settings "Courier New" "11"]
- ;; Auto-close characters '{[("'. Currently only works in English keyboards
- ;; [:app :lt.objs.settings/pair-keymap-diffs]
+ ;; Auto-close characters e.g. '{[("'
+ ;; [:app :lt.objs.editor/autoclose-brackets]
  ;; Tab settings: Use real tabs, tab size in spaces, spaces per indent
 ;; [:editor :lt.objs.editor/tab-settings false 2 2]
 ]
