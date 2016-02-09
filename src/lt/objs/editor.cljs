@@ -1008,6 +1008,9 @@
                         (load/js (str "core/node_modules/codemirror/addon/fold/" file) :sync))
                       (load/css "node_modules/codemirror/addon/fold/foldgutter.css")
                       (load/js "core/node_modules/codemirror/keymap/sublime.js" :sync)
+
+                      ;; Provides defineSimpleMode for some modes
+                      (load/js "core/node_modules/codemirror/addon/mode/simple.js" :sync)
                       (doseq [path (files/filter-walk #(and (= (files/ext %) "js")
                                                             (not (some (fn [m] (> (.indexOf % (str "core/node_modules/codemirror/mode/" m "/")) -1))
                                                                        mode-blacklist))
