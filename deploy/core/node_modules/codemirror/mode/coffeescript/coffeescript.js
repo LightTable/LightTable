@@ -15,7 +15,7 @@
 })(function(CodeMirror) {
 "use strict";
 
-CodeMirror.defineMode("coffeescript", function(conf) {
+CodeMirror.defineMode("coffeescript", function(conf, parserConf) {
   var ERRORCLASS = "error";
 
   function wordRegexp(words) {
@@ -25,7 +25,7 @@ CodeMirror.defineMode("coffeescript", function(conf) {
   var operators = /^(?:->|=>|\+[+=]?|-[\-=]?|\*[\*=]?|\/[\/=]?|[=!]=|<[><]?=?|>>?=?|%=?|&=?|\|=?|\^=?|\~|!|\?|(or|and|\|\||&&|\?)=)/;
   var delimiters = /^(?:[()\[\]{},:`=;]|\.\.?\.?)/;
   var identifiers = /^[_A-Za-z$][_A-Za-z$0-9]*/;
-  var properties = /^(@|this\.)[_A-Za-z$][_A-Za-z$0-9]*/;
+  var atProp = /^@[_A-Za-z$][_A-Za-z$0-9]*/;
 
   var wordOperators = wordRegexp(["and", "or", "not",
                                   "is", "isnt", "in",
@@ -145,6 +145,8 @@ CodeMirror.defineMode("coffeescript", function(conf) {
       }
     }
 
+
+
     // Handle operators and delimiters
     if (stream.match(operators) || stream.match(wordOperators)) {
       return "operator";
@@ -157,16 +159,16 @@ CodeMirror.defineMode("coffeescript", function(conf) {
       return "atom";
     }
 
+    if (stream.match(atProp) || state.prop && stream.match(identifiers)) {
+      return "property";
+    }
+
     if (stream.match(keywords)) {
       return "keyword";
     }
 
     if (stream.match(identifiers)) {
       return "variable";
-    }
-
-    if (stream.match(properties)) {
-      return "property";
     }
 
     // Handle non-detected items
@@ -191,7 +193,7 @@ CodeMirror.defineMode("coffeescript", function(conf) {
         }
       }
       if (singleline) {
-        if (conf.mode.singleLineStringErrors) {
+        if (parserConf.singleLineStringErrors) {
           outclass = ERRORCLASS;
         } else {
           state.tokenize = tokenBase;
@@ -265,24 +267,11 @@ CodeMirror.defineMode("coffeescript", function(conf) {
     var style = state.tokenize(stream, state);
     var current = stream.current();
 
-    // Handle "." connected identifiers
-    if (current === ".") {
-      style = state.tokenize(stream, state);
-      current = stream.current();
-      if (/^\.[\w$]+$/.test(current)) {
-        return "variable";
-      } else {
-        return ERRORCLASS;
-      }
-    }
-
     // Handle scope changes.
     if (current === "return") {
       state.dedent = true;
     }
-    if (((current === "->" || current === "=>") &&
-         !state.lambda &&
-         !stream.peek())
+    if (((current === "->" || current === "=>") && stream.eol())
         || style === "indent") {
       indent(stream, state);
     }
@@ -324,8 +313,7 @@ CodeMirror.defineMode("coffeescript", function(conf) {
       return {
         tokenize: tokenBase,
         scope: {offset:basecolumn || 0, type:"coffee", prev: null, align: false},
-        lastToken: null,
-        lambda: false,
+        prop: false,
         dedent: 0
       };
     },
@@ -335,12 +323,9 @@ CodeMirror.defineMode("coffeescript", function(conf) {
       if (fillAlign && stream.sol()) fillAlign.align = false;
 
       var style = tokenLexer(stream, state);
-      if (fillAlign && style && style != "comment") fillAlign.align = true;
-
-      state.lastToken = {style:style, content: stream.current()};
-
-      if (stream.eol() && stream.lambda) {
-        state.lambda = false;
+      if (style && style != "comment") {
+        if (fillAlign) fillAlign.align = true;
+        state.prop = style == "punctuation" && stream.current() == "."
       }
 
       return style;
@@ -365,5 +350,6 @@ CodeMirror.defineMode("coffeescript", function(conf) {
 });
 
 CodeMirror.defineMIME("text/x-coffeescript", "coffeescript");
+CodeMirror.defineMIME("text/coffeescript", "coffeescript");
 
 });

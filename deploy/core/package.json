@@ -16,7 +16,7 @@
     }
   },
   "dependencies": {
-    "codemirror": "^4.7.0",
+    "codemirror": "^5.11.0",
     "optimist": "^0.5.2",
     "request": "^2.81.0"
   },

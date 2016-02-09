@@ -55,7 +55,9 @@
   cmds[map["Alt-Left"] = "goSubwordLeft"] = function(cm) { moveSubword(cm, -1); };
   cmds[map["Alt-Right"] = "goSubwordRight"] = function(cm) { moveSubword(cm, 1); };
 
-  cmds[map[ctrl + "Up"] = "scrollLineUp"] = function(cm) {
+  var scrollLineCombo = mac ? "Ctrl-Alt-" : "Ctrl-";
+
+  cmds[map[scrollLineCombo + "Up"] = "scrollLineUp"] = function(cm) {
     var info = cm.getScrollInfo();
     if (!cm.somethingSelected()) {
       var visibleBottomLine = cm.lineAtHeight(info.top + info.clientHeight, "local");
@@ -64,7 +66,7 @@
     }
     cm.scrollTo(null, info.top - cm.defaultTextHeight());
   };
-  cmds[map[ctrl + "Down"] = "scrollLineDown"] = function(cm) {
+  cmds[map[scrollLineCombo + "Down"] = "scrollLineDown"] = function(cm) {
     var info = cm.getScrollInfo();
     if (!cm.somethingSelected()) {
       var visibleTopLine = cm.lineAtHeight(info.top, "local")+1;
@@ -106,6 +108,7 @@
   map["Shift-" + ctrl + "K"] = "deleteLine";
 
   function insertLine(cm, above) {
+    if (cm.isReadOnly()) return CodeMirror.Pass
     cm.operation(function() {
       var len = cm.listSelections().length, newSelection = [], last = -1;
       for (var i = 0; i < len; i++) {
@@ -121,9 +124,9 @@
     });
   }
 
-  cmds[map[ctrl + "Enter"] = "insertLineAfter"] = function(cm) { insertLine(cm, false); };
+  cmds[map[ctrl + "Enter"] = "insertLineAfter"] = function(cm) { return insertLine(cm, false); };
 
-  cmds[map["Shift-" + ctrl + "Enter"] = "insertLineBefore"] = function(cm) { insertLine(cm, true); };
+  cmds[map["Shift-" + ctrl + "Enter"] = "insertLineBefore"] = function(cm) { return insertLine(cm, true); };
 
   function wordAt(cm, pos) {
     var start = pos.ch, end = start, line = cm.getLine(pos.line);
@@ -190,6 +193,7 @@
   var swapLineCombo = mac ? "Cmd-Ctrl-" : "Shift-Ctrl-";
 
   cmds[map[swapLineCombo + "Up"] = "swapLineUp"] = function(cm) {
+    if (cm.isReadOnly()) return CodeMirror.Pass
     var ranges = cm.listSelections(), linesToMove = [], at = cm.firstLine() - 1, newSels = [];
     for (var i = 0; i < ranges.length; i++) {
       var range = ranges[i], from = range.from().line - 1, to = range.to().line;
@@ -216,6 +220,7 @@
   };
 
   cmds[map[swapLineCombo + "Down"] = "swapLineDown"] = function(cm) {
+    if (cm.isReadOnly()) return CodeMirror.Pass
     var ranges = cm.listSelections(), linesToMove = [], at = cm.lastLine() + 1;
     for (var i = ranges.length - 1; i >= 0; i--) {
       var range = ranges[i], from = range.to().line + 1, to = range.from().line;
@@ -238,7 +243,9 @@
     });
   };
 
-  map[ctrl + "/"] = "toggleComment";
+  cmds[map[ctrl + "/"] = "toggleCommentIndented"] = function(cm) {
+    cm.toggleComment({ indent: true });
+  }
 
   cmds[map[ctrl + "J"] = "joinLines"] = function(cm) {
     var ranges = cm.listSelections(), joined = [];
@@ -285,6 +292,7 @@
   map[ctrl + "T"] = "transposeChars";
 
   function sortLines(cm, caseSensitive) {
+    if (cm.isReadOnly()) return CodeMirror.Pass
     var ranges = cm.listSelections(), toSort = [], selected;
     for (var i = 0; i < ranges.length; i++) {
       var range = ranges[i];
@@ -386,9 +394,7 @@
 
   map["Alt-Q"] = "wrapLines";
 
-  var mapK = CodeMirror.keyMap["sublime-Ctrl-K"] = {auto: "sublime", nofallthrough: true};
-
-  map[ctrl + "K"] = function(cm) {cm.setOption("keyMap", "sublime-Ctrl-K");};
+  var cK = ctrl + "K ";
 
   function modifyWordOrSelection(cm, mod) {
     cm.operation(function() {
@@ -409,9 +415,30 @@
     });
   }
 
-  mapK[ctrl + "Backspace"] = "delLineLeft";
+  map[cK + ctrl + "Backspace"] = "delLineLeft";
 
-  cmds[mapK[ctrl + "K"] = "delLineRight"] = function(cm) {
+  cmds[map["Backspace"] = "smartBackspace"] = function(cm) {
+    if (cm.somethingSelected()) return CodeMirror.Pass;
+
+    var cursor = cm.getCursor();
+    var toStartOfLine = cm.getRange({line: cursor.line, ch: 0}, cursor);
+    var column = CodeMirror.countColumn(toStartOfLine, null, cm.getOption("tabSize"));
+    var indentUnit = cm.getOption("indentUnit");
+
+    if (toStartOfLine && !/\S/.test(toStartOfLine) && column % indentUnit == 0) {
+      var prevIndent = new Pos(cursor.line,
+        CodeMirror.findColumn(toStartOfLine, column - indentUnit, indentUnit));
+
+      // If no smart delete is happening (due to tab sizing) just do a regular delete
+      if (prevIndent.ch == cursor.ch) return CodeMirror.Pass;
+
+      return cm.replaceRange("", prevIndent, cursor, "+delete");
+    } else {
+      return CodeMirror.Pass;
+    }
+  };
+
+  cmds[map[cK + ctrl + "K"] = "delLineRight"] = function(cm) {
     cm.operation(function() {
       var ranges = cm.listSelections();
       for (var i = ranges.length - 1; i >= 0; i--)
@@ -420,22 +447,22 @@
     });
   };
 
-  cmds[mapK[ctrl + "U"] = "upcaseAtCursor"] = function(cm) {
+  cmds[map[cK + ctrl + "U"] = "upcaseAtCursor"] = function(cm) {
     modifyWordOrSelection(cm, function(str) { return str.toUpperCase(); });
   };
-  cmds[mapK[ctrl + "L"] = "downcaseAtCursor"] = function(cm) {
+  cmds[map[cK + ctrl + "L"] = "downcaseAtCursor"] = function(cm) {
     modifyWordOrSelection(cm, function(str) { return str.toLowerCase(); });
   };
 
-  cmds[mapK[ctrl + "Space"] = "setSublimeMark"] = function(cm) {
+  cmds[map[cK + ctrl + "Space"] = "setSublimeMark"] = function(cm) {
     if (cm.state.sublimeMark) cm.state.sublimeMark.clear();
     cm.state.sublimeMark = cm.setBookmark(cm.getCursor());
   };
-  cmds[mapK[ctrl + "A"] = "selectToSublimeMark"] = function(cm) {
+  cmds[map[cK + ctrl + "A"] = "selectToSublimeMark"] = function(cm) {
     var found = cm.state.sublimeMark && cm.state.sublimeMark.find();
     if (found) cm.setSelection(cm.getCursor(), found);
   };
-  cmds[mapK[ctrl + "W"] = "deleteToSublimeMark"] = function(cm) {
+  cmds[map[cK + ctrl + "W"] = "deleteToSublimeMark"] = function(cm) {
     var found = cm.state.sublimeMark && cm.state.sublimeMark.find();
     if (found) {
       var from = cm.getCursor(), to = found;
@@ -444,7 +471,7 @@
       cm.replaceRange("", from, to);
     }
   };
-  cmds[mapK[ctrl + "X"] = "swapWithSublimeMark"] = function(cm) {
+  cmds[map[cK + ctrl + "X"] = "swapWithSublimeMark"] = function(cm) {
     var found = cm.state.sublimeMark && cm.state.sublimeMark.find();
     if (found) {
       cm.state.sublimeMark.clear();
@@ -452,13 +479,13 @@
       cm.setCursor(found);
     }
   };
-  cmds[mapK[ctrl + "Y"] = "sublimeYank"] = function(cm) {
+  cmds[map[cK + ctrl + "Y"] = "sublimeYank"] = function(cm) {
     if (cm.state.sublimeKilled != null)
       cm.replaceSelection(cm.state.sublimeKilled, null, "paste");
   };
 
-  mapK[ctrl + "G"] = "clearBookmarks";
-  cmds[mapK[ctrl + "C"] = "showInCenter"] = function(cm) {
+  map[cK + ctrl + "G"] = "clearBookmarks";
+  cmds[map[cK + ctrl + "C"] = "showInCenter"] = function(cm) {
     var pos = cm.cursorCoords(null, "local");
     cm.scrollTo(null, (pos.top + pos.bottom) / 2 - cm.getScrollInfo().clientHeight / 2);
   };
@@ -530,7 +557,7 @@
 
   map["Shift-" + ctrl + "["] = "fold";
   map["Shift-" + ctrl + "]"] = "unfold";
-  mapK[ctrl + "0"] = mapK[ctrl + "j"] = "unfoldAll";
+  map[cK + ctrl + "0"] = map[cK + ctrl + "j"] = "unfoldAll";
 
   map[ctrl + "I"] = "findIncremental";
   map["Shift-" + ctrl + "I"] = "findIncrementalReverse";
@@ -538,4 +565,5 @@
   map["F3"] = "findNext";
   map["Shift-F3"] = "findPrev";
 
+  CodeMirror.normalizeKeyMap(map);
 });
