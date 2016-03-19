@@ -425,6 +425,8 @@
  [:inline.underline-result :lt.objs.eval/result-menu+]
  [:inline.underline-result :lt.objs.eval/ex-clear]
  [:inline.underline-result :lt.objs.eval/destroy-on-cleared]
+ [:inline.underline-result :lt.objs.menu/menu!]
+ [:inline.underline-result :lt.objs.eval/copy-underline-result]
 
  [:inline.watch :lt.plugins.watches/clear!]
 
