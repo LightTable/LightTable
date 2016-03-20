@@ -79,9 +79,9 @@
     nil))
 
 (behavior ::kill-procs-on-close
-                  :triggers #{:closed}
-                  :reaction (fn [this]
-                              (kill-all)))
+          :triggers #{:closed}
+          :reaction (fn [this]
+                      (kill-all)))
 
 (object/add-behavior! app/app ::kill-procs-on-close)
 
@@ -90,9 +90,9 @@
 ;;*******************************************************
 
 (behavior ::print-all
-                  :triggers #{:proc.error :proc.out :proc.exit}
-                  :reaction (fn [this data]
-                              (println "PROC: " data)))
+          :triggers #{:proc.error :proc.out :proc.exit}
+          :reaction (fn [this data]
+                      (println "PROC: " data)))
 
 (object/object* ::test-printer
                 :triggers []
@@ -128,36 +128,36 @@
       (str "PATH=" path-str ":$PATH && "))))
 
 (behavior ::set-path-OSX
-                  :triggers #{:init}
-                  :reaction (fn [app]
-                              (when (and (platform/mac?)
-                                         (not (aget js/process.env "LTCLI")))
-                                (.exec (js/require "child_process") (str (etc-paths->PATH) (get-path-command))
-                                       (fn [err out serr]
-                                         (if-not (empty? err)
-                                           (do
-                                             (notifos/set-msg! "Failed to source PATH files. See console log for details." {:class "error"})
-                                             (.error js/console err))
-                                           (when-not (empty? out)
-                                             (set! js/process.env.PATH out))))))))
+          :triggers #{:init}
+          :reaction (fn [app]
+                      (when (and (platform/mac?)
+                                 (not (aget js/process.env "LTCLI")))
+                        (.exec (js/require "child_process") (str (etc-paths->PATH) (get-path-command))
+                               (fn [err out serr]
+                                 (if-not (empty? err)
+                                   (do
+                                     (notifos/set-msg! "Failed to source PATH files. See console log for details." {:class "error"})
+                                     (.error js/console err))
+                                   (when-not (empty? out)
+                                     (set! js/process.env.PATH out))))))))
 
 (behavior ::global-path
-                  :triggers #{:object.instant}
-                  :desc "App: set global PATH for processes"
-                  :type :user
-                  :params [{:label "path"}]
-                  :exclusive true
-                  :reaction (fn [app path]
-                              (set! js/process.env.PATH path)))
+          :triggers #{:object.instant}
+          :desc "App: set global PATH for processes"
+          :type :user
+          :params [{:label "path"}]
+          :exclusive true
+          :reaction (fn [app path]
+                      (set! js/process.env.PATH path)))
 
 (behavior ::global-env
-                  :triggers #{:object.instant}
-                  :desc "App: add to the global ENV for processes"
-                  :params [{:label "env map"}]
-                  :type :user
-                  :exclusive true
-                  :reaction (fn [app kvs]
-                              (reset! custom-env kvs)))
+          :triggers #{:object.instant}
+          :desc "App: add to the global ENV for processes"
+          :params [{:label "env map"}]
+          :type :user
+          :exclusive true
+          :reaction (fn [app kvs]
+                      (reset! custom-env kvs)))
 
 
 (defn var-caps [vs]

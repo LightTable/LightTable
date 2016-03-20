@@ -111,40 +111,40 @@
   )
 
 (behavior ::track-active-client
-                  :triggers #{:active :set-client}
-                  :reaction (fn [ed]
-                              (object/merge! clients {:active (:client @ed)})))
+          :triggers #{:active :set-client}
+          :reaction (fn [ed]
+                      (object/merge! clients {:active (:client @ed)})))
 
 (behavior ::unset-client
-                  :triggers #{:unset!}
-                  :reaction (fn [this cur]
-                              (let [ed (pool/last-active)
-                                    actives (:client @ed)
-                                    found? (first (filter #(= cur (val %)) actives))]
-                                (when found?
-                                  (object/update! ed [:client] dissoc (first found?)))
-                                (pool/focus-last))))
+          :triggers #{:unset!}
+          :reaction (fn [this cur]
+                      (let [ed (pool/last-active)
+                            actives (:client @ed)
+                            found? (first (filter #(= cur (val %)) actives))]
+                        (when found?
+                          (object/update! ed [:client] dissoc (first found?)))
+                        (pool/focus-last))))
 
 (behavior ::selecting!
-                  :triggers #{:selecting!}
-                  :reaction (fn [this]
-                              (object/merge! this {:selecting? true})
-                              ))
+          :triggers #{:selecting!}
+          :reaction (fn [this]
+                      (object/merge! this {:selecting? true})
+                      ))
 
 (behavior ::done-selecting
-                  :triggers #{:selected :cancel}
-                  :reaction (fn [this]
-                              (object/merge! this {:selecting? false})))
+          :triggers #{:selected :cancel}
+          :reaction (fn [this]
+                      (object/merge! this {:selecting? false})))
 
 (behavior ::hide-on-select
-                  :triggers #{:selected}
-                  :reaction (fn [this]
-                              (object/raise sidebar/rightbar :close!)))
+          :triggers #{:selected}
+          :reaction (fn [this]
+                      (object/raise sidebar/rightbar :close!)))
 
 (behavior ::focus!
-                  :triggers #{:focus!}
-                  :reaction (fn [this]
-                              (dom/focus (object/->content this))))
+          :triggers #{:focus!}
+          :reaction (fn [this]
+                      (dom/focus (object/->content this))))
 
 (object/object* ::sidebar.clients
                 :tags #{:sidebar.clients}
@@ -163,18 +163,10 @@
   (object/update! clients [:connectors] assoc (:name c) c))
 
 (cmd/command {:command :show-connect
-              :desc "Connect: Show connect bar"
+              :desc "Connect: Toggle connect bar"
               :exec (fn []
                       (object/raise sidebar/rightbar :toggle clients)
-                      (object/raise clients :focus!)
-                      )})
-
-
-(cmd/command {:command :hide-connect
-              :desc "Connect: hide connect bar"
-              :exec (fn []
-                      (object/raise sidebar/rightbar :close!)
-                      )})
+                      (object/raise clients :focus!))})
 
 (cmd/command {:command :show-add-connection
               :desc "Connect: Add Connection"

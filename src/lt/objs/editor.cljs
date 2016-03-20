@@ -29,9 +29,18 @@
   [e]
   (.-parentElement (.getScrollerElement (->cm-ed e))))
 
-(defn set-val [e v]
+(defn set-val
+  "Set content value of editor's CodeMirror object. Cursor position is lost"
+  [e v]
   (. (->cm-ed e) (setValue (or v "")))
   e)
+
+(defn set-val-and-keep-cursor
+  "Same as set-val but current cursor position is kept"
+  [e v]
+  (let [cursor (.getCursor (->cm-ed e))]
+    (set-val e v)
+    (.setCursor (->cm-ed e) cursor)))
 
 (defn set-options
   "Given a map of options, set each pair as an option on editor's
@@ -702,6 +711,7 @@
           :triggers #{:init}
           :reaction (fn [this]
                       (load/js "core/node_modules/codemirror/addon/edit/matchbrackets.js" :sync)
+                      (load/js "core/node_modules/codemirror/addon/edit/closebrackets.js" :sync)
                       (load/js "core/node_modules/codemirror/addon/comment/comment.js" :sync)
                       (load/js "core/node_modules/codemirror/addon/selection/active-line.js" :sync)
                       ;; TODO: use addon/mode/overlay.js
@@ -749,3 +759,14 @@
                         (load/js "core/node_modules/codemirror/addon/display/rulers.js" :sync))
                       (let [rulers (or rulers [{:lineStyle "dashed" :color "#aff" :column 80}])]
                         (set-options this {:rulers (clj->js rulers)}))))
+
+(behavior ::autoclose-brackets
+          :triggers #{:object.instant}
+          :desc "Editor: Enable autoclose brackets"
+          :type :user
+          :params [{:label "map"
+                    :example "{:pairs \"()[]{}''\\\"\\\"\" :explode \"[]{}\"}"}]
+          :reaction (fn [this opts]
+                      (if opts
+                        (set-options this {:autoCloseBrackets (clj->js opts)})
+                        (set-options this {:autoCloseBrackets true}))))

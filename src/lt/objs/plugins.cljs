@@ -13,6 +13,7 @@
             [lt.objs.deploy :as deploy]
             [lt.objs.notifos :as notifos]
             [lt.objs.tabs :as tabs]
+            [lt.util.js :refer [wait]]
             [lt.objs.platform :as platform]
             [cljs.reader :as reader]
             [fetch.core :as fetch]
@@ -96,21 +97,22 @@
       plugin)))
 
 (defn plugin-edn [dir]
-  (when-let [content (files/open-sync (files/join dir "plugin.edn"))]
-    (try
-      (-> (EOF-read (:content content))
-          (assoc :dir dir)
-          (validate "plugin.edn"))
-      (catch :default e
-        (console/error (str "FAILED to load plugin.edn: " dir))))
-    ))
+  (let [file (files/join dir "plugin.edn")]
+    (when-let [content (and (files/exists? file) (files/open-sync file))]
+      (try
+        (-> (EOF-read (:content content))
+            (assoc :dir dir)
+            (validate "plugin.edn"))
+        (catch :default e
+          (console/error (str "FAILED to load plugin.edn: " dir)))))))
 
 (defn plugin-json [dir]
-  (when-let [content (files/open-sync (files/join dir "plugin.json"))]
-    (-> (js/JSON.parse (:content content))
-        (js->clj :keywordize-keys true)
-        (assoc :dir dir)
-        (validate "plugin.json"))))
+  (let [file (files/join dir "plugin.json")]
+    (when-let [content (and (files/exists? file) (files/open-sync file))]
+      (-> (js/JSON.parse (:content content))
+          (js->clj :keywordize-keys true)
+          (assoc :dir dir)
+          (validate "plugin.json")))))
 
 (defn plugin-info [dir]
   (or (plugin-json dir) (plugin-edn dir)))
@@ -221,10 +223,12 @@
 (defn latest-metadata-sha []
   (fetch/xhr [:get metadata-commits] {}
              (fn [data]
-               (let [parsed (js/JSON.parse data)
-                     sha (-> (aget parsed 0)
-                             (aget "sha"))]
-                 (object/raise manager :metadata.sha sha)))))
+               (when-let [parsed (try (js/JSON.parse data)
+                                   (catch :default e
+                                     (console/error (str "Invalid JSON response from " metadata-commits ": " (pr-str data)))))]
+                 (let [sha (-> (aget parsed 0)
+                               (aget "sha"))]
+                   (object/raise manager :metadata.sha sha))))))
 
 (defn download-metadata [sha]
   (let [tmp-gz (files/lt-user-dir "metadata-temp.tar.gz")
@@ -450,7 +454,8 @@
   (when (:dir plugin)
     (files/delete! (:dir plugin))
     ;; :ignore-missing b/c uninstalled shows up missing
-    (object/raise manager :refresh! :ignore-missing true)))
+    (object/raise manager :refresh! :ignore-missing true)
+    (notifos/set-msg! (str "Uninstalled " (:name plugin) " " (:version plugin)))))
 
 ;;*********************************************************
 ;; Manager ui
@@ -497,7 +502,10 @@
            (dom/stop-propagation e)
            (discover-deps plugin (fn []
                                    (object/raise manager :refresh!)
-                                   (cmd/exec! :behaviors.reload)))))
+                                   (cmd/exec! :behaviors.reload)
+                                   ;; Wait for behaviors.reload to write its message
+                                   (wait 1000 (fn []
+                                                (notifos/set-msg! (str "Updated " (:name plugin) " " (:version plugin)))))))))
 
 (defui install-button [plugin]
   [:span.install]
@@ -506,7 +514,10 @@
                     (discover-deps plugin (fn []
                                             (dom/remove (dom/parent me))
                                             (object/raise manager :refresh!)
-                                            (cmd/exec! :behaviors.reload))))
+                                            (cmd/exec! :behaviors.reload)
+                                            ;; Wait for behaviors.reload to write its message
+                                            (wait 1000 (fn []
+                                                         (notifos/set-msg! (str "Installed " (:name plugin) " " (:version plugin))))))))
            (dom/prevent e)
            (dom/stop-propagation e)))
 

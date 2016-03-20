@@ -290,7 +290,8 @@
                       (let [path (:path @this)
                             neue (files/join (files/parent path) n)]
                         (when-not (= path neue)
-                          (if (files/exists? neue)
+                          ;; In OSX rename is case-sensistive but exists check isn't
+                          (if (and (not= (string/lower-case path) (string/lower-case neue)) (files/exists? neue))
                             (popup/popup! {:header "Folder already exists."
                                            :body (str "The folder " neue " already exists, you'll have to pick a different name.")
                                            :buttons [{:label "ok"
@@ -312,7 +313,8 @@
                       (let [path (:path @this)
                             neue (files/join (files/parent path) n)]
                         (when-not (= path neue)
-                          (if (files/exists? neue)
+                          ;; In OSX rename is case-sensistive but exists check isn't
+                          (if (and (not= (string/lower-case path) (string/lower-case neue)) (files/exists? neue))
                             (popup/popup! {:header "File already exists."
                                            :body (str "The file" neue " already exists, you'll have to pick a different name.")
                                            :buttons [{:label "ok"

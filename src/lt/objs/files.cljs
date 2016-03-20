@@ -32,23 +32,23 @@
 (declare files-obj)
 
 (behavior ::file-types
-                  :triggers #{:object.instant}
-                  :type :user
-                  :desc "Files: Associate file types"
-                  :params [{:label "types"
-                            :example "[{:exts [:wisp],\n  :mime \"text/x-clojurescript\",\n  :name \"Wisp\",\n  :tags [:editor.wisp]}]"}]
-                  :reaction (fn [this types]
-                              (object/merge! files-obj (typelist->index @files-obj types))))
+          :triggers #{:object.instant}
+          :type :user
+          :desc "Files: Associate file types"
+          :params [{:label "types"
+                    :example "[{:exts [:wisp],\n  :mime \"text/x-clojurescript\",\n  :name \"Wisp\",\n  :tags [:editor.wisp]}]"}]
+          :reaction (fn [this types]
+                      (object/merge! files-obj (typelist->index @files-obj types))))
 
 (behavior ::file.ignore-pattern
-                  :triggers #{:object.instant}
-                  :type :user
-                  :exclusive true
-                  :desc "Files: Set ignore pattern"
-                  :params [{:label "pattern"
-                            :example "\"\\\\.git|\\\\.pyc\""}]
-                  :reaction (fn [this pattern]
-                              (set! ignore-pattern (js/RegExp. pattern))))
+          :triggers #{:object.instant}
+          :type :user
+          :exclusive true
+          :desc "Files: Set ignore pattern"
+          :params [{:label "pattern"
+                    :example "\"\\\\.git|\\\\.pyc\""}]
+          :reaction (fn [this pattern]
+                      (set! ignore-pattern (js/RegExp. pattern))))
 
 (behavior ::open-failed
           :triggers #{:files.open.error}
@@ -243,13 +243,7 @@
 (defn move!
   "Move file or directory to given path"
   [from to]
-  (if (dir? from)
-    (do
-      (.copyDirSyncRecursive wrench from to)
-      (.rmdirSyncRecursive wrench from))
-    (do
-      (save to (:content (open-sync from)))
-      (delete! from))))
+  (.renameSync fs from to))
 
 (defn copy
   "Copy file or directory to given path"

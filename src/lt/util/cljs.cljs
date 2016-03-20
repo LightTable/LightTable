@@ -51,8 +51,8 @@
 (defn ->dottedkw [& args]
   (keyword (string/join "." (map name (filter identity args)))))
 
-;; TODO: Remove once remove these references from Clojure, Python and JS plugins
 (defn js->clj [& args]
+  (js/lt.objs.console.error "lt.util.cljs/js->clj is deprecated and will be removed in 0.9.0. Use js->clj instead")
   (apply cljs.core/js->clj args))
 
 (defn str-contains? [str x]

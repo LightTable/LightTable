@@ -96,9 +96,9 @@
   [:span.pos (str "" (inc (:line pos)) " / " (inc (:ch pos)))])
 
 (behavior ::update-cursor-location
-                  :triggers #{:update!}
-                  :reaction (fn [this pos]
-                              (object/merge! this {:pos pos})))
+          :triggers #{:update!}
+          :reaction (fn [this pos]
+                      (object/merge! this {:pos pos})))
 
 (object/object* ::statusbar.cursor
                 :triggers #{}

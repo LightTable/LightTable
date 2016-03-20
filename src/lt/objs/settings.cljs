@@ -501,6 +501,7 @@
           :type :user
           :triggers #{:keymap.diffs.user+}
           :reaction (fn [this diffs]
+                      (console/error (str "[:app " ::pair-keymap-diffs "] is deprecated and will be removed in 0.9.0. Use [:editor :lt.objs.editor/autoclose-brackets] instead"))
                       (concat diffs (list {:+ pair-keybindings}))))
 
 (behavior ::on-behaviors-editor-save
