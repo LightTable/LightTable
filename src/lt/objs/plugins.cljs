@@ -202,8 +202,13 @@
    (deploy/is-newer? a b) -1
    :else 1))
 
+(defn- valid-plugin-dir?
+  [path]
+  (and (files/dir? path)
+       (not (= "script" (files/basename path)))))
+
 (defn build-cache [sha]
-  (let [items (filter files/dir? (files/full-path-ls metadata-dir))
+  (let [items (filter valid-plugin-dir? (files/full-path-ls metadata-dir))
         cache (into {:__sha sha}
                     (for [plugin items
                           :let [versions (->> (files/full-path-ls plugin)
