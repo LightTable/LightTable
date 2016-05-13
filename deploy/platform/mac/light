@@ -1,22 +1,16 @@
-#!/usr/bin/env bash
+#!/bin/sh
 
 if [ -z "$LT_HOME" ]
 then
-	myDir=$( cd $(dirname $0) ; pwd -P )
-	myAppDir="$myDir/../Applications"
-	for i in ~/Applications ~/Applications/LightTable $myDir $myDir/LightTable $myAppDir $myAppDir/LightTable /Applications /Applications/LightTable /Applications/Utilities /Applications/Utilities/LightTable; do
-		if [ -x "$i/LightTable.app" ]; then
-			APP_DIR="$i"
-			break
-		fi
-	done
+  # Find the first application bundle known to the system, the application bundle itself is already a directory
+  APP_DIR=$(mdfind kMDItemCFBundleIdentifier == com.kodowa.LightTable | head -n 1)
 else
-  APP_DIR=$LT_HOME
+  APP_DIR="${LT_HOME}/LightTable.app"
 fi
-if [ -z "$APP_DIR" ]
+if [ ! -d "$APP_DIR" ]
 then
 	echo "Sorry, cannot find LightTable.app.  Try setting the LT_HOME environment variable to the directory containing LightTable.app."
 	exit 1
 fi
 
-LTCLI=true "${APP_DIR}/LightTable.app/Contents/MacOS/Electron" "$@" &
+LTCLI=true "${APP_DIR}/Contents/MacOS/Electron" "$@" &
