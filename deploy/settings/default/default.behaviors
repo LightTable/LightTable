@@ -21,6 +21,7 @@
  [:app :lt.objs.canvas/append-canvas]
  [:app :lt.objs.tabs/init-sortable]
  [:app :lt.objs.deploy/check-version]
+ [:app :lt.objs.deploy/strict-ssl]
  [:app :lt.objs.style/style-on-init]
  [:app :lt.objs.app/track-focus]
  [:app :lt.objs.app/blur-class]
