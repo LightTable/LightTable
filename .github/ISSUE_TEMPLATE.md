@@ -1,10 +1,16 @@
-## *Remove this Section*
+## *Issue Template*
+
+This section covers general topics related to all issues, regardless of their subject.
 
 Note that issues for this repo are for bugs with or feature requests for LightTable itself. Bugs or features for a specific language or other plugin should be submitted to their respective GitHub repo e.g. [Clojure](https://github.com/LightTable/Clojure), [JavaScript](https://github.com/LightTable/Javascript), or [Vim](https://github.com/LightTable/Vim).
 
 Questions should generally be asked on the [Light Table Google Groups group](https://groups.google.com/forum/#!forum/light-table-discussion) or in [the Gitter room for the main GitHub repo](https://gitter.im/LightTable/LightTable).
 
-Remove any sections in this template that aren't pertinent. Remove the instructions text too, please, before submitting this issue.
+Please check for an existing or similar issue that covers or is related to your issue before submitting a new issue.
+
+Remove any sections in this template that aren't pertinent. Remove the instructions text too (including this section), please, before submitting this issue.
+
+There are separate sections below for requesting a feature or reporting a bug. Edit the relevant sectiont to include the information requested. If you fail to include pertinent info, we're probably going to close your issue. But we'll gladly re-open it once you include the info we need to help you.
 
 ## Request a Feature
 
