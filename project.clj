@@ -28,15 +28,14 @@
                                   [org.clojure/clojurescript "1.7.145"
                                    :exclusions [org.apache.ant/ant]]]}}
   :plugins [[lein-cljsbuild "1.0.1"]
-            [lein-codox "0.9.0"]]
+            [lein-codox "0.9.5"]]
   :codox {:language :clojurescript
           :project {:name "LightTable"}
           :output-path "codox"
           :doc-paths [] ;; Disable including doc/
           :namespaces [lt.macros lt.object lt.objs.command lt.objs.editor
                        lt.objs.editor.pool lt.objs.files lt.objs.notifos]
-          ;; :source-uri version needs to be bumped per release until codox supports {version}
-          :source-uri "https://github.com/LightTable/LightTable/blob/0.8.1/{filepath}#L{line}"
+          :source-uri "https://github.com/LightTable/LightTable/blob/{version}/{filepath}#L{line}"
           ;; Be explicit that undocumented public fns should be documented
           :metadata {:doc "TODO: Add docstring"}}
   :source-paths ["src/"]

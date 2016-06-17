@@ -67,7 +67,7 @@ This is our release checklist which can be dropped in to an issue:
 
 - [ ] Release 0.X.X
       - [ ] Version updates
-         - [ ] Update deploy/core/package.json, deploy/core/version.json and project.clj (including the Codox `:source-uri` value) to 0.X.X
+         - [ ] Update deploy/core/package.json, deploy/core/version.json and project.clj to 0.X.X
          - [ ] Make sure electron version is up to date in version.json
          - [ ] Make sure plugin versions in script/build.sh are latest versions
       - [ ] Add changelog for release to CHANGELOG.md
@@ -84,12 +84,8 @@ This is our release checklist which can be dropped in to an issue:
       - [ ] Optional blog post if a major release
       - [ ] After release, [build api documentation](#build-api-documentation)
 
-## Build api documentation
+## Build API documentation
 
-To build api documentation for current LT version and publish generated docs:
-
-1. In project.clj make sure that `[:codox :source-uri]` points to current LT version.
-   This step will be removed once [there is upstream support for version in :source-uri](https://github.com/weavejester/codox/issues/107)
-2. Run `script/build-api-docs.sh` on a clean git state. Make sure there are no pending git changes as this script will change git branches and push generated api docs to gh-pages.
+Run `script/build-api-docs.sh` on a clean git state to build API documentation for the current LT version and publish generated docs. Make sure there are no pending git changes as this script will change git branches and push generated API docs to gh-pages.
 
 Expect to see a ton of warnings e.g. `WARNING: Use of undeclared Var cljs.core/seq at line 197`. This will be noise we have to live with until we upgrade ClojureScript.
