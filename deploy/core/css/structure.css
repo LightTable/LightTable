@@ -175,9 +175,6 @@ body { -webkit-user-select: none; }
 #side .workspace .folder, .folders { font-weight:bold; }
 #side .workspace > ul > li > div > ul.sub { margin:0; }
 #side .workspace ul.root > div > ul:empty:before { content:"Right click to add files or folders to the workspace or open a recent one to get started."; display:inline-block; text-align:center; width:100%; max-width:300px; margin-top:40px;  }
-#side .workspace input.rename { display:none; }
-#side .workspace li.renaming > input.rename { display:block; width:100%; }
-#side .workspace li.renaming > .tree-item > p { display:none; }
 #side .workspace.recents .wstree { display:none; }
 #side .workspace.recents .recent { display:block; width:100%; overflow:hidden; }
 #side .workspace .recent { display:none; }
@@ -257,6 +254,12 @@ body { -webkit-user-select: none; }
 #bottombar .horizontal-grip {position:absolute; top:0px; width:100%; height:10px; z-index:10000; cursor:row-resize; }
 #bottombar.closed { padding:0; }
 #bottombar.closed .horizontal-grip { display:none; }
+
+.rename-dialog { background-color:#505d6b; }
+
+#topbar {  z-index:100000; position:fixed; background:transparent; padding-top:0px; padding-bottom:0px; box-sizing:border-box; }
+#topbar .content { padding:10px 0px; padding-right:10px; box-sizing:border-box; height:100%; }
+#topbar.closed { display:none; }
 
 #statusbar-container { position:absolute; bottom:0; left:0; right:0; }
 

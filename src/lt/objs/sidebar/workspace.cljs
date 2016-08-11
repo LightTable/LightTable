@@ -5,6 +5,7 @@
             [lt.objs.context :as ctx]
             [lt.objs.files :as files]
             [lt.objs.workspace :as workspace]
+            [lt.objs.topbar :as topbar]
             [lt.objs.opener :as opener]
             [lt.objs.popup :as popup]
             [lt.objs.sidebar :as sidebar]
@@ -29,6 +30,11 @@
 (defn root-file [path]
   (-> (object/create ::workspace.file path)
       (object/add-tags [:workspace.file.root])))
+
+(defn add-child [parent child]
+  (if (object/has-tag? child :workspace.file)
+    (object/update! parent [:files] (fn [cur] (vec (concat #{child} cur))))
+    (object/update! parent [:folders] (fn [cur] (vec (concat #{child} cur))))))
 
 (defn remove-child [p child]
   (if (object/has-tag? child :workspace.file)
@@ -285,67 +291,132 @@
                         (files/mkdir final-path)
                         (object/raise folder :start-rename!))))
 
-(behavior ::rename-folder
-          :triggers #{:rename}
-          :reaction (fn [this n]
-                      (let [path (:path @this)
-                            neue (files/join (files/parent path) n)]
-                        (when-not (= path neue)
-                          ;; In OSX rename is case-sensistive but exists check isn't
-                          (if (and (not= (string/lower-case path) (string/lower-case neue)) (files/exists? neue))
-                            (popup/popup! {:header "Folder already exists."
-                                           :body (str "The folder " neue " already exists, you'll have to pick a different name.")
-                                           :buttons [{:label "ok"
-                                                      :post-action (fn []
-                                                                     (object/raise this :rename.cancel)
-                                                                     (object/raise this :start-rename!))}]})
-                            (let [root? (object/has-tag? this :workspace.folder.root)]
-                              (object/merge! this {:path neue :realized? false})
-                              (files/move! path neue)
-                              (object/raise this :refresh!)
-                              (let [docs (get-in @document/manager [:files])
-                                    old-path (string/join [path files/separator])
-                                    affected (filter (fn [x] (.startsWith x old-path)) (keys docs))]
-                                (doseq [old-fpath affected]
-                                  (let [new-fpath (string/replace-first old-fpath path neue)]
-                                    (document/move-doc old-fpath new-fpath))))
-                              (if root?
-                                (object/raise workspace/current-ws :rename! path neue)
-                                (object/raise workspace/current-ws :watched.rename path neue))
-                              ))))))
+(defui rename-input [this path]
+  [:input.rename {:type "text" :value path :style {:width "100%"}}]
+  :focus (fn []
+           (object/raise this :rename.focus))
+  :blur (fn []
+          (object/raise this :rename.blur)))
 
-(behavior ::rename-file
+(object/object* ::rename-dialog
+                :tags #{:tree.rename}
+                :max-height 130
+                :origin nil
+                :renaming? true
+                :order 1
+                :behaviors #{::rename-focus ::rename-blur ::rename-submit ::rename-cancel ::rename-close! ::rename}
+                :init (fn [this origin]
+                        (let [t (if (files/dir? (:path @origin))
+                                  "folder"
+                                  "file")
+                              rel-path (:path @origin)]
+                          (object/merge! this {:origin origin})
+                           [:div.rename-dialog
+                            [:p "Enter path for " t ":"]
+                            (rename-input this rel-path)
+                            ])))
+
+(defn popup-same-name-error
+  [filename origin]
+  (let [t (if (object/has-tag? origin :workspace.folder)
+            "Folder"
+            "File")]
+    (popup/popup! {:header (str t " already exists.")
+                   :body (str t " " filename " already exists, you'll have to pick a different name.")
+                   :buttons [{:label "ok"
+                              :post-action (fn []
+                                             (object/raise origin :rename.cancel)
+                                             (object/raise origin :start-rename!))}]})))
+
+(defn popup-invalid-path-error
+  [invalid-path origin]
+  (popup/popup! {:header "Path does not exist."
+                 :body (str "Path '" invalid-path "' does not exist, you'll have to pick a different one.")
+                 :buttons [{:label "ok"
+                            :post-action (fn []
+                                           (object/raise origin :rename.cancel)
+                                           (object/raise origin :start-rename!))}]}))
+
+;; TODO: When moving file or folder into root folder (e.g., LightTable/untitled.txt)
+;; the file or folder does not appear until the folder is manually refreshed - all other deeper folders appear fine however
+
+(defn rename-file
+  [origin path neue]
+  ;; When moving a file, current-ws likes to be told about the change before
+  ;; the actual move so the editor tab will not close
+  (let [folder-root? (object/has-tag? origin :workspace.folder.root)
+        file-root?   (object/has-tag? origin :workspace.file.root)
+        old-parent-path  (files/parent path)
+        new-parent-path  (files/parent neue)]
+    (if (or folder-root? file-root?)
+      (object/raise workspace/current-ws :rename! path neue)
+      (object/raise workspace/current-ws :watched.rename path neue))
+    (files/move! path neue)
+    (object/merge! origin {:path neue})
+    (remove-child (find-by-path old-parent-path) origin)
+    (add-child (find-by-path new-parent-path) origin)))
+
+(defn rename-folder
+  [origin path neue]
+  (let [folder-root? (object/has-tag? origin :workspace.folder.root)
+        file-root?   (object/has-tag? origin :workspace.file.root)
+        old-parent-path  (files/parent path)
+        new-parent-path  (files/parent neue)]
+    (object/merge! origin {:path neue :realized? false})
+    (files/move! path neue)
+    (remove-child (find-by-path old-parent-path) origin)
+    (add-child (find-by-path new-parent-path) origin)
+    (let [docs (get-in @document/manager [:files])
+          old-path (string/join [path files/separator])
+          affected (filter (fn [x] (.startsWith x old-path)) (keys docs))]
+      (doseq [old-fpath affected]
+        (let [new-fpath (string/replace-first old-fpath path neue)]
+          (document/move-doc old-fpath new-fpath))))
+    (if (or folder-root? file-root?)
+        (object/raise workspace/current-ws :rename! path neue)
+        (object/raise workspace/current-ws :watched.rename path neue))))
+
+(behavior ::rename
           :triggers #{:rename}
           :reaction (fn [this n]
-                      (let [path (:path @this)
-                            neue (files/join (files/parent path) n)]
+                      (let [origin (:origin @this)
+                            path (:path @origin)
+                            neue n]
                         (when-not (= path neue)
                           ;; In OSX rename is case-sensistive but exists check isn't
                           (if (and (not= (string/lower-case path) (string/lower-case neue)) (files/exists? neue))
-                            (popup/popup! {:header "File already exists."
-                                           :body (str "The file" neue " already exists, you'll have to pick a different name.")
-                                           :buttons [{:label "ok"
-                                                      :post-action (fn []
-                                                                     (object/raise this :rename.cancel)
-                                                                     (object/raise this :start-rename!))}]})
-                            (do
-                              (if (or (object/has-tag? this :workspace.folder.root)
-                                      (object/has-tag? this :workspace.file.root))
-                                (object/raise workspace/current-ws :rename! path neue)
-                                (object/raise workspace/current-ws :watched.rename path neue))
-                              (files/move! path neue)
-                              (object/merge! this {:path neue})))))))
+                            (popup-same-name-error neue origin)
+                            (if (not (files/exists? (files/parent neue)))
+                              (popup-invalid-path-error (files/parent neue) origin)
+                              (let [is-folder?   (object/has-tag? origin :workspace.folder)
+                                    is-file?     (object/has-tag? origin :workspace.file)
+                                    folder-root? (object/has-tag? origin :workspace.folder.root)
+                                    file-root?   (object/has-tag? origin :workspace.file.root)
+                                    old-parent-path  (files/parent path)
+                                    new-parent-path  (files/parent neue)]
+
+                                (when is-file?
+                                  (rename-file origin path neue))
+
+                                (when is-folder?
+                                  (rename-folder origin path neue)))))))))
 
 (behavior ::start-rename
           :triggers #{:start-rename!}
           :reaction (fn [this]
                       (object/merge! this {:renaming? true})
-                      (let [input (dom/$ :input (object/->content this))
-                            len (count (files/without-ext (files/basename (:path @this))))
-                            width (dom/scroll-width (dom/parent input))]
-                        (dom/css input {:width width})
-                        (dom/focus input)
-                        (dom/selection input 0 len "forward"))))
+                      (let [p (object/create ::rename-dialog this)]
+                        (object/merge! p {:origin this})
+                        (topbar/add-item topbar/topbar p)
+                        (object/raise topbar/topbar :toggle p)
+
+                        (let [input (dom/$ :input.rename (object/->content p))
+                              len (count (-> input (dom/val)))
+                              basename (files/basename (:path @this))
+                              basename-len (count basename)
+                              ext-len (- basename-len (count (files/without-ext basename)))]
+                          (dom/focus input)
+                          (dom/selection input (- len basename-len) (- len ext-len) "forward")))))
 
 (behavior ::rename-focus
           :triggers #{:rename.focus}
@@ -355,10 +426,11 @@
 (behavior ::rename-submit
           :triggers #{:rename.submit!}
           :reaction (fn [this]
-                      (let [val (-> (dom/$ :input (object/->content this))
+                      (let [val (-> (dom/$ :input.rename (object/->content this))
                                     (dom/val))]
                         (object/merge! this {:renaming? false})
-                        (object/raise this :rename val))))
+                        (object/raise this :rename val)
+                        (object/raise this :rename.close!))))
 
 (behavior ::rename-blur
           :triggers #{:rename.blur}
@@ -371,7 +443,19 @@
           :triggers #{:rename.cancel!}
           :reaction (fn [this]
                       (object/merge! this {:renaming? false})
+                      (object/raise this :rename.close!)
                       ))
+
+(behavior ::rename-close!
+          :triggers #{:rename.close!}
+          :reaction (fn [this]
+                      (object/raise topbar/topbar :toggle this)
+                      (object/destroy! this)
+                      (if-let [others (-> (object/by-tag :tree.rename)
+                                          (seq))]
+                        (ctx/in! :tree.rename (last others))
+                        (ctx/out! :tree.rename)
+                        )))
 
 (behavior ::duplicate
           :triggers #{:duplicate!}
@@ -417,27 +501,12 @@
    (for [f (sort-by #(-> @% :path files/basename string/lower-case) files)]
      (object/->content f))])
 
-(defui rename-input [this]
-  [:input.rename {:type "text" :value (files/basename (:path @this))}]
-  :focus (fn []
-           (object/raise this :rename.focus))
-  :blur (fn []
-          (object/raise this :rename.blur)))
-
-(defn renameable [this cur content]
-  (if cur
-    (rename-input this)
-    content))
-
 (object/object* ::workspace.file
                 :tags #{:workspace.file :tree-item}
                 :path ""
                 :init (fn [this path]
                         (object/merge! this {:path path})
-                        [:li {:class (bound this #(if (:renaming? %)
-                                                    "renaming"
-                                                    ""))}
-                         (rename-input this)
+                        [:li
                          [:div.tree-item
                           (file-toggle this)]]))
 
@@ -450,10 +519,7 @@
                 :files []
                 :init (fn [this path]
                         (object/merge! this {:path path})
-                        [:li {:class (bound this #(if (:renaming? %)
-                                                    "renaming"
-                                                    ""))}
-                         (rename-input this)
+                        [:li
                          [:div.tree-item
                           (when path
                             (folder-toggle this))
