@@ -65,6 +65,10 @@ This background thread is invoked with the `background` macro.
 
 ## Release process
 
+Pre-release checklist:
+
+ - [ ] Notify users (as described above in the *Node packages* section) if any Node.js packages have been removed as plugins may depend on them
+
 This is our release checklist which can be dropped in to an issue:
 
 - [ ] Release 0.X.X
@@ -72,7 +76,7 @@ This is our release checklist which can be dropped in to an issue:
          - [ ] Update deploy/core/package.json, deploy/core/version.json and project.clj to 0.X.X
          - [ ] Make sure electron version is up to date in version.json
          - [ ] Make sure plugin versions in script/build.sh are latest versions
-      - [ ] Add changelog for release to CHANGELOG.md
+      - [ ] Add changelog with notes for release (i.e release notes) to CHANGELOG.md
       - [ ] Each core developer should QA at least one OS using the [QA checklist](https://github.com/LightTable/LightTable/wiki/QA-Checklist)
       - [ ] When QA passes freeze master
       - [ ] Add changelog to [GH release draft](https://github.com/LightTable/LightTable/releases/new)
