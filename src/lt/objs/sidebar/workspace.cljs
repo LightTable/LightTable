@@ -337,9 +337,6 @@
                                            (object/raise origin :rename.cancel)
                                            (object/raise origin :start-rename!))}]}))
 
-;; TODO: When moving file or folder into root folder (e.g., LightTable/untitled.txt)
-;; the file or folder does not appear until the folder is manually refreshed - all other deeper folders appear fine however
-
 (defn rename-file
   [origin path neue]
   ;; When moving a file, current-ws likes to be told about the change before
@@ -353,8 +350,9 @@
       (object/raise workspace/current-ws :watched.rename path neue))
     (files/move! path neue)
     (object/merge! origin {:path neue})
-    (remove-child (find-by-path old-parent-path) origin)
-    (add-child (find-by-path new-parent-path) origin)))
+    (when-not (or folder-root? file-root?)
+      (remove-child (find-by-path old-parent-path) origin)
+      (add-child (find-by-path new-parent-path) origin))))
 
 (defn rename-folder
   [origin path neue]
@@ -364,8 +362,9 @@
         new-parent-path  (files/parent neue)]
     (object/merge! origin {:path neue :realized? false})
     (files/move! path neue)
-    (remove-child (find-by-path old-parent-path) origin)
-    (add-child (find-by-path new-parent-path) origin)
+    (when-not (or folder-root? file-root?)
+      (remove-child (find-by-path old-parent-path) origin)
+      (add-child (find-by-path new-parent-path) origin))
     (let [docs (get-in @document/manager [:files])
           old-path (string/join [path files/separator])
           affected (filter (fn [x] (.startsWith x old-path)) (keys docs))]
