@@ -8,6 +8,13 @@ In order to streamline pull requests, prior to opening one, consider running you
 
 1. Unless obvious to someone new to the project, yet familiar with Clojure/script, a meaningful docstring should be associated with every class, function, behavior, and object.
 
+## Errors
+
+1. Catch blocks should catch on `:default` unless there is a specific exception to be caught.
+1. Catch blocks should log errors with `lt.objs.console/error`. Namespaces that the console
+  ns depend on cannot refer to the clojure var but can refer to the js fn e.g.
+  `(js/lt.objs.console.error err)`.
+
 ## Behaviors
 
 1. Add brief docstrings via `:desc` key.
