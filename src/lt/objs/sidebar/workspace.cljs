@@ -9,6 +9,7 @@
             [lt.objs.popup :as popup]
             [lt.objs.sidebar :as sidebar]
             [lt.objs.dialogs :as dialogs]
+            [lt.objs.document :as document]
             [lt.objs.menu :as menu]
             [lt.util.dom :as dom]
             [lt.util.cljs :refer [->dottedkw]]
@@ -302,6 +303,12 @@
                               (object/merge! this {:path neue :realized? false})
                               (files/move! path neue)
                               (object/raise this :refresh!)
+                              (let [docs (get-in @document/manager [:files])
+                                    old-path (string/join [path files/separator])
+                                    affected (filter (fn [x] (.startsWith x old-path)) (keys docs))]
+                                (doseq [old-fpath affected]
+                                  (let [new-fpath (string/replace-first old-fpath path neue)]
+                                    (document/move-doc old-fpath new-fpath))))
                               (if root?
                                 (object/raise workspace/current-ws :rename! path neue)
                                 (object/raise workspace/current-ws :watched.rename path neue))
