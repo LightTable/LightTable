@@ -15,6 +15,8 @@ Current ClojureScript version and libraries we use are in [project.clj](https://
 
 Node package installs last done with node.js v2.5.0 and npm v2.13.2.
 
+If you *remove* a Node package make sure to document that in the release notes, broadcast the change in the Gitter room, and post a topic about it in the Google Groups group. Plugins, including user plugins (i.e. plugins not listed in the official plugin list), might be using a package without including it in its own project.
+
 Node dependencies are at deploy/core/node\_modules/. This directory is currently a mix of vendored
 dependencies, forked dependencies and Light Table specific libraries:
 
@@ -60,6 +62,10 @@ This background thread is invoked with the `background` macro.
 
 ## Release process
 
+Pre-release checklist:
+
+ - [ ] Notify users (as described above in the *Node packages* section) if any Node.js packages have been removed as plugins may depend on them
+
 This is our release checklist which can be dropped in to an issue:
 
 - [ ] Release 0.X.X
@@ -67,7 +73,7 @@ This is our release checklist which can be dropped in to an issue:
          - [ ] Update deploy/core/package.json, deploy/core/version.json and project.clj to 0.X.X
          - [ ] Make sure electron version is up to date in version.json
          - [ ] Make sure plugin versions in script/build.sh are latest versions
-      - [ ] Add changelog for release to CHANGELOG.md
+      - [ ] Add changelog with notes for release (i.e release notes) to CHANGELOG.md
       - [ ] Each core developer should QA at least one OS using the [QA checklist](https://github.com/LightTable/LightTable/wiki/QA-Checklist)
       - [ ] When QA passes freeze master
       - [ ] Add changelog to [GH release draft](https://github.com/LightTable/LightTable/releases/new)
