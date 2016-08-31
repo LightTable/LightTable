@@ -11,8 +11,10 @@
 
 (def ^:private fs (js/require "fs"))
 (def ^:private fpath (js/require "path"))
-(def ^:private wrench (load/node-module "wrench"))
-(def ^:private shell (js/require "shell"))
+;; https://github.com/shelljs/shelljs
+(def ^:private shell (load/node-module "shelljs"))
+;; https://github.com/electron/electron/blob/master/docs/api/shell.md
+(def ^:private electron-shell (js/require "shell"))
 (def ^:private os (js/require "os"))
 (def ^:private data-path (platform/get-data-path))
 
@@ -231,13 +233,13 @@
       (when cb (cb e)))))
 
 (defn trash! [path]
-  (.moveItemTotrash shell path))
+  (.moveItemTotrash electron-shell path))
 
 (defn delete!
   "Delete file or directory"
   [path]
   (if (dir? path)
-    (.rmdirSyncRecursive wrench path)
+    (.rm shell "-rf" path)
     (.unlinkSync fs path)))
 
 (defn move!
@@ -249,7 +251,7 @@
   "Copy file or directory to given path"
   [from to]
   (if (dir? from)
-    (.copyDirSyncRecursive wrench from to)
+    (.cp shell "-R" from to)
     (save to (:content (open-sync from)))))
 
 (defn mkdir
