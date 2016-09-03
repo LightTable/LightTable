@@ -8,7 +8,7 @@
 
 (def fs (js/require "fs"))
 (def clipboard (js/require "clipboard"))
-(def shell (js/require "shell"))
+(def electron-shell (js/require "shell"))
 
 (defn get-data-path []
   (.getDataPath (.require (js/require "remote") "app")))
@@ -20,18 +20,18 @@
     "darwin" :mac))
 
 (defn open-url [path]
-  (.openExternal shell path))
+  (.openExternal electron-shell path))
 
 (defn open
   "If the given path exists, open it with the desktop's default manner.
   Otherwise, open it as an external protocol e.g. a url."
   [path]
   (if (.existsSync fs path)
-    (.openItem shell path)
+    (.openItem electron-shell path)
     (open-url path)))
 
 (defn show-item [path]
-  (.showItemInFolder shell path))
+  (.showItemInFolder electron-shell path))
 
 (defn copy
   "Copies given text to platform's clipboard"
