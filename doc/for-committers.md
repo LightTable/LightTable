@@ -85,6 +85,7 @@ This is our release checklist which can be dropped in to an issue:
       - [ ] Update download links on lighttable.com
       - [ ] Mailing list announcement - [example email](https://gist.github.com/cldwalker/3d67153fe1eade2ae3cf)
       - [ ] Optional blog post if a major release
+      - [ ] Inform [Brian Dukes](https://github.com/bdukes) so that he can update the [Chocolatey package](https://chocolatey.org/packages/LightTable)
       - [ ] After release, [build api documentation](#build-api-documentation)
 
 ## Build API documentation
