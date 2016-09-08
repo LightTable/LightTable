@@ -383,6 +383,12 @@
                             (object/raise widget :clear!)))
                         (object/update! this [:widgets] assoc [line :underline] res-obj))))
 
+(behavior ::copy-underline-result
+          :triggers #{:copy}
+          :reaction (fn [this]
+                      (platform/copy (string/join "\n"
+                                                  (map #(.-innerText %) (.-children (:result @this)))))))
+
 ;;****************************************************
 ;; inline exception
 ;;****************************************************

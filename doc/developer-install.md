@@ -41,6 +41,8 @@ To run electron on Linux you need to have libgconf-2.so.4 installed.
 
 Ref: [Linux (Arch) build depends on libgconf-2.so.4](https://github.com/LightTable/LightTable/issues/1926)
 
+Note that, on Debian-based distros, you may need to install an additional package as there is a pre-existing *node* package and the standard Node.js package on these distros installs a Node.js executable named `nodejs` instead of `node` as our build script expects. See issue [#1931](https://github.com/LightTable/LightTable/issues/1931) for some background.
+
 # Build
 
 To build LightTable from scratch on OSX, Windows Cygwin or Linux:

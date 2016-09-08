@@ -8,6 +8,8 @@
  [:app "ctrl-shift-d" :docs.search.show]
  [:app "pmeta-o" :navigate-workspace-transient]
  [:app "pmeta-shift-=" :window.zoom-in]
+ [:app "pmeta-=" :window.zoom-in]
+ [:app "pmeta-0" :window.zoom-reset]
  [:app "pmeta-r" :refresh-connected-browser]
  [:app "f11" :window.fullscreen]
 
@@ -33,7 +35,7 @@
  [:editor.keys.normal "pmeta-f" :find.fill-selection :find.show]
  [:editor.keys.normal "pmeta-g" :find.next]
  [:editor.keys.normal "tab" :auto-complete]
- [:editor.keys.normal "backspace" :editor.backspace-pair :editor.backspace-indent]
+ [:editor.keys.normal "backspace" :passthrough :editor.backspace-indent]
 
  [:filter-list.input "down" (:filter-list.input.move-selection 1)]
  [:filter-list.input "esc" (:filter-list.input.escape! :force)]
@@ -73,7 +75,7 @@
 
  [:searcher.search "enter" :searcher.search]
 
- [:sidebar.clients "esc" :hide-connect]
+ [:sidebar.clients "esc" :show-connect]
 
  [:sidebar.doc.search.input "esc" :docs.search.hide]
  [:sidebar.doc.search.input "enter" :docs.search.exec]

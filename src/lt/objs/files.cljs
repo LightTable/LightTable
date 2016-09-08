@@ -11,8 +11,10 @@
 
 (def ^:private fs (js/require "fs"))
 (def ^:private fpath (js/require "path"))
-(def ^:private wrench (load/node-module "wrench"))
-(def ^:private shell (js/require "shell"))
+;; https://github.com/shelljs/shelljs
+(def ^:private shell (load/node-module "shelljs"))
+;; https://github.com/electron/electron/blob/master/docs/api/shell.md
+(def ^:private electron-shell (js/require "shell"))
 (def ^:private os (js/require "os"))
 (def ^:private data-path (platform/get-data-path))
 
@@ -32,23 +34,23 @@
 (declare files-obj)
 
 (behavior ::file-types
-                  :triggers #{:object.instant}
-                  :type :user
-                  :desc "Files: Associate file types"
-                  :params [{:label "types"
-                            :example "[{:exts [:wisp],\n  :mime \"text/x-clojurescript\",\n  :name \"Wisp\",\n  :tags [:editor.wisp]}]"}]
-                  :reaction (fn [this types]
-                              (object/merge! files-obj (typelist->index @files-obj types))))
+          :triggers #{:object.instant}
+          :type :user
+          :desc "Files: Associate file types"
+          :params [{:label "types"
+                    :example "[{:exts [:wisp],\n  :mime \"text/x-clojurescript\",\n  :name \"Wisp\",\n  :tags [:editor.wisp]}]"}]
+          :reaction (fn [this types]
+                      (object/merge! files-obj (typelist->index @files-obj types))))
 
 (behavior ::file.ignore-pattern
-                  :triggers #{:object.instant}
-                  :type :user
-                  :exclusive true
-                  :desc "Files: Set ignore pattern"
-                  :params [{:label "pattern"
-                            :example "\"\\\\.git|\\\\.pyc\""}]
-                  :reaction (fn [this pattern]
-                              (set! ignore-pattern (js/RegExp. pattern))))
+          :triggers #{:object.instant}
+          :type :user
+          :exclusive true
+          :desc "Files: Set ignore pattern"
+          :params [{:label "pattern"
+                    :example "\"\\\\.git|\\\\.pyc\""}]
+          :reaction (fn [this pattern]
+                      (set! ignore-pattern (js/RegExp. pattern))))
 
 (behavior ::open-failed
           :triggers #{:files.open.error}
@@ -231,31 +233,25 @@
       (when cb (cb e)))))
 
 (defn trash! [path]
-  (.moveItemTotrash shell path))
+  (.moveItemTotrash electron-shell path))
 
 (defn delete!
   "Delete file or directory"
   [path]
   (if (dir? path)
-    (.rmdirSyncRecursive wrench path)
+    (.rm shell "-rf" path)
     (.unlinkSync fs path)))
 
 (defn move!
   "Move file or directory to given path"
   [from to]
-  (if (dir? from)
-    (do
-      (.copyDirSyncRecursive wrench from to)
-      (.rmdirSyncRecursive wrench from))
-    (do
-      (save to (:content (open-sync from)))
-      (delete! from))))
+  (.renameSync fs from to))
 
 (defn copy
   "Copy file or directory to given path"
   [from to]
   (if (dir? from)
-    (.copyDirSyncRecursive wrench from to)
+    (.cp shell "-R" from to)
     (save to (:content (open-sync from)))))
 
 (defn mkdir

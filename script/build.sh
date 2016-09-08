@@ -8,13 +8,13 @@ set -e
 # the app before calling build-app.sh to build it.
 
 # Check if lein is installed
-[ `which lein` ] || { echo >&2 "Please install leiningen before running this script."; exit 1; }
+[ "`which lein`" ] || { echo >&2 "Please install leiningen before running this script."; exit 1; }
 if [ "$(echo `lein version` | grep 'Leiningen \(1.\|2.0\)')" ]; then
   echo "lein version must be 2.1 or above. Do a lein upgrade first"; exit 1;
 fi
 
 # Check if npm is installed
-[ `which npm` ] || { echo >&2 "Please install npm before running this script."; exit 1; }
+[ "`which npm`" ] || { echo >&2 "Please install npm before running this script."; exit 1; }
 
 # Ensure we start in project root
 cd "$(dirname "${BASH_SOURCE[0]}")"; cd ..
@@ -35,7 +35,7 @@ rm -f deploy/core/node_modules/lighttable/bootstrap.js
 lein cljsbuild once app
 
 # Fetch plugins
-PLUGINS=("Clojure,0.2.0" "CSS,0.0.6" "HTML,0.1.0" "Javascript,0.1.3"
+PLUGINS=("Clojure,0.3.1" "CSS,0.0.6" "HTML,0.1.0" "Javascript,0.2.0"
          "Paredit,0.0.4" "Python,0.0.7" "Rainbow,0.0.8")
 
 # Plugins cache

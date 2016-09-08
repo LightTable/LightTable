@@ -1,7 +1,7 @@
 {
   "name": "LightTable",
   "description": "LightTable Electron App",
-  "version": "0.8.0",
+  "version": "0.8.1",
   "main": "main.js",
   "browserWindowOptions": {
     "icon": "img/lticon.png",
@@ -18,8 +18,7 @@
   "dependencies": {
     "codemirror": "^4.7.0",
     "optimist": "^0.5.2",
-    "request": "^2.14.0",
-    "wrench": "^1.5.6"
+    "request": "^2.14.0"
   },
   "forkedDependencies": {
     "replace": "^0.2.7",

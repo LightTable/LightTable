@@ -11,18 +11,6 @@ button { cursor:default; border:none; outline:none; border-radius:0px; padding:2
 
 * { box-sizing: border-box; }
 
-.fullscreen #titlebar { display:none; }
-#titlebar { -webkit-app-region: drag; height:29px; }
-#titlebar p { text-align:center; padding-top:5px;  }
-#titlebar .window-buttons { position:absolute; left:8px; top:5px; }
-#titlebar .window-buttons .button { position:relative; display:inline-block; border-radius:10px !important; width:12px; height:12px; margin-right:8px; }
-#titlebar .window-buttons .button span { font-size:11px; }
-#titlebar .window-buttons .close span { position:absolute; top:-3px; left:3px; }
-#titlebar .window-buttons .minimize span { position:absolute; top:-5px; left:3px; font-size:14px }
-#titlebar .window-buttons .maximize span { position:absolute; top:-3px; left:2px; }
-#titlebar .fullscreen { position:absolute; top:5px; right:8px; }
-#titlebar .button { -webkit-app-region: no-drag; }
-
 body { -webkit-user-select: none; }
 
 #loader { position:absolute; top:0; left:0; right:0; bottom:0; width:100vw; height:100vh; display:table; text-align:center; box-sizing:border-box; vertical-align:middle;}
@@ -101,12 +89,6 @@ body { -webkit-user-select: none; }
 .console li > table td { vertical-align:top; }
 .console td.loc { padding-right:5px; }
 .console .log-val + .log-val:before { content: ", " }
-
-#multi .fullscreen { display:none; position:absolute; right:8px; top:8px; cursor:default; border-radius:3px; width:13px; height:13px; font-size:11pt; line-height:0.77em; padding-left:3px; box-sizing:border-box; }
-.windows.fullscreen #multi .fullscreen { display:block; }
-.linux.fullscreen #multi .fullscreen { display:block; }
-.windows.fullscreen #multi .tabset:last-child .list {width:calc(100% - 40px);}
-.linux.fullscreen #multi .tabset:last-child .list {width:calc(100% - 40px);}
 
 #intro { padding:50px; }
 #intro h1 { margin-bottom:50px; }
@@ -209,13 +191,14 @@ body { -webkit-user-select: none; }
 
 #right-bar .navigate { height:100%; overflow:auto; box-sizing:border-box; }
 #right-bar .navigate em { font-weight:normal; }
-#right-bar .navigate li { border:none; padding:5px 5px; cursor:default; overflow:hidden; width:100%; box-sizing:border-box; white-space:nowrap; }
+#right-bar .navigate li { border:none; padding:5px 5px; cursor:default; width:100%; box-sizing:border-box; white-space:nowrap; }
 #right-bar .navigate li:empty { display:none; }
 #right-bar .navigate p { font-size:8pt; }
 #right-bar .navigate h2 { font-size:11pt; }
 #right-bar .navigate .selected, #side .navigate li:hover { border-radius:2px}
 #right-bar .navigate input { border:none; margin-bottom:20px; border-radius:2px; outline:none; box-sizing:border-box; width:100%; padding:10px; font-size:11pt;}
 #right-bar .navigate .filter-list.empty ul:before { content: "Add some files or folders to your workspace to fill the navigator."; padding:10px 0; text-align:center; display:inline-block;}
+#right-bar .navigate.active {overflow: auto;}
 
 #right-bar .clients.active {overflow:auto; height:100%; }
 #right-bar .clients .list > h2.add { float:none; display:block; box-sizing:border-box; text-align:left; margin-bottom:15px; }
@@ -293,11 +276,6 @@ body { -webkit-user-select: none; }
 #find-bar input { display:inline-block; font-size:11pt; font-family:"Inconsolata", "Ubuntu Mono", "Consolas", monospace; border-radius:0;  width:50%; height:30px; box-sizing:border-box; padding:5px; padding-left:10px; outline:none; }
 #find-bar button { position:absolute; right:-3px; z-index: 100000; padding:6px 10px;}
 
-
-.docs { width:100%; height:100%; }
-.docs iframe { width:100%; height:100%; }
-.docs .frame-shade { height:100%; width:100%; background:transparent; position:absolute; display:none; }
-
 #browser webview { position:absolute; top:0; left:0; right:0; bottom:35px; }
 #browser nav { position:absolute; bottom:5px; left:0; right:0; }
 #browser .frame-shade { height:-webkit-calc(100% - 35px); width:100%; background:transparent; position:absolute; display:none; }
@@ -322,39 +300,6 @@ body { -webkit-user-select: none; }
 .search-results .line { display:inline-block; margin-right:5px; padding:0 5px; }
 .search-results div div { position:relative; }
 .search-results  button { position:absolute; right:0px; margin:2px 0; padding:5px 10px; border-radius:0px; }
-
-.struct-tree { overflow:auto; height:100%; }
-.struct-tree span { margin:0 2px; }
-.struct-tree div {display:inline-block; width:100%; padding-left:20px; }
-.struct-tree > div { background:#444; }
-.struct-tree > div > div { background:#464; }
-.struct-tree > div > div > div { background:#446; }
-.struct-tree > div > div > div > div { background:#446; }
-.struct-tree > div > div > div > div > div { background:#466; }
-.struct-tree > div > div > div > div > div > div { background:#646; }
-.struct-tree > div > div > div > div > div > div > div { background:#844; }
-.struct-tree > div > div > div > div > div > div > div > div { background:#666; }
-.struct-tree > .tlist { margin-bottom:10px; width:100%; }
-.struct-tree .tlist:before { content: "("; }
-.struct-tree .tlist:after { content: ")"; }
-.struct-tree .vec:before { content: "["; }
-.struct-tree .vec:after { content: "]"; }
-.struct-tree .map:before { content: "{"; }
-.struct-tree .map:after { content: "}"; }
-.struct-tree .set:before { content: "#{"; }
-.struct-tree .set:after { content: "}"; }
-
-.codex { height:100%; overflow:auto; }
-.codex > li { border-bottom:2px solid #444; }
-.codex .CodeMirror { height:auto; position:relative; }
-.codex .CodeMirror-scroll { height:auto; }
-
-.gitmarks { width:5px; }
-.gitmark { height:1em; background:#5fa; display:inline-block; width:5px; }
-.gitmodified { height:1em; background:#b5f; display:inline-block; width:5px; }
-
-.jshintmarks { width:5px; }
-.jshinterror { height:1em; display:inline-block; width:5px; }
 
 .inline-doc { line-height:1.1em; margin-left:-10px; padding:5px 20px; border-radius:0px; }
 .inline-doc h1 span { font-size:10pt; }

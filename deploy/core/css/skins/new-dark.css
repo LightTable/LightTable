@@ -521,19 +521,6 @@ input {
   background: #606970;
   border: 1px solid #606970;
 }
-.docs ::-webkit-scrollbar {
-  background: #3b3f41 !important;
-}
-.docs ::-webkit-scrollbar-track {
-  background: #3b3f41 !important;
-}
-.docs ::-webkit-scrollbar-corner {
-  background: #3b3f41 !important;
-}
-.docs ::-webkit-scrollbar-thumb {
-  background: #606970;
-  border: 1px solid #606970;
-}
 .search-results .path,
 .search-results .line {
   color: #bbb;
@@ -576,24 +563,6 @@ input {
 }
 .CodeMirror .watched {
   border-bottom: 1px solid #7ffffd;
-}
-.hintwrapper {
-  padding: 2px 0;
-  padding-bottom: 5px;
-  padding-left: 12px;
-  box-sizing: border-box;
-}
-.jshinterrors {
-  display: inline-block;
-  box-sizing: border-box;
-  padding: 2px 10px;
-  border-radius: 0px;
-  background: #73404c;
-  color: #ffa6a6;
-}
-.hintwrapper .spacer {
-  display: inline-block;
-  white-space: pre;
 }
 .behavior-helper-line {
   z-index: 10 !important;
@@ -824,9 +793,6 @@ input {
   width: 20px;
   height: 20px;
   background: url("../../img/connectingloader.gif");
-}
-#titlebar .button {
-  color: #ccc;
 }
 .load-wrapper .img {
   background: url("../../img/loaderdark.gif");

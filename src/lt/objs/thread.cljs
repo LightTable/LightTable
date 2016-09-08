@@ -12,51 +12,51 @@
 (declare worker)
 
 (behavior ::try-send
-                  :triggers #{:try-send!}
-                  :reaction (fn [this msg]
-                              (if-not (:connected @this)
-                                (object/raise this :queue! msg)
-                                (object/raise this :send! msg))))
+          :triggers #{:try-send!}
+          :reaction (fn [this msg]
+                      (if-not (:connected @this)
+                        (object/raise this :queue! msg)
+                        (object/raise this :send! msg))))
 
 (behavior ::queue!
-                  :triggers #{:queue!}
-                  :reaction (fn [this msg]
-                              (object/update! this [:queue] conj msg)))
+          :triggers #{:queue!}
+          :reaction (fn [this msg]
+                      (object/update! this [:queue] conj msg)))
 
 (behavior ::send!
-                  :triggers #{:send!}
-                  :reaction (fn [this msg]
-                              (.send (:worker @this) (clj->js msg))))
+          :triggers #{:send!}
+          :reaction (fn [this msg]
+                      (.send (:worker @this) (clj->js msg))))
 
 (behavior ::connect
-                  :triggers #{:connect}
-                  :reaction (fn [this]
-                              (doseq [q (:queue @this)]
-                                (object/raise this :send! q))
-                              (object/merge! this {:connected true
-                                                   :queue []})))
+          :triggers #{:connect}
+          :reaction (fn [this]
+                      (doseq [q (:queue @this)]
+                        (object/raise this :send! q))
+                      (object/merge! this {:connected true
+                                           :queue []})))
 
 (behavior ::message
-                  :triggers #{:message}
-                  :reaction (fn [this m]
-                              (when-let [obj (object/by-id (.-obj m))]
-                                (object/raise obj
-                                              (if-not (keyword? (.-msg m))
-                                                (keyword (.-msg m))
-                                                (.-msg m))
-                                              (if (= "clj" (.-format m))
-                                                (reader/read-string (.-res m))
-                                                (.-res m))))))
+          :triggers #{:message}
+          :reaction (fn [this m]
+                      (when-let [obj (object/by-id (.-obj m))]
+                        (object/raise obj
+                                      (if-not (keyword? (.-msg m))
+                                        (keyword (.-msg m))
+                                        (.-msg m))
+                                      (if (= "clj" (.-format m))
+                                        (reader/read-string (.-res m))
+                                        (.-res m))))))
 
 (behavior ::kill!
-                  :triggers #{:kill!}
-                  :reaction (fn [this]
-                              (.kill (:worker @this))))
+          :triggers #{:kill!}
+          :reaction (fn [this]
+                      (.kill (:worker @this))))
 
 (behavior ::shutdown-worker-on-close
-                  :triggers #{:closed}
-                  :reaction (fn [app]
-                              (object/raise worker :kill!)))
+          :triggers #{:closed}
+          :reaction (fn [app]
+                      (object/raise worker :kill!)))
 
 ;; Provides a forked thread, mainly for use with background macro. Parent thread
 ;; sends messages to child thread. Child thread performs work and sends results
