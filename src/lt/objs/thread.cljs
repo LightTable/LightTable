@@ -107,17 +107,3 @@
 (object/tag-behaviors :worker-thread [::kill! ::connect ::send! ::queue! ::try-send ::message])
 
 (def worker (object/create ::worker-thread))
-
-(comment
-
-(object/raise test :kill!)
-(object/destroy! test)
-
-(def t (background (fn [m]
-          (.log js/console "this is a message! " m)
-          )))
-
-(t test "blah")
-
-
-  )
