@@ -37,6 +37,7 @@
                        lt.objs.editor.pool lt.objs.files lt.objs.notifos]
           :source-uri "https://github.com/LightTable/LightTable/blob/{version}/{filepath}#L{line}"
           ;; Be explicit that undocumented public fns should be documented
-          :metadata {:doc "TODO: Add docstring"}}
+          :metadata {:doc "TODO: Add docstring"
+                     :doc/format :markdown}}
   :source-paths ["src/"]
   )

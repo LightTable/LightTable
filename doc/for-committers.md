@@ -101,3 +101,5 @@ This is our release checklist which can be dropped in to an issue:
 Run `script/build-api-docs.sh` on a clean git state to build API documentation for the current LT version and publish generated docs. Make sure there are no pending git changes as this script will change git branches and push generated API docs to gh-pages.
 
 Expect to see a ton of warnings e.g. `WARNING: Use of undeclared Var cljs.core/seq at line 197`. This will be noise we have to live with until we upgrade ClojureScript.
+
+To build documentation locally for debugging of documentation generation, run `lein with-profile doc codox`. This will create a `codox` directory within the LightTable directory. Do not include in pull requests or commits. Note, the generated documenation will not have styling, and the view source links may be incorrect.
