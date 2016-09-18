@@ -2,11 +2,11 @@
   "Provide fns and behaviors for interfacing with a CodeMirror editor
   object. Also manage defining and loading [CodeMirror](http://codemirror.net/doc/manual.html).
 
-  Editor objects are frequently used as arguements for functions, but often only the internal
+  Editor objects are frequently used as arguments for functions, but often only the internal
   CodeMirror object is actually used. Where the following documentation referers to the editor,
   it is informally referring to the editor's CodeMirror object.
 
-  Commonly encountered arguement names:
+  Commonly encountered argument names:
 
   * `e` - Editor
   * `v` - Value

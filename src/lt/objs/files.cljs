@@ -141,7 +141,7 @@
   (subs (.extname fpath path) 1))
 
 (defn without-ext
-  "Returns the `path`, but without the last extension, deteremined by the final `.` of the path.
+  "Returns the `path`, but without the last extension, determined by the final `.` of the path.
 
   Example:
   ```
