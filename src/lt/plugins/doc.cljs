@@ -133,7 +133,7 @@
           (clients/send c (:trigger cur) {:search v} :only this))))))
 
 (defn ->val [this]
-  (dom/val (dom/$ :.search (object/->content this))))
+  (dom/val (dom/$ :input.search (object/->content this))))
 
 (defn grouped-items [results v prev]
   (let [normal (dom/fragment [])
@@ -199,10 +199,19 @@
                         (dom/prepend old exact)
                         (dom/append old normal))))
 
+(behavior ::focus-on-show
+          :triggers #{:show}
+          :reaction (fn [this]
+                      (object/raise this :focus!)))
+
 (behavior ::focus!
           :triggers #{:focus!}
           :reaction (fn [this]
-                      (dom/focus (dom/$ :input (object/->content this)))))
+                      (if-not (:active @this)
+                        (let [input (dom/$ :input (object/->content this))]
+                          (dom/focus input)
+                          (.select input))
+                        (object/raise (-> @this :active :options) :focus!))))
 
 (object/object* ::sidebar.doc.search
                 :tags #{:sidebar.docs.search}
@@ -230,8 +239,7 @@
               :desc "Docs: Search language docs"
               :exec (fn [force?]
                       (when doc-search
-                        (object/raise sidebar/rightbar :toggle doc-search {:force? force?})
-                        (object/raise doc-search :focus!))
+                        (object/raise sidebar/rightbar :toggle doc-search {:force? force?}))
                       )})
 
 (cmd/command {:command :docs.search.hide
@@ -239,7 +247,7 @@
               :hidden true
               :exec (fn [force?]
                       (when doc-search
-                        (object/raise sidebar/rightbar :close! doc-search))
+                        (object/raise sidebar/rightbar :close!))
                       )})
 
 (behavior ::init-doc-search

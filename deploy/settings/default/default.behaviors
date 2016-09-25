@@ -517,6 +517,7 @@
 
  [:sidebar.docs.search :lt.plugins.doc/sidebar.doc.search.exec]
  [:sidebar.docs.search :lt.plugins.doc/doc.search.results]
+ [:sidebar.docs.search :lt.plugins.doc/focus-on-show]
  [:sidebar.docs.search :lt.plugins.doc/focus!]
  [:sidebar.docs.search :lt.plugins.doc/set-item]
  [:sidebar.docs.search :lt.plugins.doc/clear!]
