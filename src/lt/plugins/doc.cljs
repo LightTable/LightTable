@@ -76,12 +76,46 @@
               (not= (:doc doc) "nil"))
      [:pre (:doc doc)])])
 
+(defn- retrieve-behavior
+  "Helper method for behavior `editor.doc.show!` to determine if the given `ns` and `name`
+  match existing behaviors.
+
+  Returns found behavior or `nil`."
+  [ns name]
+  (@object/behaviors (keyword (str ns "/" (subs name 2)))))
+
+(defn- retrieve-object-def
+  "Helper method for behavior `editor.doc.show!` to determine if the given `ns` and `name`
+  match existing object defs. Not recommended to print whole object def... use destructuring.
+
+  Returns found object def or `nil`."
+  [ns name]
+  (@object/object-defs (keyword (str ns "/" (subs name 2)))))
+
+(defn- retrieve-docstring
+  "Helper method for behavior `editor.doc.show!` that returns the docstring for a matching
+  object or behavior. If `:doc` is not found, then `:desc` is used. Otherwise `nil`."
+  [ns name]
+  (let [beh (retrieve-behavior ns name)
+        beh-doc (or (:doc beh) (:desc beh))
+        obj (retrieve-object-def ns name)
+        obj-doc (or (:doc obj) (:desc obj))]
+    (if (and (nil? beh-doc) (nil? obj-doc))
+      nil
+      (if (nil? beh-doc)
+        obj-doc
+        beh-doc))))
+
 (behavior ::editor.doc.show!
           :triggers #{:editor.doc.show!}
           :reaction (fn [editor doc]
                       (when (not= (:name doc) "")
-                        (inline-doc editor (doc-ui doc) {} (:loc doc)))
-                      ))
+                        ;; If :file and :doc are nil then this is likely a behavior or object.
+                        ;; Check if a match exists and splice the resulting :doc into the doc argument.
+                        (let [doc (if (and (nil? (:file doc)) (nil? (:doc doc)))
+                                    (merge doc {:doc (retrieve-docstring (:ns doc) (:name doc))})
+                                    doc)]
+                          (inline-doc editor (doc-ui doc) {} (:loc doc))))))
 
 (defui search-item [item]
   [:li

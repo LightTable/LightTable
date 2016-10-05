@@ -226,7 +226,8 @@
   * :triggers - Set of object's triggers
   * :init - Init fn called when object is created. Fn's return value
             is hiccup html content and saved to :content
-  * :listeners (internal) - Map of triggers to vectors of behaviors"
+  * :listeners (internal) - Map of triggers to vectors of behaviors
+  * :doc - Equivalent to a traditional function docstring."
   [name & r]
   (-> (apply make-object* name r)
       (store-object*)
