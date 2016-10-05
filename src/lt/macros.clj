@@ -12,7 +12,8 @@
   * :reaction (required) - Function to invoke when behavior is called.
                            First arg is object behavior is attached to
   * :triggers (required) - Set of keyword triggers that trigger behavior
-  * :desc - Brief description of behavior
+  * :desc - Brief description of behavior.
+  * :doc - Equivalent to a traditional function docstring.
   * :type - When set to :user, shows up in hints. Not enabled by default
   * :params - Vector of maps describing behavior args. Each map contains required :label key
               and optional keys of :type (:string, :number or :list), :items and :example
@@ -22,19 +23,25 @@
   (if (and (seq? reaction) (= 'fn (first reaction)))
     (let [[_ args & body] reaction]
       `(do
-         (defn- ~(namify "BEH" name) ~args ~@body)
+         (defn- ~(namify "BEH" name) ~(:doc r "") ~args ~@body)
          (lt.object/behavior* ~name ~@(apply concat (assoc r :reaction (namify "BEH" name))))))
     `(lt.object/behavior* ~name ~@(apply concat r))))
 
 (defmacro defui
   "Define a UI element for given hiccup data and key-value pairs
-  of events for element"
-  [sym params hiccup & events]
-  `(defn ~sym ~params
-     (let [e# (crate.core/html ~hiccup)]
-       (doseq [[ev# func#] (partition 2 ~(vec events))]
-         (lt.util.dom/on e# ev# func#))
-       e#)))
+  of events for element. Like defn, a docstring is optional."
+  [sym & decl]
+   (let [doc (if (string? (first decl))
+                  (first decl)
+                  "")
+        [params hiccup & events] (if (string? (first decl))
+                (next decl)
+                decl)]
+   `(defn ~sym ~doc ~params
+      (let [e# (crate.core/html ~hiccup)]
+        (doseq [[ev# func#] (partition 2 ~(vec events))]
+          (lt.util.dom/on e# ev# func#))
+        e#))))
 
 (defmacro ^:private timed [ev & body]
   `(let [start# (lighttable.util.js/now)
