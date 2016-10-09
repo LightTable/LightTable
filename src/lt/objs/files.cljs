@@ -408,7 +408,7 @@
   "Delete file or directory from filesystem."
   [path]
   (if (dir? path)
-    (.rm shell "-rf" path)
+    (.rm shell "-r" path)
     (.unlinkSync fs path)))
 
 (defn move!
