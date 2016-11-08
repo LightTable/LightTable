@@ -494,7 +494,7 @@
    (search-input this)])
 
 (defui source-button [plugin]
-  [:span.source [:a {:href (:url plugin (:source plugin))} "source"]]
+  [:span.source [:a {:href (:url plugin (:source plugin))} "website"]]
   :click (fn [e]
            (dom/prevent e)
            (dom/stop-propagation e)
@@ -526,6 +526,13 @@
            (dom/prevent e)
            (dom/stop-propagation e)))
 
+(defui plugin-title [plugin]
+  [:h1 (:name plugin) [:span.version (:version plugin)]]
+  :click (fn [e]
+           (dom/prevent e)
+           (dom/stop-propagation e)
+           (platform/open-url (:url plugin (:source plugin)))))
+
 (defui server-plugin-ui [plugin]
   (let [info plugin
         ver (:version info)
@@ -540,7 +547,7 @@
          (update-button plugin)
          [:span.installed]))
      (source-button plugin)
-     [:h1 (:name info) [:span.version ver]]
+     (plugin-title plugin)
      [:h3 (:author info)]
      [:p (:desc info)]]))
 
@@ -566,7 +573,7 @@
        (update-button (assoc plugin :version cached)))
      (uninstall-button plugin)
      (source-button plugin)
-     [:h1 (:name plugin) [:span.version (:version plugin)]]
+     (plugin-title plugin)
      [:h3 (:author plugin)]
      [:p (:desc plugin)]
      ]))
