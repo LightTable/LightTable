@@ -17,6 +17,10 @@ In order to streamline pull requests, prior to opening one, consider running you
   ns depend on cannot refer to the clojure var but can refer to the js fn e.g.
   `(js/lt.objs.console.error err)`.
 
+## Plugins
+
+1. Any `:desc` key should start with the plugin name. For instance, with the Clojure plugin, `:desc "Clojure: Eval editor content"` would be appropriate. This is because the plugin is named Clojure, not because it works with Clojure.
+
 ## Behaviors
 
 1. Add brief docstrings via `:desc` key.
