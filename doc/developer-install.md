@@ -66,13 +66,13 @@ line before compiling ClojureScript to get around [issue 1025](https://github.co
 Once you've built LightTable, run it in one of the following ways:
 
 * OSX
-  * As a commandline executable: `builds/lighttable-0.8.0-mac/light`
-  * As an application: `open -a $PWD/builds/lighttable-0.8.0-mac/LightTable.app`
+  * As a commandline executable: `builds/lighttable-0.8.1-mac/light`
+  * As an application: `open -a $PWD/builds/lighttable-0.8.1-mac/LightTable.app`
 * Linux
-  * As a commandline executable: `builds/lighttable-0.8.0-linux/light`
-  * As an application: `builds/lighttable-0.8.0-linux/LightTable`
+  * As a commandline executable: `builds/lighttable-0.8.1-linux/light`
+  * As an application: `builds/lighttable-0.8.1-linux/LightTable`
 * Windows
-  * As an application: `builds/lighttable-0.8.0-windows/LightTable.exe`
+  * As an application: `builds/lighttable-0.8.1-windows/LightTable.exe`
 
 You can also run LightTable with `script/light.sh`. This script allows you to
 skip running `script/build-app.sh`. While it's useful as a dev convenience,
