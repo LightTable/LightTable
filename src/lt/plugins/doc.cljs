@@ -72,6 +72,9 @@
    (when (and (:args doc)
               (not= (:args doc) "nil"))
      [:h3 (:args doc)])
+   (when (and (:labels doc)
+              (not= (:labels doc) ""))
+     [:h3 (str "[" (:labels doc) "]")])
    (when (and (:doc doc)
               (not= (:doc doc) "nil"))
      [:pre (:doc doc)])])
@@ -92,19 +95,22 @@
   [ns name]
   (@object/object-defs (keyword (str ns "/" (subs name 2)))))
 
+(defn- retrieve
+  [ns name]
+  (or (retrieve-behavior ns name)
+      (retrieve-object-def ns name)))
+
 (defn- retrieve-docstring
   "Helper method for behavior `editor.doc.show!` that returns the docstring for a matching
   object or behavior. If `:doc` is not found, then `:desc` is used. Otherwise `nil`."
   [ns name]
-  (let [beh (retrieve-behavior ns name)
-        beh-doc (or (:doc beh) (:desc beh))
-        obj (retrieve-object-def ns name)
-        obj-doc (or (:doc obj) (:desc obj))]
-    (if (and (nil? beh-doc) (nil? obj-doc))
-      nil
-      (if (nil? beh-doc)
-        obj-doc
-        beh-doc))))
+  (let [o (retrieve ns name)]
+    (or (:doc o) (:desc o))))
+
+(defn- retrieve-labels
+  [ns name]
+  (let [o (retrieve ns name)]
+    (clojure.string/join ", " (map #(get %1 :label) (:params o [])))))
 
 (behavior ::editor.doc.show!
           :triggers #{:editor.doc.show!}
@@ -113,7 +119,8 @@
                         ;; If :file and :doc are nil then this is likely a behavior or object.
                         ;; Check if a match exists and splice the resulting :doc into the doc argument.
                         (let [doc (if (and (nil? (:file doc)) (nil? (:doc doc)))
-                                    (merge doc {:doc (retrieve-docstring (:ns doc) (:name doc))})
+                                    (merge doc {:doc (retrieve-docstring (:ns doc) (:name doc))
+                                                :labels (retrieve-labels (:ns doc) (:name doc))})
                                     doc)]
                           (inline-doc editor (doc-ui doc) {} (:loc doc))))))
 
