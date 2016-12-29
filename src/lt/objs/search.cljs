@@ -60,7 +60,7 @@
   [:p.entry (crate/raw (str "<span class='line'>" (.-line r) "</span><pre>" (.-text r) "</pre>"))]
   :click (fn []
            (cmd/exec! :open-path file)
-           (cmd/exec! :goto-line (.-line r))))
+           (cmd/exec! :go-to-line (.-line r))))
 
 (defui ->result-item [r]
   (let [file (.-file r)]
@@ -168,7 +168,7 @@
                               neue (aget all file)]
                           (object/merge! this {:position [file result]})
                           (cmd/exec! :open-path (.-file neue))
-                          (cmd/exec! :goto-line (-> (.-results neue)
+                          (cmd/exec! :go-to-line (-> (.-results neue)
                                                     (aget result)
                                                     (.-line)))))))
 
@@ -191,7 +191,7 @@
                               neue (aget (:results @this) file)]
                           (object/merge! this {:position [file result]})
                           (cmd/exec! :open-path (.-file neue))
-                          (cmd/exec! :goto-line (-> (.-results neue)
+                          (cmd/exec! :go-to-line (-> (.-results neue)
                                                     (aget result)
                                                     (.-line)))))))
 (behavior ::on-result
