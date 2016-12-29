@@ -215,8 +215,8 @@
 
 (object/add-behavior! line-input ::exec-active!)
 
-(cmd/command {:command :goto-line
-              :desc "Editor: Goto line"
+(cmd/command {:command :go-to-line
+              :desc "Editor: Go to line"
               :options line-input
               :exec (fn [l]
                       (when (or (number? l) (not (empty? l)))
