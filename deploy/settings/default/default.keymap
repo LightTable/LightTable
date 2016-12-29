@@ -23,7 +23,7 @@
  [:editor "ctrl-," :editor.unjump]
  [:editor "ctrl-." :editor.jump-to-definition-at-cursor]
  [:editor "pmeta-shift-s" :save-as]
- [:editor "pmeta-l" :goto-line]
+ [:editor "pmeta-l" :go-to-line]
  [:editor "pmeta-shift-enter" :eval-editor]
  [:editor "ctrl-=" :editor.fold-code]
  [:editor "pmeta-s" :save]

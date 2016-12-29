@@ -22,7 +22,7 @@
         (do
           (object/raise opener/opener :open! path)
           (when line
-            (cmd/exec! :goto-line line))
+            (cmd/exec! :go-to-line line))
           (when add?
             (object/raise workspace/current-ws :add.file! path))))
       (object/raise opener/opener :new! path))))
