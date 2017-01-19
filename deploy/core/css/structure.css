@@ -315,6 +315,7 @@ body { -webkit-user-select: none; }
 .plugin-manager .enabled { float:right; position:absolute; right:0; top:1px; overflow:auto; }
 .plugin-manager .plugins { flex:1; display:block; overflow:auto; }
 .plugin-manager .server-plugins { flex:1; display:none; overflow:auto; }
+.plugin-manager .link { text-decoration:underline; cursor:pointer; }
 .plugin-manager.server .server-plugins { display:block; }
 .plugin-manager.server .plugins { display:none; }
 

@@ -526,12 +526,17 @@
            (dom/prevent e)
            (dom/stop-propagation e)))
 
-(defui plugin-title [plugin]
-  [:h1 (:name plugin) [:span.version (:version plugin)]]
+(defui plugin-link-title [plugin]
+  [:span.link (:name plugin)]
   :click (fn [e]
            (dom/prevent e)
            (dom/stop-propagation e)
            (platform/open-url (:url plugin (:source plugin)))))
+
+(defui plugin-title [plugin]
+  [:h1
+   (plugin-link-title plugin)
+   [:span.version (:version plugin)]])
 
 (defui server-plugin-ui [plugin]
   (let [info plugin
