@@ -10,6 +10,9 @@
 (def settings (atom {}))
 
 (defn on-disk [cb]
+  ;; We must ensure the file's existence before attempting to open it.
+  (when-not (files/file? settings-path)
+    (files/save settings-path {}))
   (files/open settings-path (fn [data]
                               (if-not (empty? data)
                                 (cb (reader/read-string (:content data)))
