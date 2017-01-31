@@ -8,7 +8,7 @@ Current ClojureScript version and libraries we use are in [project.clj](https://
 ### Notable JS dependencies
 
 * [CodeMirror](http://codemirror.org/) for the editor
-* [Mousetrap](https://github.com/LightTable/LightTable/blob/686c9b1e5e24fcb08ff44eb57eb7889e31e37806/deploy/core/node_modules/lighttable/util/keyevents.js) for handling keyboard shortcuts
+* [Mousetrap](https://github.com/LightTable/LightTable/blob/686c9b1e5e24fcb08ff44eb57eb7889e31e37806/deploy/core/node_modules/lighttable/util/keyevents.js) for handling keyboard shortcuts. The main deviation introduced is the ability to handle chords and sequences... sections added or changed are wrapped with comments indicating so. The fork is located at [LightTable/mousetrap](https://github.com/LightTable/mousetrap).
 * [jQuery throttle/debounce plugin](https://github.com/LightTable/LightTable/blob/686c9b1e5e24fcb08ff44eb57eb7889e31e37806/deploy/core/node_modules/lighttable/util/throttle.js)
 
 ### Node packages
