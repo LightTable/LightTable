@@ -11,9 +11,10 @@
 
 None. Skip to [Build](#build).
 
-### Windows
 
-Download [Cygwin](https://cygwin.com/install.html).
+### Windows - with Cygwin
+
+Download [Cygwin](https://cygwin.com/install.html). If you find Cygwin to much on your windows system, take a look at [building with Windows (using GIT)](#WindowsGit)
 
 You may need to change */etc/fstab* (path in Cygwin) to fix a directory permission error when building. Change this line:
 
@@ -32,6 +33,42 @@ Close and re-open Cygwin Terminal.
 The issue:
 
  - ["mkdir: cannot create directory" error running branch build on Windows 7 · Issue #1918 · LightTable/LightTable](https://github.com/LightTable/LightTable/issues/1918)
+
+
+### Windows - With GIT <a name="WindowsGit"></a>
+Preparations. Make sure you have git and node installed. Download the lein script (not lein.bat).
+
+1. Start bash.exe from the &lt;GITHOME&gt;/bin
+
+2. Test for necessary executables. Execute
+
+```bash
+$ where lein
+C:\Leiningen\lein
+C:\Leiningen\lein.bat
+
+$ where npm
+C:\Programme\NodeJS\npm
+C:\Programme\NodeJS\npm.bat
+
+$ where node
+C:\Programme\NodeJS\node.exe
+```
+
+All commands should yield a path like in the above example. If one of the commands returns with a *file not found* then add the path to the executable to the path:
+
+```bash
+$ where lein
+... not found ...
+
+$ export PATH=$PATH:/C/Leiningen
+
+$ where lein
+C:\Leiningen\lein
+C:\Leiningen\lein.bat
+```
+
+You are good to go! Continue with the [Build](#build).
 
 
 ### Linux
