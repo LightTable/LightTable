@@ -310,12 +310,12 @@ body { -webkit-user-select: none; }
 .plugin-manager { padding:10px 5px; overflow:hidden; box-sizing:border-box; display:flex; flex-direction:column; }
 .plugin-manager h1 { font-size:14pt; margin-bottom:0; line-height:1.3em; }
 .plugin-manager p { margin-top:10px;}
-.plugin-manager li { padding-left:5px; padding-top:8px; margin:0; padding-bottom:12px; position:relative; }
+.plugin-manager li { padding-left:5px; padding-top:8px; margin:0; padding-bottom:12px; position:relative; -webkit-user-select: text;}
 .plugin-manager .tabs { min-height:30px; }
 .plugin-manager .enabled { float:right; position:absolute; right:0; top:1px; overflow:auto; }
 .plugin-manager .plugins { flex:1; display:block; overflow:auto; }
 .plugin-manager .server-plugins { flex:1; display:none; overflow:auto; }
-.plugin-manager .link { text-decoration:underline; cursor:pointer; }
+.plugin-manager .link { cursor:pointer; }
 .plugin-manager.server .server-plugins { display:block; }
 .plugin-manager.server .plugins { display:none; }
 
