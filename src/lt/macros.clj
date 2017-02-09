@@ -1,6 +1,7 @@
 (ns lt.macros
   "Macros used across LT"
-  (:require [clojure.walk :as walk]))
+  (:require [clojure.walk :as walk]
+            [cljs.core :refer [js-arguments]]))
 
 (defn- namify [type keyword]
   (symbol (str "__" type "__" (.replace (name keyword) "." "__DOT__"))))
@@ -92,18 +93,34 @@
   `(let [~start (.getTime (js/Date.))]
      ~@body)))
 
+;; ;;  BenjaminVanRyseghem's attempted fix:
+;; (defmacro background
+;;   "Register given `func` to run on background thread."
+;;   [func]
+;;   `(lt.objs.thread/thread*
+;;     (fn ~(gensym "tfun") [msg# & body#]
+;;       (let [args# (map cljs.reader/read-string body#)
+;;             ~'raise (fn [obj# k# v#]
+;;                      (js/_send obj# k# (pr-str v#) "clj"))]
+;;         (.apply ~func nil `(clj->js (cons (.-obj msg#) args#)))))))
+
+
+;; Original background function
+;; js/_send and js/argsArray are both defined in threadworker.js
+;; This is misleading and gross.
 (defmacro background
-  "Register given func to run on background thread"
-  [func]
-  `(lt.objs.thread/thread*
-    (fn ~(gensym "tfun") []
-      (let [orig# (js/argsArray js/arguments)
-            msg# (.shift orig#)
-            args# (.map orig# cljs.reader/read-string)
-            ~'raise (fn [obj# k# v#]
+ [func]
+ `(lt.objs.thread/thread*
+   (fn ~(gensym "tfun") []
+     (.log js/console (str "orig#: " (js/argsArray js/arguments2)))
+     (.log js/console (str "msg#: " (.shift (js/argsArray js/arguments2))))
+     (.log js/console (str "args#: " (.map (js/argsArray js/arguments2) cljs.reader/read-string)))
+     (let [orig# (js/argsArray js/arguments2)
+           msg# (.shift orig#)
+           args# (.map orig# cljs.reader/read-string)
+           ~'raise (fn [obj# k# v#]
                      (js/_send obj# k# (pr-str v#) "clj"))]
-        (.unshift args# (.-obj msg#))
-        (.apply ~func nil args#)))))
+       (.apply ~func nil `(clj->js (cons (.-obj msg#) args#)))))))
 
 (defmacro ^:private aloop [[var arr] & body]
   `(let [arr# ~arr]
@@ -111,21 +128,3 @@
        (when (< ~var (.-length arr#))
          ~@body
          (recur (+ ~var 1))))))
-
-(comment
-
-  (worker (fn [v]
-            (do-something v))
-          :zomg (fn [r]
-                  ))
-
-  (defui cool [l]
-    [:li (bound l)]
-
-    :click (fn [e]
-             (this-as me
-                      ))
-    :hover (fn [e]
-             ))
-
-  )
