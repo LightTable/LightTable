@@ -8,21 +8,27 @@
                      (.log js/console (string/trim x)))))
 
 
+;; In v1.7.145. Later version of ChunkedCons implemented INext - looks fancier than this one.
 ;;NEEDED for latest CLJS
-(extend-type cljs.core/ChunkedCons
-  INext
-  (-next [this] (-seq (-rest this))))
+;; (extend-type cljs.core/ChunkedCons
+;;   INext
+;;   (-next [this] (-seq (-rest this))))
 
+;;  Is implementing ISeqable on nil necessary given that (seq nil) returns nil?
 (extend-type nil
   ISeqable
   (-seq [coll] nil))
 
-(extend-type cljs.core/RSeq
-  INext
-  (-next [this] (-seq (-rest this))))
+;; In v1.7.145. Later version of RSeq implemented INext - looks fancier than this one.
+;; (extend-type cljs.core/RSeq
+;;   INext
+;;   (-next [this] (-seq (-rest this))))
 
+;; Appears to still be needed... need to do more searching in ClojureScript.
 (extend-type js/global.String
   IFn
+  ;; Allows js/global.String to be used like a vector... (["a" "b" "c"] 2) ;;=> "c"
+  ;; Returns not-found if coll is not found.
   (-invoke
     ([this coll]
        (get coll (.toString this)))
@@ -33,6 +39,7 @@
     (when (and coll (not (zero? (alength coll))))
                  (IndexedSeq. (js/String. coll) 0))))
 
+;; Appears to still be needed... need to do more searching in ClojureScript.
 (set! js/global.String.prototype.apply
   (fn
     [s args]
@@ -40,13 +47,12 @@
       (get (aget args 0) s)
       (get (aget args 0) s (aget args 1)))))
 
-
+;; Appears to still be needed... need to do more searching in ClojureScript.
 (extend-type js/global.Array
   ISeqable
   (-seq [coll]
     (when (and coll (not (zero? (alength coll))))
                  (IndexedSeq. coll 0))))
-
 
 (defn ->dottedkw [& args]
   (keyword (string/join "." (map name (filter identity args)))))
