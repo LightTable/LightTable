@@ -112,10 +112,10 @@
  [func]
  `(lt.objs.thread/thread*
    (fn ~(gensym "tfun") []
-     (.log js/console (str "orig#: " (js/argsArray js/arguments2)))
-     (.log js/console (str "msg#: " (.shift (js/argsArray js/arguments2))))
-     (.log js/console (str "args#: " (.map (js/argsArray js/arguments2) cljs.reader/read-string)))
-     (let [orig# (js/argsArray js/arguments2)
+     (.log js/console (str "orig#: " (js/argsArray js/arguments)))
+     (.log js/console (str "msg#: " (.shift (js/argsArray js/arguments))))
+     (.log js/console (str "args#: " (.map (js/argsArray js/arguments) cljs.reader/read-string)))
+     (let [orig# (js/argsArray js/arguments)
            msg# (.shift orig#)
            args# (.map orig# cljs.reader/read-string)
            ~'raise (fn [obj# k# v#]
