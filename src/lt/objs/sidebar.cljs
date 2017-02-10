@@ -96,18 +96,18 @@
 (defn ->width [width]
   (str (or width 0) "px"))
 
-(object/object* ::sidebar
-                :tags #{:sidebar}
-                :items {}
-                :width 0
-                :side :left
-                :transients '()
-                :max-width default-width
-                :init (fn [this]
-                        [:div#side {:style {:width (bound (subatom this :width) ->width)}}
-                         [:div.content
-                          (bound (subatom this :active) active-content)]
-                         (vertical-grip this)]))
+;; (object/object* ::sidebar
+;;                 :tags #{:sidebar}
+;;                 :items {}
+;;                 :width 0
+;;                 :side :left
+;;                 :transients '()
+;;                 :max-width default-width
+;;                 :init (fn [this]
+;;                         [:div#side {:style {:width (bound (subatom this :width) ->width)}}
+;;                          [:div.content
+;;                           (bound (subatom this :active) active-content)]
+;;                          (vertical-grip this)]))
 
 (object/object* ::right-bar
                 :items {}
@@ -121,10 +121,10 @@
                          [:div.content
                           ]]))
 
-(def sidebar (object/create ::sidebar))
+;; (def sidebar (object/create ::sidebar))
 (def rightbar (object/create ::right-bar))
 
-(canvas/add! sidebar)
+;; (canvas/add! sidebar)
 (canvas/add! rightbar)
 
 (defn add-item [bar item]
