@@ -3,7 +3,7 @@
   :url "http://www.lighttable.com/"
   :dependencies [[org.clojure/clojure "1.7.0"]
                  [crate "0.2.5"]
-                 [fetch "0.3.0" :exclusions [org.clojure/clojure noir]]
+                 [fetch "0.2.0" :exclusions [org.clojure/clojure noir]]
                  [org.clojure/clojurescript "1.7.145"
                   :exclusions [org.apache.ant/ant]]
                  ]
