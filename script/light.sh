@@ -14,6 +14,8 @@ elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
   CLI="${DIR}/deploy/electron/electron/electron"
 elif [ "$(expr substr $(uname -s) 1 9)" == "CYGWIN_NT" ]; then
   CLI="${DIR}/deploy/electron/electron/electron.exe"
+elif [ "$(expr substr $(uname -s) 1 5)" == "MINGW" ]; then
+  CLI="${DIR}/deploy/electron/electron/electron.exe"
 else
   echo "Cannot detect a supported OS."
   exit 1
