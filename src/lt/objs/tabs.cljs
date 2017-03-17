@@ -298,8 +298,9 @@
         (object/raise cur-tabset :tab idx)
         (when (not= aidx (->index active))
           (object/merge! cur-tabset {:active-obj nil})
-          (active! active))
-        ))))
+          (active! active)))
+      (if (empty? (:objs @cur-tabset))
+        (rem-tabset cur-tabset nil)))))
 
 (defn refresh! [obj]
   (when-let [ts (::tabset @obj)]
