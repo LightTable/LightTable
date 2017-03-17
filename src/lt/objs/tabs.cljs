@@ -641,7 +641,11 @@
                             objs (object/by-tag :tabset.tab)]
                         (doseq [obj objs]
                           (if-not (identical? cur obj)
-                            (object/raise obj :close)))))})
+                            (object/raise obj :close)))
+                        (let [tss (:tabsets @multi)]
+                          (doseq [ts tss]
+                            (when (zero? (count (:objs @ts)))
+                              (rem-tabset ts))))))})
 
 (cmd/command {:command :tabs.goto
               :hidden true
