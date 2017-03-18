@@ -34,6 +34,9 @@ The issue:
  - ["mkdir: cannot create directory" error running branch build on Windows 7 · Issue #1918 · LightTable/LightTable](https://github.com/LightTable/LightTable/issues/1918)
 
 
+Place [rcedit](https://github.com/electron/rcedit) on your path to allow the build process to brand the exe.  It's usually most convenient to download a [pre-built release]((https://github.com/electron/rcedit/releases) from GitHub.
+
+
 ### Linux
 
 To run electron on Linux you need to have libgconf-2.so.4 installed.
