@@ -106,8 +106,8 @@ elif [ "$OS" == "windows" ]; then
       --set-icon deploy/core/img/lticon.ico \
       --set-file-version "$VERSION" \
       --set-product-version "$VERSION" \
-      --set-version-string "FileDescription" "LightTable" \
-      --set-version-string "ProductName" "LightTable" \
+      --set-version-string "FileDescription" "Light Table" \
+      --set-version-string "ProductName" "Light Table" \
       --set-version-string "CompanyName" "" \
       --set-version-string "LegalCopyright" "" \
       --set-version-string "OriginalFilename" ""

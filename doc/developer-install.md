@@ -34,7 +34,7 @@ The issue:
  - ["mkdir: cannot create directory" error running branch build on Windows 7 · Issue #1918 · LightTable/LightTable](https://github.com/LightTable/LightTable/issues/1918)
 
 
-Place [rcedit](https://github.com/electron/rcedit) on your path to allow the build process to brand the exe.  It's usually most convenient to download a [pre-built release]((https://github.com/electron/rcedit/releases) from GitHub.
+In order to rebrand a build's resulting executable with the Light Table icon, you will need rcedit on your path. If rcedit is not found, it will maintain GitHub's Electron branding. There is a [pre-built release of rcedit](https://github.com/electron/rcedit/releases) on GitHub.
 
 
 ### Linux
