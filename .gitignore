@@ -9,5 +9,5 @@
 .lein-plugins/
 .nrepl-port
 /builds/
-/.idea/
-.idea/
+.idea
+*.iml
