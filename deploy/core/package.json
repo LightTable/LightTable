@@ -18,7 +18,7 @@
   "dependencies": {
     "codemirror": "^4.7.0",
     "optimist": "^0.5.2",
-    "request": "^2.14.0"
+    "request": "^2.81.0"
   },
   "forkedDependencies": {
     "replace": "^0.2.7",
