@@ -69,12 +69,14 @@
 (behavior ::show!
           :triggers #{:show!}
           :reaction (fn [this]
-                      (object/merge! this {:pos (when-let [ed (pool/last-active)]
+                      (object/merge! this {:shown true
+                                           :pos (when-let [ed (pool/last-active)]
                                                   (editor/->cursor ed))})))
 
 (behavior ::hide!
           :triggers #{:hide!}
           :reaction (fn [this]
+                      (object/merge! this {:shown false})
                       (when-let [ed (pool/last-active)]
                             (editor/focus ed))))
 
@@ -227,3 +229,20 @@
                                                                 l))})
                           (editor/center-cursor cur))))})
 
+(cmd/command {:command :find.toggle
+              :desc    "Find: Toggle the find bar"
+              :exec    (fn []
+                         (object/raise bar :toggle!))})
+
+(behavior ::toggle!
+          :triggers #{:toggle!}
+          :reaction (fn [this]
+                      (if (get @this :shown)
+                        (do
+                          (object/raise this :clear!)
+                          (object/raise this :hide!))
+                        (do
+                          (object/raise this :show!)
+                          (object/raise this :focus!)))))
+
+(object/add-behavior! bar ::toggle!)
