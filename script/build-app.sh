@@ -100,6 +100,18 @@ elif [ "$OS" == "linux" ]; then
 elif [ "$OS" == "windows" ]; then
 
   mv $RELEASE_DIR/electron.exe $RELEASE_DIR/LightTable.exe
+  RCEDIT_PATH=`which rcedit` || { echo "expected to find rcedit; unable to rebrand the exe"; }
+  if [ "$RCEDIT_PATH" != "" ]; then
+    rcedit "$RELEASE_DIR/LightTable.exe" \
+      --set-icon deploy/core/img/lticon.ico \
+      --set-file-version "$VERSION" \
+      --set-product-version "$VERSION" \
+      --set-version-string "FileDescription" "Light Table" \
+      --set-version-string "ProductName" "Light Table" \
+      --set-version-string "CompanyName" "" \
+      --set-version-string "LegalCopyright" "" \
+      --set-version-string "OriginalFilename" ""
+  fi
 
 fi
 
