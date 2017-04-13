@@ -22,7 +22,7 @@ cd "$(dirname "${BASH_SOURCE[0]}")"; cd ..
 # Ensure we have current version of electron
 pushd deploy/electron
   npm install
-  node_modules/.bin/grunt download-electron
+  npm run download-electron
 popd
 
 # Build the core cljs

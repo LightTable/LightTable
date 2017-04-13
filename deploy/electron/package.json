@@ -1,6 +1,9 @@
 {
   "name": "download-electron",
   "version": "0.1.0",
+  "scripts": {
+    "download-electron": "grunt download-electron"
+  },
   "devDependencies": {
     "grunt": "^0.4.5",
     "grunt-cli": "^0.1.13",
