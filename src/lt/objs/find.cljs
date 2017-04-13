@@ -232,17 +232,6 @@
 (cmd/command {:command :find.toggle
               :desc    "Find: Toggle the find bar"
               :exec    (fn []
-                         (object/raise bar :toggle!))})
-
-(behavior ::toggle!
-          :triggers #{:toggle!}
-          :reaction (fn [this]
-                      (if (get @this :shown)
-                        (do
-                          (object/raise this :clear!)
-                          (object/raise this :hide!))
-                        (do
-                          (object/raise this :show!)
-                          (object/raise this :focus!)))))
-
-(object/add-behavior! bar ::toggle!)
+                         (if (get @bar :shown)
+                           (cmd/exec! :find.hide)
+                           (cmd/exec! :find.show)))})
