@@ -13,7 +13,8 @@ None. Skip to [Build](#build).
 
 ### Windows
 
-Download [Cygwin](https://cygwin.com/install.html).
+Download [Cygwin](https://cygwin.com/install.html) and be sure to **install the web/wget package** as shown below.
+![Cygwin packages interface: Select Web/Wget](build-windows-setup-cygwin-with-wget-plugin.png)
 
 You may need to change */etc/fstab* (path in Cygwin) to fix a directory permission error when building. Change this line:
 
