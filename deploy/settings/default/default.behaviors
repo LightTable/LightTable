@@ -338,6 +338,7 @@
                                     {:exts [:rs], :mime "text/x-rustsrc", :tags [:editor.rust], :name "Rust"}
                                     {:exts [:sass], :mime "text/x-sass", :tags [:editor.sass], :name "Sass"}
                                     {:exts [:scala], :mime "text/x-scala", :tags [:editor.scala], :name "Scala"}
+                                    {:exts [:SConstruct :SConscript], :mime "text/x-python", :tags [:editor.python], :name "SCons"}
                                     {:exts [:ss :scm :sch], :mime "text/x-scheme", :tags [:editor.scheme], :name "Scheme"}
                                     {:exts [:vert :frag], :mime "x-shader/x-vertex", :tags [:editor.vertexshader], :name "Shader"}
                                     {:exts [:sh :bash :profile :bash_profile :bashrc :zsh :zshrc], :mime "text/x-sh", :tags [:editor.shell], :name "Shell"}
