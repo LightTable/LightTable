@@ -15,3 +15,8 @@ For hunting down behaviors, objects and other things that don't live in vars use
 
 Finally, use the documentation searcher (Ctrl-Shift-d) for full-text search over the names and docstrings of all known vars. Most of Light Table doesn't have docstrings, but this is still useful for library code.
 
+# Note on Hotkeys for OS X
+
+Many (though not all) of the OS X hotkeys mentioned in the Light Table documentation use the cmd key instead of ctrl.
+
+When in doubt, you can look up the key sequence by name by pressing ctrl-space (yes, it's really ctrl on this one) and then typing part of the name of the command you want to use. If a key is mapped to the command, it will be printed right below the command name in the command bar.
