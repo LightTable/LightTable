@@ -173,6 +173,7 @@ body { -webkit-user-select: none; }
 #side .workspace ul.sub { margin-left:15px; display:none; }
 #side .workspace ul.sub.opened { display:block; }
 #side .workspace .folder, .folders { font-weight:bold; }
+#side .workspace .folder:before { content: "\24D3\20";  }
 #side .workspace > ul > li > div > ul.sub { margin:0; }
 #side .workspace ul.root > div > ul:empty:before { content:"Right click to add files or folders to the workspace or open a recent one to get started."; display:inline-block; text-align:center; width:100%; max-width:300px; margin-top:40px;  }
 #side .workspace input.rename { display:none; }
