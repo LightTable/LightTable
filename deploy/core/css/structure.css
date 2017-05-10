@@ -227,6 +227,7 @@ body { -webkit-user-select: none; }
 #right-bar .clients .connector ul li:last-child { border-bottom-right-radius:2px; border-bottom-left-radius:2px; }
 #right-bar .clients .connector > h2 { cursor:default; }
 #right-bar .clients .connector > h2:after { float:right; content: "⇡"; }
+#right-bar .clients.selecting .connector > h2:after { -webkit-transform:rotate(180deg); }
 #right-bar .clients .toggle { padding:5px 10px; font-size:10pt;  border-radius:0px;  }
 #right-bar .clients .toggle:after { float:right; content: "⇡"; }
 
