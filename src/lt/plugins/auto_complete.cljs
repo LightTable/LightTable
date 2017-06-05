@@ -10,7 +10,7 @@
             [lt.objs.editor :as editor]
             [lt.objs.context :as ctx]
             [clojure.string :as string]
-            [lt.util.js :refer [wait]]
+            [lt.util.js :refer [wait escape]]
             [lt.util.dom :as dom])
   (:require-macros [lt.macros :refer [behavior defui background]]))
 
@@ -139,12 +139,16 @@
   (str (.-text x) (.-completion x)))
 
 (defn distinct-completions [hints]
-  (let [seen #js {}]
-    (filter (fn [hint]
-              (if (true? (aget seen (.-completion hint)))
-                false
-                (aset seen (.-completion hint) true)))
-            hints)))
+  (let [seen #js {}
+        distinct-hints (filter (fn [hint]
+                          (if (true? (aget seen (.-completion hint)))
+                            false
+                            (aset seen (.-completion hint) true)))
+                        hints)]
+    (map (fn [h] #js {"completion" (.-completion h)
+                      "text" (escape (.-completion h))}) distinct-hints)
+
+    ))
 
 (declare hinter)
 
