@@ -4,6 +4,7 @@
 
 - [Leiningen 2.x](http://leiningen.org/)
 - [node.js and npm](https://nodejs.org/)
+- [git](https://git-scm.com/)
 
 ## OS Specific Prerequisites
 
@@ -14,6 +15,17 @@ None. Skip to [Build](#build).
 ### Windows
 
 Download [Cygwin](https://cygwin.com/install.html).
+
+#### Getting Leiningen to Work With Cygwin
+
+For some tips on getting Leiningen to work with Cygwin see [this](https://stackoverflow.com/questions/24634340/getting-leiningen-cygwin-working) Stack Overflow question.
+
+#### Permission Errors
+
+If you run into permission errors you'll need to try:
+
+- Changing Cygwin's /etc/fstab file (see below) and/or
+- Running Cygwin as admin.
 
 You may need to change */etc/fstab* (path in Cygwin) to fix a directory permission error when building. Change this line:
 
@@ -29,10 +41,11 @@ none /cygdrive cygdrive binary,posix=0,user,noacl 0 0
 
 Close and re-open Cygwin Terminal.
 
+#### Branding
+
 The issue:
 
  - ["mkdir: cannot create directory" error running branch build on Windows 7 · Issue #1918 · LightTable/LightTable](https://github.com/LightTable/LightTable/issues/1918)
-
 
 In order to rebrand a build's resulting executable with the Light Table icon, you will need rcedit on your path. If rcedit is not found, it will maintain GitHub's Electron branding. There is a [pre-built release of rcedit](https://github.com/electron/rcedit/releases) on GitHub.
 
