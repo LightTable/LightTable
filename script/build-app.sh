@@ -92,6 +92,7 @@ if [ "$OS" == "mac" ]; then
   codesign --force --deep --sign - $RELEASE_DIR/LightTable.app
 
 elif [ "$OS" == "linux" ]; then
+  cp $PLATFORM_DIR/libpangoft2-1.0.so.0.4000.5 $RELEASE_DIR/
 
   cp $PLATFORM_DIR/light $RELEASE_DIR/
 
