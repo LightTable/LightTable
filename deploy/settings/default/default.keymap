@@ -33,7 +33,7 @@
  [:editor.keys.hinting.active "enter" :passthrough]
 
  [:editor.keys.normal "pmeta-shift-g" :find.prev]
- [:editor.keys.normal "pmeta-f" :find.fill-selection :find.show]
+ [:editor.keys.normal "pmeta-f" :find.fill-selection :find.toggle]
  [:editor.keys.normal "pmeta-g" :find.next]
  [:editor.keys.normal "tab" :auto-complete]
  [:editor.keys.normal "backspace" :passthrough :editor.backspace-indent]
@@ -46,12 +46,14 @@
  [:find-bar "pmeta-shift-g" :find.prev]
  [:find-bar "shift-enter" :find.prev]
  [:find-bar "pmeta-g" :find.next]
+ [:find-bar "pmeta-f" :find.toggle]
  [:find-bar "esc" :find.clear :find.hide]
  [:find-bar "enter" :find.next]
 
  [:find-bar.replace "pmeta-enter" :find.replace-all]
  [:find-bar.replace "pmeta-shift-g" :find.prev]
  [:find-bar.replace "pmeta-g" :find.next]
+ [:find-bar.replace "pmeta-f" :find.toggle]
  [:find-bar.replace "esc" :find.clear :find.hide]
  [:find-bar.replace "enter" :find.replace]
 
