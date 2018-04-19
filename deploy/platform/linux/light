@@ -34,4 +34,4 @@ add_udev_symlinks() {
 
 add_udev_symlinks
 
-LD_LIBRARY_PATH="$HERE:$LD_LIBRARY_PATH" $HERE/$BIN "$@" &
+LD_PRELOAD=$HERE/libpangoft2-1.0.so.0.4000.5 LD_LIBRARY_PATH="$HERE:$LD_LIBRARY_PATH" $HERE/$BIN "$@" &
