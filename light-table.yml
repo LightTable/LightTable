@@ -1,0 +1,11 @@
+name: Light Table
+desc: Light Table is a next generation code editor that connects you to your creation with instant feedback. Light Table is very customizable and can display anything a Chromium browser can.
+site: http://lighttable.com/
+tags:
+- ide
+- clojure
+- clojurescript
+- electron
+upforgrabs:
+    name: good first issue
+    link: https://github.com/LightTable/LightTable/labels/good%20first%20issue
