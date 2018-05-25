@@ -4,7 +4,7 @@
             [lt.objs.context :as ctx]
             [lt.objs.statusbar :as statusbar]
             [lt.util.load :as load]
-            [lt.objs.console :as console]
+            [lt.objs.notifos :as notifos]
             [lt.objs.canvas :as canvas]
             [lt.objs.sidebar.command :as cmd]
             [lt.objs.editor.pool :as pool]
@@ -229,9 +229,7 @@
                           (let [cur (pool/last-active)]
                             (editor/move-cursor cur {:ch 0 :line (dec line)})
                             (editor/center-cursor cur))
-                          (do
-                            (console/error (str "Line " l " is not a positive integer > 0"))
-                            (cmd/exec! :console.show)))))})
+                          (notifos/set-msg! (str "Line " l " is not a positive integer > 0") {:class "error"}))))})
 
 (cmd/command {:command :find.toggle
               :desc    "Find: Toggle the find bar"
