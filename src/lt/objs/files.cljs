@@ -31,7 +31,7 @@
 
 (def ignore-pattern
   "Regex pattern consisting of files, folders, etc... to ignore."
-  #"(^\..*)|\.class$|target/|svn|cvs|\.git|\.pyc|~|\.swp|\.jar|.DS_Store")
+  #"(^\..*)|\.class$|target/|^svn$|^cvs$|\.git|\.pyc|~|\.swp|\.jar|.DS_Store")
 
 (declare files-obj)
 
