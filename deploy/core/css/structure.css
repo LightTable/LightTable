@@ -6,7 +6,7 @@ input { border:none; padding:5px; outline:none; border-radius:0px; font-size:10p
 a {text-decoration:none; }
 ul { list-style:none; }
 h1 { font-size: 16pt; margin-bottom:10px; }
-button { cursor:default; border:none; outline:none; border-radius:0px; padding:2px 5px; outline:none; font-size:100%; }
+button { cursor:default; border:none; outline:none; border-radius:0px; padding:2px 5px; outline:none; font-size:120%; font-family: "Inconsolata", "Ubuntu Mono", "Consolas", monospace; }
 *:focus { outline:none; }
 
 * { box-sizing: border-box; }
@@ -75,7 +75,7 @@ body { -webkit-user-select: none; }
 #filter .results h2 { font-weight:bold; float:left; }
 #filter .results p { white-space:nowrap; float:left; margin-left:10px; }
 
-.console { overflow:auto; width:100%; height:100%; border-radius:0px; padding:0 10px; box-sizing:border-box; font-size:11pt; font-family: Inconsolata, Consolas, "Courier New"; }
+.console { overflow:auto; width:100%; height:100%; border-radius:0px; padding:0 10px; box-sizing:border-box; font-size:11pt; font-family: "Inconsolata", "Consolas", "Courier New"; }
 .console > li { padding-right:10px; padding-left:5px; font-size:11pt; -webkit-user-select:text;}
 .console pre { width:auto; white-space: pre-wrap; }
 .console .inspector-object { display:inline-block; vertical-align:top; line-height:17px; }
@@ -274,7 +274,7 @@ body { -webkit-user-select: none; }
 .vertical-grip { background: transparent; width:7px; height:100%; z-index:10000000; position:absolute; top:0; right:0; cursor:col-resize; }
 
 #find-bar { overflow:hidden; background:transparent; position:relative; height:0; }
-#find-bar input { display:inline-block; font-size:11pt; font-family:"Inconsolata", "Ubuntu Mono", "Consolas", monospace; border-radius:0;  width:50%; height:30px; box-sizing:border-box; padding:5px; padding-left:10px; outline:none; }
+#find-bar input { display:inline-block; font-size:11pt; font-family: "Verdana", "Courier New", "Inconsolata", monospace; border-radius:0;  width:50%; height:30px; box-sizing:border-box; padding:5px; padding-left:10px; outline:none; }
 #find-bar button { position:absolute; right:-3px; z-index: 100000; padding:6px 10px;}
 
 #browser webview { position:absolute; top:0; left:0; right:0; bottom:35px; }
