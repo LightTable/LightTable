@@ -280,7 +280,7 @@ body { -webkit-user-select: none; }
 #browser webview { position:absolute; top:0; left:0; right:0; bottom:35px; }
 #browser nav { position:absolute; bottom:5px; left:0; right:0; }
 #browser .frame-shade { height:-webkit-calc(100% - 35px); width:100%; background:transparent; position:absolute; display:none; }
-#browser input { font-size:10pt; padding-left:10px; background:#444; width:-webkit-calc(100% - 60px); padding:5px 12px; vertical-align:middle;}
+#browser input { font-size:10pt; padding-left:10px; background:#444; width:-webkit-calc(100% - 60px); padding:5px 12px; vertical-align:middle; font-family: "Verdana", "Courier New", "Inconsolata", monospace; }
 #browser button { width:20px; height:26px; padding:4px 5px; box-sizing:border-box; border-radius:0px; vertical-align:middle; }
 
 #side .tab-settings .filter-list { position:relative; }
@@ -312,6 +312,7 @@ body { -webkit-user-select: none; }
 .plugin-manager h1 { font-size:14pt; margin-bottom:0; line-height:1.3em; }
 .plugin-manager p { margin-top:10px;}
 .plugin-manager li { padding-left:5px; padding-top:8px; margin:0; padding-bottom:12px; position:relative; -webkit-user-select: text;}
+.plugin-manager input { font-family: "Verdana", "Courier New", "Inconsolata", monospace; }
 .plugin-manager .tabs { min-height:30px; }
 .plugin-manager .enabled { float:right; position:absolute; right:0; top:1px; overflow:auto; }
 .plugin-manager .plugins { flex:1; display:block; overflow:auto; }
