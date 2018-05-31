@@ -154,7 +154,7 @@ body { -webkit-user-select: none; }
 #right-bar .command { padding:0px 0px; background:transparent; overflow:hidden; height:100%; }
 #right-bar .command h2 { font-size: 12pt; margin-bottom:10px; cursor:default; padding:10px; border-radius:2px; }
 #right-bar .command h2:after { float:right; content: "⇡"; }
-#right-bar .command input { outline:none; border:none; font-size:11pt; width:100%; border-radius:2px; padding:10px; margin-bottom:10px; }
+#right-bar .command input { outline:none; border:none; font-size:11pt; width:100%; border-radius:2px; padding:10px; margin-bottom:10px; font-family: "Verdana", "Courier New", "Inconsolata", monospace; }
 #right-bar .command .selector {overflow:hidden; }
 #right-bar .command.options .selector { display:none; }
 #right-bar .command.selector .options { display:none; overflow:hidden; }
@@ -289,7 +289,7 @@ body { -webkit-user-select: none; }
 #side .tab-settings .filter-list input:focus + * { display:block; }
 
 .search-results { overflow:hidden; position:relative; box-sizing:border-box; }
-.search-results input { width:100%; margin:2px 0; }
+.search-results input { width:100%; margin:2px 0; font-family: "Verdana", "Courier New", "Inconsolata", monospace; }
 .search-results .res { position:absolute; overflow:auto; left:10px; right:10px; top:10px; bottom:130px; }
 .search-results .searcher { margin-bottom:10px; margin-top:10px; position:absolute; left:10px; right:10px; bottom:0px; }
 .search-results .res li { background:transparent; padding:7px 0; margin-bottom:5px; border-bottom:0px solid #444; }
