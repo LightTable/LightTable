@@ -41,11 +41,11 @@ none /cygdrive cygdrive binary,posix=0,user,noacl 0 0
 
 Close and re-open Cygwin Terminal.
 
-#### Branding
-
 The issue:
 
  - ["mkdir: cannot create directory" error running branch build on Windows 7 · Issue #1918 · LightTable/LightTable](https://github.com/LightTable/LightTable/issues/1918)
+
+#### Branding
 
 In order to rebrand a build's resulting executable with the Light Table icon, you will need rcedit on your path. If rcedit is not found, it will maintain GitHub's Electron branding. There is a [pre-built release of rcedit](https://github.com/electron/rcedit/releases) on GitHub.
 
