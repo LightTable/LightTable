@@ -223,13 +223,13 @@
               :options line-input
               :exec (fn [l]
                       (let [line (if-not (number? l)
-                                   (js/parseInt l)
+                                   (js/parseInt l 10)
                                    l)]
                         (if (pos? line)
                           (let [cur (pool/last-active)]
                             (editor/move-cursor cur {:ch 0 :line (dec line)})
                             (editor/center-cursor cur))
-                          (notifos/set-msg! (str "Line " l " is not a positive integer > 0") {:class "error"}))))})
+                          (notifos/set-msg! (str "Line number '" l "' must be a positive integer") {:class "error"}))))})
 
 (cmd/command {:command :find.toggle
               :desc    "Find: Toggle the find bar"
