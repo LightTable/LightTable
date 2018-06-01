@@ -175,7 +175,7 @@ body { -webkit-user-select: none; }
 #side .workspace .folder, .folders { font-weight:bold; }
 #side .workspace > ul > li > div > ul.sub { margin:0; }
 #side .workspace ul.root > div > ul:empty:before { content:"Right click to add files or folders to the workspace or open a recent one to get started."; display:inline-block; text-align:center; width:100%; max-width:300px; margin-top:40px;  }
-#side .workspace input.rename { display:none; }
+#side .workspace input.rename { display:none; font-family: "Verdana", "Courier New", "Inconsolata"; }
 #side .workspace li.renaming > input.rename { display:block; width:100%; }
 #side .workspace li.renaming > .tree-item > p { display:none; }
 #side .workspace.recents .wstree { display:none; }
