@@ -9,7 +9,7 @@
     "height": 700,
     "minWidth": 400,
     "minHeight": 400,
-    "web-preferences": {
+    "webPreferences": {
       "webgl": true,
       "webaudio": true,
       "plugins": true
