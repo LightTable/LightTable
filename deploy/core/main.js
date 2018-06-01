@@ -50,7 +50,7 @@ function createWindow() {
   });
 
   // and load the index.html of the app.
-  window.loadUrl('file://' + __dirname + '/LightTable.html?id=' + window.id);
+  window.loadURL('file://' + __dirname + '/LightTable.html?id=' + window.id);
 
   // Notify LT that the user requested to close the window/app
   window.on("close", function(evt) {
