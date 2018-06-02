@@ -1,7 +1,7 @@
 "use strict";
 
-var app = require('app'),  // Module to control application life.
-    BrowserWindow = require('browser-window'),  // Module to create native browser window.
+var app = require('electron').app,  // Module to control application life.
+    BrowserWindow = require('electron').BrowserWindow,  // Module to create native browser window.
     ipcMain = require("electron").ipcMain,
     optimist = require('optimist');
 
@@ -101,7 +101,7 @@ function parseArgs() {
     optimist.showHelp();
     process.exit(0);
   }
-}
+};
 
 function start() {
   app.commandLine.appendSwitch('remote-debugging-port', '8315');
