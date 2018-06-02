@@ -14,7 +14,7 @@
 ;; https://github.com/shelljs/shelljs
 (def ^:private shell (load/node-module "shelljs"))
 ;; https://github.com/electron/electron/blob/master/docs/api/shell.md
-(def ^:private electron-shell (js/require "shell"))
+(def ^:private electron-shell (.-shell (js/require "electron")))
 (def ^:private os (js/require "os"))
 (def ^:private data-path (platform/get-data-path))
 
