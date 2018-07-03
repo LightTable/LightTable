@@ -4,6 +4,8 @@
 
 Light Table is a next generation code editor that connects you to your creation with instant feedback. Light Table is very customizable and can display anything a [Chromium browser](http://www.chromium.org/) can.
 
+> Light Table is putting out a call for additional maintainers! There is plenty to do for nearly every aspect of the project. Ranging from digging deep down into the internals, writing documentation, fixing bugs, writing plugins, or triaging new issues, Light Table could use a hand. If you are interested, please reach out.
+
 ## Downloads
 
 Prebuilt binaries are available through [lighttable.com](http://lighttable.com). To build and use a developer version of Light Table [see these instructions](doc/developer-install.md).
