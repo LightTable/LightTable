@@ -68,7 +68,7 @@
       (.on (.-sockets ws) "connection" on-connect)
       ws)
     (catch :default e
-      (console/error "Error starting socket.io server" e))))
+      (.error js/console "Error starting socket.io server" e))))
 
 (behavior ::kill-on-closed
           :triggers #{:closed}

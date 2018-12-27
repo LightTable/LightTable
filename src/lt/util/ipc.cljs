@@ -17,7 +17,7 @@
                 (prn "RENDERER->" args)
                 (apply old-send args)))
     (def on (fn [channel cb]
-              (old-on channel (fn [& args]
+              (old-on channel (fn [_ & args]
                                 (prn "->RENDERER" channel args)
                                 (apply cb args)))))))
 

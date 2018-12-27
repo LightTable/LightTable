@@ -1,9 +1,12 @@
+/*jshint esversion: 6 */
 "use strict";
 
-var app = require('electron').app,  // Module to control application life.
-    BrowserWindow = require('electron').BrowserWindow,  // Module to create native browser window.
-    ipcMain = require("electron").ipcMain,
-    optimist = require('optimist');
+const { app, BrowserWindow, ipcMain } = require('electron');
+
+// Module to control application life.
+// Module to create native browser window.
+
+let optimist = require('optimist');
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the javascript object is GCed.
@@ -14,9 +17,9 @@ var packageJSON = require(__dirname + '/package.json');
 
 // Returns Window object
 function createWindow() {
-  var browserWindowOptions = packageJSON.browserWindowOptions;
+  let browserWindowOptions = packageJSON.browserWindowOptions;
   browserWindowOptions.icon = __dirname + '/' + browserWindowOptions.icon;
-  var window = new BrowserWindow(browserWindowOptions);
+  let window = new BrowserWindow(browserWindowOptions);
   windows[window.id] = window;
   window.focus();
   window.webContents.on("will-navigate", function(e) {
@@ -63,7 +66,7 @@ function createWindow() {
   });
 
   return window;
-};
+}
 
 function onReady() {
   ipcMain.on("createWindow", function(event, info) {
@@ -84,7 +87,7 @@ function onReady() {
   });
 
   createWindow();
-};
+}
 
 function parseArgs() {
   optimist.usage("\nLight Table " + app.getVersion() + "\n" +
@@ -101,7 +104,7 @@ function parseArgs() {
     optimist.showHelp();
     process.exit(0);
   }
-};
+}
 
 function start() {
   app.commandLine.appendSwitch('remote-debugging-port', '8315');
@@ -131,26 +134,26 @@ function start() {
     }
   });
   parseArgs();
-};
+}
 
 // Set $IPC_DEBUG to debug incoming and outgoing ipcMain messages for the main process
 if (process.env["IPC_DEBUG"]) {
-  var oldOn = ipcMain.on;
+  let oldOn = ipcMain.on;
   ipcMain.on = function (channel, cb) {
     oldOn.call(ipcMain, channel, function() {
       console.log("\t\t\t\t\t->MAIN", channel, Array.prototype.slice.call(arguments).join(', '));
       cb.apply(null, arguments);
     });
   };
-  var logSend = function (window) {
-    var oldSend = window.webContents.send;
+  let logSend = function (window) {
+    let oldSend = window.webContents.send;
     window.webContents.send = function () {
       console.log("\t\t\t\t\tMAIN->", Array.prototype.slice.call(arguments).join(', '));
       oldSend.apply(window.webContents, arguments);
     };
   };
-  var oldCreateWindow = createWindow;
-  var createWindow = function() { logSend(oldCreateWindow()); };
+  let oldCreateWindow = createWindow;
+  createWindow = function() { logSend(oldCreateWindow()); };
 }
 
 start();

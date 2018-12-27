@@ -226,7 +226,7 @@
 (def app (object/create ::app))
 
 ;; Handles events e.g. focus, blur and close
-(ipc/on "app" #(object/raise app (keyword %)))
+(ipc/on "app" #(object/raise app (keyword %2)))
 
 
 ;;*********************************************************

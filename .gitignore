@@ -1,4 +1,5 @@
-/deploy/core/node_modules/lighttable/cljs/
+//deploy/core/node_modules/*
+!/deploy/core/node_modules/lighttabledeploy/core/node_modules/lighttable/cljs/
 /deploy/core/node_modules/clojurescript/cljsDeps/
 /target/
 /deploy/plugins/

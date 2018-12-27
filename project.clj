@@ -1,12 +1,12 @@
-(defproject lighttable "0.8.1"
+(defproject lighttable "0.9.0"
   :description "Light Table is a next generation code editor that connects you to your creation with instant feedback. Light Table is very customizable and can display anything a Chromium browser can."
   :url "http://www.lighttable.com/"
-  :dependencies [[org.clojure/clojure "1.7.0"]
+  :dependencies [[org.clojure/clojure "1.8.0"]
                  [crate "0.2.5"]
                  [fetch "0.3.0" :exclusions [org.clojure/clojure noir]]
-                 [org.clojure/clojurescript "1.7.145"
-                  :exclusions [org.apache.ant/ant]]
-                 ]
+                 [org.clojure/clojurescript "1.9.229"
+                  :exclusions [org.apache.ant/ant]]]
+
   :jvm-opts ["-Xmx1g" "-XX:+UseConcMarkSweepGC"] ; cljsbuild eats memory
   :cljsbuild {:builds [{:id "app"
                         :source-paths ["src"]
@@ -21,14 +21,14 @@
                         :compiler {:optimizations :simple
                                    :output-to "deploy/core/node_modules/clojurescript/cljsDeps.js"
                                    :output-dir "deploy/core/node_modules/clojurescript/cljsDeps/"
-                                   :pretty-print true }}]}
+                                   :pretty-print true}}]}
 
   ;; TODO: Remove separate :doc :dependencies after ClojureScript upgrade
-  :profiles {:doc {:dependencies [[org.clojure/clojure "1.7.0"]
-                                  [org.clojure/clojurescript "1.7.145"
+  :profiles {:doc {:dependencies [[org.clojure/clojure "1.8.0"]
+                                  [org.clojure/clojurescript "1.9.229"
                                    :exclusions [org.apache.ant/ant]]]}}
   :plugins [[lein-cljsbuild "1.1.7"]
-            [lein-codox "0.9.5"]
+            [lein-codox "0.10.5"]
             [lein-cloverage "1.0.7-SNAPSHOT"]]
   :codox {:language :clojurescript
           :project {:name "LightTable"}
@@ -40,5 +40,4 @@
           ;; Be explicit that undocumented public fns should be documented
           :metadata {:doc "TODO: Add docstring"
                      :doc/format :markdown}}
-  :source-paths ["src/"]
-  )
+  :source-paths ["src/"])

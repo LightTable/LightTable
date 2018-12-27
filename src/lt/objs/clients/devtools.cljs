@@ -116,10 +116,10 @@
                                  (str ": " (:url msg)))]
                          [:table
                           (for [f (:stackTrace msg)]
-                            (frame f)
-                            )]]
-                        "error" (error->string msg))
-      )))
+                            (frame f))]]
+
+                        "error" (error->string msg)))))
+
 
 (defmethod handle-log-msg "log" [this msg]
   (let [stack (first (filter #(not= (files/basename (:url %)) "bootstrap.js") (-> msg :stackTrace)))
@@ -197,7 +197,7 @@
 (def local (object/create ::devtools-client (app/app-url)))
 
 ;; Handle events e.g. disconnect and reconnect!
-(ipc/on "devtools" #(object/raise local (keyword %)))
+(ipc/on "devtools" #(object/raise local (keyword %2)))
 
 ;;*********************************************************
 ;; Behaviors
@@ -219,9 +219,9 @@
 
 (behavior ::print-messages
           :triggers #{:message}
-          :reaction (fn [this m]
+          :reaction (fn [this m]))
                       ;;(console/log (pr-str m))
-                      ))
+
 
 (behavior ::handle-message
           :triggers #{:message}
@@ -237,8 +237,8 @@
           :triggers #{:Debugger.scriptParsed}
           :reaction (fn [this s]
                       (let [url (-> s :params :url)]
-                        (object/update! this [:scripts] assoc-in [(files/basename url) url] (:params s))
-                        )))
+                        (object/update! this [:scripts] assoc-in [(files/basename url) url] (:params s)))))
+
 
 (behavior ::console-log
           :triggers #{:Console.messageAdded}
@@ -330,8 +330,8 @@
       {:ex (:description data)}
       {:result (condp = (:type data)
                  "object" (object/->content (object/create ::inspector-object this data))
-                 (or (:description data) (pr-str (:value data)))
-                 )})))
+                 (or (:description data) (pr-str (:value data))))})))
+
 
 (defn clear-unused-inspectors []
   (doseq [obj (object/by-tag :inspector.object)
@@ -343,8 +343,8 @@
           :triggers #{:init}
           :reaction (fn [this]
                       ;;Every minute clear extraneous inspectors
-                      (every 60000 clear-unused-inspectors)
-                      ))
+                      (every 60000 clear-unused-inspectors)))
+
 
 (behavior ::clear-inspector-object
           :triggers #{:destroy}

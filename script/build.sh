@@ -39,7 +39,7 @@ fi
 rm -f deploy/core/node_modules/lighttable/bootstrap.js
 lein cljsbuild once app
 
-if [-d "deploy/core/node_modules/clojurescript" ]; then
+if [ -d "deploy/core/node_modules/clojurescript" ]; then
     rm -i -rf deploy/core/node_modules/clojurescript
 fi
 lein cljsbuild once cljsdeps
