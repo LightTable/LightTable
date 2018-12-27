@@ -16,14 +16,14 @@
     }
   },
   "dependencies": {
-    "codemirror": "^4.7.0",
+    "codemirror": "^5.11.0",
     "optimist": "^0.5.2",
-    "request": "^2.81.0"
-  },
-  "forkedDependencies": {
+    "request": "^2.81.0",
     "replace": "^0.2.7",
     "socket.io": "^0.9.13",
-    "shelljs": "^0.1.4",
-    "tar": "^0.1.19"
-  }
+    "shelljs": "^0.8.3",
+    "tar": "^4.4.1",
+    "jsonify": "*"
+  },
+  "forkedDependencies": {}
 }
