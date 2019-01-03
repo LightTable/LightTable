@@ -97,7 +97,7 @@
   [func]
   `(lt.objs.thread/thread*
     (fn ~(gensym "tfun") []
-      (let [orig# (js/argsArray js/arguments)
+      (let [orig# (js/argsArray (cljs.core/js-arguments))
             msg# (.shift orig#)
             args# (.map orig# cljs.reader/read-string)
             ~'raise (fn [obj# k# v#]
