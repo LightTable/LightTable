@@ -5,9 +5,10 @@
                  [crate "0.2.5"]
                  [fetch "0.3.0" :exclusions [org.clojure/clojure noir]]
                  [org.clojure/clojurescript "1.9.229"
-                  :exclusions [org.apache.ant/ant]]]
+                  :exclusions [org.apache.ant/ant]]
+                 [javax.xml.bind/jaxb-api "2.4.0-b180830.0359"]]
 
-  :jvm-opts ["-Xmx1g" "-XX:+UseConcMarkSweepGC"] ; cljsbuild eats memory
+  :jvm-opts ["-Xmx1g" "-XX:+UseG1GC"] ; cljsbuild eats memory
   :cljsbuild {:builds [{:id "app"
                         :source-paths ["src"]
                         :compiler {:optimizations :simple
