@@ -8,16 +8,33 @@
 (def remote (js/require "remote"))
 (def dialog (.require remote "dialog"))
 
-(defn dir [obj event]
-  (let [files (.showOpenDialog dialog app/win #js {:properties #js ["openDirectory" "multiSelections"]})]
+(defn set-show-file-dialog-fn! [f] (def show-file-dialog f))
+
+(set-show-file-dialog-fn!
+ (fn [type options callback]
+  (if (= :open type)
+    (callback (.showOpenDialog dialog app/win options))
+    (callback [(.showSaveDialog dialog app/win options)]))))
+
+
+(defn broadcast-file-selected [obj event files]
     (doseq [file files]
-      (object/raise obj event file))))
+      (if file (object/raise obj event file))))
+
+(defn dir [obj event]
+  (show-file-dialog 
+    :open 
+    #js {:properties #js ["openDirectory" "multiSelections"]}
+    (partial broadcast-file-selected obj event)))
 
 (defn file [obj event]
-  (let [files (.showOpenDialog dialog app/win #js {:properties #js ["openFile" "multiSelections"]})]
-    (doseq [file files]
-      (object/raise obj event file))))
+  (show-file-dialog 
+    :open 
+    #js {:properties #js ["openFile" "multiSelections"]}
+    (partial broadcast-file-selected obj event)))
 
 (defn save-as [obj event path]
-  (when-let [file (.showSaveDialog dialog app/win #js {:defaultPath path})]
-    (object/raise obj event file)))
+  (show-file-dialog 
+    :save
+    #js {:defaultPath path}
+    (partial broadcast-file-selected obj event)))

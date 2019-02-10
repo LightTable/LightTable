@@ -1,0 +1,1 @@
+{:+ {:app [(:lt.objs.plugins/load-js ["lighttable test plugin_compiled.js"])]}}

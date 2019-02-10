@@ -42,6 +42,7 @@ LightTable is primarily written in [ClojureScript](http://clojure.org/clojurescr
 
 In order to develop for Light Table, you will need to [install a developer version of Light Table](doc/developer-install.md). For more information, read [CONTRIBUTING.md](https://github.com/LightTable/LightTable/blob/master/CONTRIBUTING.md#code-contributions) and [For Developers](https://github.com/LightTable/LightTable/wiki/For-Developers).
 
+To execute tests, run ```script/run-tests.sh```. This should be done after running ```script/build.sh```.
 
 ## License
 
