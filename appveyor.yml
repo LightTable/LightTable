@@ -1,0 +1,25 @@
+environment:
+  nodejs_version: "6"
+
+platform:
+  - x64
+
+configuration:
+  - Release
+
+cache:
+  - '%UserProfile%\.m2'
+
+install:
+  - cmd: >-
+      choco install lein
+
+test_script:
+  - cmd: >-
+      cd %APPVEYOR_BUILD_FOLDER% &&
+      lein test &&
+      lein cljsbuild once
+
+
+# Don't actually build (MSBuild).
+build: off

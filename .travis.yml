@@ -1,11 +1,38 @@
 language: clojure
-lein: lein
-script: "! lein cljsbuild once 2>&1 | grep WARNING:"
 jdk:
-- oraclejdk8
+  - oraclejdk8
+  - oraclejdk11
+matrix:
+  allow_failures:
+    - os: osx
+      osx_image: xcode10.1
+  include:
+    - os: linux
+      dist: trusty
+      lein: lein
+    - os: osx
+      osx_image: xcode9.3
+      addons:
+        homebrew:
+          packages:
+            - leiningen
+    - os: osx
+      osx_image: xcode10.1
+      addons:
+        homebrew:
+          packages:
+            - leiningen
+script: "! lein cljsbuild once 2>&1 | grep WARNING:"
 notifications:
   irc: "chat.freenode.net#lighttable"
   email:
   - gabriel.horner@gmail.com
   - kenny.evitt@gmail.com
   - mrundberget@hotmail.com
+  - prertik@outlook.com
+  webhooks:
+    urls:
+      - https://webhooks.gitter.im/e/ad53fbaaa2d43e671dc6
+    on_success: always  # options: [always|never|change] default: always
+    on_failure: always  # options: [always|never|change] default: always
+    on_start: never     # options: [always|never|change] default: always
