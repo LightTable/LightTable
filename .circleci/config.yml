@@ -1,0 +1,19 @@
+version: 2
+jobs:
+  build:
+    working_directory: ~/LightTable
+    docker:
+      - image: clojure:lein-2.8.0
+    environment:
+      LEIN_ROOT: nbd
+      JVM_OPTS: -Xmx3200m
+    steps:
+      - checkout
+      - restore_cache:
+          key: LightTable-{{ checksum "project.clj" }}
+      - run: lein deps
+      - save_cache:
+          paths:
+            - ~/.m2
+          key: LightTable-{{ checksum "project.clj" }}
+      - run: "! lein cljsbuild once 2>&1 | grep WARNING:"
