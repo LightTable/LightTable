@@ -28,7 +28,8 @@
                                   [org.clojure/clojurescript "1.7.145"
                                    :exclusions [org.apache.ant/ant]]]}}
   :plugins [[lein-cljsbuild "1.0.1"]
-            [lein-codox "0.9.5"]]
+            [lein-codox "0.9.5"]
+            [lein-cloverage "1.0.13"]]
   :codox {:language :clojurescript
           :project {:name "LightTable"}
           :output-path "codox"
