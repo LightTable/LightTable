@@ -1,8 +1,14 @@
 # Light Table
-[![Build Status](https://travis-ci.org/LightTable/LightTable.svg?branch=master)](https://travis-ci.org/LightTable/LightTable) [![Build Status](https://semaphoreci.com/api/v1/lighttable/lighttable/branches/master/badge.svg)](https://semaphoreci.com/lighttable/lighttable) [![CircleCI](https://circleci.com/gh/LightTable/LightTable.svg?style=svg)](https://circleci.com/gh/LightTable/LightTable)
+[![Build Status](https://travis-ci.org/LightTable/LightTable.svg?branch=master)](https://travis-ci.org/LightTable/LightTable)
+[![Build Status](https://semaphoreci.com/api/v1/lighttable/lighttable/branches/master/badge.svg)](https://semaphoreci.com/lighttable/lighttable)
+[![Build status](https://ci.appveyor.com/api/projects/status/kwnbeg947lueg2dl?svg=true)](https://ci.appveyor.com/project/prertik/lighttable-1rj5p)
+[![CircleCI](https://circleci.com/gh/LightTable/LightTable.svg?style=svg)](https://circleci.com/gh/LightTable/LightTable)
+[![codecov](https://codecov.io/gh/LightTable/LightTable/branch/master/graph/badge.svg)](https://codecov.io/gh/LightTable/LightTable)
+
+![](https://img.shields.io/github/downloads/LightTable/LightTable/latest/total.svg?style=for-the-badge)
+[![Packaging status](https://repology.org/badge/tiny-repos/lighttable.svg)](https://repology.org/metapackage/lighttable/versions)
 
 [![Join the chat at https://gitter.im/LightTable/LightTable](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/LightTable/LightTable?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-
 [![Code Shelter](https://www.codeshelter.co/static/badges/badge-flat.svg)](https://www.codeshelter.co/)
 
 Light Table is a next generation code editor that connects you to your creation with instant feedback. Light Table is very customizable and can display anything a [Chromium browser](http://www.chromium.org/) can.
