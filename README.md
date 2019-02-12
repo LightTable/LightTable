@@ -1,4 +1,5 @@
-# Light Table [![Build Status](https://travis-ci.org/LightTable/LightTable.svg?branch=master)](https://travis-ci.org/LightTable/LightTable)
+# Light Table
+[![Build Status](https://travis-ci.org/LightTable/LightTable.svg?branch=master)](https://travis-ci.org/LightTable/LightTable) [![Build Status](https://semaphoreci.com/api/v1/lighttable/lighttable/branches/master/badge.svg)](https://semaphoreci.com/lighttable/lighttable) [![CircleCI](https://circleci.com/gh/LightTable/LightTable.svg?style=svg)](https://circleci.com/gh/LightTable/LightTable)
 
 [![Join the chat at https://gitter.im/LightTable/LightTable](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/LightTable/LightTable?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
