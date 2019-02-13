@@ -31,7 +31,7 @@
   ISeqable
   (-seq [coll]
     (when (and coll (not (zero? (alength coll))))
-                 (IndexedSeq. (js/String. coll) 0))))
+                 (IndexedSeq. (js/String. coll) 0 nil))))
 
 (set! js/global.String.prototype.apply
   (fn
@@ -45,7 +45,7 @@
   ISeqable
   (-seq [coll]
     (when (and coll (not (zero? (alength coll))))
-                 (IndexedSeq. coll 0))))
+                 (IndexedSeq. coll 0 nil))))
 
 
 (defn ->dottedkw [& args]
