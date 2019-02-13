@@ -5,21 +5,21 @@
 
 ;; `send` and `on` are declared here with their bodies defined later as otherwise Codox will use the
 ;; redefined `send` and `on` in the below when block instead.
-(declare send)
+(declare transport)
 
-(declare on)
+(declare start)
 
 ;; Set $IPC_DEBUG to debug incoming and outgoing ipc messages for the renderer process
 (when (aget js/process.env "IPC_DEBUG")
-  (let [old-send send
-        old-on on]
-    (def send (fn [& args]
-                (prn "RENDERER->" args)
-                (apply old-send args)))
-    (def on (fn [channel cb]
-              (old-on channel (fn [_ & args]
-                                (prn "->RENDERER" channel args)
-                                (apply cb args)))))))
+  (let [old-send transport
+        old-on start]
+    (def transport (fn [& args]
+                     (prn "RENDERER->" args)
+                     (apply old-send args)))
+    (def start (fn [channel cb]
+                 (old-on channel (fn [_ & args]
+                                   (prn "->RENDERER" channel args)
+                                   (apply cb args)))))))
 
 (defn send
   "Delegates to ipc.send, which asynchronously sends args to the browser process's channel."
