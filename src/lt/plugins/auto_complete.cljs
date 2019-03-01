@@ -91,6 +91,7 @@
       false)))
 
 (def w (background (fn [obj-id m]
+                     (.log js/console "M:" (pr-str obj-id) (pr-str m))
                      (let [StringStream (-> (js/require (str js/ltpath "/core/node_modules/codemirror/addon/runmode/runmode.node.js"))
                                             (.-StringStream))
                            stream (fn [s]
@@ -110,9 +111,11 @@
                            eat-while (fn [s r]
                                        (.eatWhile s r))
                            string->tokens (fn [str pattern]
+                                            (.log js/console "PATTERN" (pr-str pattern))
                                             (let [s (stream str)
                                                   pattern (re-pattern pattern)
                                                   res (js-obj)]
+                                              (.log js/console "REPATTERN" (pr-str pattern))
                                               (skip-space s)
                                               (while (peek* s)
                                                 (eat-while s pattern)

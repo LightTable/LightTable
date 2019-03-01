@@ -4,4 +4,5 @@
   Generated javascript is used in background thread with worker-thread object."
   (:require [clojure.string :as string]
             [clojure.walk :as walk]
-            [cljs.reader :as reader]))
+            [cljs.reader :as reader]
+            [cljs.core :as core]))

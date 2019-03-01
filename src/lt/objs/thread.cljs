@@ -92,7 +92,7 @@
 
 (defn thread* [func]
   (let [func-str (str "" func)
-        n (gensym "theadfunc")] ;;trim off the errant return and outer function
+        n (gensym "threadfunc")] ;;trim off the errant return and outer function
     (send {:msg "register"
            :name n
            :func func-str})
