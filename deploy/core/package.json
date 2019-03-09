@@ -7,23 +7,23 @@
     "icon": "img/lticon.png",
     "width": 1024,
     "height": 700,
-    "min-width": 400,
-    "min-height": 400,
-    "web-preferences": {
+    "minWidth": 400,
+    "minHeight": 400,
+    "webPreferences": {
       "webgl": true,
       "webaudio": true,
       "plugins": true
     }
   },
   "dependencies": {
-    "codemirror": "^4.7.0",
+    "codemirror": "^5.11.0",
     "optimist": "^0.5.2",
-    "request": "^2.81.0"
-  },
-  "forkedDependencies": {
+    "request": "^2.81.0",
     "replace": "^0.2.7",
     "socket.io": "^0.9.13",
-    "shelljs": "^0.1.4",
-    "tar": "^0.1.19"
-  }
+    "shelljs": "^0.8.3",
+    "tar": "^4.4.1",
+    "jsonify": "*"
+  },
+  "forkedDependencies": {}
 }

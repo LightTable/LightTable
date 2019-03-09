@@ -1,8 +1,9 @@
+/*jslint node:true */
 "use strict";
 
-var app = require('app'),  // Module to control application life.
-    BrowserWindow = require('browser-window'),  // Module to create native browser window.
-    ipc = require("ipc"),
+var app = require('electron').app,  // Module to control application life.
+    BrowserWindow = require('electron').BrowserWindow,  // Module to create native browser window.
+    ipcMain = require("electron").ipcMain,
     optimist = require('optimist');
 
 // Keep a global reference of the window object, if you don't, the window will
@@ -49,7 +50,7 @@ function createWindow() {
   });
 
   // and load the index.html of the app.
-  window.loadUrl('file://' + __dirname + '/LightTable.html?id=' + window.id);
+  window.loadURL('file://' + __dirname + '/LightTable.html?id=' + window.id);
 
   // Notify LT that the user requested to close the window/app
   window.on("close", function(evt) {
@@ -63,28 +64,28 @@ function createWindow() {
   });
 
   return window;
-};
+}
 
 function onReady() {
-  ipc.on("createWindow", function(event, info) {
+  ipcMain.on("createWindow", function(event, info) {
     createWindow();
   });
 
-  ipc.on("initWindow", function(event, id) {
+  ipcMain.on("initWindow", function(event, id) {
     // Moving this to createWindow() causes js loading issues
     windows[id].on("focus", function() {
       windows[id].webContents.send("app", "focus");
     });
   });
 
-  ipc.on("toggleDevTools", function(event, windowId) {
+  ipcMain.on("toggleDevTools", function(event, windowId) {
     if(windowId && windows[windowId]) {
       windows[windowId].toggleDevTools();
     }
   });
 
   createWindow();
-};
+}
 
 function parseArgs() {
   optimist.usage("\nLight Table " + app.getVersion() + "\n" +
@@ -131,13 +132,13 @@ function start() {
     }
   });
   parseArgs();
-};
+}
 
-// Set $IPC_DEBUG to debug incoming and outgoing ipc messages for the main process
+// Set $IPC_DEBUG to debug incoming and outgoing ipcMain messages for the main process
 if (process.env["IPC_DEBUG"]) {
-  var oldOn = ipc.on;
-  ipc.on = function (channel, cb) {
-    oldOn.call(ipc, channel, function() {
+  var oldOn = ipcMain.on;
+  ipcMain.on = function (channel, cb) {
+    oldOn.call(ipcMain, channel, function() {
       console.log("\t\t\t\t\t->MAIN", channel, Array.prototype.slice.call(arguments).join(', '));
       cb.apply(null, arguments);
     });

@@ -9,9 +9,9 @@
             [clojure.string :as string])
   (:require-macros [lt.macros :refer [behavior]]))
 
-(def remote (js/require "remote"))
-(def Menu (.require remote "menu"))
-(def MenuItem (.require remote "menu-item"))
+(def remote (.-remote (js/require "electron")))
+(def Menu (.-Menu remote))
+(def MenuItem (.-MenuItem remote))
 
 (declare submenu)
 
@@ -178,7 +178,7 @@
           :triggers #{:init}
           :reaction (fn [this]
                       (when (platform/mac?)
-                        (set! (.-menu app/win) nil)
+                        (set! (.-Menu app/win) nil)
                         )
                       (main-menu)))
 
