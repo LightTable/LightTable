@@ -97,7 +97,7 @@
   (let [t (.createReadStream fs from)]
     (.. t
         (pipe (.createGunzip zlib))
-        (pipe (.Extract tar (js-obj "path" to)))
+        (pipe (.extract tar (js-obj "path" to)))
         (on "end" cb))))
 
 
