@@ -156,7 +156,7 @@
           :triggers #{:init}
           :reaction (fn [this]
                       ;; TODO: use addon/search/search.js
-                      (load/js "core/node_modules/codemirror_addons/search.js" :sync)
+                      (load/js "core/forked_modules/codemirror_addons/search.js" :sync)
                       (load/js "core/node_modules/codemirror/addon/search/searchcursor.js" :sync)))
 
 (def bar (object/create ::find-bar))
