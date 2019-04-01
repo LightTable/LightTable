@@ -7,12 +7,11 @@
 (def electron true)
 
 (def fs (js/require "fs"))
-(def remote (.-remote (js/require "electron")))
-(def clipboard (.-clipboard (js/require "electron")))
-(def electron-shell (.-shell (js/require "electron")))
+(def clipboard (js/require "clipboard"))
+(def electron-shell (js/require "shell"))
 
 (defn get-data-path []
-  (.getAppPath (.-app remote)))
+  (.getDataPath (.require (js/require "remote") "app")))
 
 (defn normalize [plat]
   (condp = plat

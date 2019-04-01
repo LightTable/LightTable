@@ -11,7 +11,7 @@
             [lt.objs.opener :as opener])
   (:require-macros [lt.macros :refer [behavior]]))
 
-(def remote (.-remote (js/require "electron")))
+(def remote (js/require "remote"))
 
 (defn open-paths [path-line-pairs add?]
   (doseq [[path line] path-line-pairs
