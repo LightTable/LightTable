@@ -19,6 +19,11 @@ fi
 # Ensure we start in project root
 cd "$(dirname "${BASH_SOURCE[0]}")"; cd ..
 
+# Ensure the core packages are installed
+pushd deploy/core
+    npm install
+popd
+
 # Ensure we have current version of electron
 pushd deploy/electron
   npm install
