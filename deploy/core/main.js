@@ -1,3 +1,4 @@
+/* jslint node:true */
 "use strict";
 
 var app = require('electron').app,  // Module to control application life.
@@ -63,7 +64,7 @@ function createWindow() {
   });
 
   return window;
-};
+}
 
 function onReady() {
   ipcMain.on("createWindow", function(event, info) {
@@ -84,7 +85,7 @@ function onReady() {
   });
 
   createWindow();
-};
+}
 
 function parseArgs() {
   optimist.usage("\nLight Table " + app.getVersion() + "\n" +
@@ -101,7 +102,7 @@ function parseArgs() {
     optimist.showHelp();
     process.exit(0);
   }
-};
+}
 
 function start() {
   app.commandLine.appendSwitch('remote-debugging-port', '8315');
@@ -131,7 +132,7 @@ function start() {
     }
   });
   parseArgs();
-};
+}
 
 // Set $IPC_DEBUG to debug incoming and outgoing ipcMain messages for the main process
 if (process.env["IPC_DEBUG"]) {
