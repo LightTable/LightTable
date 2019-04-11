@@ -24,7 +24,8 @@
     "shelljs": "^0.8.3",
     "tar": "^4.4.13",
     "jsonify": "*",
-    "bencode": "^2.0.1"
+    "bencode": "^2.0.1",
+    "yargs": "^8.0.2"
   },
   "forkedDependencies": {}
 }
