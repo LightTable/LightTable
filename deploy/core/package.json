@@ -17,8 +17,8 @@
   },
   "dependencies": {
     "codemirror": "^5.11.0",
-    "optimist": "^0.5.2",
-    "request": "^2.81.0"
+    "request": "^2.81.0",
+    "yargs": "^8.0.2"
   },
   "forkedDependencies": {
     "replace": "^0.2.7",
