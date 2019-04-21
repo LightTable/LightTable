@@ -27,7 +27,7 @@
             (object/raise workspace/current-ws :add.file! path))))
       (object/raise opener/opener :new! path))))
 
-(def parsed-args "Map of commandline options parsed by optimist"
+(def parsed-args "Map of commandline options parsed by yargs"
   (js->clj (.getGlobal remote "browserParsedArgs") :keywordize-keys true))
 
 (def open-files "Files to open from a file manager"

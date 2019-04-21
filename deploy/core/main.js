@@ -4,7 +4,7 @@
 var app = require('electron').app,  // Module to control application life.
     BrowserWindow = require('electron').BrowserWindow,  // Module to create native browser window.
     ipcMain = require("electron").ipcMain,
-    optimist = require('optimist');
+    yargs = require('yargs');
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the javascript object is GCed.
@@ -88,18 +88,18 @@ function onReady() {
 }
 
 function parseArgs() {
-  optimist.usage("\nLight Table " + app.getVersion() + "\n" +
+  yargs.usage("\nLight Table " + app.getVersion() + "\n" +
                  // TODO: Use a consistent name for executables or vary executable
                  // name per platform. $0 currently gives an unwieldy name
                  "Usage: light [options] [path ...]\n\n"+
                  "Paths are either a file or a directory.\n"+
                  "Files can take a line number e.g. file:line.");
-  optimist.alias('h', 'help').boolean('h').describe('h', 'Print help');
-  optimist.alias('a', 'add').boolean('a').describe('a', 'Add path(s) to workspace');
-  global.browserParsedArgs = optimist.parse(process.argv);
+  yargs.alias('h', 'help').boolean('h').describe('h', 'Print help');
+  yargs.alias('a', 'add').boolean('a').describe('a', 'Add path(s) to workspace');
+  global.browserParsedArgs = yargs.parse(process.argv);
 
   if (global.browserParsedArgs.help) {
-    optimist.showHelp();
+    yargs.showHelp();
     process.exit(0);
   }
 }
