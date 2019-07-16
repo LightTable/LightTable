@@ -1,28 +1,35 @@
 language: clojure
-jdk:
-  - oraclejdk8
-  - oraclejdk11
+before_install:
+  - chmod +x install-jdk.sh
 matrix:
   allow_failures:
-    - os: osx
-      osx_image: xcode10.1
+    - osx_image: xcode10.1
+    - osx_image: xcode9.3
   include:
     - os: linux
       dist: trusty
       lein: lein
+      script:
+        - jdk_switcher use oraclejdk8
+        - "! lein cljsbuild once 2>&1 | grep WARNING:"
+        - export JAVA_HOME=$HOME/openjdk11
+        - export PATH="$JAVA_HOME/bin:$PATH"
+        - $TRAVIS_BUILD_DIR/install-jdk.sh --target "/home/travis/openjdk11" --workspace "/home/travis/.cache/install-jdk" --feature "11" --license "GPL" --cacerts
+        - "! lein cljsbuild once 2>&1 | grep WARNING:"
     - os: osx
       osx_image: xcode9.3
       addons:
         homebrew:
           packages:
             - leiningen
+      script: "! lein cljsbuild once 2>&1 | grep WARNING:"
     - os: osx
       osx_image: xcode10.1
       addons:
         homebrew:
           packages:
             - leiningen
-script: "! lein cljsbuild once 2>&1 | grep WARNING:"
+      script: "! lein cljsbuild once 2>&1 | grep WARNING:"
 after_success:
   - CLOVERAGE_VERSION=1.0.7-SNAPSHOT lein cloverage --codecov
   - bash <(curl -s https://codecov.io/bash) -f target/coverage/codecov.json
