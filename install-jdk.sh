@@ -170,7 +170,7 @@ function determine_latest_jdk() {
       fi
       verbose "  Found ${url} [${curl_result}]"
       latest_jdk=${number}
-      number=$[$number +1]
+      number=$(($number +1))
     done
 
     verbose "Latest JDK feature release number is: ${latest_jdk}"
