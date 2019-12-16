@@ -13,6 +13,7 @@
             [lt.objs.deploy :as deploy]
             [lt.objs.notifos :as notifos]
             [lt.objs.tabs :as tabs]
+            [lt.objs.github :as github]
             [lt.util.js :refer [wait]]
             [lt.objs.platform :as platform]
             [cljs.reader :as reader]
@@ -191,8 +192,18 @@
 
 (declare install-failed)
 
-(def metadata-commits "https://api.github.com/repos/LightTable/plugin-metadata/commits")
-(def metadata-download "https://api.github.com/repos/LightTable/plugin-metadata/tarball/master")
+(defn metadata-commits
+  []
+  (str "https://"
+       (github/basic-auth-hostname-prefix)
+       "api.github.com/repos/LightTable/plugin-metadata/commits"))
+
+(defn metadata-download
+  []
+  (str "https://"
+       (github/basic-auth-hostname-prefix)
+       "api.github.com/repos/LightTable/plugin-metadata/tarball/master"))
+
 (def metadata-dir (files/lt-user-dir "metadata"))
 (def metadata-cache (files/join metadata-dir "cache.json"))
 
@@ -226,11 +237,11 @@
   (files/save metadata-cache (js/JSON.stringify (clj->js cache))))
 
 (defn latest-metadata-sha []
-  (fetch/xhr [:get metadata-commits] {}
+  (fetch/xhr [:get (metadata-commits)] {}
              (fn [data]
                (when-let [parsed (try (js/JSON.parse data)
                                    (catch :default e
-                                     (console/error (str "Invalid JSON response from " metadata-commits ": " (pr-str data)))))]
+                                     (console/error (str "Invalid JSON response from " (metadata-commits) ": " (pr-str data)))))]
                  (let [sha (-> (aget parsed 0)
                                (aget "sha"))]
                    (object/raise manager :metadata.sha sha))))))
@@ -239,7 +250,7 @@
   (let [tmp-gz (files/lt-user-dir "metadata-temp.tar.gz")
         tmp-dir (files/lt-user-dir "metadata-temp")]
     (notifos/working "Updating plugin metadata")
-    (deploy/download-file metadata-download tmp-gz (fn []
+    (deploy/download-file (metadata-download) tmp-gz (fn []
                                                      (deploy/untar tmp-gz tmp-dir
                                                                    (fn []
                                                                      (notifos/done-working)
@@ -333,7 +344,9 @@
                    (filter #(not= % ""))
                    (take 2))
         repo (.replace repo #".git" "")]
-    (str "https://api.github.com/repos/" username "/" repo "/tarball/" (:version plugin))))
+    (str "https://"
+         (github/basic-auth-hostname-prefix)
+         "api.github.com/repos/" username "/" repo "/tarball/" (:version plugin))))
 
 (defn fetch-and-install [url name cb]
   (let [munged-name (munge-plugin-name name)

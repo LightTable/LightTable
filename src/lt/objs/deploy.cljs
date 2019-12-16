@@ -11,6 +11,7 @@
             [lt.objs.sidebar.command :as cmd]
             [lt.objs.console :as console]
             [lt.objs.app :as app]
+            [lt.objs.github :as github]
             [lt.util.load :as load]
             [lt.util.js :refer [every]]
             [lt.util.cljs :refer [str-contains?]]
@@ -32,8 +33,8 @@
 
 (defn tar-path [v]
   (if (cache/fetch :edge)
-    (str "https://api.github.com/repos/LightTable/LightTable/tarball/master")
-    (str "https://api.github.com/repos/LightTable/LightTable/tarball/" v)))
+    (str "https://" (github/basic-auth-hostname-prefix) "api.github.com/repos/LightTable/LightTable/tarball/master")
+    (str "https://" (github/basic-auth-hostname-prefix) "api.github.com/repos/LightTable/LightTable/tarball/" v)))
 
 (def version-regex #"^\d+\.\d+\.\d+(-.*)?$")
 
@@ -120,7 +121,11 @@
                                                          restart to get the latest and greatest.")
                                               :buttons [{:label "ok"}]}))))))
 
-(def tags-url "https://api.github.com/repos/LightTable/LightTable/tags")
+(defn tags-url
+  []
+  (str "https://"
+       (github/basic-auth-hostname-prefix)
+       "api.github.com/repos/LightTable/LightTable/tags"))
 
 (defn should-update-popup [data]
   (popup/popup! {:header "There's a newer version of Light Table!"
@@ -136,7 +141,7 @@
   (when-let [parsed-body
              (try (js/JSON.parse body)
                (catch :default e
-                 (console/error (str "Invalid JSON response from " tags-url ": " (pr-str body)))))]
+                 (console/error (str "Invalid JSON response from " (tags-url) ": " (pr-str body)))))]
     (->> parsed-body
          ;; Ensure only version tags
          (keep #(when (re-find version-regex (.-name %)) (.-name %)))
@@ -144,7 +149,7 @@
          last)))
 
 (defn check-version [& [notify?]]
-  (fetch/xhr tags-url {}
+  (fetch/xhr (tags-url) {}
              (fn [data]
                (let [latest-version (->latest-version data)]
                  (when (re-find version-regex latest-version)
