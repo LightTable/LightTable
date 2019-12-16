@@ -1,9 +1,10 @@
+/* jslint node:true */
 "use strict";
 
-var app = require('app'),  // Module to control application life.
-    BrowserWindow = require('browser-window'),  // Module to create native browser window.
-    ipc = require("ipc"),
-    optimist = require('optimist');
+var app = require('electron').app,  // Module to control application life.
+    BrowserWindow = require('electron').BrowserWindow,  // Module to create native browser window.
+    ipcMain = require("electron").ipcMain,
+    yargs = require('yargs');
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the javascript object is GCed.
@@ -49,7 +50,7 @@ function createWindow() {
   });
 
   // and load the index.html of the app.
-  window.loadUrl('file://' + __dirname + '/LightTable.html?id=' + window.id);
+  window.loadURL('file://' + __dirname + '/LightTable.html?id=' + window.id);
 
   // Notify LT that the user requested to close the window/app
   window.on("close", function(evt) {
@@ -63,42 +64,42 @@ function createWindow() {
   });
 
   return window;
-};
+}
 
 function onReady() {
-  ipc.on("createWindow", function(event, info) {
+  ipcMain.on("createWindow", function(event, info) {
     createWindow();
   });
 
-  ipc.on("initWindow", function(event, id) {
+  ipcMain.on("initWindow", function(event, id) {
     // Moving this to createWindow() causes js loading issues
     windows[id].on("focus", function() {
       windows[id].webContents.send("app", "focus");
     });
   });
 
-  ipc.on("toggleDevTools", function(event, windowId) {
+  ipcMain.on("toggleDevTools", function(event, windowId) {
     if(windowId && windows[windowId]) {
       windows[windowId].toggleDevTools();
     }
   });
 
   createWindow();
-};
+}
 
 function parseArgs() {
-  optimist.usage("\nLight Table " + app.getVersion() + "\n" +
+  yargs.usage("\nLight Table " + app.getVersion() + "\n" +
                  // TODO: Use a consistent name for executables or vary executable
                  // name per platform. $0 currently gives an unwieldy name
                  "Usage: light [options] [path ...]\n\n"+
                  "Paths are either a file or a directory.\n"+
                  "Files can take a line number e.g. file:line.");
-  optimist.alias('h', 'help').boolean('h').describe('h', 'Print help');
-  optimist.alias('a', 'add').boolean('a').describe('a', 'Add path(s) to workspace');
-  global.browserParsedArgs = optimist.parse(process.argv);
+  yargs.alias('h', 'help').boolean('h').describe('h', 'Print help');
+  yargs.alias('a', 'add').boolean('a').describe('a', 'Add path(s) to workspace');
+  global.browserParsedArgs = yargs.parse(process.argv);
 
   if (global.browserParsedArgs.help) {
-    optimist.showHelp();
+    yargs.showHelp();
     process.exit(0);
   }
 }
@@ -131,13 +132,13 @@ function start() {
     }
   });
   parseArgs();
-};
+}
 
-// Set $IPC_DEBUG to debug incoming and outgoing ipc messages for the main process
+// Set $IPC_DEBUG to debug incoming and outgoing ipcMain messages for the main process
 if (process.env["IPC_DEBUG"]) {
-  var oldOn = ipc.on;
-  ipc.on = function (channel, cb) {
-    oldOn.call(ipc, channel, function() {
+  var oldOn = ipcMain.on;
+  ipcMain.on = function (channel, cb) {
+    oldOn.call(ipcMain, channel, function() {
       console.log("\t\t\t\t\t->MAIN", channel, Array.prototype.slice.call(arguments).join(', '));
       cb.apply(null, arguments);
     });

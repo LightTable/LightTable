@@ -19,6 +19,11 @@ fi
 # Ensure we start in project root
 cd "$(dirname "${BASH_SOURCE[0]}")"; cd ..
 
+# Ensure the core packages are installed
+pushd deploy/core
+    npm install
+popd
+
 # Ensure we have current version of electron
 pushd deploy/electron
   npm install
@@ -35,7 +40,7 @@ rm -f deploy/core/node_modules/lighttable/bootstrap.js
 lein cljsbuild once app
 
 # Fetch plugins
-PLUGINS=("Clojure,0.3.1" "CSS,0.0.6" "HTML,0.1.0" "Javascript,0.2.0"
+PLUGINS=("Clojure,0.3.3" "CSS,0.0.6" "HTML,0.1.0" "Javascript,0.2.0"
          "Paredit,0.0.4" "Python,0.0.7" "Rainbow,0.0.8")
 
 # Plugins cache

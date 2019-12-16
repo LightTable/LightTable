@@ -11,7 +11,7 @@
             [lt.objs.opener :as opener])
   (:require-macros [lt.macros :refer [behavior]]))
 
-(def remote (js/require "remote"))
+(def remote (.-remote (js/require "electron")))
 
 (defn open-paths [path-line-pairs add?]
   (doseq [[path line] path-line-pairs
@@ -27,7 +27,7 @@
             (object/raise workspace/current-ws :add.file! path))))
       (object/raise opener/opener :new! path))))
 
-(def parsed-args "Map of commandline options parsed by optimist"
+(def parsed-args "Map of commandline options parsed by yargs"
   (js->clj (.getGlobal remote "browserParsedArgs") :keywordize-keys true))
 
 (def open-files "Files to open from a file manager"
