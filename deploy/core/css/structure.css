@@ -6,7 +6,7 @@ input { border:none; padding:5px; outline:none; border-radius:0px; font-size:10p
 a {text-decoration:none; }
 ul { list-style:none; }
 h1 { font-size: 16pt; margin-bottom:10px; }
-button { cursor:default; border:none; outline:none; border-radius:0px; padding:2px 5px; outline:none; font-size:100%; }
+button { cursor:default; border:none; outline:none; border-radius:0px; padding:2px 5px; outline:none; font-size:120%; font-family: "Inconsolata", "Ubuntu Mono", "Consolas", monospace; }
 *:focus { outline:none; }
 
 * { box-sizing: border-box; }
@@ -75,7 +75,7 @@ body { -webkit-user-select: none; }
 #filter .results h2 { font-weight:bold; float:left; }
 #filter .results p { white-space:nowrap; float:left; margin-left:10px; }
 
-.console { overflow:auto; width:100%; height:100%; border-radius:0px; padding:0 10px; box-sizing:border-box; font-size:11pt; font-family: Inconsolata, Consolas, "Courier New"; }
+.console { overflow:auto; width:100%; height:100%; border-radius:0px; padding:0 10px; box-sizing:border-box; font-size:11pt; font-family: "Inconsolata", "Consolas", "Courier New"; }
 .console > li { padding-right:10px; padding-left:5px; font-size:11pt; -webkit-user-select:text;}
 .console pre { width:auto; white-space: pre-wrap; }
 .console .inspector-object { display:inline-block; vertical-align:top; line-height:17px; }
@@ -154,7 +154,7 @@ body { -webkit-user-select: none; }
 #right-bar .command { padding:0px 0px; background:transparent; overflow:hidden; height:100%; }
 #right-bar .command h2 { font-size: 12pt; margin-bottom:10px; cursor:default; padding:10px; border-radius:2px; }
 #right-bar .command h2:after { float:right; content: "⇡"; }
-#right-bar .command input { outline:none; border:none; font-size:11pt; width:100%; border-radius:2px; padding:10px; margin-bottom:10px; }
+#right-bar .command input { outline:none; border:none; font-size:11pt; width:100%; border-radius:2px; padding:10px; margin-bottom:10px; font-family: "Verdana", "Courier New", "Inconsolata", monospace; }
 #right-bar .command .selector {overflow:hidden; }
 #right-bar .command.options .selector { display:none; }
 #right-bar .command.selector .options { display:none; overflow:hidden; }
@@ -175,7 +175,7 @@ body { -webkit-user-select: none; }
 #side .workspace .folder, .folders { font-weight:bold; }
 #side .workspace > ul > li > div > ul.sub { margin:0; }
 #side .workspace ul.root > div > ul:empty:before { content:"Right click to add files or folders to the workspace or open a recent one to get started."; display:inline-block; text-align:center; width:100%; max-width:300px; margin-top:40px;  }
-#side .workspace input.rename { display:none; }
+#side .workspace input.rename { display:none; font-family: "Verdana", "Courier New", "Inconsolata"; }
 #side .workspace li.renaming > input.rename { display:block; width:100%; }
 #side .workspace li.renaming > .tree-item > p { display:none; }
 #side .workspace.recents .wstree { display:none; }
@@ -274,13 +274,13 @@ body { -webkit-user-select: none; }
 .vertical-grip { background: transparent; width:7px; height:100%; z-index:10000000; position:absolute; top:0; right:0; cursor:col-resize; }
 
 #find-bar { overflow:hidden; background:transparent; position:relative; height:0; }
-#find-bar input { display:inline-block; font-size:11pt; font-family:"Inconsolata", "Ubuntu Mono", "Consolas", monospace; border-radius:0;  width:50%; height:30px; box-sizing:border-box; padding:5px; padding-left:10px; outline:none; }
+#find-bar input { display:inline-block; font-size:11pt; font-family: "Verdana", "Courier New", "Inconsolata", monospace; border-radius:0;  width:50%; height:30px; box-sizing:border-box; padding:5px; padding-left:10px; outline:none; }
 #find-bar button { position:absolute; right:-3px; z-index: 100000; padding:6px 10px;}
 
 #browser webview { position:absolute; top:0; left:0; right:0; bottom:35px; }
 #browser nav { position:absolute; bottom:5px; left:0; right:0; }
 #browser .frame-shade { height:-webkit-calc(100% - 35px); width:100%; background:transparent; position:absolute; display:none; }
-#browser input { font-size:10pt; padding-left:10px; background:#444; width:-webkit-calc(100% - 60px); padding:5px 12px; vertical-align:middle;}
+#browser input { font-size:10pt; padding-left:10px; background:#444; width:-webkit-calc(100% - 60px); padding:5px 12px; vertical-align:middle; font-family: "Verdana", "Courier New", "Inconsolata", monospace; }
 #browser button { width:20px; height:26px; padding:4px 5px; box-sizing:border-box; border-radius:0px; vertical-align:middle; }
 
 #side .tab-settings .filter-list { position:relative; }
@@ -289,7 +289,7 @@ body { -webkit-user-select: none; }
 #side .tab-settings .filter-list input:focus + * { display:block; }
 
 .search-results { overflow:hidden; position:relative; box-sizing:border-box; }
-.search-results input { width:100%; margin:2px 0; }
+.search-results input { width:100%; margin:2px 0; font-family: "Verdana", "Courier New", "Inconsolata", monospace; }
 .search-results .res { position:absolute; overflow:auto; left:10px; right:10px; top:10px; bottom:130px; }
 .search-results .searcher { margin-bottom:10px; margin-top:10px; position:absolute; left:10px; right:10px; bottom:0px; }
 .search-results .res li { background:transparent; padding:7px 0; margin-bottom:5px; border-bottom:0px solid #444; }
@@ -312,6 +312,7 @@ body { -webkit-user-select: none; }
 .plugin-manager h1 { font-size:14pt; margin-bottom:0; line-height:1.3em; }
 .plugin-manager p { margin-top:10px;}
 .plugin-manager li { padding-left:5px; padding-top:8px; margin:0; padding-bottom:12px; position:relative; -webkit-user-select: text;}
+.plugin-manager input { font-family: "Verdana", "Courier New", "Inconsolata", monospace; }
 .plugin-manager .tabs { min-height:30px; }
 .plugin-manager .enabled { float:right; position:absolute; right:0; top:1px; overflow:auto; }
 .plugin-manager .plugins { flex:1; display:block; overflow:auto; }
