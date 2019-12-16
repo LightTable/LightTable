@@ -4,6 +4,7 @@
             [lt.objs.context :as ctx]
             [lt.objs.statusbar :as statusbar]
             [lt.util.load :as load]
+            [lt.objs.notifos :as notifos]
             [lt.objs.canvas :as canvas]
             [lt.objs.sidebar.command :as cmd]
             [lt.objs.editor.pool :as pool]
@@ -221,13 +222,14 @@
               :desc "Editor: Go to line"
               :options line-input
               :exec (fn [l]
-                      (when (or (number? l) (not (empty? l)))
-                        (let [cur (pool/last-active)]
-                          (editor/move-cursor cur {:ch 0
-                                                   :line (dec (if-not (number? l)
-                                                                (js/parseInt l)
-                                                                l))})
-                          (editor/center-cursor cur))))})
+                      (let [line (if-not (number? l)
+                                   (js/parseInt l 10)
+                                   l)]
+                        (if (pos? line)
+                          (let [cur (pool/last-active)]
+                            (editor/move-cursor cur {:ch 0 :line (dec line)})
+                            (editor/center-cursor cur))
+                          (notifos/set-msg! (str "Line number '" l "' must be a positive integer") {:class "error"}))))})
 
 (cmd/command {:command :find.toggle
               :desc    "Find: Toggle the find bar"
