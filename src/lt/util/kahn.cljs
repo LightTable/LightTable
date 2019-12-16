@@ -1,5 +1,5 @@
 (ns lt.util.kahn
-  "Provide a [Khan sort](https://en.wikipedia.org/wiki/Topological_sorting#Kahn.27s_algorithm)."
+  "Provide a [Kahn sort](https://en.wikipedia.org/wiki/Topological_sorting#Kahn.27s_algorithm)."
   (:require [clojure.set :as set :refer [difference union intersection]]))
 
 (defn without
