@@ -10,7 +10,7 @@ DIR=$(pwd)
 
 if [ "$(uname)" == "Darwin" ]; then
   CLI="${DIR}/deploy/electron/electron/Electron.app/Contents/MacOS/Electron"
-elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
+elif hash bash 2>/dev/null; then
   CLI="${DIR}/deploy/electron/electron/electron"
 elif [ "$(expr substr $(uname -s) 1 9)" == "CYGWIN_NT" ]; then
   CLI="${DIR}/deploy/electron/electron/electron.exe"
