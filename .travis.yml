@@ -1,7 +1,11 @@
 language: clojure
 jdk:
-  - oraclejdk8
-  - oraclejdk11
+  - openjdk8
+  - openjdk9
+  - openjdk10
+  - openjdk11
+  - openjdk12
+  - openjdk13
 matrix:
   allow_failures:
     - os: osx
@@ -29,10 +33,10 @@ after_success:
 notifications:
   irc: "chat.freenode.net#lighttable"
   email:
+  - prertik@outlook.com
   - gabriel.horner@gmail.com
   - kenny.evitt@gmail.com
   - mrundberget@hotmail.com
-  - prertik@outlook.com
   webhooks:
     urls:
       - https://webhooks.gitter.im/e/ad53fbaaa2d43e671dc6
