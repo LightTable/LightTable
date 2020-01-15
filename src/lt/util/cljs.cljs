@@ -9,17 +9,17 @@
 
 
 ;;NEEDED for latest CLJS
-(extend-type cljs.core/ChunkedCons
-  INext
-  (-next [this] (-seq (-rest this))))
+;(extend-type cljs.core/ChunkedCons
+;  INext
+;  (-next [this] (-seq (-rest this))))
 
 (extend-type nil
   ISeqable
   (-seq [coll] nil))
 
-(extend-type cljs.core/RSeq
-  INext
-  (-next [this] (-seq (-rest this))))
+;(extend-type cljs.core/RSeq
+;  INext
+;  (-next [this] (-seq (-rest this))))
 
 (extend-type js/global.String
   IFn
@@ -31,7 +31,7 @@
   ISeqable
   (-seq [coll]
     (when (and coll (not (zero? (alength coll))))
-                 (IndexedSeq. (js/String. coll) 0))))
+                 (IndexedSeq. (js/String. coll) 0 nil))))
 
 (set! js/global.String.prototype.apply
   (fn
@@ -45,7 +45,7 @@
   ISeqable
   (-seq [coll]
     (when (and coll (not (zero? (alength coll))))
-                 (IndexedSeq. coll 0))))
+                 (IndexedSeq. coll 0 nil))))
 
 
 (defn ->dottedkw [& args]

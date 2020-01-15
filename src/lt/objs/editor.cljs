@@ -335,8 +335,8 @@
   [e func]
   (.on e "onScroll"
        (fn [ed]
-         (func ed)
-         ))
+         (func ed)))
+
   e)
 
 (defn replace
@@ -753,8 +753,8 @@
                                        :doc (:doc info)
                                        :info (dissoc info :content :doc)})
                    (wrap-object-events ed obj)
-                   (->elem ed)
-                   )))
+                   (->elem ed))))
+
 
 ;;*********************************************************
 ;; Behaviors
@@ -903,8 +903,8 @@
           :triggers #{:active}
           :reaction (fn [obj]
                       ;;TODO: this is probably inefficient due to inactive
-                      (ctx-obj/in! (:tags @obj) obj)
-                      ))
+                      (ctx-obj/in! (:tags @obj) obj)))
+
 
 (behavior ::context-on-inactive
           :triggers #{:inactive}
@@ -923,8 +923,8 @@
           :triggers #{:show}
           :reaction (fn [obj]
                       (refresh (:ed @obj))
-                      (object/raise obj :focus!)
-                      ))
+                      (object/raise obj :focus!)))
+
 
 (behavior ::focus
           :triggers #{:focus!}
@@ -961,8 +961,8 @@
                         (-> (menu/menu items)
                             (menu/show-menu)))
                       (dom/prevent e)
-                      (dom/stop-propagation e)
-                      ))
+                      (dom/stop-propagation e)))
+
 
 (behavior ::copy-paste-menu+
           :triggers #{:menu+}

@@ -113,6 +113,7 @@
           :triggers #{:change :create}
           :debounce 100
           :reaction (fn [this]
+                      (.log js/console "::on-changed being hit")
                       (flat-parser this (editor/->val this))))
 
 (behavior ::parsed

@@ -97,13 +97,19 @@
   [func]
   `(lt.objs.thread/thread*
     (fn ~(gensym "tfun") []
-      (let [orig# (js/argsArray js/arguments)
+      (.log js/console "BACKGROUND:")
+      (.log js/console "ARGS:" (cljs.core/js-arguments))
+      (.log js/console "ARR:" (js/argsArray (cljs.core/js-arguments)))
+      (let [orig# (js/argsArray (cljs.core/js-arguments))
             msg# (.shift orig#)
             args# (.map orig# cljs.reader/read-string)
             ~'raise (fn [obj# k# v#]
-                     (js/_send obj# k# (pr-str v#) "clj"))]
-        (.unshift args# (.-obj msg#))
-        (.apply ~func nil args#)))))
+                      (js/_send obj# k# (pr-str v#) "clj"))]
+        ;; (.unshift args# (.-obj msg#))
+        ;; (.apply ~func nil args#)
+        (.log js/console "MAPARG:" (pr-str (cons (.-obj msg#) args#)) (pr-str args#))
+        (.log js/console "MAPARG2:" (pr-str (cljs.core/to-array (cons (.-obj msg#) args#))) (pr-str args#))
+        (.apply ~func nil (cljs.core/to-array (cons (.-obj msg#) args#)))))))
 
 (defmacro ^:private aloop [[var arr] & body]
   `(let [arr# ~arr]
