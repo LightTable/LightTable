@@ -1,5 +1,5 @@
 'use strict';
-module.exports = function generate_allOf(it, $keyword) {
+module.exports = function generate_allOf(it, $keyword, $ruleType) {
   var out = ' ';
   var $schema = it.schema[$keyword];
   var $schemaPath = it.schemaPath + it.util.getProperty($keyword);
@@ -17,7 +17,7 @@ module.exports = function generate_allOf(it, $keyword) {
       l1 = arr1.length - 1;
     while ($i < l1) {
       $sch = arr1[$i += 1];
-      if (it.util.schemaHasRules($sch, it.RULES.all)) {
+      if ((it.opts.strictKeywords ? typeof $sch == 'object' && Object.keys($sch).length > 0 : it.util.schemaHasRules($sch, it.RULES.all))) {
         $allSchemasEmpty = false;
         $it.schema = $sch;
         $it.schemaPath = $schemaPath + '[' + $i + ']';

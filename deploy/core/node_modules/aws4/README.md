@@ -3,10 +3,10 @@ aws4
 
 [![Build Status](https://secure.travis-ci.org/mhart/aws4.png?branch=master)](http://travis-ci.org/mhart/aws4)
 
-A small utility to sign vanilla node.js http(s) request options using Amazon's
+A small utility to sign vanilla Node.js http(s) request options using Amazon's
 [AWS Signature Version 4](http://docs.amazonwebservices.com/general/latest/gr/signature-version-4.html).
 
-Can also be used [in the browser](./browser).
+If you want to sign and send AWS requests in a modern browser, or an environment like [Cloudflare Workers](https://developers.cloudflare.com/workers/), then check out [aws4fetch](https://github.com/mhart/aws4fetch) – otherwise you can also bundle this library for use [in the browser](./browser).
 
 This signature is supported by nearly all Amazon services, including
 [S3](http://docs.aws.amazon.com/AmazonS3/latest/API/),

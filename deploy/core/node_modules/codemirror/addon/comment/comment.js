@@ -21,28 +21,22 @@
   }
 
   CodeMirror.commands.toggleComment = function(cm) {
-    cm.toggleComment();
-  };
-
-  CodeMirror.defineExtension("toggleComment", function(options) {
-    if (!options) options = noOptions;
-    var cm = this;
-    var minLine = Infinity, ranges = this.listSelections(), mode = null;
+    var minLine = Infinity, ranges = cm.listSelections(), mode = null;
     for (var i = ranges.length - 1; i >= 0; i--) {
       var from = ranges[i].from(), to = ranges[i].to();
       if (from.line >= minLine) continue;
       if (to.line >= minLine) to = Pos(minLine, 0);
       minLine = from.line;
       if (mode == null) {
-        if (cm.uncomment(from, to, options)) mode = "un";
-        else { cm.lineComment(from, to, options); mode = "line"; }
+        if (cm.uncomment(from, to)) mode = "un";
+        else { cm.lineComment(from, to); mode = "line"; }
       } else if (mode == "un") {
-        cm.uncomment(from, to, options);
+        cm.uncomment(from, to);
       } else {
-        cm.lineComment(from, to, options);
+        cm.lineComment(from, to);
       }
     }
-  });
+  };
 
   CodeMirror.defineExtension("lineComment", function(from, to, options) {
     if (!options) options = noOptions;
@@ -63,14 +57,7 @@
 
     self.operation(function() {
       if (options.indent) {
-        var baseString = null;
-        for (var i = from.line; i < end; ++i) {
-          var line = self.getLine(i);
-          var whitespace = line.slice(0, firstNonWS(line));
-          if (baseString == null || baseString.length > whitespace.length) {
-            baseString = whitespace;
-          }
-        }
+        var baseString = firstLine.slice(0, firstNonWS(firstLine));
         for (var i = from.line; i < end; ++i) {
           var line = self.getLine(i), cut = baseString.length;
           if (!blankLines && !nonWS.test(line)) continue;

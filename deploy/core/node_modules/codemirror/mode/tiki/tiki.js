@@ -52,27 +52,35 @@ CodeMirror.defineMode('tiki', function(config) {
     case "{": //plugin
       stream.eat("/");
       stream.eatSpace();
-      stream.eatWhile(/[^\s\u00a0=\"\'\/?(}]/);
+      var tagName = "";
+      var c;
+      while ((c = stream.eat(/[^\s\u00a0=\"\'\/?(}]/))) tagName += c;
       state.tokenize = inPlugin;
       return "tag";
+      break;
     case "_": //bold
-      if (stream.eat("_"))
+      if (stream.eat("_")) {
         return chain(inBlock("strong", "__", inText));
+      }
       break;
     case "'": //italics
-      if (stream.eat("'"))
+      if (stream.eat("'")) {
+        // Italic text
         return chain(inBlock("em", "''", inText));
+      }
       break;
     case "(":// Wiki Link
-      if (stream.eat("("))
+      if (stream.eat("(")) {
         return chain(inBlock("variable-2", "))", inText));
+      }
       break;
     case "[":// Weblink
       return chain(inBlock("variable-3", "]", inText));
       break;
     case "|": //table
-      if (stream.eat("|"))
+      if (stream.eat("|")) {
         return chain(inBlock("comment", "||"));
+      }
       break;
     case "-":
       if (stream.eat("=")) {//titleBar
@@ -82,19 +90,22 @@ CodeMirror.defineMode('tiki', function(config) {
       }
       break;
     case "=": //underline
-      if (stream.match("=="))
+      if (stream.match("==")) {
         return chain(inBlock("tw-underline", "===", inText));
+      }
       break;
     case ":":
-      if (stream.eat(":"))
+      if (stream.eat(":")) {
         return chain(inBlock("comment", "::"));
+      }
       break;
     case "^": //box
       return chain(inBlock("tw-box", "^"));
       break;
     case "~": //np
-      if (stream.match("np~"))
+      if (stream.match("np~")) {
         return chain(inBlock("meta", "~/np~"));
+      }
       break;
     }
 

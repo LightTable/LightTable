@@ -1,3 +1,16 @@
+# DEPRECATION NOTICE
+
+I don't want to maintain this module anymore since I just use
+[minimist](https://npmjs.org/package/minimist), the argument parsing engine,
+directly instead nowadays.
+
+See [yargs](https://github.com/chevex/yargs) for the modern, pirate-themed
+successor to optimist.
+
+[![yarrrrrrrgs!](http://i.imgur.com/4WFGVJ9.png)](https://github.com/chevex/yargs)
+
+You should also consider [nomnom](https://github.com/harthur/nomnom).
+
 optimist
 ========
 

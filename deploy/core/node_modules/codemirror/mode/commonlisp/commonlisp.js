@@ -111,7 +111,6 @@ CodeMirror.defineMode("commonlisp", function (config) {
       return typeof i == "number" ? i : state.ctx.start + 1;
     },
 
-    closeBrackets: {pairs: "()[]{}\"\""},
     lineComment: ";;",
     blockCommentStart: "#|",
     blockCommentEnd: "|#"

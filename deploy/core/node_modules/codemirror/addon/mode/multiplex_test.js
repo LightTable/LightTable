@@ -29,5 +29,5 @@
 
   MT(
     "stexInsideMarkdown",
-    "[strong **Equation:**] [delim&delim-open $][inner&tag \\pi][delim&delim-close $]");
+    "[strong **Equation:**] [delim $][inner&tag \\pi][delim $]");
 })();

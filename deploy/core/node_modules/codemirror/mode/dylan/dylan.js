@@ -154,12 +154,20 @@ CodeMirror.defineMode("dylan", function(_config) {
     return f(stream, state);
   }
 
+  var type, content;
+
+  function ret(_type, style, _content) {
+    type = _type;
+    content = _content;
+    return style;
+  }
+
   function tokenBase(stream, state) {
     // String
     var ch = stream.peek();
     if (ch == "'" || ch == '"') {
       stream.next();
-      return chain(stream, state, tokenString(ch, "string"));
+      return chain(stream, state, tokenString(ch, "string", "string"));
     }
     // Comment
     else if (ch == "/") {
@@ -168,16 +176,16 @@ CodeMirror.defineMode("dylan", function(_config) {
         return chain(stream, state, tokenComment);
       } else if (stream.eat("/")) {
         stream.skipToEnd();
-        return "comment";
+        return ret("comment", "comment");
       } else {
         stream.skipTo(" ");
-        return "operator";
+        return ret("operator", "operator");
       }
     }
     // Decimal
     else if (/\d/.test(ch)) {
       stream.match(/^\d*(?:\.\d*)?(?:e[+\-]?\d+)?/);
-      return "number";
+      return ret("number", "number");
     }
     // Hash
     else if (ch == "#") {
@@ -186,33 +194,33 @@ CodeMirror.defineMode("dylan", function(_config) {
       ch = stream.peek();
       if (ch == '"') {
         stream.next();
-        return chain(stream, state, tokenString('"', "string-2"));
+        return chain(stream, state, tokenString('"', "symbol", "string-2"));
       }
       // Binary number
       else if (ch == "b") {
         stream.next();
         stream.eatWhile(/[01]/);
-        return "number";
+        return ret("number", "number");
       }
       // Hex number
       else if (ch == "x") {
         stream.next();
         stream.eatWhile(/[\da-f]/i);
-        return "number";
+        return ret("number", "number");
       }
       // Octal number
       else if (ch == "o") {
         stream.next();
         stream.eatWhile(/[0-7]/);
-        return "number";
+        return ret("number", "number");
       }
       // Hash symbol
       else {
         stream.eatWhile(/[-a-zA-Z]/);
-        return "keyword";
+        return ret("hash", "keyword");
       }
     } else if (stream.match("end")) {
-      return "keyword";
+      return ret("end", "keyword");
     }
     for (var name in patterns) {
       if (patterns.hasOwnProperty(name)) {
@@ -220,21 +228,21 @@ CodeMirror.defineMode("dylan", function(_config) {
         if ((pattern instanceof Array && pattern.some(function(p) {
           return stream.match(p);
         })) || stream.match(pattern))
-          return patternStyles[name];
+          return ret(name, patternStyles[name], stream.current());
       }
     }
     if (stream.match("define")) {
-      return "def";
+      return ret("definition", "def");
     } else {
       stream.eatWhile(/[\w\-]/);
       // Keyword
       if (wordLookup[stream.current()]) {
-        return styleLookup[stream.current()];
+        return ret(wordLookup[stream.current()], styleLookup[stream.current()], stream.current());
       } else if (stream.current().match(symbol)) {
-        return "variable";
+        return ret("variable", "variable");
       } else {
         stream.next();
-        return "variable-2";
+        return ret("other", "variable-2");
       }
     }
   }
@@ -249,10 +257,10 @@ CodeMirror.defineMode("dylan", function(_config) {
       }
       maybeEnd = (ch == "*");
     }
-    return "comment";
+    return ret("comment", "comment");
   }
 
-  function tokenString(quote, style) {
+  function tokenString(quote, type, style) {
     return function(stream, state) {
       var next, end = false;
       while ((next = stream.next()) != null) {
@@ -263,7 +271,7 @@ CodeMirror.defineMode("dylan", function(_config) {
       }
       if (end)
         state.tokenize = tokenBase;
-      return style;
+      return ret(type, style);
     };
   }
 

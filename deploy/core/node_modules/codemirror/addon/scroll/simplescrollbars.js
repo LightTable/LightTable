@@ -69,20 +69,14 @@
     if (update !== false) this.scroll(pos, this.orientation);
   };
 
-  var minButtonSize = 10;
-
   Bar.prototype.update = function(scrollSize, clientSize, barSize) {
     this.screen = clientSize;
     this.total = scrollSize;
     this.size = barSize;
 
-    var buttonSize = this.screen * (this.size / this.total);
-    if (buttonSize < minButtonSize) {
-      this.size -= minButtonSize - buttonSize;
-      buttonSize = minButtonSize;
-    }
+    // FIXME clip to min size?
     this.inner.style[this.orientation == "horizontal" ? "width" : "height"] =
-      buttonSize + "px";
+      this.screen * (this.size / this.total) + "px";
     this.inner.style[this.orientation == "horizontal" ? "left" : "top"] =
       this.pos * (this.size / this.total) + "px";
   };

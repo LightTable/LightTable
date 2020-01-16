@@ -65,7 +65,8 @@ CodeMirror.defineMode("asterisk", function() {
 
   function basicToken(stream,state){
     var cur = '';
-    var ch = stream.next();
+    var ch  = '';
+    ch = stream.next();
     // comment
     if(ch == ";") {
       stream.skipToEnd();
@@ -135,6 +136,7 @@ CodeMirror.defineMode("asterisk", function() {
     token: function(stream, state) {
 
       var cur = '';
+      var ch  = '';
       if(stream.eatSpace()) return null;
       // extension started
       if(state.extenStart){
@@ -168,7 +170,7 @@ CodeMirror.defineMode("asterisk", function() {
       } else if(state.extenPriority) {
         state.extenPriority = false;
         state.extenApplication = true;
-        stream.next(); // get comma
+        ch = stream.next(); // get comma
         if(state.extenSame) return null;
         stream.eatWhile(/[^,]/);
         return "number";

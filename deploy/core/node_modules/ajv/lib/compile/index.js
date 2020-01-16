@@ -2,18 +2,8 @@
 
 var resolve = require('./resolve')
   , util = require('./util')
-  , stableStringify = require('json-stable-stringify')
-  , async = require('../async');
-
-var beautify;
-
-function loadBeautify(){
-  if (beautify === undefined) {
-    var name = 'js-beautify';
-    try { beautify = require(name).js_beautify; }
-    catch(e) { beautify = false; }
-  }
-}
+  , errorClasses = require('./error_classes')
+  , stableStringify = require('fast-json-stable-stringify');
 
 var validateGenerator = require('../dotjs/validate');
 
@@ -21,12 +11,11 @@ var validateGenerator = require('../dotjs/validate');
  * Functions below are used inside compiled validations function
  */
 
-var co = require('co');
 var ucs2length = util.ucs2length;
-var equal = require('./equal');
+var equal = require('fast-deep-equal');
 
 // this error is thrown by async schemas to return validation errors via exception
-var ValidationError = require('./validation_error');
+var ValidationError = errorClasses.Validation;
 
 module.exports = compile;
 
@@ -51,8 +40,7 @@ function compile(schema, root, localRefs, baseId) {
     , patternsHash = {}
     , defaults = []
     , defaultsHash = {}
-    , customRules = []
-    , keepSourceCode = opts.sourceCode !== false;
+    , customRules = [];
 
   root = root || { schema: schema, refVal: refVal, refs: refs };
 
@@ -74,16 +62,18 @@ function compile(schema, root, localRefs, baseId) {
       cv.refVal = v.refVal;
       cv.root = v.root;
       cv.$async = v.$async;
-      if (keepSourceCode) cv.sourceCode = v.sourceCode;
+      if (opts.sourceCode) cv.source = v.source;
     }
     return v;
   } finally {
     endCompiling.call(this, schema, root, baseId);
   }
 
+  /* @this   {*} - custom context, see passContext option */
   function callValidate() {
+    /* jshint validthis: true */
     var validate = compilation.validate;
-    var result = validate.apply(null, arguments);
+    var result = validate.apply(this, arguments);
     callValidate.errors = validate.errors;
     return result;
   }
@@ -94,7 +84,6 @@ function compile(schema, root, localRefs, baseId) {
       return compile.call(self, _schema, _root, localRefs, baseId);
 
     var $async = _schema.$async === true;
-    if ($async && !opts.transpile) async.setup(opts);
 
     var sourceCode = validateGenerator({
       isTop: true,
@@ -105,6 +94,7 @@ function compile(schema, root, localRefs, baseId) {
       schemaPath: '',
       errSchemaPath: '#',
       errorPath: '""',
+      MissingRefError: errorClasses.MissingRef,
       RULES: RULES,
       validate: validateGenerator,
       util: util,
@@ -115,6 +105,7 @@ function compile(schema, root, localRefs, baseId) {
       useCustomRule: useCustomRule,
       opts: opts,
       formats: formats,
+      logger: self.logger,
       self: self
     });
 
@@ -122,20 +113,10 @@ function compile(schema, root, localRefs, baseId) {
                    + vars(defaults, defaultCode) + vars(customRules, customRuleCode)
                    + sourceCode;
 
-    if (opts.beautify) {
-      loadBeautify();
-      /* istanbul ignore else */
-      if (beautify) sourceCode = beautify(sourceCode, opts.beautify);
-      else console.error('"npm install js-beautify" to use beautify option');
-    }
-    // console.log('\n\n\n *** \n', sourceCode);
-    var validate, validateCode
-      , transpile = opts._transpileFunc;
+    if (opts.processCode) sourceCode = opts.processCode(sourceCode);
+    // console.log('\n\n\n *** \n', JSON.stringify(sourceCode));
+    var validate;
     try {
-      validateCode = $async && transpile
-                      ? transpile(sourceCode)
-                      : sourceCode;
-
       var makeValidate = new Function(
         'self',
         'RULES',
@@ -144,11 +125,10 @@ function compile(schema, root, localRefs, baseId) {
         'refVal',
         'defaults',
         'customRules',
-        'co',
         'equal',
         'ucs2length',
         'ValidationError',
-        validateCode
+        sourceCode
       );
 
       validate = makeValidate(
@@ -159,7 +139,6 @@ function compile(schema, root, localRefs, baseId) {
         refVal,
         defaults,
         customRules,
-        co,
         equal,
         ucs2length,
         ValidationError
@@ -167,7 +146,7 @@ function compile(schema, root, localRefs, baseId) {
 
       refVal[0] = validate;
     } catch(e) {
-      console.error('Error compiling schema, function code:', validateCode);
+      self.logger.error('Error compiling schema, function code:', sourceCode);
       throw e;
     }
 
@@ -177,9 +156,9 @@ function compile(schema, root, localRefs, baseId) {
     validate.refVal = refVal;
     validate.root = isRoot ? validate : _root;
     if ($async) validate.$async = true;
-    if (keepSourceCode) validate.sourceCode = sourceCode;
     if (opts.sourceCode === true) {
       validate.source = {
+        code: sourceCode,
         patterns: patterns,
         defaults: defaults
       };
@@ -208,7 +187,7 @@ function compile(schema, root, localRefs, baseId) {
 
     refCode = addLocalRef(ref);
     var v = resolve.call(self, localCompile, root, ref);
-    if (!v) {
+    if (v === undefined) {
       var localSchema = localRefs && localRefs[ref];
       if (localSchema) {
         v = resolve.inlineRef(localSchema, opts.inlineRefs)
@@ -217,7 +196,9 @@ function compile(schema, root, localRefs, baseId) {
       }
     }
 
-    if (v) {
+    if (v === undefined) {
+      removeLocalRef(ref);
+    } else {
       replaceLocalRef(ref, v);
       return resolvedRef(v, refCode);
     }
@@ -230,15 +211,19 @@ function compile(schema, root, localRefs, baseId) {
     return 'refVal' + refId;
   }
 
+  function removeLocalRef(ref) {
+    delete refs[ref];
+  }
+
   function replaceLocalRef(ref, v) {
     var refId = refs[ref];
     refVal[refId] = v;
   }
 
   function resolvedRef(refVal, code) {
-    return typeof refVal == 'object'
+    return typeof refVal == 'object' || typeof refVal == 'boolean'
             ? { code: code, schema: refVal, inline: true }
-            : { code: code, $async: refVal && refVal.$async };
+            : { code: code, $async: refVal && !!refVal.$async };
   }
 
   function usePattern(regexStr) {
@@ -270,13 +255,21 @@ function compile(schema, root, localRefs, baseId) {
   }
 
   function useCustomRule(rule, schema, parentSchema, it) {
-    var validateSchema = rule.definition.validateSchema;
-    if (validateSchema && self._opts.validateSchema !== false) {
-      var valid = validateSchema(schema);
-      if (!valid) {
-        var message = 'keyword schema is invalid: ' + self.errorsText(validateSchema.errors);
-        if (self._opts.validateSchema == 'log') console.error(message);
-        else throw new Error(message);
+    if (self._opts.validateSchema !== false) {
+      var deps = rule.definition.dependencies;
+      if (deps && !deps.every(function(keyword) {
+        return Object.prototype.hasOwnProperty.call(parentSchema, keyword);
+      }))
+        throw new Error('parent schema must have all required keywords: ' + deps.join(','));
+
+      var validateSchema = rule.definition.validateSchema;
+      if (validateSchema) {
+        var valid = validateSchema(schema);
+        if (!valid) {
+          var message = 'keyword schema is invalid: ' + self.errorsText(validateSchema.errors);
+          if (self._opts.validateSchema == 'log') self.logger.error(message);
+          else throw new Error(message);
+        }
       }
     }
 
@@ -294,7 +287,11 @@ function compile(schema, root, localRefs, baseId) {
       validate = inline.call(self, it, rule.keyword, schema, parentSchema);
     } else {
       validate = rule.definition.validate;
+      if (!validate) return;
     }
+
+    if (validate === undefined)
+      throw new Error('custom keyword "' + rule.keyword + '"failed to compile');
 
     var index = customRules.length;
     customRules[index] = validate;
@@ -372,7 +369,7 @@ function defaultCode(i) {
 
 
 function refValCode(i, refVal) {
-  return refVal[i] ? 'var refVal' + i + ' = refVal[' + i + '];' : '';
+  return refVal[i] === undefined ? '' : 'var refVal' + i + ' = refVal[' + i + '];';
 }
 
 

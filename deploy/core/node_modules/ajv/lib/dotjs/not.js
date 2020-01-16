@@ -1,5 +1,5 @@
 'use strict';
-module.exports = function generate_not(it, $keyword) {
+module.exports = function generate_not(it, $keyword, $ruleType) {
   var out = ' ';
   var $lvl = it.level;
   var $dataLvl = it.dataLevel;
@@ -12,7 +12,7 @@ module.exports = function generate_not(it, $keyword) {
   var $it = it.util.copy(it);
   $it.level++;
   var $nextValid = 'valid' + $it.level;
-  if (it.util.schemaHasRules($schema, it.RULES.all)) {
+  if ((it.opts.strictKeywords ? typeof $schema == 'object' && Object.keys($schema).length > 0 : it.util.schemaHasRules($schema, it.RULES.all))) {
     $it.schema = $schema;
     $it.schemaPath = $schemaPath;
     $it.errSchemaPath = $errSchemaPath;
@@ -47,7 +47,8 @@ module.exports = function generate_not(it, $keyword) {
     }
     var __err = out;
     out = $$outStack.pop();
-    if (!it.compositeRule && $breakOnError) { /* istanbul ignore if */
+    if (!it.compositeRule && $breakOnError) {
+      /* istanbul ignore if */
       if (it.async) {
         out += ' throw new ValidationError([' + (__err) + ']); ';
       } else {

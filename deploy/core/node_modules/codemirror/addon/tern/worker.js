@@ -39,6 +39,6 @@ function startServer(defs, plugins, scripts) {
   });
 }
 
-this.console = {
+var console = {
   log: function(v) { postMessage({type: "debug", message: v}); }
 };

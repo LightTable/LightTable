@@ -6,6 +6,7 @@ module.exports = {
 };
 
 var assert = require('assert-plus');
+var Buffer = require('safer-buffer').Buffer;
 var rfc4253 = require('./rfc4253');
 var utils = require('../utils');
 var Key = require('../key');
@@ -14,9 +15,9 @@ var PrivateKey = require('../private-key');
 var sshpriv = require('./ssh-private');
 
 /*JSSTYLED*/
-var SSHKEY_RE = /^([a-z0-9-]+)[ \t]+([a-zA-Z0-9+\/]+[=]*)([\n \t]+([^\n]+))?$/;
+var SSHKEY_RE = /^([a-z0-9-]+)[ \t]+([a-zA-Z0-9+\/]+[=]*)([ \t]+([^ \t][^\n]*[\n]*)?)?$/;
 /*JSSTYLED*/
-var SSHKEY_RE2 = /^([a-z0-9-]+)[ \t]+([a-zA-Z0-9+\/ \t\n]+[=]*)(.*)$/;
+var SSHKEY_RE2 = /^([a-z0-9-]+)[ \t\n]+([a-zA-Z0-9+\/][a-zA-Z0-9+\/ \t\n=]*)([^a-zA-Z0-9+\/ \t\n=].*)?$/;
 
 function read(buf, options) {
 	if (typeof (buf) !== 'string') {
@@ -31,7 +32,7 @@ function read(buf, options) {
 	assert.ok(m, 'key must match regex');
 
 	var type = rfc4253.algToKeyType(m[1]);
-	var kbuf = new Buffer(m[2], 'base64');
+	var kbuf = Buffer.from(m[2], 'base64');
 
 	/*
 	 * This is a bit tricky. If we managed to parse the key and locate the
@@ -50,7 +51,7 @@ function read(buf, options) {
 		} catch (e) {
 			m = trimmed.match(SSHKEY_RE2);
 			assert.ok(m, 'key must match regex');
-			kbuf = new Buffer(m[2], 'base64');
+			kbuf = Buffer.from(m[2], 'base64');
 			key = rfc4253.readInternal(ret, 'public', kbuf);
 		}
 	} else {
@@ -71,7 +72,7 @@ function read(buf, options) {
 		 * chars from the beginning up to this point in the the string.
 		 * Then offset in this and try to make up for missing = chars.
 		 */
-		var data = m[2] + m[3];
+		var data = m[2] + (m[3] ? m[3] : '');
 		var realOffset = Math.ceil(ret.consumed / 3) * 4;
 		data = data.slice(0, realOffset - 2). /*JSSTYLED*/
 		    replace(/[^a-zA-Z0-9+\/=]/g, '') +
@@ -110,5 +111,5 @@ function write(key, options) {
 	if (key.comment)
 		parts.push(key.comment);
 
-	return (new Buffer(parts.join(' ')));
+	return (Buffer.from(parts.join(' ')));
 }

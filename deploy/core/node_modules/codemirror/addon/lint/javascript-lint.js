@@ -23,7 +23,7 @@
 
   function validator(text, options) {
     if (!window.JSHINT) return [];
-    JSHINT(text, options, options.globals);
+    JSHINT(text, options);
     var errors = JSHINT.data().errors, result = [];
     if (errors) parseErrors(errors, result);
     return result;

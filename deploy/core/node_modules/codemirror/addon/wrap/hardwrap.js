@@ -32,13 +32,11 @@
   function findBreakPoint(text, column, wrapOn, killTrailingSpace) {
     for (var at = column; at > 0; --at)
       if (wrapOn.test(text.slice(at - 1, at + 1))) break;
-    for (var first = true;; first = false) {
-      var endOfText = at;
-      if (killTrailingSpace)
-        while (text.charAt(endOfText - 1) == " ") --endOfText;
-      if (endOfText == 0 && first) at = column;
-      else return {from: endOfText, to: at};
-    }
+    if (at == 0) at = column;
+    var endOfText = at;
+    if (killTrailingSpace)
+      while (text.charAt(endOfText - 1) == " ") --endOfText;
+    return {from: endOfText, to: at};
   }
 
   function wrapRange(cm, from, to, options) {
@@ -88,8 +86,7 @@
     if (changes.length) cm.operation(function() {
       for (var i = 0; i < changes.length; ++i) {
         var change = changes[i];
-        if (change.text || CodeMirror.cmpPos(change.from, change.to))
-          cm.replaceRange(change.text, change.from, change.to);
+        cm.replaceRange(change.text, change.from, change.to);
       }
     });
     return changes.length ? {from: changes[0].from, to: CodeMirror.changeEnd(changes[changes.length - 1])} : null;

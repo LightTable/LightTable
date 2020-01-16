@@ -3,7 +3,7 @@
  */
 
 var Socket = require('./socket')
-  , EventEmitter = process.EventEmitter
+  , EventEmitter = require('events').EventEmitter
   , parser = require('./parser')
   , util = require('./util');
 
