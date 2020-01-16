@@ -10,6 +10,8 @@ matrix:
   allow_failures:
     - os: osx
       osx_image: xcode10.1
+    - os: osx
+      osx_image: xcode9.3
   include:
     - os: linux
       dist: trusty
