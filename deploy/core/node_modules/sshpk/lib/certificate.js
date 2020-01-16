@@ -3,6 +3,7 @@
 module.exports = Certificate;
 
 var assert = require('assert-plus');
+var Buffer = require('safer-buffer').Buffer;
 var algs = require('./algs');
 var crypto = require('crypto');
 var Fingerprint = require('./fingerprint');
@@ -119,6 +120,37 @@ Certificate.prototype.isSignedBy = function (issuerCert) {
 	return (this.isSignedByKey(issuerCert.subjectKey));
 };
 
+Certificate.prototype.getExtension = function (keyOrOid) {
+	assert.string(keyOrOid, 'keyOrOid');
+	var ext = this.getExtensions().filter(function (maybeExt) {
+		if (maybeExt.format === 'x509')
+			return (maybeExt.oid === keyOrOid);
+		if (maybeExt.format === 'openssh')
+			return (maybeExt.name === keyOrOid);
+		return (false);
+	})[0];
+	return (ext);
+};
+
+Certificate.prototype.getExtensions = function () {
+	var exts = [];
+	var x509 = this.signatures.x509;
+	if (x509 && x509.extras && x509.extras.exts) {
+		x509.extras.exts.forEach(function (ext) {
+			ext.format = 'x509';
+			exts.push(ext);
+		});
+	}
+	var openssh = this.signatures.openssh;
+	if (openssh && openssh.exts) {
+		openssh.exts.forEach(function (ext) {
+			ext.format = 'openssh';
+			exts.push(ext);
+		});
+	}
+	return (exts);
+};
+
 Certificate.prototype.isSignedByKey = function (issuerKey) {
 	utils.assertCompatible(issuerKey, Key, [1, 2], 'issuerKey');
 
@@ -185,7 +217,7 @@ Certificate.createSelfSigned = function (subjectOrSubjects, key, options) {
 	assert.optionalBuffer(options.serial, 'options.serial');
 	var serial = options.serial;
 	if (serial === undefined)
-		serial = new Buffer('0000000000000001', 'hex');
+		serial = Buffer.from('0000000000000001', 'hex');
 
 	var purposes = options.purposes;
 	if (purposes === undefined)
@@ -283,7 +315,7 @@ Certificate.create =
 	assert.optionalBuffer(options.serial, 'options.serial');
 	var serial = options.serial;
 	if (serial === undefined)
-		serial = new Buffer('0000000000000001', 'hex');
+		serial = Buffer.from('0000000000000001', 'hex');
 
 	var purposes = options.purposes;
 	if (purposes === undefined)
@@ -369,8 +401,9 @@ Certificate.isCertificate = function (obj, ver) {
 /*
  * API versions for Certificate:
  * [1,0] -- initial ver
+ * [1,1] -- openssh format now unpacks extensions
  */
-Certificate.prototype._sshpkApiVersion = [1, 0];
+Certificate.prototype._sshpkApiVersion = [1, 1];
 
 Certificate._oldVersionDetect = function (obj) {
 	return ([1, 0]);

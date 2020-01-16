@@ -1,3 +1,17 @@
+3.0.2 / 2018-07-19
+==================
+  * [Fix] Prevent merging `__proto__` property (#48)
+  * [Dev Deps] update `eslint`, `@ljharb/eslint-config`, `tape`
+  * [Tests] up to `node` `v10.7`, `v9.11`, `v8.11`, `v7.10`, `v6.14`, `v4.9`; use `nvm install-latest-npm`
+
+3.0.1 / 2017-04-27
+==================
+  * [Fix] deep extending should work with a non-object (#46)
+  * [Dev Deps] update `tape`, `eslint`, `@ljharb/eslint-config`
+  * [Tests] up to `node` `v7.9`, `v6.10`, `v4.8`; improve matrix
+  * [Docs] Switch from vb.teelaun.ch to versionbadg.es for the npm version badge SVG.
+  * [Docs] Add example to readme (#34)
+
 3.0.0 / 2015-07-01
 ==================
   * [Possible breaking change] Use global "strict" directive (#32)

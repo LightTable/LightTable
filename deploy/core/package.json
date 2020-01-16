@@ -16,15 +16,15 @@
     }
   },
   "dependencies": {
-    "codemirror": "^4.7.0",
+    "codemirror": "^5.50.2",
     "optimist": "^0.6.1",
     "request": "^2.88.0",
-    "replace": "^1.0.1",
-    "socket.io": "^0.9.19",
+    "replace": "^1.1.5",
+    "socket.io": "^2.3.0",
     "shelljs": "^0.8.3",
-    "tar": "^4.4.8",
+    "tar": "^4.4.13",
     "jsonify": "*",
-    "bencode": "^2.0.0"
+    "bencode": "^2.0.1"
   },
   "forkedDependencies": {}
 }

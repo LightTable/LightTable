@@ -1,11 +1,8 @@
 #!/usr/bin/env node
 
-var nomnom = require("nomnom"),
-    replace = require("../replace"),
-    sharedOptions = require("./shared-options");
+var parseArguments = require("./parse-arguments"),
+    replace = require("../replace");
 
-var options = nomnom.options(sharedOptions)
-  .script("search")
-  .parse();
+var options = parseArguments("search");
 
 replace(options);
