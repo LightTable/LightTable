@@ -11,7 +11,7 @@ cd "$(dirname "${BASH_SOURCE[0]}")"; cd ..
 # Get OS-specific Electron details
 #----------------------------------------------------------------------
 
-ELECTRON_DIR="deploy/electron/electron"
+ELECTRON_DIR="deploy/electron/node_modules/electron/dist"
 
 # from: http://stackoverflow.com/a/17072017/142317
 if [ "$(uname)" == "Darwin" ]; then
