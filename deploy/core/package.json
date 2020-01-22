@@ -16,16 +16,16 @@
     }
   },
   "dependencies": {
-    "codemirror": "^5.50.2",
-    "optimist": "^0.6.1",
-    "request": "^2.88.0",
-    "replace": "^1.1.5",
-    "socket.io": "^2.3.0",
-    "shelljs": "^0.8.3",
-    "tar": "^4.4.13",
-    "jsonify": "*",
     "bencode": "^2.0.1",
-    "yargs": "^8.0.2"
+    "codemirror": "^5.50.2",
+    "jsonify": "*",
+    "optimist": "^0.6.1",
+    "replace": "^1.1.5",
+    "request": "^2.88.0",
+    "shelljs": "^0.8.3",
+    "socket.io": "^2.3.0",
+    "tar": "^4.4.13",
+    "yargs": "^15.1.0"
   },
   "forkedDependencies": {}
 }
