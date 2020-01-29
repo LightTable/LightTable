@@ -11,9 +11,9 @@ DIR=$(pwd)
 if [ "$(uname)" == "Darwin" ]; then
   CLI="${DIR}/deploy/electron/electron/Electron.app/Contents/MacOS/Electron"
 elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
-  CLI="${DIR}/deploy/electron/electron/electron"
+  CLI="${DIR}/deploy/electron/node_modules/electron/dist/electron"
 elif [ "$(expr substr $(uname -s) 1 9)" == "CYGWIN_NT" ]; then
-  CLI="${DIR}/deploy/electron/electron/electron.exe"
+  CLI="${DIR}/deploy/electron/node_modules/e/electron/dist/electron.exe"
 else
   echo "Cannot detect a supported OS."
   exit 1

@@ -35,7 +35,7 @@ popd
 if [ "$(echo $(uname -s) | cut -c 1-9)" == "CYGWIN_NT" ]; then
   sed -i 's/:source-map/;;:source-map/' project.clj
 fi
-rm -f deploy/core/node_modules/lighttable/bootstrap.js
+rm -f deploy/core/lighttable/bootstrap.js
 lein cljsbuild once app
 
 if [ -d "deploy/core/node_modules/clojurescript" ]; then
