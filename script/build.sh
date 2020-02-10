@@ -25,9 +25,9 @@ pushd deploy/electron
 popd
 
 # Ensure we have current version of core
-pushd deploy/core
-  npm install
-popd
+#pushd deploy/core
+#  npm install
+#popd
 
 # Build the core cljs
 
