@@ -65,11 +65,12 @@
                 :tags #{:worker-thread}
                 :queue []
                 :init (fn [this]
-                        (let [worker (.fork cp (files/lt-home "/core/node_modules/lighttable/background/threadworker.js")
-                                            (clj->js ["--harmony"])
+                        (let [worker (.fork cp (files/lt-home "/core/lighttable/background/threadworker.js")
+                                            ;(clj->js ["--harmony"])
                                             (clj->js {:execPath js/process.execPath
+                                                      ;:execArgv "--harmony"
                                                       :silent true
-                                                      :env {"ATOM_SHELL_INTERNAL_RUN_AS_NODE" 1}
+                                                      :env {"ELECTRON_RUN_AS_NODE" 1}
                                                       :cwd files/cwd}))]
                           (.on (.-stdout worker) "data" (fn [data]
                                                           (console/loc-log {:file "thread"

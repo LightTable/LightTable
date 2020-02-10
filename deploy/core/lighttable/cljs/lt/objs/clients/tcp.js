@@ -60,15 +60,15 @@ return and__6781__auto__;
 var cur = cljs.core.subs.call(null,buf,(0),loc__$1);
 var next = cljs.core.subs.call(null,buf,(loc__$1 + (1)));
 var data = (function (){try{return cljs.core.js__GT_clj.call(null,JSON.parse(cur),new cljs.core.Keyword(null,"keywordize-keys","keywordize-keys",1310784252),true);
-}catch (e18692){var e = e18692;
+}catch (e18694){var e = e18694;
 return lt.objs.console.error.call(null,e);
 }})();
 cb.call(null,data);
 
-var G__18693 = next.indexOf("\n");
-var G__18694 = next;
-loc__$1 = G__18693;
-buf = G__18694;
+var G__18695 = next.indexOf("\n");
+var G__18696 = next;
+loc__$1 = G__18695;
+buf = G__18696;
 continue;
 } else {
 return socket.ltbuffer = buf;
@@ -96,8 +96,8 @@ return lt.objs.clients.tcp.on_message.call(null,data__$1);
 lt.objs.clients.tcp.on_connect = (function lt$objs$clients$tcp$on_connect(socket){
 socket.ltbuffer = "";
 
-return socket.on("data",(function (p1__18695_SHARP_){
-return lt.objs.clients.tcp.on_result.call(null,socket,p1__18695_SHARP_);
+return socket.on("data",(function (p1__18697_SHARP_){
+return lt.objs.clients.tcp.on_result.call(null,socket,p1__18697_SHARP_);
 }));
 });
 lt.objs.clients.tcp.server = (function (){try{var s = lt.objs.clients.tcp.net.createServer(lt.objs.clients.tcp.on_connect);
@@ -110,7 +110,7 @@ return lt.objs.clients.tcp.port = s.address().port;
 );
 
 return s;
-}catch (e18696){var e = e18696;
+}catch (e18698){var e = e18698;
 return lt.objs.console.error.call(null,"Error starting tcp server",e);
 }})();
 /**

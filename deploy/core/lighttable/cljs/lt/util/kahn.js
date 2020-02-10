@@ -41,11 +41,11 @@ return clojure.set.difference.call(null,nodes,have_incoming);
 lt.util.kahn.normalize = (function lt$util$kahn$normalize(g){
 var have_incoming = cljs.core.apply.call(null,clojure.set.union,cljs.core.vals.call(null,g));
 return cljs.core.reduce.call(null,((function (have_incoming){
-return (function (p1__20421_SHARP_,p2__20422_SHARP_){
-if(cljs.core.truth_(cljs.core.get.call(null,p1__20421_SHARP_,p2__20422_SHARP_))){
-return p1__20421_SHARP_;
+return (function (p1__20429_SHARP_,p2__20430_SHARP_){
+if(cljs.core.truth_(cljs.core.get.call(null,p1__20429_SHARP_,p2__20430_SHARP_))){
+return p1__20429_SHARP_;
 } else {
-return cljs.core.assoc.call(null,p1__20421_SHARP_,p2__20422_SHARP_,cljs.core.PersistentHashSet.EMPTY);
+return cljs.core.assoc.call(null,p1__20429_SHARP_,p2__20430_SHARP_,cljs.core.PersistentHashSet.EMPTY);
 }
 });})(have_incoming))
 ,g,have_incoming);
@@ -56,23 +56,23 @@ return cljs.core.assoc.call(null,p1__20421_SHARP_,p2__20422_SHARP_,cljs.core.Per
  * cyclic, returns `nil`.
  */
 lt.util.kahn.kahn_sort = (function lt$util$kahn$kahn_sort(var_args){
-var args20425 = [];
-var len__7868__auto___20431 = arguments.length;
-var i__7869__auto___20432 = (0);
+var args20433 = [];
+var len__7868__auto___20439 = arguments.length;
+var i__7869__auto___20440 = (0);
 while(true){
-if((i__7869__auto___20432 < len__7868__auto___20431)){
-args20425.push((arguments[i__7869__auto___20432]));
+if((i__7869__auto___20440 < len__7868__auto___20439)){
+args20433.push((arguments[i__7869__auto___20440]));
 
-var G__20433 = (i__7869__auto___20432 + (1));
-i__7869__auto___20432 = G__20433;
+var G__20441 = (i__7869__auto___20440 + (1));
+i__7869__auto___20440 = G__20441;
 continue;
 } else {
 }
 break;
 }
 
-var G__20427 = args20425.length;
-switch (G__20427) {
+var G__20435 = args20433.length;
+switch (G__20435) {
 case 1:
 return lt.util.kahn.kahn_sort.cljs$core$IFn$_invoke$arity$1((arguments[(0)]));
 
@@ -82,7 +82,7 @@ return lt.util.kahn.kahn_sort.cljs$core$IFn$_invoke$arity$3((arguments[(0)]),(ar
 
 break;
 default:
-throw (new Error([cljs.core.str("Invalid arity: "),cljs.core.str(args20425.length)].join('')));
+throw (new Error([cljs.core.str("Invalid arity: "),cljs.core.str(args20433.length)].join('')));
 
 }
 });
@@ -100,21 +100,21 @@ return l;
 return null;
 }
 } else {
-var vec__20428 = lt.util.kahn.take_1.call(null,s);
-var n = cljs.core.nth.call(null,vec__20428,(0),null);
-var s_SINGLEQUOTE_ = cljs.core.nth.call(null,vec__20428,(1),null);
+var vec__20436 = lt.util.kahn.take_1.call(null,s);
+var n = cljs.core.nth.call(null,vec__20436,(0),null);
+var s_SINGLEQUOTE_ = cljs.core.nth.call(null,vec__20436,(1),null);
 var m = g.call(null,n);
-var g_SINGLEQUOTE_ = cljs.core.reduce.call(null,((function (g,l,s,vec__20428,n,s_SINGLEQUOTE_,m){
-return (function (p1__20423_SHARP_,p2__20424_SHARP_){
-return cljs.core.update_in.call(null,p1__20423_SHARP_,new cljs.core.PersistentVector(null, 1, 5, cljs.core.PersistentVector.EMPTY_NODE, [n], null),lt.util.kahn.without,p2__20424_SHARP_);
-});})(g,l,s,vec__20428,n,s_SINGLEQUOTE_,m))
+var g_SINGLEQUOTE_ = cljs.core.reduce.call(null,((function (g,l,s,vec__20436,n,s_SINGLEQUOTE_,m){
+return (function (p1__20431_SHARP_,p2__20432_SHARP_){
+return cljs.core.update_in.call(null,p1__20431_SHARP_,new cljs.core.PersistentVector(null, 1, 5, cljs.core.PersistentVector.EMPTY_NODE, [n], null),lt.util.kahn.without,p2__20432_SHARP_);
+});})(g,l,s,vec__20436,n,s_SINGLEQUOTE_,m))
 ,g,m);
-var G__20435 = g_SINGLEQUOTE_;
-var G__20436 = cljs.core.conj.call(null,l,n);
-var G__20437 = clojure.set.union.call(null,s_SINGLEQUOTE_,clojure.set.intersection.call(null,lt.util.kahn.no_incoming.call(null,g_SINGLEQUOTE_),m));
-g = G__20435;
-l = G__20436;
-s = G__20437;
+var G__20443 = g_SINGLEQUOTE_;
+var G__20444 = cljs.core.conj.call(null,l,n);
+var G__20445 = clojure.set.union.call(null,s_SINGLEQUOTE_,clojure.set.intersection.call(null,lt.util.kahn.no_incoming.call(null,g_SINGLEQUOTE_),m));
+g = G__20443;
+l = G__20444;
+s = G__20445;
 continue;
 }
 break;

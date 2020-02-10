@@ -1,0 +1,1 @@
+{:output-wrapper false, :externs ["externs/jquery.js" "externs/throttle.js" "externs/codemirror.js" "closure-js/externs"], :libs ["closure-js/libs"], :optimizations :simple, :source-map "deploy/core/lighttable/bootstrap.js.map", :output-to "deploy/core/lighttable/bootstrap.js", :output-dir "deploy/core/lighttable/cljs/", :pretty-print true}

@@ -53,8 +53,8 @@ lt.objs.clients.ws.on_result = (function lt$objs$clients$ws$on_result(socket,dat
 return lt.object.raise.call(null,lt.objs.clients.clients,new cljs.core.Keyword(null,"message","message",-406056002),cljs.core.js__GT_clj.call(null,data,new cljs.core.Keyword(null,"keywordize-keys","keywordize-keys",1310784252),true));
 });
 lt.objs.clients.ws.on_connect = (function lt$objs$clients$ws$on_connect(socket){
-socket.on("result",(function (p1__18699_SHARP_){
-return lt.objs.clients.ws.on_result.call(null,socket,p1__18699_SHARP_);
+socket.on("result",(function (p1__18701_SHARP_){
+return lt.objs.clients.ws.on_result.call(null,socket,p1__18701_SHARP_);
 }));
 
 return socket.on("init",cljs.core.partial.call(null,lt.objs.clients.ws.store_client_BANG_,socket));
@@ -71,13 +71,13 @@ lt.objs.clients.ws.server = (function (){try{var ws = lt.objs.clients.ws.io.list
 ws.set("log level",(1));
 
 ws.server.on("error",((function (ws){
-return (function (p1__18700_SHARP_){
-if(cljs.core._EQ_.call(null,p1__18700_SHARP_.code,"EADDRINUSE")){
+return (function (p1__18702_SHARP_){
+if(cljs.core._EQ_.call(null,p1__18702_SHARP_.code,"EADDRINUSE")){
 console.log("Default socket.io port already used. Retrying with a random port.");
 
 return ws.server.listen((0));
 } else {
-throw p1__18700_SHARP_;
+throw p1__18702_SHARP_;
 }
 });})(ws))
 );
@@ -93,7 +93,7 @@ return lt.objs.clients.ws.port = ws.server.address().port;
 ws.sockets.on("connection",lt.objs.clients.ws.on_connect);
 
 return ws;
-}catch (e18701){var e = e18701;
+}catch (e18703){var e = e18703;
 return console.error("Error starting socket.io server",e);
 }})();
 /**

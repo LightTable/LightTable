@@ -24,57 +24,57 @@ return (new cljs.core.MultiFn(cljs.core.symbol.call(null,"lt.objs.clients.local"
 })();
 }
 cljs.core._add_method.call(null,lt.objs.clients.local.on_message,new cljs.core.Keyword(null,"editor.eval.cljs.exec","editor.eval.cljs.exec",141962241),(function (_,data,cb){
-var seq__19821 = cljs.core.seq.call(null,new cljs.core.Keyword(null,"results","results",-1134170113).cljs$core$IFn$_invoke$arity$1(data));
-var chunk__19822 = null;
-var count__19823 = (0);
-var i__19824 = (0);
+var seq__19827 = cljs.core.seq.call(null,new cljs.core.Keyword(null,"results","results",-1134170113).cljs$core$IFn$_invoke$arity$1(data));
+var chunk__19828 = null;
+var count__19829 = (0);
+var i__19830 = (0);
 while(true){
-if((i__19824 < count__19823)){
-var res = cljs.core._nth.call(null,chunk__19822,i__19824);
-var code_19827 = new cljs.core.Keyword(null,"code","code",1586293142).cljs$core$IFn$_invoke$arity$1(res);
-try{lt.object.raise.call(null,lt.objs.clients.clients,new cljs.core.Keyword(null,"message","message",-406056002),new cljs.core.PersistentVector(null, 3, 5, cljs.core.PersistentVector.EMPTY_NODE, [cb,new cljs.core.Keyword(null,"editor.eval.cljs.result","editor.eval.cljs.result",2117774912),new cljs.core.PersistentArrayMap(null, 2, [new cljs.core.Keyword(null,"result","result",1415092211),lt.objs.eval.cljs_result_format.call(null,eval.call(window,code_19827)),new cljs.core.Keyword(null,"meta","meta",1499536964),cljs.core.merge.call(null,new cljs.core.Keyword(null,"meta","meta",1499536964).cljs$core$IFn$_invoke$arity$1(data),new cljs.core.Keyword(null,"meta","meta",1499536964).cljs$core$IFn$_invoke$arity$1(res))], null)], null));
-}catch (e19825){var e_19828 = e19825;
-lt.object.raise.call(null,lt.objs.clients.clients,new cljs.core.Keyword(null,"message","message",-406056002),new cljs.core.PersistentVector(null, 3, 5, cljs.core.PersistentVector.EMPTY_NODE, [cb,new cljs.core.Keyword(null,"editor.eval.cljs.exception","editor.eval.cljs.exception",1627126758),new cljs.core.PersistentArrayMap(null, 2, [new cljs.core.Keyword(null,"ex","ex",-1413771341),e_19828,new cljs.core.Keyword(null,"meta","meta",1499536964),new cljs.core.Keyword(null,"meta","meta",1499536964).cljs$core$IFn$_invoke$arity$1(res)], null)], null));
+if((i__19830 < count__19829)){
+var res = cljs.core._nth.call(null,chunk__19828,i__19830);
+var code_19833 = new cljs.core.Keyword(null,"code","code",1586293142).cljs$core$IFn$_invoke$arity$1(res);
+try{lt.object.raise.call(null,lt.objs.clients.clients,new cljs.core.Keyword(null,"message","message",-406056002),new cljs.core.PersistentVector(null, 3, 5, cljs.core.PersistentVector.EMPTY_NODE, [cb,new cljs.core.Keyword(null,"editor.eval.cljs.result","editor.eval.cljs.result",2117774912),new cljs.core.PersistentArrayMap(null, 2, [new cljs.core.Keyword(null,"result","result",1415092211),lt.objs.eval.cljs_result_format.call(null,eval.call(window,code_19833)),new cljs.core.Keyword(null,"meta","meta",1499536964),cljs.core.merge.call(null,new cljs.core.Keyword(null,"meta","meta",1499536964).cljs$core$IFn$_invoke$arity$1(data),new cljs.core.Keyword(null,"meta","meta",1499536964).cljs$core$IFn$_invoke$arity$1(res))], null)], null));
+}catch (e19831){var e_19834 = e19831;
+lt.object.raise.call(null,lt.objs.clients.clients,new cljs.core.Keyword(null,"message","message",-406056002),new cljs.core.PersistentVector(null, 3, 5, cljs.core.PersistentVector.EMPTY_NODE, [cb,new cljs.core.Keyword(null,"editor.eval.cljs.exception","editor.eval.cljs.exception",1627126758),new cljs.core.PersistentArrayMap(null, 2, [new cljs.core.Keyword(null,"ex","ex",-1413771341),e_19834,new cljs.core.Keyword(null,"meta","meta",1499536964),new cljs.core.Keyword(null,"meta","meta",1499536964).cljs$core$IFn$_invoke$arity$1(res)], null)], null));
 }
-var G__19829 = seq__19821;
-var G__19830 = chunk__19822;
-var G__19831 = count__19823;
-var G__19832 = (i__19824 + (1));
-seq__19821 = G__19829;
-chunk__19822 = G__19830;
-count__19823 = G__19831;
-i__19824 = G__19832;
+var G__19835 = seq__19827;
+var G__19836 = chunk__19828;
+var G__19837 = count__19829;
+var G__19838 = (i__19830 + (1));
+seq__19827 = G__19835;
+chunk__19828 = G__19836;
+count__19829 = G__19837;
+i__19830 = G__19838;
 continue;
 } else {
-var temp__4657__auto__ = cljs.core.seq.call(null,seq__19821);
+var temp__4657__auto__ = cljs.core.seq.call(null,seq__19827);
 if(temp__4657__auto__){
-var seq__19821__$1 = temp__4657__auto__;
-if(cljs.core.chunked_seq_QMARK_.call(null,seq__19821__$1)){
-var c__7604__auto__ = cljs.core.chunk_first.call(null,seq__19821__$1);
-var G__19833 = cljs.core.chunk_rest.call(null,seq__19821__$1);
-var G__19834 = c__7604__auto__;
-var G__19835 = cljs.core.count.call(null,c__7604__auto__);
-var G__19836 = (0);
-seq__19821 = G__19833;
-chunk__19822 = G__19834;
-count__19823 = G__19835;
-i__19824 = G__19836;
+var seq__19827__$1 = temp__4657__auto__;
+if(cljs.core.chunked_seq_QMARK_.call(null,seq__19827__$1)){
+var c__7604__auto__ = cljs.core.chunk_first.call(null,seq__19827__$1);
+var G__19839 = cljs.core.chunk_rest.call(null,seq__19827__$1);
+var G__19840 = c__7604__auto__;
+var G__19841 = cljs.core.count.call(null,c__7604__auto__);
+var G__19842 = (0);
+seq__19827 = G__19839;
+chunk__19828 = G__19840;
+count__19829 = G__19841;
+i__19830 = G__19842;
 continue;
 } else {
-var res = cljs.core.first.call(null,seq__19821__$1);
-var code_19837 = new cljs.core.Keyword(null,"code","code",1586293142).cljs$core$IFn$_invoke$arity$1(res);
-try{lt.object.raise.call(null,lt.objs.clients.clients,new cljs.core.Keyword(null,"message","message",-406056002),new cljs.core.PersistentVector(null, 3, 5, cljs.core.PersistentVector.EMPTY_NODE, [cb,new cljs.core.Keyword(null,"editor.eval.cljs.result","editor.eval.cljs.result",2117774912),new cljs.core.PersistentArrayMap(null, 2, [new cljs.core.Keyword(null,"result","result",1415092211),lt.objs.eval.cljs_result_format.call(null,eval.call(window,code_19837)),new cljs.core.Keyword(null,"meta","meta",1499536964),cljs.core.merge.call(null,new cljs.core.Keyword(null,"meta","meta",1499536964).cljs$core$IFn$_invoke$arity$1(data),new cljs.core.Keyword(null,"meta","meta",1499536964).cljs$core$IFn$_invoke$arity$1(res))], null)], null));
-}catch (e19826){var e_19838 = e19826;
-lt.object.raise.call(null,lt.objs.clients.clients,new cljs.core.Keyword(null,"message","message",-406056002),new cljs.core.PersistentVector(null, 3, 5, cljs.core.PersistentVector.EMPTY_NODE, [cb,new cljs.core.Keyword(null,"editor.eval.cljs.exception","editor.eval.cljs.exception",1627126758),new cljs.core.PersistentArrayMap(null, 2, [new cljs.core.Keyword(null,"ex","ex",-1413771341),e_19838,new cljs.core.Keyword(null,"meta","meta",1499536964),new cljs.core.Keyword(null,"meta","meta",1499536964).cljs$core$IFn$_invoke$arity$1(res)], null)], null));
+var res = cljs.core.first.call(null,seq__19827__$1);
+var code_19843 = new cljs.core.Keyword(null,"code","code",1586293142).cljs$core$IFn$_invoke$arity$1(res);
+try{lt.object.raise.call(null,lt.objs.clients.clients,new cljs.core.Keyword(null,"message","message",-406056002),new cljs.core.PersistentVector(null, 3, 5, cljs.core.PersistentVector.EMPTY_NODE, [cb,new cljs.core.Keyword(null,"editor.eval.cljs.result","editor.eval.cljs.result",2117774912),new cljs.core.PersistentArrayMap(null, 2, [new cljs.core.Keyword(null,"result","result",1415092211),lt.objs.eval.cljs_result_format.call(null,eval.call(window,code_19843)),new cljs.core.Keyword(null,"meta","meta",1499536964),cljs.core.merge.call(null,new cljs.core.Keyword(null,"meta","meta",1499536964).cljs$core$IFn$_invoke$arity$1(data),new cljs.core.Keyword(null,"meta","meta",1499536964).cljs$core$IFn$_invoke$arity$1(res))], null)], null));
+}catch (e19832){var e_19844 = e19832;
+lt.object.raise.call(null,lt.objs.clients.clients,new cljs.core.Keyword(null,"message","message",-406056002),new cljs.core.PersistentVector(null, 3, 5, cljs.core.PersistentVector.EMPTY_NODE, [cb,new cljs.core.Keyword(null,"editor.eval.cljs.exception","editor.eval.cljs.exception",1627126758),new cljs.core.PersistentArrayMap(null, 2, [new cljs.core.Keyword(null,"ex","ex",-1413771341),e_19844,new cljs.core.Keyword(null,"meta","meta",1499536964),new cljs.core.Keyword(null,"meta","meta",1499536964).cljs$core$IFn$_invoke$arity$1(res)], null)], null));
 }
-var G__19839 = cljs.core.next.call(null,seq__19821__$1);
-var G__19840 = null;
-var G__19841 = (0);
-var G__19842 = (0);
-seq__19821 = G__19839;
-chunk__19822 = G__19840;
-count__19823 = G__19841;
-i__19824 = G__19842;
+var G__19845 = cljs.core.next.call(null,seq__19827__$1);
+var G__19846 = null;
+var G__19847 = (0);
+var G__19848 = (0);
+seq__19827 = G__19845;
+chunk__19828 = G__19846;
+count__19829 = G__19847;
+i__19830 = G__19848;
 continue;
 }
 } else {
@@ -87,7 +87,7 @@ break;
 cljs.core._add_method.call(null,lt.objs.clients.local.on_message,new cljs.core.Keyword(null,"editor.eval.js","editor.eval.js",-264636460),(function (_,data,cb){
 var code = lt.objs.eval.append_source_file.call(null,new cljs.core.Keyword(null,"code","code",1586293142).cljs$core$IFn$_invoke$arity$1(data),new cljs.core.Keyword(null,"path","path",-188191168).cljs$core$IFn$_invoke$arity$1(data));
 try{return lt.object.raise.call(null,lt.objs.clients.clients,new cljs.core.Keyword(null,"message","message",-406056002),new cljs.core.PersistentVector(null, 3, 5, cljs.core.PersistentVector.EMPTY_NODE, [cb,new cljs.core.Keyword(null,"editor.eval.js.result","editor.eval.js.result",1499033068),new cljs.core.PersistentArrayMap(null, 2, [new cljs.core.Keyword(null,"result","result",1415092211),eval.call(window,code),new cljs.core.Keyword(null,"meta","meta",1499536964),new cljs.core.Keyword(null,"meta","meta",1499536964).cljs$core$IFn$_invoke$arity$1(data)], null)], null));
-}catch (e19843){var e = e19843;
+}catch (e19849){var e = e19849;
 return lt.object.raise.call(null,lt.objs.clients.clients,new cljs.core.Keyword(null,"message","message",-406056002),new cljs.core.PersistentVector(null, 3, 5, cljs.core.PersistentVector.EMPTY_NODE, [cb,new cljs.core.Keyword(null,"editor.eval.js.exception","editor.eval.js.exception",1928121505),new cljs.core.PersistentArrayMap(null, 2, [new cljs.core.Keyword(null,"ex","ex",-1413771341),e,new cljs.core.Keyword(null,"meta","meta",1499536964),new cljs.core.Keyword(null,"meta","meta",1499536964).cljs$core$IFn$_invoke$arity$1(data)], null)], null));
 }}));
 cljs.core._add_method.call(null,lt.objs.clients.local.on_message,new cljs.core.Keyword(null,"editor.eval.css","editor.eval.css",601791630),(function (_,data,cb){

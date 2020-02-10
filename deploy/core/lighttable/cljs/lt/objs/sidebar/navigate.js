@@ -18,61 +18,72 @@ goog.require('crate.binding');
 lt.objs.sidebar.navigate.file_filters = (function lt$objs$sidebar$navigate$file_filters(f){
 return cljs.core.re_seq.call(null,lt.objs.files.ignore_pattern,f);
 });
-lt.objs.sidebar.navigate.populate_bg = lt.objs.thread.thread_STAR_.call(null,(function lt$objs$sidebar$navigate$tfun21518(){
-console.log("BACKGROUND:");
-
-console.log("ARGS:",arguments);
-
-console.log("ARR:",argsArray(arguments));
-
-var orig__8016__auto__ = argsArray(arguments);
-var msg__8017__auto__ = orig__8016__auto__.shift();
-var args__8018__auto__ = orig__8016__auto__.map(cljs.reader.read_string);
-var raise = ((function (orig__8016__auto__,msg__8017__auto__,args__8018__auto__){
-return (function (obj__8019__auto__,k__8020__auto__,v__8021__auto__){
-return _send(obj__8019__auto__,k__8020__auto__,cljs.core.pr_str.call(null,v__8021__auto__),"clj");
-});})(orig__8016__auto__,msg__8017__auto__,args__8018__auto__))
+lt.objs.sidebar.navigate.populate_bg = lt.objs.thread.thread_STAR_.call(null,(function() { 
+var lt$objs$sidebar$navigate$tfun21526__delegate = function (msg__8018__auto__,body__8019__auto__){
+var args__8020__auto__ = cljs.core.map.call(null,cljs.reader.read_string_STAR_,body__8019__auto__);
+var raise = ((function (args__8020__auto__){
+return (function (obj__8021__auto__,k__8022__auto__,v__8023__auto__){
+return _send(obj__8021__auto__,k__8022__auto__,cljs.core.pr_str.call(null,v__8023__auto__),"clj");
+});})(args__8020__auto__))
 ;
-console.log("MAPARG:",cljs.core.pr_str.call(null,cljs.core.cons.call(null,msg__8017__auto__.obj,args__8018__auto__)),cljs.core.pr_str.call(null,args__8018__auto__));
-
-console.log("MAPARG2:",cljs.core.pr_str.call(null,cljs.core.to_array.call(null,cljs.core.cons.call(null,msg__8017__auto__.obj,args__8018__auto__))),cljs.core.pr_str.call(null,args__8018__auto__));
-
-return ((function (orig__8016__auto__,msg__8017__auto__,args__8018__auto__,raise){
-return (function (obj_id,p__21528){
-var map__21529 = p__21528;
-var map__21529__$1 = ((((!((map__21529 == null)))?((((map__21529.cljs$lang$protocol_mask$partition0$ & (64))) || (map__21529.cljs$core$ISeq$))?true:false):false))?cljs.core.apply.call(null,cljs.core.hash_map,map__21529):map__21529);
-var lim = cljs.core.get.call(null,map__21529__$1,new cljs.core.Keyword(null,"lim","lim",1172958742));
-var pattern = cljs.core.get.call(null,map__21529__$1,new cljs.core.Keyword(null,"pattern","pattern",242135423));
-var ws = cljs.core.get.call(null,map__21529__$1,new cljs.core.Keyword(null,"ws","ws",86841443));
+return ((function (args__8020__auto__,raise){
+return (function (obj_id,p__21536){
+var map__21537 = p__21536;
+var map__21537__$1 = ((((!((map__21537 == null)))?((((map__21537.cljs$lang$protocol_mask$partition0$ & (64))) || (map__21537.cljs$core$ISeq$))?true:false):false))?cljs.core.apply.call(null,cljs.core.hash_map,map__21537):map__21537);
+var lim = cljs.core.get.call(null,map__21537__$1,new cljs.core.Keyword(null,"lim","lim",1172958742));
+var pattern = cljs.core.get.call(null,map__21537__$1,new cljs.core.Keyword(null,"pattern","pattern",242135423));
+var ws = cljs.core.get.call(null,map__21537__$1,new cljs.core.Keyword(null,"ws","ws",86841443));
 var fs = require("fs");
 var fpath = require("path");
-var walkdir = require([cljs.core.str(ltpath),cljs.core.str("/core/node_modules/lighttable/background/walkdir2.js")].join(''));
-var grab_files = ((function (fs,fpath,walkdir,map__21529,map__21529__$1,lim,pattern,ws,orig__8016__auto__,msg__8017__auto__,args__8018__auto__,raise){
+var walkdir = require([cljs.core.str(ltpath),cljs.core.str("/core/lighttable/background/walkdir2.js")].join(''));
+var grab_files = ((function (fs,fpath,walkdir,map__21537,map__21537__$1,lim,pattern,ws,args__8020__auto__,raise){
 return (function (all_files,folder){
 var root_length = (cljs.core.count.call(null,fpath.dirname(folder)) + (1));
-var walked = walkdir.call(null,folder,(function (){var obj21532 = {"filter":(new RegExp(pattern)),"limit":lim};
-return obj21532;
+var walked = walkdir.call(null,folder,(function (){var obj21540 = {"filter":(new RegExp(pattern)),"limit":lim};
+return obj21540;
 })());
-return all_files.concat(walked.paths.map(((function (root_length,walked,fs,fpath,walkdir,map__21529,map__21529__$1,lim,pattern,ws,orig__8016__auto__,msg__8017__auto__,args__8018__auto__,raise){
-return (function (p1__21516_SHARP_){
-var obj21534 = {"full":p1__21516_SHARP_,"rel":cljs.core.subs.call(null,p1__21516_SHARP_,root_length)};
-return obj21534;
-});})(root_length,walked,fs,fpath,walkdir,map__21529,map__21529__$1,lim,pattern,ws,orig__8016__auto__,msg__8017__auto__,args__8018__auto__,raise))
+return all_files.concat(walked.paths.map(((function (root_length,walked,fs,fpath,walkdir,map__21537,map__21537__$1,lim,pattern,ws,args__8020__auto__,raise){
+return (function (p1__21524_SHARP_){
+var obj21542 = {"full":p1__21524_SHARP_,"rel":cljs.core.subs.call(null,p1__21524_SHARP_,root_length)};
+return obj21542;
+});})(root_length,walked,fs,fpath,walkdir,map__21537,map__21537__$1,lim,pattern,ws,args__8020__auto__,raise))
 ));
-});})(fs,fpath,walkdir,map__21529,map__21529__$1,lim,pattern,ws,orig__8016__auto__,msg__8017__auto__,args__8018__auto__,raise))
+});})(fs,fpath,walkdir,map__21537,map__21537__$1,lim,pattern,ws,args__8020__auto__,raise))
 ;
 var all_files = cljs.core.to_array.call(null,new cljs.core.Keyword(null,"folders","folders",44248772).cljs$core$IFn$_invoke$arity$1(ws)).reduce(grab_files,[]);
-var other_files = cljs.core.to_array.call(null,new cljs.core.Keyword(null,"files","files",-472457450).cljs$core$IFn$_invoke$arity$1(ws)).map(((function (fs,fpath,walkdir,grab_files,all_files,map__21529,map__21529__$1,lim,pattern,ws,orig__8016__auto__,msg__8017__auto__,args__8018__auto__,raise){
-return (function (p1__21517_SHARP_){
-var obj21536 = {"full":p1__21517_SHARP_,"rel":fpath.basename(p1__21517_SHARP_)};
-return obj21536;
-});})(fs,fpath,walkdir,grab_files,all_files,map__21529,map__21529__$1,lim,pattern,ws,orig__8016__auto__,msg__8017__auto__,args__8018__auto__,raise))
+var other_files = cljs.core.to_array.call(null,new cljs.core.Keyword(null,"files","files",-472457450).cljs$core$IFn$_invoke$arity$1(ws)).map(((function (fs,fpath,walkdir,grab_files,all_files,map__21537,map__21537__$1,lim,pattern,ws,args__8020__auto__,raise){
+return (function (p1__21525_SHARP_){
+var obj21544 = {"full":p1__21525_SHARP_,"rel":fpath.basename(p1__21525_SHARP_)};
+return obj21544;
+});})(fs,fpath,walkdir,grab_files,all_files,map__21537,map__21537__$1,lim,pattern,ws,args__8020__auto__,raise))
 );
 var final$ = all_files.concat(other_files);
 return _send(obj_id,new cljs.core.Keyword(null,"workspace-files","workspace-files",2129954136),final$);
-});})(orig__8016__auto__,msg__8017__auto__,args__8018__auto__,raise))
-.apply(null,cljs.core.to_array.call(null,cljs.core.cons.call(null,msg__8017__auto__.obj,args__8018__auto__)));
-}));
+});})(args__8020__auto__,raise))
+.apply(null,cljs.core.seq.call(null,cljs.core.concat.call(null,cljs.core._conj.call(null,cljs.core.List.EMPTY,new cljs.core.Symbol("lt.macros","clj->js","lt.macros/clj->js",-1355263103,null)),(function (){var x__7627__auto__ = cljs.core.seq.call(null,cljs.core.concat.call(null,cljs.core._conj.call(null,cljs.core.List.EMPTY,new cljs.core.Symbol("clojure.core","cons","clojure.core/cons",534945327,null)),(function (){var x__7627__auto__ = cljs.core.seq.call(null,cljs.core.concat.call(null,cljs.core._conj.call(null,cljs.core.List.EMPTY,new cljs.core.Symbol(null,".-obj",".-obj",-2111595180,null)),cljs.core._conj.call(null,cljs.core.List.EMPTY,new cljs.core.Symbol("lt.macros","msg__8016__auto__","lt.macros/msg__8016__auto__",-386890926,null))));
+return cljs.core._conj.call(null,cljs.core.List.EMPTY,x__7627__auto__);
+})(),cljs.core._conj.call(null,cljs.core.List.EMPTY,new cljs.core.Symbol("lt.macros","args__8017__auto__","lt.macros/args__8017__auto__",1401972833,null))));
+return cljs.core._conj.call(null,cljs.core.List.EMPTY,x__7627__auto__);
+})())));
+};
+var lt$objs$sidebar$navigate$tfun21526 = function (msg__8018__auto__,var_args){
+var body__8019__auto__ = null;
+if (arguments.length > 1) {
+var G__21545__i = 0, G__21545__a = new Array(arguments.length -  1);
+while (G__21545__i < G__21545__a.length) {G__21545__a[G__21545__i] = arguments[G__21545__i + 1]; ++G__21545__i;}
+  body__8019__auto__ = new cljs.core.IndexedSeq(G__21545__a,0);
+} 
+return lt$objs$sidebar$navigate$tfun21526__delegate.call(this,msg__8018__auto__,body__8019__auto__);};
+lt$objs$sidebar$navigate$tfun21526.cljs$lang$maxFixedArity = 1;
+lt$objs$sidebar$navigate$tfun21526.cljs$lang$applyTo = (function (arglist__21546){
+var msg__8018__auto__ = cljs.core.first(arglist__21546);
+var body__8019__auto__ = cljs.core.rest(arglist__21546);
+return lt$objs$sidebar$navigate$tfun21526__delegate(msg__8018__auto__,body__8019__auto__);
+});
+lt$objs$sidebar$navigate$tfun21526.cljs$core$IFn$_invoke$arity$variadic = lt$objs$sidebar$navigate$tfun21526__delegate;
+return lt$objs$sidebar$navigate$tfun21526;
+})()
+);
 /**
  * 
  */
@@ -98,8 +109,8 @@ lt.objs.sidebar.navigate.__BEH__watched__DOT__create = (function lt$objs$sidebar
 if(cljs.core.truth_(lt.objs.sidebar.navigate.file_filters.call(null,lt.objs.files.basename.call(null,path)))){
 return null;
 } else {
-var ws_parent = lt.objs.files.parent.call(null,cljs.core.first.call(null,cljs.core.filter.call(null,(function (p1__21537_SHARP_){
-return cljs.core._EQ_.call(null,(0),path.indexOf(p1__21537_SHARP_));
+var ws_parent = lt.objs.files.parent.call(null,cljs.core.first.call(null,cljs.core.filter.call(null,(function (p1__21547_SHARP_){
+return cljs.core._EQ_.call(null,(0),path.indexOf(p1__21547_SHARP_));
 }),new cljs.core.Keyword(null,"folders","folders",44248772).cljs$core$IFn$_invoke$arity$1(cljs.core.deref.call(null,ws)))));
 var rel_length = (cljs.core.count.call(null,ws_parent) + (1));
 lt.object.update_BANG_.call(null,lt.objs.sidebar.navigate.sidebar_navigate,new cljs.core.PersistentVector(null, 1, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null,"files","files",-472457450)], null),cljs.core.conj,new cljs.core.PersistentArrayMap(null, 2, [new cljs.core.Keyword(null,"full","full",436801220),path,new cljs.core.Keyword(null,"rel","rel",1378823488),cljs.core.subs.call(null,path,rel_length)], null));
@@ -113,10 +124,10 @@ lt.object.behavior_STAR_.call(null,new cljs.core.Keyword("lt.objs.sidebar.naviga
  * 
  */
 lt.objs.sidebar.navigate.__BEH__watched__DOT__delete = (function lt$objs$sidebar$navigate$__BEH__watched__DOT__delete(ws,path){
-lt.object.update_BANG_.call(null,lt.objs.sidebar.navigate.sidebar_navigate,new cljs.core.PersistentVector(null, 1, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null,"files","files",-472457450)], null),(function (p1__21538_SHARP_){
+lt.object.update_BANG_.call(null,lt.objs.sidebar.navigate.sidebar_navigate,new cljs.core.PersistentVector(null, 1, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null,"files","files",-472457450)], null),(function (p1__21548_SHARP_){
 return cljs.core.remove.call(null,(function (x){
 return cljs.core._EQ_.call(null,(0),new cljs.core.Keyword(null,"full","full",436801220).cljs$core$IFn$_invoke$arity$1(x).indexOf(path));
-}),p1__21538_SHARP_);
+}),p1__21548_SHARP_);
 }));
 
 return lt.object.raise.call(null,new cljs.core.Keyword(null,"filter-list","filter-list",-321279505).cljs$core$IFn$_invoke$arity$1(cljs.core.deref.call(null,lt.objs.sidebar.navigate.sidebar_navigate)),new cljs.core.Keyword(null,"refresh!","refresh!",156149341));
@@ -174,8 +185,8 @@ return lt.object.merge_BANG_.call(null,this$,new cljs.core.PersistentArrayMap(nu
 
 lt.object.behavior_STAR_.call(null,new cljs.core.Keyword("lt.objs.sidebar.navigate","set-file-limit","lt.objs.sidebar.navigate/set-file-limit",-1062113351),new cljs.core.Keyword(null,"desc","desc",2093485764),"Navigate: set maximum number of indexed files",new cljs.core.Keyword(null,"params","params",710516235),new cljs.core.PersistentVector(null, 1, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.PersistentArrayMap(null, 2, [new cljs.core.Keyword(null,"label","label",1718410804),"Number",new cljs.core.Keyword(null,"example","example",-1755779144),(8000)], null)], null),new cljs.core.Keyword(null,"type","type",1174270348),new cljs.core.Keyword(null,"user","user",1532431356),new cljs.core.Keyword(null,"triggers","triggers",-1443678770),new cljs.core.PersistentHashSet(null, new cljs.core.PersistentArrayMap(null, 1, [new cljs.core.Keyword(null,"object.instant","object.instant",-29936727),null], null), null),new cljs.core.Keyword(null,"reaction","reaction",490869788),lt.objs.sidebar.navigate.__BEH__set_file_limit);
 lt.object.object_STAR_.call(null,new cljs.core.Keyword("lt.objs.sidebar.navigate","sidebar.navigate","lt.objs.sidebar.navigate/sidebar.navigate",1924909782),new cljs.core.Keyword(null,"tags","tags",1771418977),new cljs.core.PersistentHashSet(null, new cljs.core.PersistentArrayMap(null, 1, [new cljs.core.Keyword(null,"navigator","navigator",2050004181),null], null), null),new cljs.core.Keyword(null,"label","label",1718410804),"navigate",new cljs.core.Keyword(null,"order","order",-1254677256),(-3),new cljs.core.Keyword(null,"selected","selected",574897764),(0),new cljs.core.Keyword(null,"files","files",-472457450),cljs.core.PersistentVector.EMPTY,new cljs.core.Keyword(null,"file-limit","file-limit",-954194843),(8000),new cljs.core.Keyword(null,"search","search",1564939822),"",new cljs.core.Keyword(null,"init","init",-1875481434),(function (this$){
-var list = lt.objs.sidebar.command.filter_list.call(null,new cljs.core.PersistentArrayMap(null, 4, [new cljs.core.Keyword(null,"key","key",-1516042587),new cljs.core.Keyword(null,"rel","rel",1378823488),new cljs.core.Keyword(null,"transform","transform",1381301764),(function (p1__21539_SHARP_,p2__21541_SHARP_,p3__21540_SHARP_){
-return [cljs.core.str("<h2>"),cljs.core.str(lt.objs.files.basename.call(null,p1__21539_SHARP_)),cljs.core.str("</h2><p>"),cljs.core.str(p3__21540_SHARP_),cljs.core.str("</p>")].join('');
+var list = lt.objs.sidebar.command.filter_list.call(null,new cljs.core.PersistentArrayMap(null, 4, [new cljs.core.Keyword(null,"key","key",-1516042587),new cljs.core.Keyword(null,"rel","rel",1378823488),new cljs.core.Keyword(null,"transform","transform",1381301764),(function (p1__21549_SHARP_,p2__21551_SHARP_,p3__21550_SHARP_){
+return [cljs.core.str("<h2>"),cljs.core.str(lt.objs.files.basename.call(null,p1__21549_SHARP_)),cljs.core.str("</h2><p>"),cljs.core.str(p3__21550_SHARP_),cljs.core.str("</p>")].join('');
 }),new cljs.core.Keyword(null,"items","items",1031954938),crate.binding.subatom.call(null,this$,new cljs.core.Keyword(null,"files","files",-472457450)),new cljs.core.Keyword(null,"placeholder","placeholder",-104873083),"file"], null));
 lt.object.add_tags.call(null,list,new cljs.core.PersistentVector(null, 1, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null,"navigate.selector","navigate.selector",-1327991510)], null));
 

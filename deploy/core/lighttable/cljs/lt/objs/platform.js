@@ -12,18 +12,18 @@ lt.objs.platform.get_data_path = (function lt$objs$platform$get_data_path(){
 return lt.objs.platform.remote.app.getAppPath();
 });
 lt.objs.platform.normalize = (function lt$objs$platform$normalize(plat){
-var pred__13435 = cljs.core._EQ_;
-var expr__13436 = plat;
-if(cljs.core.truth_(pred__13435.call(null,"win32",expr__13436))){
+var pred__13437 = cljs.core._EQ_;
+var expr__13438 = plat;
+if(cljs.core.truth_(pred__13437.call(null,"win32",expr__13438))){
 return new cljs.core.Keyword(null,"windows","windows",2068861701);
 } else {
-if(cljs.core.truth_(pred__13435.call(null,"linux",expr__13436))){
+if(cljs.core.truth_(pred__13437.call(null,"linux",expr__13438))){
 return new cljs.core.Keyword(null,"linux","linux",-238042662);
 } else {
-if(cljs.core.truth_(pred__13435.call(null,"darwin",expr__13436))){
+if(cljs.core.truth_(pred__13437.call(null,"darwin",expr__13438))){
 return new cljs.core.Keyword(null,"mac","mac",-1879391650);
 } else {
-throw (new Error([cljs.core.str("No matching clause: "),cljs.core.str(expr__13436)].join('')));
+throw (new Error([cljs.core.str("No matching clause: "),cljs.core.str(expr__13438)].join('')));
 }
 }
 }

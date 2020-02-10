@@ -7,23 +7,23 @@ goog.require('cljs.core');
  *   If `elem` is not provided then the event `ev` and its `handler` are bound to the document.
  */
 lt.util.events.capture = (function lt$util$events$capture(var_args){
-var args13632 = [];
-var len__7868__auto___13635 = arguments.length;
-var i__7869__auto___13636 = (0);
+var args13634 = [];
+var len__7868__auto___13637 = arguments.length;
+var i__7869__auto___13638 = (0);
 while(true){
-if((i__7869__auto___13636 < len__7868__auto___13635)){
-args13632.push((arguments[i__7869__auto___13636]));
+if((i__7869__auto___13638 < len__7868__auto___13637)){
+args13634.push((arguments[i__7869__auto___13638]));
 
-var G__13637 = (i__7869__auto___13636 + (1));
-i__7869__auto___13636 = G__13637;
+var G__13639 = (i__7869__auto___13638 + (1));
+i__7869__auto___13638 = G__13639;
 continue;
 } else {
 }
 break;
 }
 
-var G__13634 = args13632.length;
-switch (G__13634) {
+var G__13636 = args13634.length;
+switch (G__13636) {
 case 2:
 return lt.util.events.capture.cljs$core$IFn$_invoke$arity$2((arguments[(0)]),(arguments[(1)]));
 
@@ -33,7 +33,7 @@ return lt.util.events.capture.cljs$core$IFn$_invoke$arity$3((arguments[(0)]),(ar
 
 break;
 default:
-throw (new Error([cljs.core.str("Invalid arity: "),cljs.core.str(args13632.length)].join('')));
+throw (new Error([cljs.core.str("Invalid arity: "),cljs.core.str(args13634.length)].join('')));
 
 }
 });

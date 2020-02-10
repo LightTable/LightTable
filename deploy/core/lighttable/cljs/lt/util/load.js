@@ -73,23 +73,23 @@ return [cljs.core.str(lt.util.load.abs_source_mapping_url.call(null,code,file)),
  *   If `sync` is not provided then it defaults to `false`. If `sync` is truthy then `file` will be loaded synchronously.
  */
 lt.util.load.js = (function lt$util$load$js(var_args){
-var args13440 = [];
-var len__7868__auto___13443 = arguments.length;
-var i__7869__auto___13444 = (0);
+var args13442 = [];
+var len__7868__auto___13445 = arguments.length;
+var i__7869__auto___13446 = (0);
 while(true){
-if((i__7869__auto___13444 < len__7868__auto___13443)){
-args13440.push((arguments[i__7869__auto___13444]));
+if((i__7869__auto___13446 < len__7868__auto___13445)){
+args13442.push((arguments[i__7869__auto___13446]));
 
-var G__13445 = (i__7869__auto___13444 + (1));
-i__7869__auto___13444 = G__13445;
+var G__13447 = (i__7869__auto___13446 + (1));
+i__7869__auto___13446 = G__13447;
 continue;
 } else {
 }
 break;
 }
 
-var G__13442 = args13440.length;
-switch (G__13442) {
+var G__13444 = args13442.length;
+switch (G__13444) {
 case 1:
 return lt.util.load.js.cljs$core$IFn$_invoke$arity$1((arguments[(0)]));
 
@@ -99,7 +99,7 @@ return lt.util.load.js.cljs$core$IFn$_invoke$arity$2((arguments[(0)]),(arguments
 
 break;
 default:
-throw (new Error([cljs.core.str("Invalid arity: "),cljs.core.str(args13440.length)].join('')));
+throw (new Error([cljs.core.str("Invalid arity: "),cljs.core.str(args13442.length)].join('')));
 
 }
 });
@@ -151,10 +151,10 @@ return cur;
 var temp__4655__auto__ = (cur[cljs.core.first.call(null,parts)]);
 if(cljs.core.truth_(temp__4655__auto__)){
 var cur__$1 = temp__4655__auto__;
-var G__13447 = cljs.core.rest.call(null,parts);
-var G__13448 = cur__$1;
-parts = G__13447;
-cur = G__13448;
+var G__13449 = cljs.core.rest.call(null,parts);
+var G__13450 = cur__$1;
+parts = G__13449;
+cur = G__13450;
 continue;
 } else {
 return null;
@@ -171,8 +171,8 @@ lt.util.load.provided = ({});
  * Return the number of ancestors of `parent`.
  */
 lt.util.load.provided_ancestors = (function lt$util$load$provided_ancestors(parent){
-return cljs.core.count.call(null,Object.keys(lt.util.load.provided).filter((function (p1__13449_SHARP_){
-return (p1__13449_SHARP_.indexOf(parent) > (-1));
+return cljs.core.count.call(null,Object.keys(lt.util.load.provided).filter((function (p1__13451_SHARP_){
+return (p1__13451_SHARP_.indexOf(parent) > (-1));
 })));
 });
 /**

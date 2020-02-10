@@ -15,7 +15,7 @@
             [crate.binding :refer [bound map-bound subatom]])
   (:require-macros [lt.macros :refer [behavior defui]]))
 
-(load/js "core/node_modules/lighttable/ui/dragdrop.js" :sync)
+(load/js "core/lighttable/ui/dragdrop.js" :sync)
 
 (def multi-def (object* ::multi-editor2
                         :tags #{:tabs}

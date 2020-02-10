@@ -14,7 +14,7 @@
             [crate.binding :refer [subatom bound map-bound computed]])
   (:require-macros [lt.macros :refer [behavior defui]]))
 
-(load/js "core/node_modules/lighttable/util/fuzzy.js" :sync)
+(load/js "core/lighttable/util/fuzzy.js" :sync)
 
 ;**********************************************************
 ;; options input

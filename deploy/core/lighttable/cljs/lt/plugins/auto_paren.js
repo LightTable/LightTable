@@ -125,11 +125,11 @@ return lt.object.raise.call(null,lt.objs.context.__GT_obj.call(null,new cljs.cor
 lt.objs.command.command.call(null,new cljs.core.PersistentArrayMap(null, 4, [new cljs.core.Keyword(null,"command","command",-894540724),new cljs.core.Keyword(null,"editor.backspace-pair","editor.backspace-pair",138318891),new cljs.core.Keyword(null,"hidden","hidden",-312506092),true,new cljs.core.Keyword(null,"desc","desc",2093485764),"Editor: Pair aware backspace",new cljs.core.Keyword(null,"exec","exec",1625568743),(function (c){
 return lt.object.raise.call(null,lt.objs.context.__GT_obj.call(null,new cljs.core.Keyword(null,"editor.keys.normal","editor.keys.normal",-1649567699)),new cljs.core.Keyword(null,"backspace!","backspace!",1763897986),c);
 })], null));
-lt.plugins.auto_paren.pre_cursor_indent = (function lt$plugins$auto_paren$pre_cursor_indent(ed,p__17162){
-var map__17165 = p__17162;
-var map__17165__$1 = ((((!((map__17165 == null)))?((((map__17165.cljs$lang$protocol_mask$partition0$ & (64))) || (map__17165.cljs$core$ISeq$))?true:false):false))?cljs.core.apply.call(null,cljs.core.hash_map,map__17165):map__17165);
-var line = cljs.core.get.call(null,map__17165__$1,new cljs.core.Keyword(null,"line","line",212345235));
-var ch = cljs.core.get.call(null,map__17165__$1,new cljs.core.Keyword(null,"ch","ch",-554717905));
+lt.plugins.auto_paren.pre_cursor_indent = (function lt$plugins$auto_paren$pre_cursor_indent(ed,p__17164){
+var map__17167 = p__17164;
+var map__17167__$1 = ((((!((map__17167 == null)))?((((map__17167.cljs$lang$protocol_mask$partition0$ & (64))) || (map__17167.cljs$core$ISeq$))?true:false):false))?cljs.core.apply.call(null,cljs.core.hash_map,map__17167):map__17167);
+var line = cljs.core.get.call(null,map__17167__$1,new cljs.core.Keyword(null,"line","line",212345235));
+var ch = cljs.core.get.call(null,map__17167__$1,new cljs.core.Keyword(null,"ch","ch",-554717905));
 var tabs = lt.objs.editor.option.call(null,ed,new cljs.core.Keyword(null,"indentWithTabs","indentWithTabs",520478820));
 var unit = lt.objs.editor.option.call(null,ed,new cljs.core.Keyword(null,"indentUnit","indentUnit",438562839));
 var precursor = lt.objs.editor.line.call(null,ed,line).substring((0),ch);
@@ -146,13 +146,13 @@ return (lt.objs.editor.__GT_cm_ed.call(null,ed).getSelections().length > (1));
 })())){
 var cursor = lt.objs.editor.__GT_cursor.call(null,ed);
 var unit = lt.objs.editor.option.call(null,ed,new cljs.core.Keyword(null,"indentUnit","indentUnit",438562839));
-var vec__17173 = lt.plugins.auto_paren.pre_cursor_indent.call(null,ed,cursor);
-var indent = cljs.core.nth.call(null,vec__17173,(0),null);
-var rem = cljs.core.nth.call(null,vec__17173,(1),null);
+var vec__17175 = lt.plugins.auto_paren.pre_cursor_indent.call(null,ed,cursor);
+var indent = cljs.core.nth.call(null,vec__17175,(0),null);
+var rem = cljs.core.nth.call(null,vec__17175,(1),null);
 var cursor__$1 = (((rem > (0)))?lt.plugins.auto_paren.adjust_loc.call(null,lt.objs.editor.__GT_cursor.call(null,ed),(unit - rem)):cursor);
-var vec__17176 = (((rem > (0)))?lt.plugins.auto_paren.pre_cursor_indent.call(null,ed,cursor__$1):new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [indent,rem], null));
-var indent__$1 = cljs.core.nth.call(null,vec__17176,(0),null);
-var rem__$1 = cljs.core.nth.call(null,vec__17176,(1),null);
+var vec__17178 = (((rem > (0)))?lt.plugins.auto_paren.pre_cursor_indent.call(null,ed,cursor__$1):new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [indent,rem], null));
+var indent__$1 = cljs.core.nth.call(null,vec__17178,(0),null);
+var rem__$1 = cljs.core.nth.call(null,vec__17178,(1),null);
 if(((indent__$1 > (0))) && ((rem__$1 === (0)))){
 lt.objs.editor.replace.call(null,ed,lt.plugins.auto_paren.adjust_loc.call(null,cursor__$1,(- unit)),cursor__$1,"");
 

@@ -39,9 +39,9 @@ var stack = new cljs.core.Keyword(null,"stack","stack",-793405930).cljs$core$IFn
 if(cljs.core.empty_QMARK_.call(null,stack)){
 return lt.objs.notifos.set_msg_BANG_.call(null,"Nowhere left to jump",new cljs.core.PersistentArrayMap(null, 1, [new cljs.core.Keyword(null,"class","class",-2030961996),"error"], null));
 } else {
-var vec__20416 = cljs.core.last.call(null,stack);
-var file__$1 = cljs.core.nth.call(null,vec__20416,(0),null);
-var pos__$1 = cljs.core.nth.call(null,vec__20416,(1),null);
+var vec__20424 = cljs.core.last.call(null,stack);
+var file__$1 = cljs.core.nth.call(null,vec__20424,(0),null);
+var pos__$1 = cljs.core.nth.call(null,vec__20424,(1),null);
 if(cljs.core.not.call(null,lt.objs.files.exists_QMARK_.call(null,file__$1))){
 return lt.objs.notifos.set_msg_BANG_.call(null,[cljs.core.str("Could not find file: "),cljs.core.str(file__$1)].join(''),new cljs.core.PersistentArrayMap(null, 1, [new cljs.core.Keyword(null,"class","class",-2030961996),"error"], null));
 } else {

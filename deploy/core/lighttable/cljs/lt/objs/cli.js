@@ -11,15 +11,15 @@ goog.require('lt.util.ipc');
 goog.require('clojure.string');
 lt.objs.cli.remote = require("electron").remote;
 lt.objs.cli.open_paths = (function lt$objs$cli$open_paths(path_line_pairs,add_QMARK_){
-var seq__16545 = cljs.core.seq.call(null,path_line_pairs);
-var chunk__16547 = null;
-var count__16548 = (0);
-var i__16549 = (0);
+var seq__16547 = cljs.core.seq.call(null,path_line_pairs);
+var chunk__16549 = null;
+var count__16550 = (0);
+var i__16551 = (0);
 while(true){
-if((i__16549 < count__16548)){
-var vec__16551 = cljs.core._nth.call(null,chunk__16547,i__16549);
-var path = cljs.core.nth.call(null,vec__16551,(0),null);
-var line = cljs.core.nth.call(null,vec__16551,(1),null);
+if((i__16551 < count__16550)){
+var vec__16553 = cljs.core._nth.call(null,chunk__16549,i__16551);
+var path = cljs.core.nth.call(null,vec__16553,(0),null);
+var line = cljs.core.nth.call(null,vec__16553,(1),null);
 if(cljs.core.not_EQ_.call(null,path,process.execPath)){
 if(cljs.core.truth_(lt.objs.files.exists_QMARK_.call(null,path))){
 if(cljs.core.truth_(lt.objs.files.dir_QMARK_.call(null,path))){
@@ -41,45 +41,45 @@ lt.object.raise.call(null,lt.objs.workspace.current_ws,new cljs.core.Keyword(nul
 lt.object.raise.call(null,lt.objs.opener.opener,new cljs.core.Keyword(null,"new!","new!",-1640547457),path);
 }
 
-var G__16557 = seq__16545;
-var G__16558 = chunk__16547;
-var G__16559 = count__16548;
-var G__16560 = (i__16549 + (1));
-seq__16545 = G__16557;
-chunk__16547 = G__16558;
-count__16548 = G__16559;
-i__16549 = G__16560;
+var G__16559 = seq__16547;
+var G__16560 = chunk__16549;
+var G__16561 = count__16550;
+var G__16562 = (i__16551 + (1));
+seq__16547 = G__16559;
+chunk__16549 = G__16560;
+count__16550 = G__16561;
+i__16551 = G__16562;
 continue;
 } else {
-var G__16561 = seq__16545;
-var G__16562 = chunk__16547;
-var G__16563 = count__16548;
-var G__16564 = (i__16549 + (1));
-seq__16545 = G__16561;
-chunk__16547 = G__16562;
-count__16548 = G__16563;
-i__16549 = G__16564;
+var G__16563 = seq__16547;
+var G__16564 = chunk__16549;
+var G__16565 = count__16550;
+var G__16566 = (i__16551 + (1));
+seq__16547 = G__16563;
+chunk__16549 = G__16564;
+count__16550 = G__16565;
+i__16551 = G__16566;
 continue;
 }
 } else {
-var temp__4657__auto__ = cljs.core.seq.call(null,seq__16545);
+var temp__4657__auto__ = cljs.core.seq.call(null,seq__16547);
 if(temp__4657__auto__){
-var seq__16545__$1 = temp__4657__auto__;
-if(cljs.core.chunked_seq_QMARK_.call(null,seq__16545__$1)){
-var c__7604__auto__ = cljs.core.chunk_first.call(null,seq__16545__$1);
-var G__16565 = cljs.core.chunk_rest.call(null,seq__16545__$1);
-var G__16566 = c__7604__auto__;
-var G__16567 = cljs.core.count.call(null,c__7604__auto__);
-var G__16568 = (0);
-seq__16545 = G__16565;
-chunk__16547 = G__16566;
-count__16548 = G__16567;
-i__16549 = G__16568;
+var seq__16547__$1 = temp__4657__auto__;
+if(cljs.core.chunked_seq_QMARK_.call(null,seq__16547__$1)){
+var c__7604__auto__ = cljs.core.chunk_first.call(null,seq__16547__$1);
+var G__16567 = cljs.core.chunk_rest.call(null,seq__16547__$1);
+var G__16568 = c__7604__auto__;
+var G__16569 = cljs.core.count.call(null,c__7604__auto__);
+var G__16570 = (0);
+seq__16547 = G__16567;
+chunk__16549 = G__16568;
+count__16550 = G__16569;
+i__16551 = G__16570;
 continue;
 } else {
-var vec__16554 = cljs.core.first.call(null,seq__16545__$1);
-var path = cljs.core.nth.call(null,vec__16554,(0),null);
-var line = cljs.core.nth.call(null,vec__16554,(1),null);
+var vec__16556 = cljs.core.first.call(null,seq__16547__$1);
+var path = cljs.core.nth.call(null,vec__16556,(0),null);
+var line = cljs.core.nth.call(null,vec__16556,(1),null);
 if(cljs.core.not_EQ_.call(null,path,process.execPath)){
 if(cljs.core.truth_(lt.objs.files.exists_QMARK_.call(null,path))){
 if(cljs.core.truth_(lt.objs.files.dir_QMARK_.call(null,path))){
@@ -101,24 +101,24 @@ lt.object.raise.call(null,lt.objs.workspace.current_ws,new cljs.core.Keyword(nul
 lt.object.raise.call(null,lt.objs.opener.opener,new cljs.core.Keyword(null,"new!","new!",-1640547457),path);
 }
 
-var G__16569 = cljs.core.next.call(null,seq__16545__$1);
-var G__16570 = null;
-var G__16571 = (0);
-var G__16572 = (0);
-seq__16545 = G__16569;
-chunk__16547 = G__16570;
-count__16548 = G__16571;
-i__16549 = G__16572;
+var G__16571 = cljs.core.next.call(null,seq__16547__$1);
+var G__16572 = null;
+var G__16573 = (0);
+var G__16574 = (0);
+seq__16547 = G__16571;
+chunk__16549 = G__16572;
+count__16550 = G__16573;
+i__16551 = G__16574;
 continue;
 } else {
-var G__16573 = cljs.core.next.call(null,seq__16545__$1);
-var G__16574 = null;
-var G__16575 = (0);
-var G__16576 = (0);
-seq__16545 = G__16573;
-chunk__16547 = G__16574;
-count__16548 = G__16575;
-i__16549 = G__16576;
+var G__16575 = cljs.core.next.call(null,seq__16547__$1);
+var G__16576 = null;
+var G__16577 = (0);
+var G__16578 = (0);
+seq__16547 = G__16575;
+chunk__16549 = G__16576;
+count__16550 = G__16577;
+i__16551 = G__16578;
 continue;
 }
 }
@@ -141,8 +141,8 @@ lt.objs.cli.open_files = cljs.core.js__GT_clj.call(null,lt.objs.cli.remote.getGl
  * Arguments used to start LightTable
  */
 lt.objs.cli.argv = cljs.core.js__GT_clj.call(null,lt.objs.cli.remote.process.argv);
-lt.util.ipc.on.call(null,"openFileAfterStartup",(function (p1__16577_SHARP_){
-return lt.object.raise.call(null,lt.objs.app.app,new cljs.core.Keyword(null,"open!","open!",1145596908),p1__16577_SHARP_);
+lt.util.ipc.on.call(null,"openFileAfterStartup",(function (p1__16579_SHARP_){
+return lt.object.raise.call(null,lt.objs.app.app,new cljs.core.Keyword(null,"open!","open!",1145596908),p1__16579_SHARP_);
 }));
 /**
  * Returns path arguments passed to executable or nil if none given. Only returns
@@ -161,11 +161,11 @@ return and__6781__auto__;
  */
 lt.objs.cli.__BEH__open_on_args = (function lt$objs$cli$__BEH__open_on_args(this$){
 if(cljs.core.truth_(lt.objs.app.first_window_QMARK_.call(null))){
-var path_line_pairs = cljs.core.map.call(null,(function (p1__16578_SHARP_){
-var vec__16582 = cljs.core.re_find.call(null,/^(.*?):?(\d+)?$/,p1__16578_SHARP_);
-var _ = cljs.core.nth.call(null,vec__16582,(0),null);
-var path = cljs.core.nth.call(null,vec__16582,(1),null);
-var line = cljs.core.nth.call(null,vec__16582,(2),null);
+var path_line_pairs = cljs.core.map.call(null,(function (p1__16580_SHARP_){
+var vec__16584 = cljs.core.re_find.call(null,/^(.*?):?(\d+)?$/,p1__16580_SHARP_);
+var _ = cljs.core.nth.call(null,vec__16584,(0),null);
+var path = cljs.core.nth.call(null,vec__16584,(1),null);
+var line = cljs.core.nth.call(null,vec__16584,(2),null);
 return new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [lt.objs.files.resolve.call(null,lt.objs.files.cwd,path),line], null);
 }),lt.objs.cli.args.call(null));
 var paths = cljs.core.map.call(null,cljs.core.first,path_line_pairs);

@@ -37,15 +37,15 @@ return cljs.core._EQ_.call(null,cljs.core.subs.call(null,token,(0),(1)),":");
 return and__6781__auto__;
 }
 })())){
-return cljs.core.map.call(null,(function (p1__13423_SHARP_){
-return ({"completion": [cljs.core.str(new cljs.core.Keyword(null,"command","command",-894540724).cljs$core$IFn$_invoke$arity$1(p1__13423_SHARP_))].join(''), "text": [cljs.core.str(new cljs.core.Keyword(null,"command","command",-894540724).cljs$core$IFn$_invoke$arity$1(p1__13423_SHARP_))].join('')});
+return cljs.core.map.call(null,(function (p1__13425_SHARP_){
+return ({"completion": [cljs.core.str(new cljs.core.Keyword(null,"command","command",-894540724).cljs$core$IFn$_invoke$arity$1(p1__13425_SHARP_))].join(''), "text": [cljs.core.str(new cljs.core.Keyword(null,"command","command",-894540724).cljs$core$IFn$_invoke$arity$1(p1__13425_SHARP_))].join('')});
 }),cljs.core.vals.call(null,new cljs.core.Keyword(null,"commands","commands",161008658).cljs$core$IFn$_invoke$arity$1(cljs.core.deref.call(null,lt.objs.command.manager))));
 } else {
-return cljs.core.map.call(null,(function (p1__13424_SHARP_){
-if(cljs.core.not.call(null,new cljs.core.Keyword(null,"desc","desc",2093485764).cljs$core$IFn$_invoke$arity$1(p1__13424_SHARP_))){
-return ({"completion": [cljs.core.str(new cljs.core.Keyword(null,"command","command",-894540724).cljs$core$IFn$_invoke$arity$1(p1__13424_SHARP_))].join(''), "text": [cljs.core.str(new cljs.core.Keyword(null,"command","command",-894540724).cljs$core$IFn$_invoke$arity$1(p1__13424_SHARP_))].join('')});
+return cljs.core.map.call(null,(function (p1__13426_SHARP_){
+if(cljs.core.not.call(null,new cljs.core.Keyword(null,"desc","desc",2093485764).cljs$core$IFn$_invoke$arity$1(p1__13426_SHARP_))){
+return ({"completion": [cljs.core.str(new cljs.core.Keyword(null,"command","command",-894540724).cljs$core$IFn$_invoke$arity$1(p1__13426_SHARP_))].join(''), "text": [cljs.core.str(new cljs.core.Keyword(null,"command","command",-894540724).cljs$core$IFn$_invoke$arity$1(p1__13426_SHARP_))].join('')});
 } else {
-return ({"completion": [cljs.core.str(new cljs.core.Keyword(null,"command","command",-894540724).cljs$core$IFn$_invoke$arity$1(p1__13424_SHARP_))].join(''), "text": new cljs.core.Keyword(null,"desc","desc",2093485764).cljs$core$IFn$_invoke$arity$1(p1__13424_SHARP_)});
+return ({"completion": [cljs.core.str(new cljs.core.Keyword(null,"command","command",-894540724).cljs$core$IFn$_invoke$arity$1(p1__13426_SHARP_))].join(''), "text": new cljs.core.Keyword(null,"desc","desc",2093485764).cljs$core$IFn$_invoke$arity$1(p1__13426_SHARP_)});
 }
 }),cljs.core.vals.call(null,new cljs.core.Keyword(null,"commands","commands",161008658).cljs$core$IFn$_invoke$arity$1(cljs.core.deref.call(null,lt.objs.command.manager))));
 }
@@ -55,14 +55,14 @@ return ({"completion": [cljs.core.str(new cljs.core.Keyword(null,"command","comm
  */
 lt.objs.command.exec_BANG_ = (function lt$objs$command$exec_BANG_(var_args){
 var args__7875__auto__ = [];
-var len__7868__auto___13427 = arguments.length;
-var i__7869__auto___13428 = (0);
+var len__7868__auto___13429 = arguments.length;
+var i__7869__auto___13430 = (0);
 while(true){
-if((i__7869__auto___13428 < len__7868__auto___13427)){
-args__7875__auto__.push((arguments[i__7869__auto___13428]));
+if((i__7869__auto___13430 < len__7868__auto___13429)){
+args__7875__auto__.push((arguments[i__7869__auto___13430]));
 
-var G__13429 = (i__7869__auto___13428 + (1));
-i__7869__auto___13428 = G__13429;
+var G__13431 = (i__7869__auto___13430 + (1));
+i__7869__auto___13430 = G__13431;
 continue;
 } else {
 }
@@ -94,10 +94,10 @@ return null;
 
 lt.objs.command.exec_BANG_.cljs$lang$maxFixedArity = (1);
 
-lt.objs.command.exec_BANG_.cljs$lang$applyTo = (function (seq13425){
-var G__13426 = cljs.core.first.call(null,seq13425);
-var seq13425__$1 = cljs.core.next.call(null,seq13425);
-return lt.objs.command.exec_BANG_.cljs$core$IFn$_invoke$arity$variadic(G__13426,seq13425__$1);
+lt.objs.command.exec_BANG_.cljs$lang$applyTo = (function (seq13427){
+var G__13428 = cljs.core.first.call(null,seq13427);
+var seq13427__$1 = cljs.core.next.call(null,seq13427);
+return lt.objs.command.exec_BANG_.cljs$core$IFn$_invoke$arity$variadic(G__13428,seq13427__$1);
 });
 
 lt.object.object_STAR_.call(null,new cljs.core.Keyword("lt.objs.command","command.manager","lt.objs.command/command.manager",-922176480),new cljs.core.Keyword(null,"tags","tags",1771418977),new cljs.core.PersistentHashSet(null, new cljs.core.PersistentArrayMap(null, 1, [new cljs.core.Keyword(null,"command.manager","command.manager",-780692353),null], null), null),new cljs.core.Keyword(null,"commands","commands",161008658),cljs.core.PersistentArrayMap.EMPTY);
