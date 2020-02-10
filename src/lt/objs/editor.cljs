@@ -1001,7 +1001,7 @@
                       (load/js "core/node_modules/codemirror/addon/comment/comment.js" :sync)
                       (load/js "core/node_modules/codemirror/addon/selection/active-line.js" :sync)
                       ;; TODO: use addon/mode/overlay.js
-                      (load/js "core/node_modules/codemirror_addons/overlay.js" :sync)
+                      (load/js "core/node_modules/codemirror/addon/mode/overlay.js" :sync)
                       (load/js "core/node_modules/codemirror/addon/scroll/scrollpastend.js" :sync)
                       (doseq [file (files/ls (files/lt-home "core/node_modules/codemirror/addon/fold"))
                               :when (= (files/ext file) "js")]
