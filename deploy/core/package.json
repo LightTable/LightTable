@@ -17,14 +17,14 @@
   },
   "dependencies": {
     "bencode": "^2.0.1",
-    "codemirror": "^5.50.2",
-    "jsonify": "*",
+    "codemirror": "^5.51.0",
+    "jsonify": "^0.0.0",
     "optimist": "^0.6.1",
     "replace": "^1.1.5",
     "request": "^2.88.0",
     "shelljs": "^0.8.3",
-    "socket.io": "^2.3.0",
-    "tar": "^4.4.13",
+    "socket.io": "^0.9.19",
+    "tar": "^2.2.2",
     "yargs": "^15.1.0"
   },
   "forkedDependencies": {}

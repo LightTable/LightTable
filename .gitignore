@@ -1,5 +1,5 @@
-//deploy/core/node_modules/*
-!/deploy/core/node_modules/lighttabledeploy/core/node_modules/lighttable/cljs/
+/deploy/core/node_modules/*
+!/deploy/core/node_modules/lighttable
 /deploy/core/node_modules/clojurescript/cljsDeps/
 /target/
 /deploy/plugins/
@@ -12,3 +12,4 @@
 /builds/
 .idea
 *.iml
+Lighttable-plugin-metadata-1e53959/*
