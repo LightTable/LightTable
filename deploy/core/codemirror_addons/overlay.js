@@ -1,5 +1,5 @@
-// CodeMirror 4.1.1, copyright (c) by Marijn Haverbeke and others
-// Distributed under an MIT license: http://codemirror.net/LICENSE
+// CodeMirror, copyright (c) by Marijn Haverbeke and others
+// Distributed under an MIT license: https://codemirror.net/LICENSE
 
 // Utility function that allows modes to be combined. The mode given
 // as the base argument takes care of most of the normal mode
@@ -14,7 +14,7 @@
   if (typeof exports == "object" && typeof module == "object") // CommonJS
     mod(require("../../lib/codemirror"));
   else if (typeof define == "function" && define.amd) // AMD
-    define(["../../lib/codemirror"], mod);
+    define(["/../node_modules/codemirror/lib/codemirror"], mod);
   else // Plain browser env
     mod(CodeMirror);
 })(function(CodeMirror) {
@@ -28,7 +28,7 @@ CodeMirror.overlayMode = function(base, overlay, combine) {
         overlay: CodeMirror.startState(overlay),
         basePos: 0, baseCur: null,
         overlayPos: 0, overlayCur: null,
-        lineSeen: null
+        streamSeen: null
       };
     },
     copyState: function(state) {
@@ -41,9 +41,9 @@ CodeMirror.overlayMode = function(base, overlay, combine) {
     },
 
     token: function(stream, state) {
-      if (stream.sol() || stream.string != state.lineSeen ||
+      if (stream != state.streamSeen ||
           Math.min(state.basePos, state.overlayPos) < stream.start) {
-        state.lineSeen = stream.string;
+        state.streamSeen = stream;
         state.basePos = state.overlayPos = stream.start;
       }
 
@@ -53,7 +53,7 @@ CodeMirror.overlayMode = function(base, overlay, combine) {
       }
       if (stream.start == state.overlayPos) {
         stream.pos = stream.start;
-        state.overlayCur = overlay.token(stream, state.overlay, {pos: state.basePos, style: state.baseCur});
+        state.overlayCur = overlay.token(stream, state.overlay);
         state.overlayPos = stream.pos;
       }
       stream.pos = Math.min(state.basePos, state.overlayPos);
@@ -68,16 +68,21 @@ CodeMirror.overlayMode = function(base, overlay, combine) {
       else return state.overlayCur;
     },
 
-    indent: base.indent && function(state, textAfter) {
-      return base.indent(state.base, textAfter);
+    indent: base.indent && function(state, textAfter, line) {
+      return base.indent(state.base, textAfter, line);
     },
     electricChars: base.electricChars,
 
     innerMode: function(state) { return {state: state.base, mode: base}; },
 
     blankLine: function(state) {
-      if (base.blankLine) base.blankLine(state.base);
-      if (overlay.blankLine) overlay.blankLine(state.overlay);
+      var baseToken, overlayToken;
+      if (base.blankLine) baseToken = base.blankLine(state.base);
+      if (overlay.blankLine) overlayToken = overlay.blankLine(state.overlay);
+
+      return overlayToken == null ?
+        baseToken :
+        (combine && baseToken != null ? baseToken + " " + overlayToken : overlayToken);
     }
   };
 };
