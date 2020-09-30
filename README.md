@@ -11,15 +11,17 @@
 [![Join the chat at https://gitter.im/LightTable/LightTable](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/LightTable/LightTable?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![Code Shelter](https://www.codeshelter.co/static/badges/badge-flat.svg)](https://www.codeshelter.co/)
 
-Light Table is a next generation code editor that connects you to your creation with instant feedback. Light Table is very customizable and can display anything a [Chromium browser](http://www.chromium.org/) can.
+**Light Table is a next generation code editor that connects you to your creation with instant feedback**. 
+
+**Light Table is very customizable and can display anything a [Chromium browser](http://www.chromium.org/) can.**
 
 ### This is a development branch and is not clean like `master` and can have many breakages.
 
 ## Downloads
 
-Prebuilt binaries are available through [lighttable.com](http://lighttable.com). To build and use a developer version of Light Table [see these instructions](doc/developer-install.md).
+**Prebuilt binaries are available through [lighttable.com](http://lighttable.com). To build and use a developer version of Light Table [see these instructions](doc/developer-install.md).**
 
-For OSX users, the install process involves the following steps until we officially sign our OSX App:
+For **OSX users**, the install process involves the following steps **until we officially sign our OSX App**:
 
 * In Finder, Ctrl-click on LightTable.app/ and select Open.
 * When you see [this prompt](https://cloud.githubusercontent.com/assets/11994/11731454/85181e90-9f69-11e5-9c65-f6aa4228005c.png) about LightTable being unidentified, click Open.
@@ -37,7 +39,7 @@ For OSX users, the install process involves the following steps until we officia
 
 ## Plugins
 
-Light Table has a powerful plugin system that allows almost any aspect of the editor to be extended and customized. With over [100+ plugins](https://github.com/LightTable/plugin-metadata), the community is able to offer eval support for new languages, create domain-specific IDEs and much more. If you're interested in writing your own plugin, see the [Write a Plugin](http://docs.lighttable.com/#write-a-plugin) and [Submit a Plugin](http://docs.lighttable.com/#submit-a-plugin) docs. For an example ClojureScript plugin, see [LightTable-Declassifier](https://github.com/LightTable/LightTable-Declassifier).
+Light Table has a **powerful plugin system** that allows almost any aspect of the editor to be **extended and customized**. With over [100+ plugins](https://github.com/LightTable/plugin-metadata), the community is able to offer eval support for **new languages, create domain-specific IDEs and much more**. If you're interested in writing your own plugin, see the [Write a Plugin](http://docs.lighttable.com/#write-a-plugin) and [Submit a Plugin](http://docs.lighttable.com/#submit-a-plugin) docs. For an example ClojureScript plugin, see [LightTable-Declassifier](https://github.com/LightTable/LightTable-Declassifier).
 
 ## Community
 
