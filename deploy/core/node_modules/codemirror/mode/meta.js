@@ -24,7 +24,7 @@
     {name: "Clojure", mime: "text/x-clojure", mode: "clojure", ext: ["clj", "cljc", "cljx"]},
     {name: "ClojureScript", mime: "text/x-clojurescript", mode: "clojure", ext: ["cljs"]},
     {name: "Closure Stylesheets (GSS)", mime: "text/x-gss", mode: "css", ext: ["gss"]},
-    {name: "CMake", mime: "text/x-cmake", mode: "cmake", ext: ["cmake", "cmake.in"], file: /^CMakeLists.txt$/},
+    {name: "CMake", mime: "text/x-cmake", mode: "cmake", ext: ["cmake", "cmake.in"], file: /^CMakeLists\.txt$/},
     {name: "CoffeeScript", mimes: ["application/vnd.coffeescript", "text/coffeescript", "text/x-coffeescript"], mode: "coffeescript", ext: ["coffee"], alias: ["coffee", "coffee-script"]},
     {name: "Common Lisp", mime: "text/x-common-lisp", mode: "commonlisp", ext: ["cl", "lisp", "el"], alias: ["lisp"]},
     {name: "Cypher", mime: "application/x-cypher-query", mode: "cypher", ext: ["cyp", "cypher"]},
@@ -44,7 +44,7 @@
     {name: "edn", mime: "application/edn", mode: "clojure", ext: ["edn"]},
     {name: "Eiffel", mime: "text/x-eiffel", mode: "eiffel", ext: ["e"]},
     {name: "Elm", mime: "text/x-elm", mode: "elm", ext: ["elm"]},
-    {name: "Embedded Javascript", mime: "application/x-ejs", mode: "htmlembedded", ext: ["ejs"]},
+    {name: "Embedded JavaScript", mime: "application/x-ejs", mode: "htmlembedded", ext: ["ejs"]},
     {name: "Embedded Ruby", mime: "application/x-erb", mode: "htmlembedded", ext: ["erb"]},
     {name: "Erlang", mime: "text/x-erlang", mode: "erlang", ext: ["erl"]},
     {name: "Esper", mime: "text/x-esper", mode: "sql"},
@@ -55,7 +55,7 @@
     {name: "F#", mime: "text/x-fsharp", mode: "mllike", ext: ["fs"], alias: ["fsharp"]},
     {name: "Gas", mime: "text/x-gas", mode: "gas", ext: ["s"]},
     {name: "Gherkin", mime: "text/x-feature", mode: "gherkin", ext: ["feature"]},
-    {name: "GitHub Flavored Markdown", mime: "text/x-gfm", mode: "gfm", file: /^(readme|contributing|history).md$/i},
+    {name: "GitHub Flavored Markdown", mime: "text/x-gfm", mode: "gfm", file: /^(readme|contributing|history)\.md$/i},
     {name: "Go", mime: "text/x-go", mode: "go", ext: ["go"]},
     {name: "Groovy", mime: "text/x-groovy", mode: "groovy", ext: ["groovy", "gradle"], file: /^Jenkinsfile$/},
     {name: "HAML", mime: "text/x-haml", mode: "haml", ext: ["haml"]},
@@ -144,7 +144,7 @@
     {name: "SystemVerilog", mime: "text/x-systemverilog", mode: "verilog", ext: ["v", "sv", "svh"]},
     {name: "Tcl", mime: "text/x-tcl", mode: "tcl", ext: ["tcl"]},
     {name: "Textile", mime: "text/x-textile", mode: "textile", ext: ["textile"]},
-    {name: "TiddlyWiki ", mime: "text/x-tiddlywiki", mode: "tiddlywiki"},
+    {name: "TiddlyWiki", mime: "text/x-tiddlywiki", mode: "tiddlywiki"},
     {name: "Tiki wiki", mime: "text/tiki", mode: "tiki"},
     {name: "TOML", mime: "text/x-toml", mode: "toml", ext: ["toml"]},
     {name: "Tornado", mime: "text/x-tornado", mode: "tornado"},
@@ -169,7 +169,8 @@
     {name: "Z80", mime: "text/x-z80", mode: "z80", ext: ["z80"]},
     {name: "mscgen", mime: "text/x-mscgen", mode: "mscgen", ext: ["mscgen", "mscin", "msc"]},
     {name: "xu", mime: "text/x-xu", mode: "mscgen", ext: ["xu"]},
-    {name: "msgenny", mime: "text/x-msgenny", mode: "mscgen", ext: ["msgenny"]}
+    {name: "msgenny", mime: "text/x-msgenny", mode: "mscgen", ext: ["msgenny"]},
+    {name: "WebAssembly", mime: "text/webassembly", mode: "wast", ext: ["wat", "wast"]},
   ];
   // Ensure all modes have a mime property for backwards compatibility
   for (var i = 0; i < CodeMirror.modeInfo.length; i++) {

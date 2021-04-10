@@ -1,0 +1,1 @@
+_,multiline,exclude-list,excludeList,color,fileColor,file-color,paths,$0,regex,replacement

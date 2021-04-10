@@ -149,11 +149,14 @@ module.exports = function(options) {
       if (isFile) {
           var text = fs.readFileSync(file, "utf-8");
 
-          text = replacizeText(text, file);
-          if (canReplace && text !== null) {
-              fs.writeFileSync(file, text);
-          } else if (text) {
-              matched.push(text);
+          var replacizedText = replacizeText(text, file);
+
+          if (replacizedText !== null) {
+              if (canReplace) {
+                  fs.writeFileSync(file, replacizedText);
+              } else {
+                  matched.push({ text, path: file });
+              }
           }
       }
       else if (stats.isDirectory() && options.recursive) {

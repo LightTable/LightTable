@@ -40,9 +40,9 @@
       cm.removeKeyMap("autoCloseTags");
     if (!val) return;
     var map = {name: "autoCloseTags"};
-    if (typeof val != "object" || val.whenClosing)
+    if (typeof val != "object" || val.whenClosing !== false)
       map["'/'"] = function(cm) { return autoCloseSlash(cm); };
-    if (typeof val != "object" || val.whenOpening)
+    if (typeof val != "object" || val.whenOpening !== false)
       map["'>'"] = function(cm) { return autoCloseGT(cm); };
     cm.addKeyMap(map);
   });
@@ -128,9 +128,10 @@
         replacement = head + "style";
       } else {
         var context = inner.mode.xmlCurrentContext && inner.mode.xmlCurrentContext(state)
-        if (!context || (context.length && closingTagExists(cm, context, context[context.length - 1], pos)))
+        var top = context.length ? context[context.length - 1] : ""
+        if (!context || (context.length && closingTagExists(cm, context, top, pos)))
           return CodeMirror.Pass;
-        replacement = head + context[context.length - 1]
+        replacement = head + top
       }
       if (cm.getLine(pos.line).charAt(tok.end) != ">") replacement += ">";
       replacements[i] = replacement;
