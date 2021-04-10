@@ -38,7 +38,7 @@
                 (next decl)
                 decl)]
    `(defn ~sym ~doc ~params
-      (let [e# (crate.core/html ~hiccup)]
+      (let [e# (singultus.core/html ~hiccup)]
         (doseq [[ev# func#] (partition 2 ~(vec events))]
           (lt.util.dom/on e# ev# func#))
         e#))))

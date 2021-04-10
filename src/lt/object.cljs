@@ -2,10 +2,10 @@
   "Define core of BOT architecture and provide fns for manipulating objects,
   behaviors and tags"
   (:refer-clojure :exclude [set!])
-  (:require [crate.core :as crate]
+  (:require [singultus.core :as crate]
             [clojure.set :as set]
             [clojure.string :as string]
-            [crate.binding :refer [sub-swap! subatom sub-reset! deref?]]
+            [singultus.binding :refer [sub-swap! subatom sub-reset! deref?]]
             [lt.util.cljs :as cljs]
             [lt.util.dom :refer [replace-with] :as dom]
             [lt.util.js :refer [throttle debounce]])

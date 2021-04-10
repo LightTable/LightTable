@@ -9,7 +9,7 @@
             [lt.objs.editor :as ed]
             [lt.util.dom :as dom]
             [lt.util.cljs :as cljs]
-            [crate.binding :refer [bound map-bound]])
+            [singultus.binding :refer [bound map-bound]])
   (:require-macros [lt.macros :refer [behavior defui]]))
 
 ;;**********************************************************

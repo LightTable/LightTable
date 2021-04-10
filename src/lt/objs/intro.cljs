@@ -8,8 +8,8 @@
             [lt.objs.app :as app]
             [lt.objs.tabs :as tabs]
             [lt.util.dom :as dom]
-            [crate.core :refer [raw]]
-            [crate.binding :refer [bound]])
+            [singultus.core :refer [raw]]
+            [singultus.binding :refer [bound]])
   (:require-macros [lt.macros :refer [behavior defui]]))
 
 (behavior ::on-close-destroy

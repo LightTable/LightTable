@@ -10,7 +10,7 @@
             [lt.objs.keyboard :as keyboard]
             [lt.objs.editor :as editor]
             [lt.util.dom :as dom]
-            [crate.binding :refer [bound subatom]]
+            [singultus.binding :refer [bound subatom]]
             [lt.util.style :refer [->px]])
   (:require-macros [lt.macros :refer [behavior defui]]))
 

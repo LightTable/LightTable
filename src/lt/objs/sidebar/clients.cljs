@@ -10,7 +10,7 @@
             [lt.objs.popup :as popup]
             [lt.objs.editor.pool :as pool]
             [lt.util.dom :as dom]
-            [crate.binding :refer [bound map-bound subatom]])
+            [singultus.binding :refer [bound map-bound subatom]])
   (:require-macros [lt.macros :refer [behavior defui]]))
 
 (defui close-button [i]

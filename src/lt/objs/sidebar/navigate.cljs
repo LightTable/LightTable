@@ -12,8 +12,8 @@
             [lt.util.dom :as dom]
             [lt.objs.thread]
             [lt.util.load :as load]
-            [crate.core :as crate]
-            [crate.binding :refer [bound subatom]])
+            [singultus.core :as crate]
+            [singultus.binding :refer [bound subatom]])
   (:require-macros [lt.macros :refer [behavior defui background]]))
 
 

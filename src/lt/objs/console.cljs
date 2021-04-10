@@ -11,7 +11,7 @@
             [clojure.string :as string]
             [lt.util.dom :refer [$ append empty parents] :as dom]
             [lt.objs.platform :as platform])
-  (:require-macros [crate.def-macros :refer [defpartial]]
+  (:require-macros [singultus.def-macros :refer [defpartial]]
                    [lt.macros :refer [behavior defui]]))
 
 (def console-limit 50)

@@ -13,7 +13,7 @@
             [lt.objs.menu :as menu]
             [lt.util.dom :as dom]
             [lt.util.cljs :refer [->dottedkw]]
-            [crate.binding :refer [bound subatom]]
+            [singultus.binding :refer [bound subatom]]
             [clojure.string :as string])
   (:require-macros [lt.macros :refer [behavior defui]]))
 

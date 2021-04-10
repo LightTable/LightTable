@@ -17,7 +17,7 @@
   * `pos` - Position: depending on the context, either a Javascript object
             (e.g., `{\"line\": 0, \"ch\": 0}`) or cljs map (e.g., `{:line 0 :ch 0}`)."
   (:refer-clojure :exclude [val replace range])
-  (:require [crate.core :as crate]
+  (:require [singultus.core :as crate]
             [lt.objs.context :as ctx-obj]
             [lt.object :as object]
             [lt.objs.files :as files]

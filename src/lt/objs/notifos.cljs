@@ -4,7 +4,7 @@
             [lt.objs.statusbar :as statusbar]
             [lt.objs.command :as cmd]
             [lt.util.js :refer [wait]]
-            [crate.binding :refer [map-bound bound deref?]])
+            [singultus.binding :refer [map-bound bound deref?]])
   (:require-macros [lt.macros :refer [behavior defui]]))
 
 (def ^:private standard-timeout 10000)

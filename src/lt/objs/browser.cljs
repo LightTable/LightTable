@@ -18,8 +18,8 @@
             [lt.objs.clients.devtools :as devtools]
             [lt.util.dom :as dom]
             [clojure.string :as string]
-            [crate.core :as crate]
-            [crate.binding :refer [bound subatom]])
+            [singultus.core :as crate]
+            [singultus.binding :refer [bound subatom]])
   (:require-macros [lt.macros :refer [behavior defui]]))
 
 (def utils (js-obj))

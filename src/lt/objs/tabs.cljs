@@ -11,8 +11,8 @@
             [lt.util.dom :refer [$ append] :as dom]
             [lt.util.style :refer [->px]]
             [lt.util.js :refer [now]]
-            [crate.core :as crate]
-            [crate.binding :refer [bound map-bound subatom]])
+            [singultus.core :as crate]
+            [singultus.binding :refer [bound map-bound subatom]])
   (:require-macros [lt.macros :refer [behavior defui]]))
 
 (load/js "core/node_modules/lighttable/ui/dragdrop.js" :sync)

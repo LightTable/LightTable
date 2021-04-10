@@ -6,7 +6,7 @@
             [lt.objs.canvas :as canvas]
             [lt.util.cljs :refer [->dottedkw]]
             [lt.util.style :refer [->px]]
-            [crate.binding :refer [map-bound bound subatom]])
+            [singultus.binding :refer [map-bound bound subatom]])
   (:require-macros [lt.macros :refer [behavior defui]]))
 
 

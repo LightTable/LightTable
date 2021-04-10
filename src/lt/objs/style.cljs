@@ -12,8 +12,8 @@
             [lt.objs.deploy :as deploy]
             [lt.util.dom :as dom]
             [lt.util.load :as load]
-            [crate.binding :refer [bound -value subatom]]
-            [crate.compiler :refer [dom-attr]]
+            [singultus.binding :refer [bound -value subatom]]
+            [singultus.compiler :refer [dom-attr]]
             [clojure.string :as string])
   (:require-macros [lt.macros :refer [behavior defui]]))
 

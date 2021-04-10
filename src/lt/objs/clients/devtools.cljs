@@ -9,11 +9,11 @@
             [lt.objs.app :as app]
             [lt.objs.clients :as clients]
             [fetch.core :as fetch]
-            [crate.core :as crate]
+            [singultus.core :as crate]
             [lt.util.dom :as dom]
             [lt.util.js :refer [every wait ->clj]]
             [lt.util.ipc :as ipc]
-            [crate.binding :refer [bound subatom]]
+            [singultus.binding :refer [bound subatom]]
             [clojure.string :as string])
   (:require-macros [lt.macros :refer [behavior defui]]))
 

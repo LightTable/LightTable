@@ -10,8 +10,8 @@
             [lt.util.dom :as dom]
             [lt.util.cljs :refer [->dottedkw]]
             [clojure.string :as string]
-            [crate.core :as crate]
-            [crate.binding :refer [subatom bound map-bound computed]])
+            [singultus.core :as crate]
+            [singultus.binding :refer [subatom bound map-bound computed]])
   (:require-macros [lt.macros :refer [behavior defui]]))
 
 (load/js "core/node_modules/lighttable/util/fuzzy.js" :sync)

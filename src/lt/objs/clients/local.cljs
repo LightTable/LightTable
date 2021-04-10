@@ -9,7 +9,7 @@
             [lt.objs.eval :as eval]
             [lt.objs.console :as console]
             [clojure.string :as string]
-            [crate.core :as crate]
+            [singultus.core :as crate]
             [lt.util.dom :refer [$ append remove]])
   (:use [lt.util.js :only [wait ->clj]])
   (:require-macros [lt.macros :refer [behavior]]))

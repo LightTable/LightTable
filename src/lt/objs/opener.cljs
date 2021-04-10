@@ -17,8 +17,8 @@
             [lt.objs.files :as files]
             [lt.util.dom :as dom]
             [lt.util.cljs :refer [->dottedkw]])
-  (:use [crate.binding :only [bound map-bound]])
-  (:use-macros [crate.def-macros :only [defpartial]]
+  (:use [singultus.binding :only [bound map-bound]])
+  (:use-macros [singultus.def-macros :only [defpartial]]
                [lt.macros :only [behavior defui]]))
 
 ;;**********************************************************
