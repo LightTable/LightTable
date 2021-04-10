@@ -25,9 +25,9 @@ pushd deploy/electron
 popd
 
 # Ensure we have current version of core
-pushd deploy/core
-  npm install
-popd
+#pushd deploy/core
+#  npm install
+#popd
 
 # Build the core cljs
 
@@ -38,10 +38,10 @@ fi
 rm -f deploy/core/node_modules/lighttable/bootstrap.js
 lein cljsbuild once app
 
-if [ -d "deploy/core/node_modules/clojurescript" ]; then
-    rm -i -rf deploy/core/node_modules/clojurescript
-fi
-lein cljsbuild once cljsdeps
+#if [ -d "deploy/core/node_modules/clojurescript" ]; then
+#    rm -i -rf deploy/core/node_modules/clojurescript
+#fi
+#lein cljsbuild once cljsdeps
 
 # Fetch plugins
 PLUGINS=("Clojure,0.3.3" "CSS,0.0.6" "HTML,0.1.0" "Javascript,0.2.0"
