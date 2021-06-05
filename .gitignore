@@ -12,3 +12,4 @@
 /builds/
 .idea
 *.iml
+/lsp
