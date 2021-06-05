@@ -2,6 +2,6 @@
   "name": "download-electron",
   "version": "1.0.0",
   "devDependencies": {
-    "electron": "12.0.2"
+    "electron": "13.1.1"
   }
 }
