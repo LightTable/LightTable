@@ -13,9 +13,9 @@
                         :source-paths ["src"]
                         :compiler {:optimizations :simple
                                    :externs ["externs/jquery.js" "externs/throttle.js" "externs/codemirror.js"]
-                                   :source-map "deploy/core/node_modules/lighttable/bootstrap.js.map"
-                                   :output-to "deploy/core/node_modules/lighttable/bootstrap.js"
-                                   :output-dir "deploy/core/node_modules/lighttable/cljs/"
+                                   :source-map "deploy/core/lighttable/bootstrap.js.map"
+                                   :output-to "deploy/core/lighttable/bootstrap.js"
+                                   :output-dir "deploy/core/lighttable/cljs/"
                                    :pretty-print true}}
                        {:id "cljsdeps"
                         :source-paths ["src-cljsdeps"]

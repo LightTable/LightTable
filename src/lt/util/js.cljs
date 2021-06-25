@@ -32,7 +32,7 @@
 
   See [[throttle]]."
   [ts func]
-  ;; For js/Cowboy, see deploy/core/node_modules/lighttable/throttle.js
+  ;; For js/Cowboy, see deploy/core/lighttable/throttle.js
   (.debounce js/Cowboy ts func))
 
 (defn throttle
@@ -43,7 +43,7 @@
 
   See [[debounce]]."
   [ts func]
-  ;; For js/Cowboy, see deploy/core/node_modules/lighttable/throttle.js
+  ;; For js/Cowboy, see deploy/core/lighttable/throttle.js
   (.throttle js/Cowboy ts func))
 
 (defn ->clj

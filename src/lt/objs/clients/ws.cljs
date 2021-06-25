@@ -64,7 +64,7 @@
                                       (throw %))))
       (.on (.-server ws) "listening" #(do
                                         (set! port (.-port (.address (.-server ws))))))
-      (.add (aget ws "static") "/lighttable/ws.js" (clj->js {:file (files/lt-home "core/node_modules/lighttable/ws.js")}))
+      (.add (aget ws "static") "/lighttable/ws.js" (clj->js {:file (files/lt-home "core/lighttable/ws.js")}))
       (.on (.-sockets ws) "connection" on-connect)
       ws)
     (catch :default e

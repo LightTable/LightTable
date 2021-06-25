@@ -65,7 +65,7 @@
                 :tags #{:worker-thread}
                 :queue []
                 :init (fn [this]
-                        (let [worker (.fork cp (files/lt-home "/core/node_modules/lighttable/background/threadworker.js")
+                        (let [worker (.fork cp (files/lt-home "/core/lighttable/background/threadworker.js")
                                             (clj->js ["--harmony"])
                                             (clj->js {:execPath js/process.execPath
                                                       :silent true

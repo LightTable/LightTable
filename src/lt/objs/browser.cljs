@@ -94,7 +94,7 @@
 (defui webview [this]
   [:webview {:src (bound (subatom this :url))
              :id (browser-id this)
-             :preload (files/lt-home "core/node_modules/lighttable/browserInjection.js")}]
+             :preload (files/lt-home "core/lighttable/browserInjection.js")}]
   :focus (fn []
            (object/raise this :active))
   :blur (fn []
