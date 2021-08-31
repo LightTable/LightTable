@@ -23,7 +23,7 @@
     "request": "^2.88.2",
     "shelljs": "^0.8.4",
     "socket.io": "^4.0.1",
-    "tar": "^6.1.0",
+    "tar": "^6.1.9",
     "yargs": "^16.2.0"
   },
   "forkedDependencies": {}
