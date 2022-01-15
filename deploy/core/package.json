@@ -21,7 +21,7 @@
     "jsonify": "*",
     "replace": "^1.2.1",
     "request": "^2.88.2",
-    "shelljs": "^0.8.4",
+    "shelljs": "^0.8.5",
     "socket.io": "^4.0.1",
     "tar": "^6.1.0",
     "yargs": "^16.2.0"
